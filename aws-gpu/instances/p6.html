@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P6 系列实例详情 - AWS GPU 实例对比</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        header {
+            background: linear-gradient(135deg, #232f3e 0%, #2c3e50 100%);
+            color: white;
+            padding: 24px 32px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .breadcrumb {
+            color: #cbd5e0;
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+
+        .breadcrumb a {
+            color: #ff9900;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb a:hover {
+            color: #ffb84d;
+            text-decoration: underline;
+        }
+
+        .info-bar {
+            padding: 20px 32px;
+            background: #f7fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.75em;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .controls {
+            padding: 20px 32px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.95em;
+            transition: all 0.2s;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #ff9900;
+            box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.1);
+        }
+
+        .region-select {
+            padding: 10px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.95em;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 200px;
+        }
+
+        .region-select:focus {
+            outline: none;
+            border-color: #ff9900;
+            box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #ff9900;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e88b00;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        thead {
+            background: #2d3748;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        th:hover {
+            background: #1a202c;
+        }
+
+        th.sortable::after {
+            content: " ⇅";
+            opacity: 0.3;
+            font-size: 0.8em;
+        }
+
+        th.sort-asc::after {
+            content: " ↑";
+            opacity: 1;
+            color: #ff9900;
+        }
+
+        th.sort-desc::after {
+            content: " ↓";
+            opacity: 1;
+            color: #ff9900;
+        }
+
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        tbody tr {
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: #f7fafc;
+        }
+
+        .instance-name {
+            font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+            font-weight: 700;
+            color: #2d3748;
+            font-size: 1.05em;
+        }
+
+        .api-name {
+            font-family: 'SF Mono', 'Monaco', monospace;
+            color: #718096;
+            font-size: 0.85em;
+            margin-top: 2px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-new {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge-region {
+            background: #e6f7ff;
+            color: #0066cc;
+            font-size: 0.7em;
+            padding: 2px 8px;
+        }
+
+        .price-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .price-item {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            font-size: 0.9em;
+        }
+
+        .price-label {
+            color: #718096;
+            font-size: 0.85em;
+        }
+
+        .price-value {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .price-spot {
+            color: #38a169;
+        }
+
+        .spec-value {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .spec-unit {
+            color: #2d3748;
+            font-size: 0.85em;
+            margin-left: 2px;
+        }
+
+        .stats {
+            padding: 24px 32px;
+            background: #edf2f7;
+            text-align: center;
+            font-size: 0.9em;
+            color: #4a5568;
+        }
+
+        footer {
+            background: #2d3748;
+            color: #cbd5e0;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.85em;
+        }
+
+        footer a {
+            color: #ff9900;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .info-bar {
+                padding: 16px 20px;
+            }
+
+            .controls {
+                padding: 16px 20px;
+            }
+
+            .control-group {
+                width: 100%;
+            }
+
+            .filter-input, .region-select {
+                width: 100%;
+            }
+
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>P6 Instance Family</h1>
+            <div class="breadcrumb">
+                <a href="../index.html">← 返回总览</a> / NVIDIA GPU / P6 Series
+            </div>
+        </header>
+
+        <div class="info-bar">
+            <div class="info-item">
+                <span class="info-label">GPU Model</span>
+                <span class="info-value">NVIDIA GB200 Grace Blackwell Superchip</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Instance Count</span>
+                <span class="info-value">2 Variants</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Release Year</span>
+                <span class="info-value">2024-2025</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Availability</span>
+                <span class="info-value">Global Regions</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Current Region</span>
+                <span class="info-value" id="currentRegionLabel">美国东部（弗吉尼亚北部）</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <input type="text" id="filterInput" class="filter-input" placeholder="🔍 筛选实例...">
+                <select id="regionSelect" class="region-select" onchange="changeRegion(this.value)">
+                    <optgroup label="主要区域">
+                        <option value="us-east-1">美国东部（弗吉尼亚北部）</option>
+                        <option value="us-east-2">美国东部（俄亥俄）</option>
+                        <option value="us-west-1">美国西部（加利福尼亚北部）</option>
+                        <option value="us-west-2">美国西部（俄勒冈）</option>
+                        <option value="eu-west-1">欧洲（爱尔兰）</option>
+                        <option value="eu-central-1">欧洲（法兰克福）</option>
+                        <option value="ap-southeast-1">亚太（新加坡）</option>
+                        <option value="ap-northeast-1">亚太（东京）</option>
+                    </optgroup>
+                    <optgroup label="中国区域">
+                        <option value="cn-north-1">中国（北京）</option>
+                        <option value="cn-northwest-1">中国（宁夏）</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="control-group">
+                <button class="btn btn-secondary" onclick="clearFilter()">清除筛选</button>
+                <button class="btn btn-primary" onclick="window.location.href='../index.html'">← 返回</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="instanceTable">
+                <thead>
+                    <tr>
+                        <th class="sortable" onclick="sortTable(0)">实例类型</th>
+                        <th class="sortable" onclick="sortTable(1)">GPU 型号</th>
+                        <th class="sortable" onclick="sortTable(2)">GPU 数量</th>
+                        <th class="sortable" onclick="sortTable(3)">GPU Memory</th>
+                        <th class="sortable" onclick="sortTable(4)">vCPU</th>
+                        <th class="sortable" onclick="sortTable(5)">系统内存</th>
+                        <th class="sortable" onclick="sortTable(6)">网络</th>
+                        <th class="sortable" onclick="sortTable(7)">存储</th>
+                        <th>Pricing (<span id="regionCode">us-east-1</span>)</th>
+                        <th>可用性</th>
+                    </tr>
+                </thead>
+                <tbody id="instanceTableBody">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="stats">
+            显示 <strong id="visibleCount">3</strong> / 共 <strong id="totalCount">3</strong> 个实例 |
+            价格区域：<strong id="statsRegion">us-east-1</strong>
+        </div>
+
+        <footer>
+            <p>AWS GPU 实例对比 | <a href="../index.html">返回总览</a></p>
+            <p style="margin-top: 8px; font-size: 0.9em; opacity: 0.8;">
+                Price estimates are subject to change. Please refer to AWS official pricing for accurate information.
+            </p>
+        </footer>
+    </div>
+
+    <!-- Load real instance data from instances.vantage.sh -->
+    <script src="../data/p6_family_all.js"></script>
+
+    <script>
+        // Data is now loaded from external file: ../data/p6_family_all.js
+
+        let currentRegion = "us-east-1";
+        const regionNames = {
+            "us-east-1": "美国东部（弗吉尼亚北部）",
+            "us-east-2": "美国东部（俄亥俄）",
+            "us-west-1": "美国西部（加利福尼亚北部）",
+            "us-west-2": "美国西部（俄勒冈）",
+            "eu-west-1": "欧洲（爱尔兰）",
+            "eu-central-1": "欧洲（法兰克福）",
+            "ap-southeast-1": "亚太（新加坡）",
+            "ap-northeast-1": "亚太（东京）",
+            "cn-north-1": "中国（北京）",
+            "cn-northwest-1": "中国（宁夏）",
+        };
+
+        function renderTable() {
+            const tbody = document.getElementById('instanceTableBody');
+            tbody.innerHTML = '';
+
+            instanceData.forEach(instance => {
+                const pricing = instance.pricing[currentRegion];
+                const isAvailable = instance.availability.includes(currentRegion);
+
+                const row = document.createElement('tr');
+                if (!isAvailable) {
+                    row.style.opacity = '0.5';
+                }
+
+                row.innerHTML = `
+                    <td>
+                        <div class="instance-name">${instance.name}</div>
+                        ${instance.apiName && instance.apiName !== instance.name ? `<div class="api-name">${instance.apiName}</div>` : ''}
+                        ${instance.isNew ? '<span class="badge badge-new">new 2024</span>' : ''}
+                    </td>
+                    <td>
+                        <div class="spec-value">${instance.gpu}</div>
+                        <div class="api-name">Tensor Core GPU</div>
+                    </td>
+                    <td><span class="spec-value">${instance.gpuCount}</span><span class="spec-unit">GPUs</span></td>
+                    <td><span class="spec-unit">${instance.gpuMemory}</span></td>
+                    <td><span class="spec-value">${instance.vcpu}</span><span class="spec-unit">vCPUs</span></td>
+                    <td><span class="spec-value">${instance.memory.replace(' GB', '')} GB</span></td>
+                    <td><span class="spec-unit">${instance.network}</span></td>
+                    <td><span class="spec-unit">${instance.storage}</span></td>
+                    <td>${isAvailable && pricing ? `
+                        <div class="price-grid">
+                            <div class="price-item">
+                                <span class="price-label">按需：</span>
+                                <span class="price-value">$${pricing.onDemand.toFixed(2)}/小时</span>
+                            </div>
+                            ${pricing.spot ? `
+                            <div class="price-item">
+                                <span class="price-label">竞价：</span>
+                                <span class="price-value price-spot">~$${pricing.spot.toFixed(2)}/小时</span>
+                            </div>` : ''}
+                            ${pricing.reserved ? `
+                            <div class="price-item">
+                                <span class="price-label">1年预留：</span>
+                                <span class="price-value">~$${pricing.reserved.toFixed(2)}/小时</span>
+                            </div>` : ''}
+                        </div>
+                    ` : '<span style="color: #999;">不可用</span>'}</td>
+                    <td>${isAvailable ? '<span class="badge badge-region">可用</span>' : '<span style="color: #999;">不可用</span>'}</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+
+            updateVisibleCount();
+        }
+
+        function changeRegion(region) {
+            currentRegion = region;
+            document.getElementById('regionCode').textContent = region;
+            document.getElementById('statsRegion').textContent = region;
+            document.getElementById('currentRegionLabel').textContent = regionNames[region] || region;
+            renderTable();
+        }
+
+        // Filter functionality
+        const filterInput = document.getElementById('filterInput');
+        filterInput.addEventListener('input', function() {
+            const filterValue = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#instanceTableBody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filterValue) ? '' : 'none';
+            });
+
+            updateVisibleCount();
+        });
+
+        function clearFilter() {
+            filterInput.value = '';
+            const rows = document.querySelectorAll('#instanceTableBody tr');
+            rows.forEach(row => row.style.display = '');
+            updateVisibleCount();
+        }
+
+        function updateVisibleCount() {
+            const rows = document.querySelectorAll('#instanceTableBody tr');
+            const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+            document.getElementById('visibleCount').textContent = visibleRows.length;
+            document.getElementById('totalCount').textContent = instanceData.length;
+        }
+
+        // Sort functionality
+        let currentSort = { column: -1, ascending: true };
+
+        function sortTable(columnIndex) {
+            const table = document.getElementById('instanceTable');
+            const headers = table.querySelectorAll('th');
+            const tbody = document.getElementById('instanceTableBody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            const isAscending = currentSort.column === columnIndex ? !currentSort.ascending : true;
+
+            headers.forEach((header, index) => {
+                header.classList.remove('sort-asc', 'sort-desc');
+                if (index === columnIndex) {
+                    header.classList.add(isAscending ? 'sort-asc' : 'sort-desc');
+                }
+            });
+
+            rows.sort((a, b) => {
+                const aValue = a.cells[columnIndex].textContent.trim();
+                const bValue = b.cells[columnIndex].textContent.trim();
+                const aNum = parseFloat(aValue.replace(/[^0-9.-]/g, ''));
+                const bNum = parseFloat(bValue.replace(/[^0-9.-]/g, ''));
+
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return isAscending ? aNum - bNum : bNum - aNum;
+                }
+                return isAscending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+            currentSort = { column: columnIndex, ascending: isAscending };
+        }
+
+        // Initialize
+        renderTable();
+    </script>
+</body>
+</html>
