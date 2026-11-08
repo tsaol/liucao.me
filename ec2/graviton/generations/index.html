@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graviton 7 / 8 / 9 代对比 — Graviton 深度指南</title>
+    <meta name="description" content="Amazon EC2 第 7、8、9 代 Graviton 实例（Graviton3 / Graviton4 / Graviton5）每一代改进了什么：核心、缓存、内存、规格、网络存储、安全和性能。">
+    <link rel="stylesheet" href="../../../ec2/assets/style.css">
+    <style>
+        /* ── shared graviton subpage styles ── */
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.87rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+        .cmp .pill { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; font-family: var(--mono); font-size: 0.7rem; border: 1px solid var(--border); margin-right: 0.3rem; }
+        .pill.g { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-glow); }
+        .pill.i { color: #60a5fa; border-color: rgba(96,165,250,0.35); background: rgba(96,165,250,0.10); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+    </style>
+    <style>
+        .gen3 { color: #a78bfa; } .gen4 { color: #60a5fa; } .gen5 { color: var(--accent); }
+        .cmp td.up { color: var(--accent); }
+        .note { font-size: 0.8rem; color: var(--text-mute); }
+        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.9rem; margin: 1rem 0; }
+        .step { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.1rem; }
+        .step h4 { font-size: 0.95rem; margin-bottom: 0.4rem; }
+        .step ul { padding-left: 1.1rem; color: var(--text-dim); font-size: 0.88rem; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+        <div class="links">
+            <a href="../../../ec2/">EC2</a>
+        </div>
+    </nav>
+
+    <main class="wrap">
+        <div class="gv-hero">
+            <div class="crumb"><a href="../../../ec2/graviton/">Graviton 指南</a> · 研究 · 7 / 8 / 9 代</div>
+            <h1>Graviton <span class="g">7 / 8 / 9 代</span>，每一代进步了什么</h1>
+            <p class="sub">第 7 代 = Graviton3（M7g、C7g、R7g），第 8 代 = Graviton4（M8g、C8g、R8g、X8g、I8g），第 9 代 = Graviton5（M9g、C9g、R9g）。只用 AWS 公开资料，2026-11 整理。</p>
+            <nav class="toc">
+                <a href="#tldr">一句话</a>
+                <a href="#table">1 · 总表</a>
+                <a href="#g3g4">2 · 7 → 8 代</a>
+                <a href="#g4g5">3 · 8 → 9 代</a>
+                <a href="#perf">4 · 官方性能数字</a>
+                <a href="#io">5 · 网络与存储</a>
+                <a href="#sec">6 · 安全</a>
+                <a href="#timeline">7 · 上市时间</a>
+                <a href="#migrate">8 · 升级要注意什么</a>
+            </nav>
+        </div>
+
+        <section id="tldr" class="content-section">
+            <div class="callout">
+                <div class="lead">一句话结论</div>
+                <b class="gen3">7 代</b>把 Graviton 带进了 DDR5 和 SVE 时代；<b class="gen4">8 代</b>把"规模"做大了——每颗 96 核、L2 翻倍、最大规格的 vCPU 和内存是 7 代的 3 倍；<b class="gen5">9 代</b>把 192 核放进<b>一颗</b>芯片，L3 变成 5 倍、内存升到 DDR5-8800、主频 3.3 GHz，同时第一次用上了经过形式化验证的 Nitro Isolation Engine。按 AWS 的数字，每一代比上一代快约 25–30%。
+            </div>
+        </section>
+
+        <section id="table" class="content-section">
+            <h2 class="section-title">1 · <span>总表</span></h2>
+            <table class="cmp">
+                <thead><tr><th></th><th class="gen3">第 7 代 · Graviton3</th><th class="gen4">第 8 代 · Graviton4</th><th class="gen5">第 9 代 · Graviton5</th></tr></thead>
+                <tbody>
+                    <tr><td><b>代表实例</b></td><td>C7g / M7g / R7g（+gd）；C7gn、Hpc7g 用 Graviton3E</td><td>C8g / M8g / R8g / X8g / I8g（+gd / gn / gb）</td><td>M9g / M9gd、C9g / C9gd、R9g / R9gd</td></tr>
+                    <tr><td><b>CPU 核心设计</b></td><td>Arm Neoverse V1</td><td>Neoverse V2</td><td>Neoverse V3</td></tr>
+                    <tr><td><b>指令集</b></td><td>Armv8.4-A</td><td>Armv9.0-A</td><td>Armv9.2-A</td></tr>
+                    <tr><td><b>主频</b>（无 Turbo）</td><td>2.6 GHz</td><td>2.8 GHz（48xlarge 为 2.7 GHz）</td><td class="up">3.3 GHz</td></tr>
+                    <tr><td><b>每颗芯片核数</b></td><td>64</td><td>96（48xlarge 由 2 颗组成，共 192）</td><td class="up">192（单芯片）</td></tr>
+                    <tr><td><b>L1 / 核</b></td><td>64 KB 指令 + 64 KB 数据</td><td>同左</td><td>同左</td></tr>
+                    <tr><td><b>L2 / 核</b></td><td>1 MB</td><td class="up">2 MB</td><td>2 MB</td></tr>
+                    <tr><td><b>共享末级缓存</b></td><td>32 MB</td><td>36 MB</td><td class="up">每个 NUMA 48 MB（≤16xlarge）或 96 MB（24/48xlarge）；AWS 称是上一代的 5 倍</td></tr>
+                    <tr><td><b>片上互连</b></td><td>CMN-650</td><td>CMN-700</td><td>CMN-S3；核间延迟最多降低 33%</td></tr>
+                    <tr><td><b>内存</b></td><td>8 通道 DDR5（带宽比 Graviton2 的 M6g 高 50%）</td><td>12 通道 DDR5-5600（M8gn / M8gb 为 DDR5-6400）</td><td class="up">12 通道 DDR5-8800，AWS 称云上最快</td></tr>
+                    <tr><td><b>PCIe</b></td><td>—</td><td>—</td><td class="up">PCIe Gen6（AWS 机队第一个）</td></tr>
+                    <tr><td><b>向量单元</b></td><td>4×128 bit Neon / <b>2×256 bit SVE</b></td><td>4×128 bit Neon / SVE2</td><td>4×128 bit Neon / SVE2</td></tr>
+                    <tr><td><b>新增特性</b></td><td>SVE、RNG、bf16、int8</td><td>SVE2、sve-int8、sve-bf16、sve-bitperm、sve-crypto</td><td>afp、wfxt</td></tr>
+                    <tr><td><b>指针认证 PAC / 分支目标 BTI</b></td><td>PAC ✅ / BTI ❌</td><td>PAC ✅ / BTI ✅</td><td>PAC ✅ / BTI ✅</td></tr>
+                    <tr><td><b>32 位用户态兼容</b></td><td>支持</td><td>不再支持</td><td>不支持</td></tr>
+                    <tr><td><b>NUMA 节点</b></td><td>1</td><td>1（48xlarge 为 2）</td><td>1（16xlarge 和 48xlarge 为 2）</td></tr>
+                    <tr><td><b>最大规格（M 系列）</b></td><td>m7g.16xlarge：64 vCPU / 256 GiB</td><td class="up">m8g.48xlarge：192 vCPU / 768 GiB</td><td>m9g.48xlarge：192 vCPU（M9g 为每 vCPU 4 GiB）</td></tr>
+                    <tr><td><b>比上一代快</b>（AWS 官方，up to）</td><td>25%（对 Graviton2）</td><td>30%（对 Graviton3）</td><td>25%（对 Graviton4）</td></tr>
+                </tbody>
+            </table>
+            <p class="note">来源：总表大部分来自 AWS 官方的 Graviton 技术指南 README 里的处理器对照表 <sup>[1]</sup>；性能、内存速率、PCIe 来自各代实例页和发布博客 <sup>[2–8]</sup>。M9g 的内存按"每 vCPU 4 GiB"推算，48xlarge 应为 768 GiB。</p>
+        </section>
+
+        <section id="g3g4" class="content-section">
+            <h2 class="section-title">2 · <span class="gen3">7 代</span> → <span class="gen4">8 代</span>：做大规模</h2>
+            <ul>
+                <li><b>核数 1.5 倍、规格 3 倍</b>：每颗芯片从 64 核到 96 核；最大规格用两颗芯片，做到 192 vCPU。R8g 的最大规格 vCPU 和内存都是 R7g 的 3 倍，X8g 最大 3 TiB 内存 <sup>[4][9]</sup>。</li>
+                <li><b>L2 翻倍</b>：每核从 1 MB 到 2 MB，而且每个 vCPU 独享缓存 <sup>[1][4]</sup>。</li>
+                <li><b>内存从 8 通道到 12 通道</b>，速率到 DDR5-5600；网络和存储加强版（M8gn / M8gb）到 DDR5-6400 <sup>[4]</sup>。</li>
+                <li><b>Armv9 + SVE2</b>：新增 SVE2 和一批整数、bf16、加密类向量指令。注意向量宽度从 Graviton3 的 2×256 bit 变成 4×128 bit <sup>[1]</sup>。</li>
+                <li><b>主频 2.6 → 2.8 GHz</b>，依旧没有 Turbo，性能稳定可预测 <sup>[1]</sup>。</li>
+                <li><b>性能</b>：比 Graviton3 最多快 30%；X8g 比 X2gd 最多快 60% <sup>[4][9]</sup>。</li>
+                <li><b>新的极限型号</b>：M8gn 用第 6 代 Nitro 卡，网络最高 600 Gbps；M8gb 的 EBS 最高 300 Gbps、1,440K IOPS <sup>[4]</sup>。</li>
+            </ul>
+        </section>
+
+        <section id="g4g5" class="content-section">
+            <h2 class="section-title">3 · <span class="gen4">8 代</span> → <span class="gen5">9 代</span>：一颗芯片做到 192 核</h2>
+            <ul>
+                <li><b>192 核放进一颗芯片</b>：8 代的 192 vCPU 要两颗芯片拼，9 代一颗就够 <sup>[1][2]</sup>。</li>
+                <li><b>L3 是上一代的 5 倍</b>，核间延迟最多降低 33% <sup>[2]</sup>。</li>
+                <li><b>内存 DDR5-8800</b>（8 代是 5600），AWS 称是云上最快的内存；同时是 AWS 机队里第一个支持 <b>PCIe Gen6</b> 的 CPU <sup>[2][3]</sup>。</li>
+                <li><b>主频 2.8 → 3.3 GHz</b>，核心设计从 Neoverse V2 升到 V3，指令集到 Armv9.2-A <sup>[1]</sup>。</li>
+                <li><b>网络和 EBS 带宽</b>：各规格平均高 15% / 20%，最大规格（48xlarge）翻倍：网络 100 Gbps、EBS 72 Gbps；收发包性能最多 3 倍 <sup>[2][3][5]</sup>。</li>
+                <li><b>Instance Bandwidth Configuration（IBC）</b>：可以在 EBS 和网络之间最多调整 25% 的带宽分配 <sup>[2]</sup>。</li>
+                <li><b>本地盘</b>：M9gd 最高 11.4 TB NVMe，IOPS 比 M8gd 高 30% <sup>[2]</sup>。</li>
+                <li><b>能效</b>：AWS 称 Graviton5 是它造过的能效最高的处理器 <sup>[5]</sup>。</li>
+            </ul>
+        </section>
+
+        <section id="perf" class="content-section">
+            <h2 class="section-title">4 · <span>官方性能数字</span></h2>
+            <table class="cmp">
+                <thead><tr><th>对比</th><th>AWS 公布（up to）</th></tr></thead>
+                <tbody>
+                    <tr><td><b>M7g vs M6g</b>（Graviton3 vs 2）</td><td>整体最多快 25%；浮点最多 2 倍；加密最多 2 倍；内存带宽高 50% <sup>[6]</sup></td></tr>
+                    <tr><td><b>M8g vs M7g</b>（Graviton4 vs 3）</td><td>整体最多快 30% <sup>[4]</sup></td></tr>
+                    <tr><td><b>X8g vs X2gd</b></td><td>最多快 60% <sup>[9]</sup></td></tr>
+                    <tr><td><b>M9g vs M8g</b>（Graviton5 vs 4）</td><td>计算最多快 25%；Web 应用 35%；机器学习推理 35%；数据库 30% <sup>[2][7]</sup></td></tr>
+                    <tr><td><b>C9g vs C8g</b></td><td>每 vCPU 性能最多高 25% <sup>[3]</sup></td></tr>
+                    <tr><td><b>R9g vs R8g</b></td><td>每 vCPU 计算性能最多高 25% <sup>[5]</sup></td></tr>
+                </tbody>
+            </table>
+            <div class="callout warn">
+                <div class="lead">怎么看这些数字</div>
+                都是 AWS 公布的 <b>"最多"</b> 提升，测试条件各不相同，不能直接相加或互相换算。自己的业务一定要做 A/B 压测；判断 CPU 是否真的用满，可以参考本系列的 <a href="../../../ec2/graviton/saturation/">ARM 上判断资源用满</a>。
+            </div>
+        </section>
+
+        <section id="io" class="content-section">
+            <h2 class="section-title">5 · <span>网络与存储</span></h2>
+            <table class="cmp">
+                <thead><tr><th>最大规格</th><th>网络</th><th>EBS</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="pill i">m8g.48xlarge</span></td><td>50 Gbps</td><td>40 Gbps</td></tr>
+                    <tr><td><span class="pill g">c9g / r9g .48xlarge</span></td><td class="up">100 Gbps</td><td class="up">72 Gbps</td></tr>
+                    <tr><td><span class="pill i">m8gn（网络加强版）</span></td><td>最高 600 Gbps</td><td>—</td></tr>
+                    <tr><td><span class="pill i">m8gb（EBS 加强版）</span></td><td>—</td><td>最高 300 Gbps / 1,440K IOPS</td></tr>
+                </tbody>
+            </table>
+            <p>9 代目前只有 M / C / R 和对应的本地盘版本（gd），还没有类似 M8gn、M8gb 的网络或 EBS 加强版。所以如果追求<b>极限</b>网络或 EBS 带宽，8 代的 gn / gb 型号目前更高 <sup>[3][4][5]</sup>。</p>
+        </section>
+
+        <section id="sec" class="content-section">
+            <h2 class="section-title">6 · <span>安全</span></h2>
+            <ul>
+                <li><b>7 代</b>：内存始终加密（always-on memory encryption），支持指针认证（PAC） <sup>[1][6]</sup>。</li>
+                <li><b>8 代</b>：再加上分支目标识别（BTI），每个 vCPU 独享缓存 <sup>[1][4]</sup>。</li>
+                <li><b>9 代</b>：首次推出 <b>Nitro Isolation Engine</b>。它负责虚拟机之间的隔离（包括对虚拟机内存、CPU 寄存器和 I/O 设备的访问），并用<b>形式化验证</b>从数学上证明隔离是成立的；AWS 称 Nitro 因此成为第一个经过形式化验证的云 hypervisor <sup>[2][5]</sup>。</li>
+            </ul>
+        </section>
+
+        <section id="timeline" class="content-section">
+            <h2 class="section-title">7 · <span>上市时间</span></h2>
+            <ul>
+                <li><b class="gen4">第 8 代</b>：C8g、M8g 于 2024-09 正式可用 <sup>[8]</sup>；之后陆续推出 R8g、X8g、I8g 和 gd / gn / gb 版本，2025-12 仍在扩展区域 <sup>[10]</sup>。</li>
+                <li><b class="gen5">第 9 代</b>：2025-12 re:Invent 发布 M9g 预览 <sup>[7]</sup> → 2026-06 M9g / M9gd 和 C9g / C9gd 正式可用 <sup>[2][3]</sup> → 2026-08 R9g / R9gd 正式可用 <sup>[5]</sup> → 2026-09 起陆续扩展区域（例如东京的 C9g），Lambda Managed Instances 也开始支持 Graviton5 <sup>[11][12]</sup>。</li>
+            </ul>
+            <p class="note">第 7 代的上市时间这里没有列出：本页只引用已经核对过原文的来源。</p>
+        </section>
+
+        <section id="migrate" class="content-section">
+            <h2 class="section-title">8 · <span>升级要注意什么</span></h2>
+            <div class="steps">
+                <div class="step">
+                    <h4 class="gen4">7 代 → 8 代</h4>
+                    <ul>
+                        <li>编译参数 <code>-mcpu=neoverse-512tvb</code> 三代都适用，一般<b>不用重新编译</b> <sup>[1]</sup>。</li>
+                        <li><b>不再支持 32 位用户态</b>：还有 armv7 / 32 位程序的，要先换成 64 位版本 <sup>[1]</sup>。</li>
+                        <li>向量从 2×256 bit SVE 变成 4×128 bit：专门按 256 bit 调过的 SVE 代码要重新测一下性能。</li>
+                        <li>48xlarge 是两颗芯片、两个 NUMA 节点，要关注 NUMA，见 <a href="../../../ec2/numa/">NUMA 深度指南</a>。</li>
+                    </ul>
+                </div>
+                <div class="step">
+                    <h4 class="gen5">8 代 → 9 代</h4>
+                    <ul>
+                        <li>指令集向后兼容，代码一般直接能跑；多个客户案例都是"零代码改动"拿到了提升 <sup>[2]</sup>。</li>
+                        <li>内存带宽敏感的负载（数据库、缓存、分析）最受益于 DDR5-8800 和更大的 L3。</li>
+                        <li>16xlarge 和 48xlarge 仍然有 2 个 NUMA 节点，大规格依旧要做 NUMA 绑定 <sup>[1]</sup>。</li>
+                        <li>要极限网络或 EBS 带宽，目前 8 代的 gn / gb 型号更高；先确认 9 代在你的区域已经可用。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="refs">
+            <h4>参考资料（均为公开来源，2026-11 核对）</h4>
+            <ol>
+                <li>[1] <a href="https://github.com/aws/aws-graviton-getting-started">aws/aws-graviton-getting-started</a> — README 处理器对照表</li>
+                <li>[2] <a href="https://aws.amazon.com/blogs/aws/now-available-amazon-ec2-m9g-and-m9gd-instances-powered-by-new-aws-graviton5-processors/">AWS News Blog：M9g / M9gd 正式可用（2026-06）</a></li>
+                <li>[3] <a href="https://aws.amazon.com/blogs/aws/amazon-ec2-c9g-and-c9gd-instances-powered-by-aws-graviton5-processors-are-now-available/">AWS News Blog：C9g / C9gd 正式可用（2026-06）</a></li>
+                <li>[4] <a href="https://aws.amazon.com/ec2/instance-types/m8g/">Amazon EC2 M8g 实例页</a></li>
+                <li>[5] <a href="https://aws.amazon.com/blogs/aws/amazon-ec2-r9g-and-r9gd-instances-powered-by-aws-graviton5-processors-are-now-generally-available/">AWS News Blog：R9g / R9gd 正式可用（2026-08）</a></li>
+                <li>[6] <a href="https://aws.amazon.com/ec2/instance-types/m7g/">Amazon EC2 M7g 实例页</a></li>
+                <li>[7] <a href="https://aws.amazon.com/about-aws/whats-new/2025/12/ec2-m9g-instances-graviton5-processors-preview/">What's New：M9g 预览（2025-12）</a></li>
+                <li>[8] <a href="https://aws.amazon.com/about-aws/whats-new/2024/09/amazon-ec2-c8g-m8g-instances/">What's New：C8g、M8g 正式可用（2024-09）</a></li>
+                <li>[9] <a href="https://aws.amazon.com/ec2/instance-types/x8g/">Amazon EC2 X8g 实例页</a>、<a href="https://aws.amazon.com/ec2/instance-types/r8g/">R8g 实例页</a></li>
+                <li>[10] <a href="https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-c8g-m8g-r8g-instances-additional-regions/">What's New：C8g、M8g、R8g 扩展区域（2025-12）</a></li>
+                <li>[11] <a href="https://aws.amazon.com/about-aws/whats-new/2026/09/ec2-c9g-c9gd-asia-pacific-tokyo/">What's New：C9g、C9gd 进入东京（2026-09）</a></li>
+                <li>[12] <a href="https://aws.amazon.com/about-aws/whats-new/2026/09/aws-lambda-graviton5-ec2/">What's New：Lambda 支持 Graviton5（2026-09）</a></li>
+            </ol>
+        </div>
+
+        <div class="next">
+            <div class="left">相关</div>
+            <div class="right">
+                <a href="../../../ec2/graviton/compare/">01 / 04 · 硬件对比</a>
+                <a class="big" href="../../../ec2/graviton/compare/">M8g vs M7i 全景对比 →</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 liucao.me &middot; <a href="../../../">Home</a> &middot; <a href="../../../ec2/graviton/">Graviton 指南</a></p>
+    </footer>
+</body>
+</html>
