@@ -143,7 +143,7 @@
             <p><b>证明层 1 不够</b>——跑一次这个 API：</p>
             <pre>aws cloudwatch list-metrics \
   --namespace AWS/EC2 \
-  --dimensions Name=InstanceId,Value=<你的实例ID></pre>
+  --dimensions Name=InstanceId,Value=&lt;你的实例ID&gt;</pre>
             <p>返回里有 CPUUtilization、NetworkIn/Out、DiskReadBytes、StatusCheckFailed、EBSReadOps。<b>没有</b> MemoryUsed、DiskSpaceUsed_Percent、ProcessCount、TCPEstablished。这些指标必须来自 guest 里的 agent。</p>
         </section>
 
