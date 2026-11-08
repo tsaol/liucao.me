@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>liucao.me/network</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .container { max-width: 600px; width: 100%; }
+        h1 { font-size: 1.8rem; font-weight: 600; margin-bottom: 0.5rem; color: #111827; }
+        .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 2.5rem; }
+        .links { display: flex; flex-direction: column; gap: 1rem; }
+        .link-card {
+            display: block;
+            padding: 1.25rem 1.5rem;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #1a1a1a;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .link-card:hover {
+            border-color: #059669;
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.1);
+        }
+        .link-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.3rem;
+        }
+        .link-desc {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+        .link-tag {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+            background: #d1fae5;
+            color: #065f46;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>liucao.me/network</h1>
+        <p class="subtitle">AWS networking notes & benchmarks</p>
+
+        <div class="links">
+            <a href="/network/matrix/" class="link-card">
+                <div class="link-title">AWS Region-to-Region Latency Matrix <span class="link-tag">EN</span></div>
+                <div class="link-desc">Every commercial AWS region pinging every other — 35 × 35 = 1,225 cells, hoverable heatmap with p50 / p99 toggles.</div>
+            </a>
+            <a href="/network/zaz-latency/" class="link-card">
+                <div class="link-title">ZAZ Cross-Region Latency <span class="link-tag">EN</span></div>
+                <div class="link-desc">Round-trip time from eu-south-2 (Aragón) to 34 regions — p10 / p50 / p99, sortable, with sync-replication picks and data-source methodology.</div>
+            </a>
+            <a href="/network/s3bench/" class="link-card">
+                <div class="link-title">S3 Download Acceleration Benchmark <span class="link-tag">EN</span></div>
+                <div class="link-desc">Parallel Range GET vs baseline — 2 GiB download from eu-south-2, eu-central-1, eu-north-1. Up to 13x faster.</div>
+            </a>
+            <a href="/network/cors/" class="link-card">
+                <div class="link-title">S3 + CloudFront CORS 配置 <span class="link-tag">CN</span></div>
+                <div class="link-desc">什么时候需要 CORS、配在哪里（CF Response Headers Policy vs S3 CORS）、常见坑。</div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

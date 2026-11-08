@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZAZ Cross-Region Latency — liucao.me/network</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --green: #059669;
+    --green-light: #d1fae5;
+    --green-dark: #065f46;
+    --gray-50: #fafafa;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --band-lan: #d1fae5;
+    --band-lan-fg: #065f46;
+    --band-cont: #fef3c7;
+    --band-cont-fg: #92400e;
+    --band-far: #fee2e2;
+    --band-far-fg: #991b1b;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    padding: 2rem 1.25rem 4rem;
+    line-height: 1.55;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  .breadcrumb { font-size: 0.85rem; color: var(--gray-500); margin-bottom: 1.25rem; }
+  .breadcrumb a { color: var(--gray-500); text-decoration: none; border-bottom: 1px dotted var(--gray-500); }
+  .breadcrumb a:hover { color: var(--green); border-bottom-color: var(--green); }
+  h1 { font-size: 1.9rem; font-weight: 600; margin-bottom: 0.35rem; }
+  .subtitle { color: var(--gray-500); font-size: 0.95rem; margin-bottom: 1.75rem; }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1rem;
+    font-size: 0.8rem; color: var(--gray-500);
+    padding: 0.75rem 1rem; background: #fff; border: 1px solid var(--gray-200); border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+  .meta strong { color: var(--gray-900); font-weight: 600; }
+  h2 { font-size: 1.15rem; font-weight: 600; margin: 2rem 0 0.75rem; }
+  p.lead { color: var(--gray-700); margin-bottom: 1rem; }
+
+  /* controls */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;
+    padding: 0.9rem 1rem; background: #fff; border: 1px solid var(--gray-200); border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  .segmented { display: inline-flex; background: var(--gray-100); border-radius: 6px; padding: 3px; }
+  .segmented button {
+    padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 500;
+    background: transparent; border: 0; border-radius: 4px; cursor: pointer;
+    color: var(--gray-500); transition: 0.15s;
+  }
+  .segmented button.on { background: #fff; color: var(--gray-900); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+  .ctrl-label { font-size: 0.78rem; color: var(--gray-500); margin-right: 0.35rem; }
+  .filter {
+    flex: 1; min-width: 180px;
+    padding: 0.4rem 0.65rem; font-size: 0.85rem;
+    border: 1px solid var(--gray-200); border-radius: 6px; background: #fff;
+    outline: none;
+  }
+  .filter:focus { border-color: var(--green); }
+
+  /* table */
+  .table-wrap { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+  thead { background: var(--gray-100); }
+  th {
+    text-align: left; padding: 0.65rem 0.85rem; font-weight: 600; font-size: 0.75rem;
+    color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.03em;
+    cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  th.num { text-align: right; }
+  th .arrow { color: var(--gray-500); font-size: 0.7rem; margin-left: 0.15rem; }
+  th.sorted { color: var(--green); }
+  td { padding: 0.6rem 0.85rem; border-top: 1px solid var(--gray-200); vertical-align: middle; }
+  td.code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.82rem; color: var(--gray-700); }
+  td.city { font-weight: 500; }
+  td.city .flag { margin-right: 0.4rem; }
+  td.iata { font-family: ui-monospace, monospace; font-size: 0.75rem; color: var(--gray-500); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.bar-cell { width: 45%; padding-right: 0.85rem; }
+  .bar-track { height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.25s ease; }
+  .bar-fill.lan { background: var(--green); }
+  .bar-fill.cont { background: #f59e0b; }
+  .bar-fill.far { background: #ef4444; }
+  tr:hover { background: #f9fafb; }
+  .band {
+    display: inline-block; padding: 0.1rem 0.45rem; border-radius: 3px;
+    font-size: 0.68rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .band.lan { background: var(--band-lan); color: var(--band-lan-fg); }
+  .band.cont { background: var(--band-cont); color: var(--band-cont-fg); }
+  .band.far { background: var(--band-far); color: var(--band-far-fg); }
+
+  /* summary cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.9rem; margin: 1rem 0 1.75rem; }
+  .card {
+    padding: 0.9rem 1rem; background: #fff; border: 1px solid var(--gray-200); border-radius: 8px;
+  }
+  .card-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gray-500); margin-bottom: 0.25rem; }
+  .card-value { font-size: 1.1rem; font-weight: 600; color: var(--gray-900); }
+  .card-value .unit { font-weight: 400; color: var(--gray-500); font-size: 0.85rem; margin-left: 0.15rem; }
+  .card-sub { font-size: 0.78rem; color: var(--gray-500); margin-top: 0.15rem; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem;
+    font-size: 0.78rem; color: var(--gray-500); margin: 0.75rem 0 1.5rem;
+  }
+  .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 0.35rem; vertical-align: middle; }
+
+  .notes {
+    padding: 1rem 1.15rem; background: #fff; border: 1px solid var(--gray-200); border-radius: 8px;
+    font-size: 0.85rem; color: var(--gray-700);
+  }
+  .notes ul { margin: 0.4rem 0 0 1.15rem; }
+  .notes li { margin: 0.3rem 0; }
+  .notes code { background: var(--gray-100); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.82rem; }
+  .notes a { color: var(--green); text-decoration: none; border-bottom: 1px solid transparent; }
+  .notes a:hover { border-bottom-color: var(--green); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.25rem 0.75rem 3rem; }
+    h1 { font-size: 1.5rem; }
+    td.bar-cell { display: none; }
+    th.bar-cell { display: none; }
+    .card-value { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb"><a href="/network/">liucao.me/network</a> / ZAZ cross-region latency</div>
+  <h1>ZAZ Cross-Region Latency</h1>
+  <p class="subtitle">Round-trip time from AWS <code style="font-family: ui-monospace, monospace;">eu-south-2</code> (Spain / Aragón) to every other AWS commercial region.</p>
+
+  <div class="meta">
+    <div><strong>Origin:</strong> eu-south-2 (Aragón, Spain)</div>
+    <div><strong>Destinations:</strong> 34 regions</div>
+    <div><strong>Window:</strong> rolling 1 week</div>
+    <div><strong>Source:</strong> <a href="https://www.cloudping.co/" target="_blank" rel="noopener" style="color:inherit; text-decoration: underline;">cloudping.co</a> · <a href="https://www.cloudping.co/api/latencies?percentile=p_50&amp;timeframe=1W" target="_blank" rel="noopener" style="color:inherit; text-decoration: underline;">API</a></div>
+    <div id="fetchedAt"></div>
+  </div>
+
+  <div class="cards" id="summary"></div>
+
+  <div class="controls">
+    <span class="ctrl-label">Percentile</span>
+    <div class="segmented" id="pctl">
+      <button data-p="p10">p10</button>
+      <button data-p="p50" class="on">p50</button>
+      <button data-p="p99">p99</button>
+    </div>
+    <span class="ctrl-label" style="margin-left: 0.75rem;">Region group</span>
+    <div class="segmented" id="grp">
+      <button data-g="all" class="on">All</button>
+      <button data-g="Europe">Europe</button>
+      <button data-g="North America">N.America</button>
+      <button data-g="Asia Pacific">APAC</button>
+      <button data-g="other">Other</button>
+    </div>
+    <input class="filter" id="filter" type="text" placeholder="Filter by code, city, or IATA…">
+  </div>
+
+  <div class="legend">
+    <span><span class="legend-dot" style="background: var(--green);"></span>≤ 60 ms · same continent, sync replication feasible</span>
+    <span><span class="legend-dot" style="background: #f59e0b;"></span>60–180 ms · transatlantic / regional hop</span>
+    <span><span class="legend-dot" style="background: #ef4444;"></span>&gt; 180 ms · trans-oceanic, async only</span>
+  </div>
+
+  <div class="table-wrap">
+    <table id="tbl">
+      <thead>
+        <tr>
+          <th data-sort="p50" class="sorted num" style="width: 3rem;">#</th>
+          <th data-sort="city">City</th>
+          <th data-sort="code">Region</th>
+          <th data-sort="iata">IATA</th>
+          <th data-sort="p50" class="num">Latency <span class="arrow">▼</span></th>
+          <th class="bar-cell">&nbsp;</th>
+          <th>Band</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <p style="margin: 0.75rem 0 1.5rem; font-size: 0.9rem;">
+    Want the whole picture? <a href="/network/matrix/" style="color: var(--green); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--green);">See the full 35 × 35 region-to-region matrix →</a>
+  </p>
+
+  <h2>Data source &amp; methodology</h2>
+  <div class="notes">
+    <ul>
+      <li><strong>Source:</strong> <a href="https://www.cloudping.co/" target="_blank" rel="noopener">CloudPing.co</a> — AWS Region Latency Matrix, community-maintained by <a href="https://matt.aimonetti.net/" target="_blank" rel="noopener">Matt Aimonetti</a>. Public JSON endpoint: <code>https://www.cloudping.co/api/latencies?percentile={p_10|p_50|p_99}&amp;timeframe=1W</code></li>
+      <li><strong>Measurement:</strong> A t3.nano EC2 instance in every AWS commercial region opens periodic TCP connections to every other region and records round-trip time. Values reflect <strong>public-internet EC2 ↔ EC2 TCP handshakes</strong>, not ICMP ping and not the AWS backbone.</li>
+      <li><strong>Aggregation window:</strong> Rolling 1 week, refreshed several times per day at source. Snapshot on this page captured <strong>2026-09-12</strong>.</li>
+      <li><strong>Percentiles:</strong> <code>p10</code> is the fast-path (10% of samples are faster). <code>p50</code> is the median. <code>p99</code> is the tail — 1 in 100 samples is at least this slow. Design SLAs against p99, not p50.</li>
+      <li><strong>Coverage:</strong> 34 destination regions. GovCloud (<code>us-gov-*</code>) and China (<code>cn-*</code>) regions are isolated environments and cannot be probed from commercial accounts, so they are absent by design.</li>
+      <li><strong>Caveats:</strong>
+        <ul style="margin-top: 0.3rem;">
+          <li>Traffic over Transit Gateway, VPC peering, PrivateLink, or the AWS backbone is often lower and less jittery than these numbers.</li>
+          <li>Bahrain (<code>me-south-1</code>) shows identical p10/p50/p99 — a sparse-sampling artifact in the source, not a suspiciously stable link.</li>
+          <li>Sub-millisecond precision here is spurious; treat values as ±3 ms.</li>
+        </ul>
+      </li>
+      <li><strong>Reproduce:</strong> <code>curl 'https://www.cloudping.co/api/latencies?percentile=p_50&amp;timeframe=1W' | jq '.data["eu-south-2"]'</code></li>
+    </ul>
+  </div>
+
+  <h2>Sources considered</h2>
+  <div class="notes">
+    <p style="margin-bottom: 0.5rem;">Six public sources were evaluated. Only one is used here — the others measure a different thing, have no API, or are dead.</p>
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 0.5rem;">
+      <thead>
+        <tr style="border-bottom: 1px solid var(--gray-200);">
+          <th style="text-align: left; padding: 0.4rem 0.5rem 0.4rem 0;">Source</th>
+          <th style="text-align: left; padding: 0.4rem 0.5rem;">Method</th>
+          <th style="text-align: left; padding: 0.4rem 0.5rem;">API</th>
+          <th style="text-align: left; padding: 0.4rem 0.5rem;">Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid var(--gray-100);">
+          <td style="padding: 0.4rem 0.5rem 0.4rem 0;"><a href="https://www.cloudping.co/" target="_blank" rel="noopener">CloudPing.co</a></td>
+          <td style="padding: 0.4rem 0.5rem;">EC2 → EC2 TCP, all 35 regions</td>
+          <td style="padding: 0.4rem 0.5rem;"><strong style="color: var(--green);">Yes, JSON</strong></td>
+          <td style="padding: 0.4rem 0.5rem;"><strong>Used here.</strong> Only public source with p10/p50/p99, 1D/1W/1M/1Y windows, and full N×N coverage.</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--gray-100);">
+          <td style="padding: 0.4rem 0.5rem 0.4rem 0;"><a href="https://awsspeedtest.com/" target="_blank" rel="noopener">awsspeedtest.com</a></td>
+          <td style="padding: 0.4rem 0.5rem;">Browser → S3 HTTPS</td>
+          <td style="padding: 0.4rem 0.5rem;">No</td>
+          <td style="padding: 0.4rem 0.5rem;">Client-to-region only. Adds ~20–40 ms of browser/TLS overhead vs. EC2 probes. Good for a laptop-side sanity check.</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--gray-100);">
+          <td style="padding: 0.4rem 0.5rem 0.4rem 0;"><a href="https://www.cloudping.info/" target="_blank" rel="noopener">cloudping.info</a></td>
+          <td style="padding: 0.4rem 0.5rem;">Browser HTTP ping</td>
+          <td style="padding: 0.4rem 0.5rem;">No</td>
+          <td style="padding: 0.4rem 0.5rem;">Single-shot only. Not the Adorjan tool — that's <code>.co</code>. Fine for one-off checks, no history.</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--gray-100);">
+          <td style="padding: 0.4rem 0.5rem 0.4rem 0;"><a href="https://cloudpingtest.com/" target="_blank" rel="noopener">cloudpingtest.com</a></td>
+          <td style="padding: 0.4rem 0.5rem;">Browser HTTPS, multi-cloud</td>
+          <td style="padding: 0.4rem 0.5rem;">No</td>
+          <td style="padding: 0.4rem 0.5rem;">Useful for comparing AWS vs. GCP/Azure from your location, not for inter-region.</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--gray-100);">
+          <td style="padding: 0.4rem 0.5rem 0.4rem 0;">ThousandEyes (Cisco)</td>
+          <td style="padding: 0.4rem 0.5rem;">Enterprise probes, TCP + BGP</td>
+          <td style="padding: 0.4rem 0.5rem;">Paywalled</td>
+          <td style="padding: 0.4rem 0.5rem;">Quarterly PDF cloud performance report — good for order-of-magnitude citations, not real-time.</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.4rem 0.5rem 0.4rem 0;">AWS Reachability Analyzer / Internet Monitor</td>
+          <td style="padding: 0.4rem 0.5rem;">Your own account traffic</td>
+          <td style="padding: 0.4rem 0.5rem;">Account only</td>
+          <td style="padding: 0.4rem 0.5rem;">Not public — AWS <strong>does not publish</strong> an inter-region latency matrix.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top: 0.75rem; color: var(--gray-500); font-size: 0.8rem;">Dead / dropped: cloudharmony.com (Gartner shut it down), perfops.net/latency (404), aws-latency-test.com (empty shell).</p>
+    <p style="margin-top: 0.5rem;"><strong>Want an independent second opinion?</strong> Run 30 Lambda-to-Lambda TCP probes for a day — about 50 lines of Python. That gives you a private dataset to compare against CloudPing's public one.</p>
+  </div>
+
+  <h2>Design guidance</h2>
+  <div class="notes">
+    <ul>
+      <li>The <strong>Aurora Global Database</strong> RPO of &lt; 1 s needs consistent single-digit-to-low-double-digit latency — only <code>eu-west-3</code> (Paris, ~18 ms) qualifies as a comfortable secondary. <code>eu-central-2</code>, <code>eu-south-1</code>, <code>eu-west-2</code> all work with a bit more replay lag.</li>
+      <li>For <strong>async DR</strong> anywhere in Europe or the eastern US the p50 is under 100 ms — pick by service catalog and price, not latency.</li>
+    </ul>
+  </div>
+
+  <h2>Regional shortcuts</h2>
+  <div class="notes">
+    <ul>
+      <li><strong>Closest neighbour:</strong> <code>eu-west-3</code> Paris — 18 ms via terrestrial fibre through the French border. Best pick for synchronous replication.</li>
+      <li><strong>Bedrock / SageMaker fallback:</strong> <code>eu-central-1</code> Frankfurt — 31 ms, richest service catalog in EU.</li>
+      <li><strong>EU sovereignty:</strong> <code>eusc-de-east-1</code> European Sovereign Cloud (Brandenburg) — 105 ms, higher because it currently routes through a limited number of PoPs.</li>
+      <li><strong>Americas gateway:</strong> <code>us-east-1</code> N. Virginia — 97 ms, the standard cross-Atlantic pivot.</li>
+      <li><strong>Asia entry point:</strong> <code>ap-south-1</code> Mumbai — 119 ms, shortest hop to Asia via the SEA-ME-WE cable path.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+const DATA = [{"code": "eu-west-3", "city": "Paris", "flag": "\ud83c\uddeb\ud83c\uddf7", "group": "Europe", "iata": "CDG", "p10": 16.4162, "p50": 18.028999999999996, "p99": 28.040000000000003}, {"code": "eu-west-2", "city": "London", "flag": "\ud83c\uddec\ud83c\udde7", "group": "Europe", "iata": "LHR", "p10": 20.743, "p50": 22.753999999999998, "p99": 44.27848}, {"code": "eu-central-2", "city": "Zurich", "flag": "\ud83c\udde8\ud83c\udded", "group": "Europe", "iata": "ZRH", "p10": 25.3414, "p50": 27.104999999999997, "p99": 42.298399999999994}, {"code": "eu-south-1", "city": "Milan", "flag": "\ud83c\uddee\ud83c\uddf9", "group": "Europe", "iata": "MXP", "p10": 21.5242, "p50": 27.188000000000002, "p99": 56.31}, {"code": "eu-central-1", "city": "Frankfurt", "flag": "\ud83c\udde9\ud83c\uddea", "group": "Europe", "iata": "FRA", "p10": 24.159, "p50": 31.45, "p99": 42.00422}, {"code": "eu-west-1", "city": "Dublin", "flag": "\ud83c\uddee\ud83c\uddea", "group": "Europe", "iata": "DUB", "p10": 31.3742, "p50": 32.043, "p99": 38.45646000000001}, {"code": "eu-north-1", "city": "Stockholm", "flag": "\ud83c\uddf8\ud83c\uddea", "group": "Europe", "iata": "ARN", "p10": 55.39359999999999, "p50": 57.453, "p99": 66.91669999999999}, {"code": "il-central-1", "city": "Tel Aviv", "flag": "\ud83c\uddee\ud83c\uddf1", "group": "Middle East", "iata": "TLV", "p10": 59.909, "p50": 63.73, "p99": 67.8853}, {"code": "me-south-1", "city": "Bahrain", "flag": "\ud83c\udde7\ud83c\udded", "group": "Middle East", "iata": "BAH", "p10": 96.67, "p50": 96.67, "p99": 96.67}, {"code": "us-east-1", "city": "N. Virginia", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "North America", "iata": "IAD", "p10": 96.3956, "p50": 97.33600000000001, "p99": 104.71834000000001}, {"code": "eusc-de-east-1", "city": "Brandenburg (Sovereign)", "flag": "\ud83c\uddea\ud83c\uddfa", "group": "Europe", "iata": "BER", "p10": 91.2514, "p50": 104.93, "p99": 128.42484}, {"code": "ca-central-1", "city": "Montreal", "flag": "\ud83c\udde8\ud83c\udde6", "group": "North America", "iata": "YUL", "p10": 107.2266, "p50": 110.152, "p99": 120.81267999999999}, {"code": "us-east-2", "city": "Ohio", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "North America", "iata": "CMH", "p10": 108.4694, "p50": 110.921, "p99": 122.15466000000002}, {"code": "ap-south-1", "city": "Mumbai", "flag": "\ud83c\uddee\ud83c\uddf3", "group": "Asia Pacific", "iata": "BOM", "p10": 117.10579999999999, "p50": 119.42699999999999, "p99": 123.60090000000001}, {"code": "me-central-1", "city": "UAE", "flag": "\ud83c\udde6\ud83c\uddea", "group": "Middle East", "iata": "DXB", "p10": 122.089, "p50": 125.07199999999999, "p99": 132.89884}, {"code": "af-south-1", "city": "Cape Town", "flag": "\ud83c\uddff\ud83c\udde6", "group": "Africa", "iata": "CPT", "p10": 133.2682, "p50": 135.728, "p99": 140.51142000000002}, {"code": "ap-south-2", "city": "Hyderabad", "flag": "\ud83c\uddee\ud83c\uddf3", "group": "Asia Pacific", "iata": "HYD", "p10": 132.6072, "p50": 135.784, "p99": 140.7686}, {"code": "us-west-2", "city": "Oregon", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "North America", "iata": "PDX", "p10": 153.2036, "p50": 160.48900000000003, "p99": 168.08408000000003}, {"code": "mx-central-1", "city": "Mexico City", "flag": "\ud83c\uddf2\ud83c\uddfd", "group": "North America", "iata": "MEX", "p10": 160.961, "p50": 167.107, "p99": 178.2309}, {"code": "ap-southeast-1", "city": "Singapore", "flag": "\ud83c\uddf8\ud83c\uddec", "group": "Asia Pacific", "iata": "SIN", "p10": 167.219, "p50": 172.08499999999998, "p99": 175.6038}, {"code": "ca-west-1", "city": "Calgary", "flag": "\ud83c\udde8\ud83c\udde6", "group": "North America", "iata": "YYC", "p10": 168.7774, "p50": 172.713, "p99": 186.76092}, {"code": "us-west-1", "city": "N. California", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "North America", "iata": "SFO", "p10": 167.75639999999999, "p50": 172.76099999999997, "p99": 180.86896000000002}, {"code": "ap-southeast-5", "city": "Malaysia", "flag": "\ud83c\uddf2\ud83c\uddfe", "group": "Asia Pacific", "iata": "KUL", "p10": 172.2606, "p50": 176.14, "p99": 188.48006}, {"code": "ap-southeast-3", "city": "Jakarta", "flag": "\ud83c\uddee\ud83c\udde9", "group": "Asia Pacific", "iata": "CGK", "p10": 183.32899999999998, "p50": 187.986, "p99": 197.47505999999998}, {"code": "ap-southeast-7", "city": "Thailand", "flag": "\ud83c\uddf9\ud83c\udded", "group": "Asia Pacific", "iata": "BKK", "p10": 195.24120000000002, "p50": 199.332, "p99": 208.14058}, {"code": "ap-east-1", "city": "Hong Kong", "flag": "\ud83c\udded\ud83c\uddf0", "group": "Asia Pacific", "iata": "HKG", "p10": 200.11839999999998, "p50": 203.88, "p99": 218.69136}, {"code": "ap-east-2", "city": "Taipei", "flag": "\ud83c\uddf9\ud83c\uddfc", "group": "Asia Pacific", "iata": "TPE", "p10": 203.786, "p50": 204.43200000000002, "p99": 208.98919999999998}, {"code": "sa-east-1", "city": "S\u00e3o Paulo", "flag": "\ud83c\udde7\ud83c\uddf7", "group": "South America", "iata": "GRU", "p10": 220.5858, "p50": 224.644, "p99": 233.61068}, {"code": "ap-northeast-1", "city": "Tokyo", "flag": "\ud83c\uddef\ud83c\uddf5", "group": "Asia Pacific", "iata": "NRT", "p10": 232.63920000000002, "p50": 235.56699999999998, "p99": 244.44790000000003}, {"code": "ap-northeast-3", "city": "Osaka", "flag": "\ud83c\uddef\ud83c\uddf5", "group": "Asia Pacific", "iata": "KIX", "p10": 243.9042, "p50": 246.476, "p99": 256.85751999999997}, {"code": "ap-northeast-2", "city": "Seoul", "flag": "\ud83c\uddf0\ud83c\uddf7", "group": "Asia Pacific", "iata": "ICN", "p10": 246.6538, "p50": 251.81800000000004, "p99": 265.88148}, {"code": "ap-southeast-2", "city": "Sydney", "flag": "\ud83c\udde6\ud83c\uddfa", "group": "Asia Pacific", "iata": "SYD", "p10": 306.2356, "p50": 310.116, "p99": 319.71332}, {"code": "ap-southeast-4", "city": "Melbourne", "flag": "\ud83c\udde6\ud83c\uddfa", "group": "Asia Pacific", "iata": "MEL", "p10": 312.3782, "p50": 315.568, "p99": 323.61938}, {"code": "ap-southeast-6", "city": "Auckland", "flag": "\ud83c\uddf3\ud83c\uddff", "group": "Asia Pacific", "iata": "AKL", "p10": 327.41880000000003, "p50": 330.915, "p99": 340.72488}];
+const state = { p: 'p50', g: 'all', filter: '', sortKey: 'p50', sortDir: 'asc' };
+
+function band(v){
+  if (v == null) return 'far';
+  if (v <= 60) return 'lan';
+  if (v <= 180) return 'cont';
+  return 'far';
+}
+function fmt(v){ return v == null ? '—' : v.toFixed(v < 100 ? 1 : 0); }
+
+function render(){
+  const q = state.filter.toLowerCase();
+  let rows = DATA.filter(r => {
+    if (state.g !== 'all') {
+      if (state.g === 'other') {
+        if (['Europe','North America','Asia Pacific'].includes(r.group)) return false;
+      } else if (r.group !== state.g) return false;
+    }
+    if (q && ![r.code, r.city, r.iata, r.group].some(x => x.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  const key = state.sortKey;
+  const dir = state.sortDir === 'asc' ? 1 : -1;
+  rows.sort((a,b) => {
+    let av, bv;
+    if (['p10','p50','p99'].includes(key)) { av = a[state.p]; bv = b[state.p]; }
+    else { av = a[key]; bv = b[key]; }
+    if (av == null) av = Infinity;
+    if (bv == null) bv = Infinity;
+    if (typeof av === 'string') return av.localeCompare(bv) * dir;
+    return (av - bv) * dir;
+  });
+
+  const maxV = Math.max(...DATA.map(r => r[state.p] ?? 0));
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = rows.map((r, i) => {
+    const v = r[state.p];
+    const b = band(v);
+    const pct = v ? Math.min(100, (v / maxV) * 100) : 0;
+    return `<tr>
+      <td class="num" style="color: var(--gray-500);">${i+1}</td>
+      <td class="city"><span class="flag">${r.flag}</span>${r.city}</td>
+      <td class="code">${r.code}</td>
+      <td class="iata">${r.iata}</td>
+      <td class="num"><strong>${fmt(v)}</strong> <span style="color: var(--gray-500); font-size: 0.75rem;">ms</span></td>
+      <td class="bar-cell"><div class="bar-track"><div class="bar-fill ${b}" style="width: ${pct}%"></div></div></td>
+      <td><span class="band ${b}">${b === 'lan' ? '≤ 60' : b === 'cont' ? '60–180' : '> 180'}</span></td>
+    </tr>`;
+  }).join('');
+
+  // update sort indicator
+  document.querySelectorAll('th').forEach(th => {
+    th.classList.remove('sorted');
+    const arrow = th.querySelector('.arrow');
+    if (arrow) arrow.textContent = '';
+  });
+  const sortedTh = document.querySelector(`th[data-sort="${state.sortKey === state.p ? state.p : state.sortKey}"]`)
+                || document.querySelector(`th[data-sort="p50"]`);
+  if (sortedTh) {
+    sortedTh.classList.add('sorted');
+    let arrow = sortedTh.querySelector('.arrow');
+    if (!arrow) {
+      arrow = document.createElement('span');
+      arrow.className = 'arrow';
+      sortedTh.appendChild(arrow);
+    }
+    arrow.textContent = state.sortDir === 'asc' ? ' ▼' : ' ▲';
+  }
+}
+
+function renderSummary(){
+  const vals = DATA.map(r => r[state.p]).filter(v => v != null);
+  const minR = DATA.reduce((a,b) => (b[state.p] < a[state.p] ? b : a));
+  const maxR = DATA.reduce((a,b) => (b[state.p] > a[state.p] ? b : a));
+  const sorted = [...vals].sort((a,b) => a - b);
+  const median = sorted[Math.floor(sorted.length/2)];
+  const under60 = vals.filter(v => v <= 60).length;
+  document.getElementById('summary').innerHTML = `
+    <div class="card">
+      <div class="card-label">Fastest</div>
+      <div class="card-value">${minR.city} <span class="unit">${minR[state.p].toFixed(1)} ms</span></div>
+      <div class="card-sub">${minR.code}</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Slowest</div>
+      <div class="card-value">${maxR.city} <span class="unit">${maxR[state.p].toFixed(0)} ms</span></div>
+      <div class="card-sub">${maxR.code}</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Median across regions</div>
+      <div class="card-value">${median.toFixed(0)}<span class="unit"> ms</span></div>
+      <div class="card-sub">across 34 destinations</div>
+    </div>
+    <div class="card">
+      <div class="card-label">≤ 60 ms partners</div>
+      <div class="card-value">${under60}<span class="unit"> regions</span></div>
+      <div class="card-sub">sync-replication candidates</div>
+    </div>
+  `;
+}
+
+document.getElementById('pctl').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.p = b.dataset.p;
+  document.querySelectorAll('#pctl button').forEach(x => x.classList.toggle('on', x === b));
+  if (['p10','p50','p99'].includes(state.sortKey)) state.sortKey = state.p;
+  renderSummary(); render();
+});
+document.getElementById('grp').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.g = b.dataset.g;
+  document.querySelectorAll('#grp button').forEach(x => x.classList.toggle('on', x === b));
+  render();
+});
+document.getElementById('filter').addEventListener('input', e => {
+  state.filter = e.target.value; render();
+});
+document.querySelectorAll('th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const k = th.dataset.sort;
+    if (state.sortKey === k || (['p10','p50','p99'].includes(k) && k === state.p)) {
+      state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      state.sortKey = k;
+      state.sortDir = ['p10','p50','p99'].includes(k) ? 'asc' : 'asc';
+    }
+    render();
+  });
+});
+
+document.getElementById('fetchedAt').innerHTML = '<strong>Fetched:</strong> 2026-09-12';
+renderSummary();
+render();
+</script>
+</body>
+</html>

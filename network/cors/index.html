@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3 + CloudFront CORS Guide - liucao.me</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .back { position: absolute; top: 1.5rem; left: 1.5rem; color: #6b7280; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+        .back:hover { color: #059669; }
+        .lang-toggle { position: absolute; top: 1.5rem; right: 1.5rem; display: flex; gap: 0.5rem; }
+        .lang-btn { padding: 0.3rem 0.8rem; border: 1px solid #e5e7eb; border-radius: 4px; background: #fff; color: #6b7280; cursor: pointer; font-size: 0.8rem; transition: all 0.2s; }
+        .lang-btn.active { background: #059669; color: #fff; border-color: #059669; }
+        .container { max-width: 900px; margin: 0 auto; padding-top: 2rem; }
+        h1 { font-size: 2rem; font-weight: 600; margin-bottom: 0.5rem; color: #111827; }
+        .subtitle { color: #6b7280; font-size: 0.95rem; margin-bottom: 2rem; }
+        h2 { font-size: 1.3rem; margin-top: 2.5rem; margin-bottom: 1rem; color: #111827; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.5rem; }
+        h3 { font-size: 1.05rem; margin-top: 1.5rem; margin-bottom: 0.8rem; color: #374151; }
+        p { color: #374151; line-height: 1.8; margin-bottom: 1rem; font-size: 0.95rem; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.9rem; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f3f4f6; color: #6b7280; font-weight: 500; font-size: 0.8rem; }
+        tr:hover { background: #f9fafb; }
+        .highlight { color: #059669; font-weight: 600; }
+        .bad { color: #dc2626; }
+        .warn { color: #d97706; }
+        .setup { background: #f3f4f6; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .setup p { margin-bottom: 0.5rem; color: #374151; }
+        .finding { background: #f3f4f6; border-left: 3px solid #059669; padding: 1rem 1.5rem; margin-bottom: 1rem; border-radius: 0 6px 6px 0; }
+        .finding strong { color: #059669; }
+        .finding.warn-b { border-left-color: #d97706; }
+        .finding.warn-b strong { color: #d97706; }
+        pre { background: #f9fafb; border: 1px solid #e5e7eb; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.8rem; color: #374151; margin: 0.5rem 0 1.5rem; font-family: 'SF Mono', 'Fira Code', monospace; line-height: 1.6; }
+        code { color: #059669; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85rem; }
+        .tag { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem; }
+        .tag-green { background: #d1fae5; color: #065f46; }
+        .tag-blue { background: #dbeafe; color: #1e40af; }
+        .tag-yellow { background: #fef3c7; color: #92400e; }
+        footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 0.8rem; }
+        .lang-cn, .lang-en { display: none; }
+        .lang-cn.active, .lang-en.active { display: block; }
+    </style>
+</head>
+<body>
+    <a href="/network/" class="back">&larr; liucao.me/network</a>
+    <div class="lang-toggle">
+        <button class="lang-btn active" onclick="switchLang('cn')">CN</button>
+        <button class="lang-btn" onclick="switchLang('en')">EN</button>
+    </div>
+
+    <!-- CHINESE -->
+    <div class="container lang-cn active">
+        <h1>S3 + CloudFront CORS 配置</h1>
+        <p class="subtitle">什么时候需要配 CORS、怎么配、配在哪里</p>
+
+        <h2>什么时候需要配 CORS</h2>
+        <div class="finding">
+            <strong>用户点链接下载文件 → 不需要 CORS。</strong>只有前端 JavaScript 用 fetch/XHR 跨域读取文件时才需要。
+        </div>
+        <table>
+            <thead><tr><th>场景</th><th>需要 CORS？</th></tr></thead>
+            <tbody>
+                <tr><td>用户点 <code>&lt;a href&gt;</code> 下载</td><td class="highlight">不需要</td></tr>
+                <tr><td><code>window.open(presignedUrl)</code></td><td class="highlight">不需要</td></tr>
+                <tr><td><code>&lt;img&gt;</code> / <code>&lt;video&gt;</code> 加载</td><td class="highlight">不需要</td></tr>
+                <tr><td>后端/服务器请求 S3</td><td class="highlight">不需要</td></tr>
+                <tr><td>手机原生 APP 请求</td><td class="highlight">不需要</td></tr>
+                <tr><td style="border-top:2px solid #dc2626;">前端 JS <code>fetch()</code> 跨域读文件</td><td class="bad" style="border-top:2px solid #dc2626;">需要</td></tr>
+                <tr><td>前端 JS 下载文件显示进度条</td><td class="bad">需要</td></tr>
+                <tr><td>Canvas <code>toBlob()</code> 跨域图片</td><td class="bad">需要</td></tr>
+                <tr><td>Web 字体从 CDN 加载</td><td class="bad">需要</td></tr>
+            </tbody>
+        </table>
+
+        <h2>CORS 30s</h2>
+        <svg viewBox="0 0 760 150" style="width:100%;max-width:760px;margin:1rem 0;" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#6b7280"/></marker>
+            <marker id="arr1g" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#059669"/></marker>
+          </defs>
+          <rect x="10" y="35" width="130" height="55" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="75" y="57" text-anchor="middle" font-size="10" fill="#1e40af" font-weight="600">your-app.com</text>
+          <text x="75" y="73" text-anchor="middle" font-size="9" fill="#1e40af">前端 JS: fetch()</text>
+          <rect x="200" y="35" width="130" height="55" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+          <text x="265" y="57" text-anchor="middle" font-size="10" fill="#92400e" font-weight="600">浏览器</text>
+          <text x="265" y="73" text-anchor="middle" font-size="9" fill="#92400e">自动加 Origin 头</text>
+          <rect x="400" y="35" width="150" height="55" rx="8" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+          <text x="475" y="57" text-anchor="middle" font-size="10" fill="#065f46" font-weight="600">CloudFront / S3</text>
+          <text x="475" y="73" text-anchor="middle" font-size="9" fill="#065f46">返回 CORS 响应头</text>
+          <line x1="140" y1="55" x2="195" y2="55" stroke="#6b7280" stroke-width="1.2" marker-end="url(#arr1)"/>
+          <line x1="330" y1="55" x2="395" y2="55" stroke="#6b7280" stroke-width="1.2" marker-end="url(#arr1)"/>
+          <text x="362" y="48" text-anchor="middle" font-size="9" fill="#6b7280">Origin: your-app.com</text>
+          <path d="M 395,75 L 335,75" stroke="#059669" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr1g)"/>
+          <text x="365" y="90" text-anchor="middle" font-size="8" fill="#059669">Access-Control-Allow-Origin: *</text>
+          <rect x="580" y="35" width="160" height="55" rx="8" fill="#f3f4f6" stroke="#6b7280" stroke-width="1"/>
+          <text x="660" y="55" text-anchor="middle" font-size="9" fill="#374151">有 CORS 头 → JS 拿到数据</text>
+          <text x="660" y="72" text-anchor="middle" font-size="9" fill="#dc2626">没有 → 浏览器拦截响应</text>
+          <line x1="550" y1="62" x2="575" y2="62" stroke="#6b7280" stroke-width="1" marker-end="url(#arr1)"/>
+          <text x="380" y="130" text-anchor="middle" font-size="10" fill="#6b7280">请求一定会到达服务器。浏览器拦截的是「响应给 JS」这一步，不是请求本身。</text>
+          <text x="380" y="145" text-anchor="middle" font-size="10" fill="#6b7280">服务器（S3/CF）通过响应头决定谁可以读。前端无法绕过。</text>
+        </svg>
+
+        <h2>配置方案</h2>
+        <table>
+            <thead><tr><th></th><th>方案 1: CF Response Headers Policy</th><th>方案 2: S3 Bucket CORS</th></tr></thead>
+            <tbody>
+                <tr><td><strong>CORS 头来源</strong></td><td>CloudFront 强制插入</td><td>S3 返回</td></tr>
+                <tr><td><strong>需要改 S3？</strong></td><td class="highlight">不需要</td><td>需要</td></tr>
+                <tr><td><strong>需要转发 Origin？</strong></td><td class="highlight">不需要</td><td>需要（ORP 配 Origin header）</td></tr>
+                <tr><td><strong>复杂度</strong></td><td class="highlight">低</td><td>中</td></tr>
+                <tr><td><strong>适用</strong></td><td>通用，推荐</td><td>需要精细控制哪些 origin</td></tr>
+            </tbody>
+        </table>
+
+        <h2>方案 1：CloudFront Response Headers Policy <span class="tag tag-green">推荐</span></h2>
+        <p>在 CloudFront 层强制给所有响应加 CORS 头，无需修改 S3 桶配置。</p>
+        <h3>Step 1: 创建 Response Headers Policy</h3>
+        <pre>aws cloudfront create-response-headers-policy \
+  --response-headers-policy-config '{
+    "Name": "CORS-AllowAll",
+    "Comment": "Allow all origins for GET/HEAD",
+    "CorsConfig": {
+      "AccessControlAllowOrigins": {"Quantity": 1, "Items": ["*"]},
+      "AccessControlAllowMethods": {"Quantity": 2, "Items": ["GET", "HEAD"]},
+      "AccessControlAllowHeaders": {"Quantity": 1, "Items": ["*"]},
+      "AccessControlExposeHeaders": {"Quantity": 0, "Items": []},
+      "AccessControlAllowCredentials": false,
+      "AccessControlMaxAgeSec": 86400,
+      "OriginOverride": true
+    }
+  }'</pre>
+        <h3>Step 2: 绑定到 Distribution Behavior</h3>
+        <p>Console → Distribution → Behavior → Edit → Response headers policy → 选择 CORS-AllowAll</p>
+        <h3>Step 3: 验证</h3>
+        <pre>curl -I -X OPTIONS \
+  -H "Origin: https://your-app.com" \
+  -H "Access-Control-Request-Method: GET" \
+  https://d1234.cloudfront.net/file.jpg
+
+# access-control-allow-origin: *
+# access-control-allow-methods: GET, HEAD</pre>
+
+        <h2>方案 2：S3 Bucket CORS 配置</h2>
+        <p>让 S3 自己返回 CORS 头。需要 CloudFront 转发 <code>Origin</code> header。</p>
+        <h3>Step 1: S3 CORS</h3>
+        <pre>aws s3api put-bucket-cors --bucket your-bucket --cors-configuration '{
+  "CORSRules": [{
+    "AllowedOrigins": ["https://your-app.com"],
+    "AllowedMethods": ["GET", "HEAD"],
+    "AllowedHeaders": ["*"],
+    "ExposeHeaders": ["Content-Length", "Content-Type"],
+    "MaxAgeSeconds": 3600
+  }]
+}'</pre>
+        <h3>Step 2: ORP 转发 Origin</h3>
+        <pre># managed ORP: CORS-S3Origin (88a5eaf4-2fd4-4709-b370-b4c650ea3fcf)
+# 或自定义 ORP:
+aws cloudfront create-origin-request-policy \
+  --origin-request-policy-config '{
+    "Name": "ForwardOriginAndQS",
+    "HeadersConfig": {"HeaderBehavior": "whitelist", "Headers": {"Quantity": 1, "Items": ["Origin"]}},
+    "CookiesConfig": {"CookieBehavior": "none"},
+    "QueryStringsConfig": {"QueryStringBehavior": "all"}
+  }'</pre>
+        <div class="finding warn-b">
+            <strong>注意：</strong>ORP 不转发 Origin → S3 不返回 CORS 头 → 前端报跨域。最常见的坑。
+        </div>
+        <h3>Step 3: Cache Policy 加 Origin</h3>
+        <p>缓存开启时必须把 Origin 加入 Cache Key，否则无 CORS 头的缓存会影响后续请求。</p>
+
+        <h2>常见问题</h2>
+        <div class="finding warn-b"><strong>Q: 配了 S3 CORS 但还是报跨域？</strong><br>A: CloudFront 没有转发 Origin header。检查 ORP。</div>
+        <div class="finding warn-b"><strong>Q: 第一次正常，后续报跨域？</strong><br>A: Cache Key 没包含 Origin。用方案 1 或 Cache Policy 加 Origin。</div>
+        <div class="finding"><strong>Q: 设 <code>*</code> 有安全风险吗？</strong><br>A: 对公开文件（presigned URL / CDN）没有。CORS 头只决定 JS 能否读响应，不影响文件本身的访问控制。</div>
+
+        <footer><p>liucao.me/network/cors</p></footer>
+    </div>
+
+    <!-- ENGLISH -->
+    <div class="container lang-en">
+        <h1>S3 + CloudFront CORS Setup</h1>
+        <p class="subtitle">When you need CORS, how to configure it, and where</p>
+
+        <h2>When Do You Need CORS</h2>
+        <div class="finding">
+            <strong>User clicks a link to download → No CORS needed.</strong> CORS only applies when frontend JavaScript uses fetch/XHR to read cross-origin responses.
+        </div>
+        <table>
+            <thead><tr><th>Scenario</th><th>CORS needed?</th></tr></thead>
+            <tbody>
+                <tr><td>User clicks <code>&lt;a href&gt;</code> to download</td><td class="highlight">No</td></tr>
+                <tr><td><code>window.open(presignedUrl)</code></td><td class="highlight">No</td></tr>
+                <tr><td><code>&lt;img&gt;</code> / <code>&lt;video&gt;</code> tag loading</td><td class="highlight">No</td></tr>
+                <tr><td>Backend / server-side requests</td><td class="highlight">No</td></tr>
+                <tr><td>Native mobile APP</td><td class="highlight">No</td></tr>
+                <tr><td style="border-top:2px solid #dc2626;">Frontend JS <code>fetch()</code> cross-origin</td><td class="bad" style="border-top:2px solid #dc2626;">Yes</td></tr>
+                <tr><td>JS download with progress bar</td><td class="bad">Yes</td></tr>
+                <tr><td>Canvas <code>toBlob()</code> on cross-origin image</td><td class="bad">Yes</td></tr>
+                <tr><td>Web fonts from CDN</td><td class="bad">Yes</td></tr>
+            </tbody>
+        </table>
+
+        <h2>CORS 30s</h2>
+        <svg viewBox="0 0 760 150" style="width:100%;max-width:760px;margin:1rem 0;" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#6b7280"/></marker>
+            <marker id="arr2g" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#059669"/></marker>
+          </defs>
+          <rect x="10" y="35" width="130" height="55" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="75" y="57" text-anchor="middle" font-size="10" fill="#1e40af" font-weight="600">your-app.com</text>
+          <text x="75" y="73" text-anchor="middle" font-size="9" fill="#1e40af">JS: fetch()</text>
+          <rect x="200" y="35" width="130" height="55" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+          <text x="265" y="57" text-anchor="middle" font-size="10" fill="#92400e" font-weight="600">Browser</text>
+          <text x="265" y="73" text-anchor="middle" font-size="9" fill="#92400e">Adds Origin header</text>
+          <rect x="400" y="35" width="150" height="55" rx="8" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+          <text x="475" y="57" text-anchor="middle" font-size="10" fill="#065f46" font-weight="600">CloudFront / S3</text>
+          <text x="475" y="73" text-anchor="middle" font-size="9" fill="#065f46">Returns CORS headers</text>
+          <line x1="140" y1="55" x2="195" y2="55" stroke="#6b7280" stroke-width="1.2" marker-end="url(#arr2)"/>
+          <line x1="330" y1="55" x2="395" y2="55" stroke="#6b7280" stroke-width="1.2" marker-end="url(#arr2)"/>
+          <text x="362" y="48" text-anchor="middle" font-size="9" fill="#6b7280">Origin: your-app.com</text>
+          <path d="M 395,75 L 335,75" stroke="#059669" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr2g)"/>
+          <text x="365" y="90" text-anchor="middle" font-size="8" fill="#059669">Access-Control-Allow-Origin: *</text>
+          <rect x="580" y="35" width="160" height="55" rx="8" fill="#f3f4f6" stroke="#6b7280" stroke-width="1"/>
+          <text x="660" y="55" text-anchor="middle" font-size="9" fill="#374151">CORS header present → JS gets data</text>
+          <text x="660" y="72" text-anchor="middle" font-size="9" fill="#dc2626">Missing → Browser blocks response</text>
+          <line x1="550" y1="62" x2="575" y2="62" stroke="#6b7280" stroke-width="1" marker-end="url(#arr2)"/>
+          <text x="380" y="130" text-anchor="middle" font-size="10" fill="#6b7280">The request always reaches the server. The browser blocks the JS from reading the response, not the request itself.</text>
+          <text x="380" y="145" text-anchor="middle" font-size="10" fill="#6b7280">The server decides who can read via response headers. Frontend cannot bypass this.</text>
+        </svg>
+
+        <h2>Configuration Options</h2>
+        <table>
+            <thead><tr><th></th><th>Option 1: CF Response Headers Policy</th><th>Option 2: S3 Bucket CORS</th></tr></thead>
+            <tbody>
+                <tr><td><strong>CORS header source</strong></td><td>CloudFront injects</td><td>S3 returns</td></tr>
+                <tr><td><strong>Modify S3?</strong></td><td class="highlight">No</td><td>Yes</td></tr>
+                <tr><td><strong>Forward Origin header?</strong></td><td class="highlight">No</td><td>Yes (via ORP)</td></tr>
+                <tr><td><strong>Complexity</strong></td><td class="highlight">Low</td><td>Medium</td></tr>
+                <tr><td><strong>Best for</strong></td><td>General use, recommended</td><td>Fine-grained origin control</td></tr>
+            </tbody>
+        </table>
+
+        <h2>Option 1: CloudFront Response Headers Policy <span class="tag tag-green">Recommended</span></h2>
+        <p>CloudFront injects CORS headers into every response. No S3 changes required.</p>
+        <h3>Step 1: Create Response Headers Policy</h3>
+        <pre>aws cloudfront create-response-headers-policy \
+  --response-headers-policy-config '{
+    "Name": "CORS-AllowAll",
+    "Comment": "Allow all origins for GET/HEAD",
+    "CorsConfig": {
+      "AccessControlAllowOrigins": {"Quantity": 1, "Items": ["*"]},
+      "AccessControlAllowMethods": {"Quantity": 2, "Items": ["GET", "HEAD"]},
+      "AccessControlAllowHeaders": {"Quantity": 1, "Items": ["*"]},
+      "AccessControlExposeHeaders": {"Quantity": 0, "Items": []},
+      "AccessControlAllowCredentials": false,
+      "AccessControlMaxAgeSec": 86400,
+      "OriginOverride": true
+    }
+  }'</pre>
+        <h3>Step 2: Attach to Distribution Behavior</h3>
+        <p>Console → Distribution → Behavior → Edit → Response headers policy → Select CORS-AllowAll</p>
+        <h3>Step 3: Verify</h3>
+        <pre>curl -I -X OPTIONS \
+  -H "Origin: https://your-app.com" \
+  -H "Access-Control-Request-Method: GET" \
+  https://d1234.cloudfront.net/file.jpg
+
+# access-control-allow-origin: *
+# access-control-allow-methods: GET, HEAD</pre>
+
+        <h2>Option 2: S3 Bucket CORS</h2>
+        <p>S3 returns CORS headers natively. Requires CloudFront to forward the <code>Origin</code> header.</p>
+        <h3>Step 1: Configure S3 CORS</h3>
+        <pre>aws s3api put-bucket-cors --bucket your-bucket --cors-configuration '{
+  "CORSRules": [{
+    "AllowedOrigins": ["https://your-app.com"],
+    "AllowedMethods": ["GET", "HEAD"],
+    "AllowedHeaders": ["*"],
+    "ExposeHeaders": ["Content-Length", "Content-Type"],
+    "MaxAgeSeconds": 3600
+  }]
+}'</pre>
+        <h3>Step 2: ORP must forward Origin</h3>
+        <pre># Managed ORP: CORS-S3Origin (88a5eaf4-2fd4-4709-b370-b4c650ea3fcf)
+# Or custom ORP:
+aws cloudfront create-origin-request-policy \
+  --origin-request-policy-config '{
+    "Name": "ForwardOriginAndQS",
+    "HeadersConfig": {"HeaderBehavior": "whitelist", "Headers": {"Quantity": 1, "Items": ["Origin"]}},
+    "CookiesConfig": {"CookieBehavior": "none"},
+    "QueryStringsConfig": {"QueryStringBehavior": "all"}
+  }'</pre>
+        <div class="finding warn-b">
+            <strong>Warning:</strong> If ORP doesn't forward Origin → S3 won't return CORS headers → frontend gets CORS error. This is the #1 pitfall.
+        </div>
+        <h3>Step 3: Include Origin in Cache Key</h3>
+        <p>With caching enabled, Origin must be in the Cache Key. Otherwise a cached response without CORS headers will be served to subsequent requests that include Origin.</p>
+
+        <h2>FAQ</h2>
+        <div class="finding warn-b"><strong>Q: Configured S3 CORS but still getting CORS errors?</strong><br>A: CloudFront isn't forwarding the Origin header to S3. Check your ORP.</div>
+        <div class="finding warn-b"><strong>Q: First request works, subsequent ones fail?</strong><br>A: Cache Key doesn't include Origin. Use Option 1, or add Origin to your Cache Policy.</div>
+        <div class="finding"><strong>Q: Is setting <code>*</code> a security risk?</strong><br>A: For public files (presigned URLs / CDN delivery), no. CORS headers only control whether JS can read the response — the file itself is already accessible via URL. CORS doesn't increase the attack surface.</div>
+
+        <footer><p>liucao.me/network/cors</p></footer>
+    </div>
+
+    <script>
+    function switchLang(lang) {
+        document.querySelectorAll('.lang-cn, .lang-en').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector('.lang-' + lang).classList.add('active');
+        document.querySelectorAll('.lang-btn')[lang === 'cn' ? 0 : 1].classList.add('active');
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3 Download Acceleration Report - liucao.me</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f1419;
+            color: #e8e8e8;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .back {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back:hover { color: #00e5a0; }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-top: 2rem;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #00e5a0;
+        }
+        .subtitle {
+            color: #9ca3af;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            font-size: 1.3rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #e8e8e8;
+            border-bottom: 1px solid #2d3748;
+            padding-bottom: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+        th {
+            background: #1a2332;
+            color: #9ca3af;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+        tr:hover { background: #1a2332; }
+        .highlight {
+            color: #00e5a0;
+            font-weight: 600;
+        }
+        .bar-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .bar {
+            height: 20px;
+            background: #00e5a0;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        .bar-label {
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .setup {
+            background: #1a2332;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .setup code {
+            color: #00e5a0;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+        }
+        .setup p {
+            margin-bottom: 0.5rem;
+            color: #9ca3af;
+        }
+        .finding {
+            background: #1a2332;
+            border-left: 3px solid #00e5a0;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0 6px 6px 0;
+        }
+        .finding strong {
+            color: #00e5a0;
+        }
+        .tag {
+            display: inline-block;
+            background: #00e5a020;
+            color: #00e5a0;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+        }
+        .tag.winner { background: #00e5a040; }
+        .tag.neutral { background: #9ca3af20; color: #9ca3af; }
+        footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #2d3748;
+            color: #6b7280;
+            font-size: 0.8rem;
+        }
+        .method-baseline { color: #60a5fa; }
+        .method-accel { color: #a78bfa; }
+        .method-parallel { color: #00e5a0; }
+        .method-tuned { color: #f59e0b; }
+        .method-presigned { color: #f472b6; }
+        .method-cf { color: #22d3ee; }
+        .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+        .dot-baseline { background: #60a5fa; }
+        .dot-accel { background: #a78bfa; }
+        .dot-parallel { background: #00e5a0; }
+        .dot-tuned { background: #f59e0b; }
+        .dot-presigned { background: #f472b6; }
+        .dot-cf { background: #22d3ee; }
+    </style>
+</head>
+<body>
+    <a href="/network/" class="back">Home</a>
+    <div class="container">
+        <h1>S3 Download Acceleration Benchmark</h1>
+        <p class="subtitle">Testing download speed for 2 GiB file from EU S3 buckets | June 2026</p>
+
+        <h2>Test Setup</h2>
+        <div class="setup">
+            <p><strong>File size:</strong> <code>2 GiB</code> (random data)</p>
+            <p><strong>Source (client):</strong> EC2 instance in AWS</p>
+            <p><strong>Bucket 1:</strong> <code>eu-south-2</code> (Spain, Zaragoza)</p>
+            <p><strong>Bucket 2:</strong> <code>eu-central-1</code> (Frankfurt, Germany)</p>
+            <p><strong>Bucket 3:</strong> <code>eu-north-1</code> (Stockholm, Sweden)</p>
+            <p><strong>Access:</strong> Private (no public access)</p>
+        </div>
+
+        <h2>Region Map</h2>
+        <div id="map" style="height: 400px; border-radius: 8px; margin-bottom: 1.5rem;"></div>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
+            var map = L.map('map', {zoomControl: true, scrollWheelZoom: false}).setView([46.5, 3.5], 5);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap &copy; CARTO',
+                maxZoom: 19
+            }).addTo(map);
+
+            var greenIcon = L.divIcon({
+                className: '',
+                html: '<div style="width:16px;height:16px;background:#00e5a0;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px #00e5a0;"></div>',
+                iconSize: [16, 16], iconAnchor: [8, 8]
+            });
+            var orangeIcon = L.divIcon({
+                className: '',
+                html: '<div style="width:16px;height:16px;background:#f59e0b;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px #f59e0b;"></div>',
+                iconSize: [16, 16], iconAnchor: [8, 8]
+            });
+
+            var blueIcon = L.divIcon({
+                className: '',
+                html: '<div style="width:16px;height:16px;background:#60a5fa;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px #60a5fa;"></div>',
+                iconSize: [16, 16], iconAnchor: [8, 8]
+            });
+
+            var frankfurt = L.marker([50.1109, 8.6821], {icon: greenIcon}).addTo(map)
+                .bindPopup('<b>Frankfurt</b><br>eu-central-1<br><span style="color:#00e5a0;font-weight:bold;">9,337 Mbps</span>');
+            var zaragoza = L.marker([41.6488, -0.8891], {icon: orangeIcon}).addTo(map)
+                .bindPopup('<b>Zaragoza</b><br>eu-south-2<br><span style="color:#f59e0b;font-weight:bold;">9,544 Mbps</span>');
+            var stockholm = L.marker([59.3293, 18.0686], {icon: blueIcon}).addTo(map)
+                .bindPopup('<b>Stockholm</b><br>eu-north-1<br><span style="color:#60a5fa;font-weight:bold;">9,090 Mbps</span>');
+
+            var line = L.polyline([[50.1109, 8.6821], [41.6488, -0.8891]], {
+                color: '#00e5a0', weight: 2, dashArray: '8, 6', opacity: 0.7
+            }).addTo(map);
+            L.polyline([[50.1109, 8.6821], [59.3293, 18.0686]], {
+                color: '#60a5fa', weight: 2, dashArray: '8, 6', opacity: 0.7
+            }).addTo(map);
+            L.polyline([[41.6488, -0.8891], [59.3293, 18.0686]], {
+                color: '#a78bfa', weight: 2, dashArray: '8, 6', opacity: 0.5
+            }).addTo(map);
+
+            var midpoint = [(50.1109+41.6488)/2, (8.6821+(-0.8891))/2];
+            L.marker(midpoint, {
+                icon: L.divIcon({
+                    className: '',
+                    html: '<div style="background:#0f1419;border:1px solid #2d3748;border-radius:4px;padding:2px 8px;white-space:nowrap;font-size:11px;color:#9ca3af;font-family:-apple-system,sans-serif;">~1,200 km</div>',
+                    iconSize: [80, 20], iconAnchor: [40, 10]
+                })
+            }).addTo(map);
+        </script>
+
+        <h2>Test Methods</h2>
+        <div class="finding">
+            <strong>1. Baseline (aws s3 cp)</strong> — Standard single-stream download using the AWS CLI. Uses default multipart settings internally but downloads through a single TCP connection to S3.
+            <pre style="background:#0f1419;padding:0.8rem;border-radius:4px;margin-top:0.5rem;overflow-x:auto;font-size:0.8rem;color:#9ca3af;"><code>aws s3 cp s3://&lt;your-bucket&gt;/file.bin ./output.bin --region eu-south-2</code></pre>
+        </div>
+        <div class="finding">
+            <strong>2. S3 Transfer Acceleration</strong> — Routes data through CloudFront edge locations. Designed to speed up transfers for clients far from the S3 bucket region by using AWS backbone from the nearest edge.
+            <pre style="background:#0f1419;padding:0.8rem;border-radius:4px;margin-top:0.5rem;overflow-x:auto;font-size:0.8rem;color:#9ca3af;"><code>aws s3api put-bucket-accelerate-configuration --bucket bucket --accelerate-configuration Status=Enabled
+aws s3 cp s3://&lt;your-bucket&gt;/file.bin ./output.bin --endpoint-url https://s3-accelerate.amazonaws.com</code></pre>
+        </div>
+        <div class="finding">
+            <strong>3. Parallel Range GET (16 chunks)</strong> — Splits the file into 16 byte-range segments and downloads all concurrently using background processes. Each chunk uses a separate TCP connection to S3, saturating available bandwidth.
+            <pre style="background:#0f1419;padding:0.8rem;border-radius:4px;margin-top:0.5rem;overflow-x:auto;font-size:0.8rem;color:#9ca3af;"><code>for i in $(seq 0 15); do
+  aws s3api get-object --bucket bucket --key file.bin \
+    --range "bytes=${start}-${end}" chunk-${i}.bin &amp;
+done
+wait</code></pre>
+        </div>
+        <div class="finding">
+            <strong>4. Tuned Multipart (64MB chunks)</strong> — Uses aws s3 cp with adjusted multipart chunk size configuration. Tests whether larger transfer units improve throughput over the default settings.
+            <pre style="background:#0f1419;padding:0.8rem;border-radius:4px;margin-top:0.5rem;overflow-x:auto;font-size:0.8rem;color:#9ca3af;"><code>aws s3 cp s3://&lt;your-bucket&gt;/file.bin ./output.bin --region eu-south-2 \
+  --cli-read-timeout 300 --expected-size 2147483648</code></pre>
+        </div>
+
+        <h2>Results</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Region</th>
+                    <th>Duration</th>
+                    <th>Speed</th>
+                    <th>Speedup</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="dot dot-baseline"></span><span class="method-baseline">Baseline (aws s3 cp)</span></td>
+                    <td>Spain</td>
+                    <td>24.56s</td>
+                    <td>699.5 Mbps</td>
+                    <td>1.0x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-baseline"></span><span class="method-baseline">Baseline (aws s3 cp)</span></td>
+                    <td>Frankfurt</td>
+                    <td>23.90s</td>
+                    <td>718.8 Mbps</td>
+                    <td>1.0x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-accel"></span><span class="method-accel">Transfer Acceleration</span></td>
+                    <td>Spain</td>
+                    <td colspan="3" style="color:#6b7280;">Not supported</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-accel"></span><span class="method-accel">Transfer Acceleration</span></td>
+                    <td>Frankfurt</td>
+                    <td>24.78s</td>
+                    <td>693.3 Mbps</td>
+                    <td>0.97x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-tuned"></span><span class="method-tuned">Tuned Multipart (64MB)</span></td>
+                    <td>Spain</td>
+                    <td>24.71s</td>
+                    <td>695.3 Mbps</td>
+                    <td>0.99x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-tuned"></span><span class="method-tuned">Tuned Multipart (64MB)</span></td>
+                    <td>Frankfurt</td>
+                    <td>24.53s</td>
+                    <td>700.4 Mbps</td>
+                    <td>1.0x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-parallel"></span><span class="method-parallel" style="font-weight:600;">Parallel Range GET (16 chunks)</span> <span class="tag winner">WINNER</span></td>
+                    <td>Spain</td>
+                    <td>1.80s</td>
+                    <td class="method-parallel" style="font-weight:600;">9,544 Mbps</td>
+                    <td class="method-parallel" style="font-weight:600;">13.6x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-parallel"></span><span class="method-parallel" style="font-weight:600;">Parallel Range GET (16 chunks)</span> <span class="tag winner">WINNER</span></td>
+                    <td>Frankfurt</td>
+                    <td>1.84s</td>
+                    <td class="method-parallel" style="font-weight:600;">9,337 Mbps</td>
+                    <td class="method-parallel" style="font-weight:600;">13.0x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-baseline"></span><span class="method-baseline">Baseline (aws s3 cp)</span></td>
+                    <td>Stockholm</td>
+                    <td>26.69s</td>
+                    <td>643.7 Mbps</td>
+                    <td>0.9x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-parallel"></span><span class="method-parallel" style="font-weight:600;">Parallel Range GET (16 chunks)</span> <span class="tag winner">WINNER</span></td>
+                    <td>Stockholm</td>
+                    <td>1.89s</td>
+                    <td class="method-parallel" style="font-weight:600;">9,090 Mbps</td>
+                    <td class="method-parallel" style="font-weight:600;">12.6x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-presigned"></span><span class="method-presigned">Pre-signed URL (curl)</span></td>
+                    <td>Stockholm</td>
+                    <td>161.30s</td>
+                    <td>106.5 Mbps</td>
+                    <td>0.15x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-presigned"></span><span class="method-presigned">Pre-signed Parallel (curl, 16 chunks)</span></td>
+                    <td>Stockholm</td>
+                    <td>15.99s</td>
+                    <td>1,074 Mbps</td>
+                    <td>1.5x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-presigned"></span><span class="method-presigned">Pre-signed URL (curl)</span></td>
+                    <td>Spain</td>
+                    <td>136.32s</td>
+                    <td>126.0 Mbps</td>
+                    <td>0.18x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-presigned"></span><span class="method-presigned">Pre-signed URL (curl)</span></td>
+                    <td>Frankfurt</td>
+                    <td>131.51s</td>
+                    <td>130.6 Mbps</td>
+                    <td>0.18x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-presigned"></span><span class="method-presigned">Pre-signed Parallel (curl, 16 chunks)</span></td>
+                    <td>Spain</td>
+                    <td>22.85s</td>
+                    <td>751.9 Mbps</td>
+                    <td>1.05x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-presigned"></span><span class="method-presigned">Pre-signed Parallel (curl, 16 chunks)</span></td>
+                    <td>Frankfurt</td>
+                    <td>12.54s</td>
+                    <td>1,370 Mbps</td>
+                    <td>1.9x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-cf"></span><span class="method-cf">CloudFront (single stream)</span></td>
+                    <td>Frankfurt</td>
+                    <td>127.33s</td>
+                    <td>134.9 Mbps</td>
+                    <td>0.19x</td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-cf"></span><span class="method-cf">CloudFront Parallel (16 chunks)</span></td>
+                    <td>Frankfurt</td>
+                    <td>6.22s</td>
+                    <td class="method-cf" style="font-weight:600;">2,762 Mbps</td>
+                    <td class="method-cf" style="font-weight:600;">3.8x</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Visual Comparison</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Throughput</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="dot dot-baseline"></span><span class="method-baseline">Baseline</span></td>
+                    <td>
+                        <div class="bar-container">
+                            <div class="bar" style="width: 7%; background: #60a5fa;"></div>
+                            <span class="bar-label">~700 Mbps</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-accel"></span><span class="method-accel">Transfer Acceleration</span></td>
+                    <td>
+                        <div class="bar-container">
+                            <div class="bar" style="width: 7%; background: #a78bfa;"></div>
+                            <span class="bar-label">~693 Mbps</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-tuned"></span><span class="method-tuned">Tuned Multipart</span></td>
+                    <td>
+                        <div class="bar-container">
+                            <div class="bar" style="width: 7%; background: #f59e0b;"></div>
+                            <span class="bar-label">~698 Mbps</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-presigned"></span><span class="method-presigned">Pre-signed (curl)</span></td>
+                    <td>
+                        <div class="bar-container">
+                            <div class="bar" style="width: 1.4%; background: #f472b6;"></div>
+                            <span class="bar-label">~130 Mbps</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-cf"></span><span class="method-cf">CloudFront (single)</span></td>
+                    <td>
+                        <div class="bar-container">
+                            <div class="bar" style="width: 1.4%; background: #22d3ee;"></div>
+                            <span class="bar-label">~135 Mbps</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-presigned"></span><span class="method-presigned">Pre-signed Parallel</span></td>
+                    <td>
+                        <div class="bar-container">
+                            <div class="bar" style="width: 14%; background: #f472b6;"></div>
+                            <span class="bar-label">~1,370 Mbps</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-cf"></span><span class="method-cf">CloudFront Parallel</span></td>
+                    <td>
+                        <div class="bar-container">
+                            <div class="bar" style="width: 29%; background: #22d3ee;"></div>
+                            <span class="bar-label method-cf" style="font-weight:600;">~2,762 Mbps</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="dot dot-parallel"></span><span class="method-parallel">S3 API Parallel GET</span></td>
+                    <td>
+                        <div class="bar-container">
+                            <div class="bar" style="width: 95%; background: #00e5a0;"></div>
+                            <span class="bar-label method-parallel" style="font-weight:600;">~9,440 Mbps</span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Key Findings</h2>
+        <div class="finding">
+            <strong>Parallel Range GET is 13x faster</strong> — By splitting the file into 16 concurrent byte-range requests, we saturate the network bandwidth and download 2 GiB in under 2 seconds (~9.5 Gbps).
+        </div>
+        <div class="finding">
+            <strong>Transfer Acceleration doesn't help within AWS</strong> — S3 Transfer Acceleration is designed for clients outside AWS. When both source and destination are in AWS, it adds latency through CloudFront edge hops without benefit.
+        </div>
+        <div class="finding">
+            <strong>Region choice barely matters within EU</strong> — Spain and Frankfurt deliver nearly identical throughput from the same client, thanks to AWS backbone networking.
+        </div>
+        <div class="finding">
+            <strong>Tuning multipart chunk size has no effect</strong> — The AWS CLI already uses optimal multipart settings internally. Adjusting chunk size doesn't improve single-stream throughput.
+        </div>
+
+        <h2>Recommendation</h2>
+        <div class="setup">
+            <p>For maximum download speed from S3 within AWS:</p>
+            <p style="margin-top:0.5rem;"><code>Use parallel byte-range GET requests (16-32 concurrent streams)</code></p>
+            <p style="margin-top:0.5rem; color:#6b7280;">This technique works with private buckets, requires no special configuration, and scales linearly with available bandwidth.</p>
+        </div>
+
+        <footer>
+            <p>Test conducted June 2026 from AWS EC2 | Buckets: eu-south-2 (Spain), eu-central-1 (Frankfurt) | File: 2 GiB random data</p>
+        </footer>
+    </div>
+</body>
+</html>
