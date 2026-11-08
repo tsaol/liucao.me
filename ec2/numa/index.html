@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUMA 深度指南：大机型的隐形税 · liucao.me</title>
+    <meta name="description" content="Non-Uniform Memory Access 完全指南：物理起源、kernel 语义、五种 mempolicy、MySQL 真实故障案例、EC2 上的 NUMA 布局">
+    <link rel="stylesheet" href="../../ec2/assets/style.css">
+    <style>
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .fig { margin: 1.2rem 0 1.4rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .fig svg { display: block; width: 100%; height: auto; }
+        .fig figcaption { text-align: center; font-size: 0.8rem; color: var(--text-mute); margin-top: 0.6rem; }
+        .photo { position: relative; }
+        .photo img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
+        .pin { position: absolute; transform: translate(-50%, -50%); background: rgba(11,15,20,0.88); border: 1px solid var(--accent); color: var(--accent); font-size: 0.74rem; font-weight: 600; padding: 0.12rem 0.55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+        .pin.n1 { border-color: #60a5fa; color: #60a5fa; }
+        .fig figcaption a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .tldr { background: var(--surface); border: 1px solid var(--accent-dim); border-radius: var(--radius); padding: 1.1rem 1.3rem; margin: 0.4rem 0 2.2rem; }
+        .tldr .lead { color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; }
+        .tldr ol { color: var(--text-dim); padding-left: 1.2rem; }
+        .tldr li { margin-bottom: 0.3rem; }
+        .tldr b { color: var(--text); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.87rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        pre.ascii { line-height: 1.35; font-size: 0.78rem; }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+        <div class="links">
+            <a href="../../ec2/">EC2</a>
+        </div>
+    </nav>
+
+    <main class="wrap">
+        <div class="gv-hero">
+            <div class="crumb"><a href="../../ec2/">EC2</a> · 概念 · Intel / AMD / Graviton 通用</div>
+            <h1><span class="g">NUMA</span>：大机型的隐形税</h1>
+            <p class="sub">你租了一台 192 核的大机器，跑分却只有预期的 60%。CPU 图看着正常，内存也没满。问题往往不在"用了多少"，而在"数据放在哪"。这篇从一块真实的主板讲起，讲到 kernel、数据库和 Kubernetes。</p>
+            <nav class="toc">
+                <a href="#physics">1 · 物理起源</a>
+                <a href="#name">2 · 为什么叫 NUMA</a>
+                <a href="#inspect">3 · 看拓扑</a>
+                <a href="#policy">4 · 内存放哪</a>
+                <a href="#counters">5 · 计数器</a>
+                <a href="#autobalance">6 · 自动搬家</a>
+                <a href="#casestudy">7 · MySQL 真实故障</a>
+                <a href="#traps">8 · 常见坑</a>
+                <a href="#ec2">9 · EC2 拓扑</a>
+                <a href="#k8s">10 · K8s</a>
+                <a href="#skip">11 · 什么时候不用管</a>
+            </nav>
+        </div>
+
+        <div class="tldr">
+            <div class="lead">三句话读懂 NUMA</div>
+            <ol>
+                <li>大服务器里有好几颗 CPU，<b>每颗 CPU 管着自己的一组内存</b>。一颗 CPU 加它的内存，叫一个 NUMA node。</li>
+                <li>读自己 node 的内存快，读别的 node 的内存<b>大约慢一倍</b>。</li>
+                <li>所以在大机器上，除了看"用了多少内存"，还要看<b>"内存放在哪个 node"</b>。小机器（单 node）完全不用管。</li>
+            </ol>
+        </div>
+
+        <!-- 1 -->
+        <section id="physics" class="content-section">
+            <h2 class="section-title">1 · <span>物理起源</span></h2>
+            <p>先打个比方。一家公司租了两栋楼，每栋楼都有自己的档案室。员工去本楼档案室拿文件，走几步就到。要拿另一栋楼的文件，就得穿过两栋楼之间的连廊：路更远，连廊也只有那么宽，人一多还要排队。</p>
+            <p>服务器里的内存，就是按这个方式摆放的：</p>
+            <ol>
+                <li><b>楼 = CPU socket</b>（CPU 插座，一个插座装一颗 CPU；也可以是一颗芯片里的一块 CCD / tile，也就是芯片内部的一组核心）。每个 socket 自带<b>内存控制器</b>（负责读写内存条的电路）。</li>
+                <li><b>档案室 = DIMM 内存条</b>。每根 DIMM 接在某一个内存控制器上，所以它"属于"某个 socket。</li>
+                <li><b>连廊 = socket 之间的互联</b>。Intel 叫 UPI（更早叫 QPI），AMD 叫 Infinity Fabric，Arm Neoverse 平台用 CMN mesh（片内网格网络）加片间一致性链路。带宽有限，还有额外延迟。</li>
+            </ol>
+            <p>光说不够直观，直接看一块真实的双路主板：</p>
+            <figure class="fig">
+                <div class="photo">
+                    <img src="../../ec2/numa/img/intel-s2600cp4.jpg" alt="Intel S2600CP4 双路服务器主板，两个 CPU 散热器各自被 8 条内存插槽围着" loading="lazy" width="1100" height="993">
+                    <span class="pin" style="left:26%;top:64%">CPU（node 0）</span>
+                    <span class="pin" style="left:23%;top:41.5%">node 0 的内存插槽</span>
+                    <span class="pin" style="left:23%;top:85.5%">node 0 的内存插槽</span>
+                    <span class="pin n1" style="left:66%;top:69%">CPU（node 1）</span>
+                    <span class="pin n1" style="left:70%;top:48%">node 1 的内存插槽</span>
+                    <span class="pin n1" style="left:69%;top:91.5%">node 1 的内存插槽</span>
+                </div>
+                <figcaption>图 1：一块真实的双路服务器主板（Intel S2600CP4）。两个大散热器下面各压着一颗 CPU，每颗 CPU 上下各有 4 条内存插槽，这 8 条只接到它自己的内存控制器上。两颗 CPU 之间的 QPI 互联走在电路板里面，照片上看不到。哪颗算 node 0 由固件决定，这里的标注只是示意。照片：<a href="https://commons.wikimedia.org/wiki/File:Intel_S2600CP4.jpg" target="_blank" rel="noopener">Phiarc / Wikimedia Commons</a>，<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>。</figcaption>
+            </figure>
+            <p>照片里能看到"楼"和"档案室"，但看不到"连廊"。把它画成示意图，就是下面这样。一个 socket 加上它自己的内存，就叫一个 <b>NUMA node</b>：</p>
+            <figure class="fig">
+                <svg viewBox="0 0 720 300" role="img" aria-label="两个 NUMA node，各自有内存控制器和 DIMM；读对方的内存要走 socket 之间的互联">
+                    <defs>
+                        <marker id="ah-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"/></marker>
+                        <marker id="ah-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"/></marker>
+                    </defs>
+                    <text x="135" y="18" text-anchor="middle" fill="#e8edf2" font-size="13" font-weight="600">NUMA node 0</text>
+                    <rect x="38" y="30" width="40" height="46" rx="4" fill="#11171f" stroke="#34455a"/><text x="58" y="58" text-anchor="middle" fill="#9aa7b4" font-size="11">DIMM</text><rect x="90" y="30" width="40" height="46" rx="4" fill="#11171f" stroke="#34455a"/><text x="110" y="58" text-anchor="middle" fill="#9aa7b4" font-size="11">DIMM</text><rect x="142" y="30" width="40" height="46" rx="4" fill="#11171f" stroke="#34455a"/><text x="162" y="58" text-anchor="middle" fill="#9aa7b4" font-size="11">DIMM</text><rect x="194" y="30" width="40" height="46" rx="4" fill="#11171f" stroke="#34455a"/><text x="214" y="58" text-anchor="middle" fill="#9aa7b4" font-size="11">DIMM</text>
+                    <rect x="20" y="100" width="230" height="142" rx="10" fill="#151c26" stroke="#26313f"/>
+                    <rect x="50" y="124" width="170" height="34" rx="6" fill="#11171f" stroke="#0bbd87"/>
+                    <text x="140" y="146" text-anchor="middle" fill="#e8edf2" font-size="12">内存控制器</text>
+                    <rect x="42" y="190" width="38" height="30" rx="4" fill="#0b0f14" stroke="#34455a"/><text x="61" y="209" text-anchor="middle" fill="#9aa7b4" font-size="11">核心</text><rect x="90" y="190" width="38" height="30" rx="4" fill="#0b0f14" stroke="#34455a"/><text x="109" y="209" text-anchor="middle" fill="#9aa7b4" font-size="11">核心</text><rect x="138" y="190" width="38" height="30" rx="4" fill="#0b0f14" stroke="#34455a"/><text x="157" y="209" text-anchor="middle" fill="#9aa7b4" font-size="11">核心</text><rect x="186" y="190" width="38" height="30" rx="4" fill="#0b0f14" stroke="#34455a"/><text x="205" y="209" text-anchor="middle" fill="#9aa7b4" font-size="11">核心</text>
+                    <text x="135" y="236" text-anchor="middle" fill="#64717f" font-size="10">CPU socket 0</text>
+                    <text x="585" y="18" text-anchor="middle" fill="#e8edf2" font-size="13" font-weight="600">NUMA node 1</text>
+                    <rect x="488" y="30" width="40" height="46" rx="4" fill="#11171f" stroke="#34455a"/><text x="508" y="58" text-anchor="middle" fill="#9aa7b4" font-size="11">DIMM</text><rect x="540" y="30" width="40" height="46" rx="4" fill="#11171f" stroke="#34455a"/><text x="560" y="58" text-anchor="middle" fill="#9aa7b4" font-size="11">DIMM</text><rect x="592" y="30" width="40" height="46" rx="4" fill="#11171f" stroke="#34455a"/><text x="612" y="58" text-anchor="middle" fill="#9aa7b4" font-size="11">DIMM</text><rect x="644" y="30" width="40" height="46" rx="4" fill="#11171f" stroke="#34455a"/><text x="664" y="58" text-anchor="middle" fill="#9aa7b4" font-size="11">DIMM</text>
+                    <rect x="470" y="100" width="230" height="142" rx="10" fill="#151c26" stroke="#26313f"/>
+                    <rect x="500" y="124" width="170" height="34" rx="6" fill="#11171f" stroke="#0bbd87"/>
+                    <text x="590" y="146" text-anchor="middle" fill="#e8edf2" font-size="12">内存控制器</text>
+                    <rect x="492" y="190" width="38" height="30" rx="4" fill="#0b0f14" stroke="#34455a"/><text x="511" y="209" text-anchor="middle" fill="#9aa7b4" font-size="11">核心</text><rect x="540" y="190" width="38" height="30" rx="4" fill="#0b0f14" stroke="#34455a"/><text x="559" y="209" text-anchor="middle" fill="#9aa7b4" font-size="11">核心</text><rect x="588" y="190" width="38" height="30" rx="4" fill="#0b0f14" stroke="#34455a"/><text x="607" y="209" text-anchor="middle" fill="#9aa7b4" font-size="11">核心</text><rect x="636" y="190" width="38" height="30" rx="4" fill="#0b0f14" stroke="#34455a"/><text x="655" y="209" text-anchor="middle" fill="#9aa7b4" font-size="11">核心</text>
+                    <text x="585" y="236" text-anchor="middle" fill="#64717f" font-size="10">CPU socket 1</text>
+                    <rect x="250" y="130" width="220" height="22" rx="11" fill="#11171f" stroke="#f59e0b" stroke-dasharray="5 4"/>
+                    <text x="360" y="176" text-anchor="middle" fill="#f59e0b" font-size="11">socket 互联：UPI / Infinity Fabric / CMN</text>
+                    <path d="M60,190 V80" fill="none" stroke="#00e5a0" stroke-width="2.5" marker-end="url(#ah-g)"/>
+                    <path d="M205,190 V141 H508 V80" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#ah-r)"/>
+                    <text x="18" y="275" fill="#00e5a0" font-size="12">● 本地访问 ≈ 80 ns</text>
+                    <text x="250" y="275" fill="#f59e0b" font-size="12">● 远端访问（跨 socket）≈ 150–200 ns，约慢 2 倍</text>
+                </svg>
+                <figcaption>图 2：两个 NUMA node。绿线是本地访问，核心经本 node 的内存控制器读自己的 DIMM；橙色虚线是远端访问，要多穿过一段 socket 互联，才能读到另一个 node 的 DIMM。</figcaption>
+            </figure>
+            <p>具体慢多少？看典型延迟：</p>
+            <table class="cmp">
+                <thead><tr><th>数据在哪</th><th>延迟</th></tr></thead>
+                <tbody>
+                    <tr><td>L1 cache（CPU 内部最快的缓存）</td><td>~1 ns</td></tr>
+                    <tr><td>L2 cache</td><td>~4 ns</td></tr>
+                    <tr><td>L3 cache</td><td>~15 ns</td></tr>
+                    <tr><td>本地 DRAM（内存条）</td><td>~80 ns</td></tr>
+                    <tr><td>远端 DRAM（跨 socket）</td><td>~150–200 ns</td></tr>
+                </tbody>
+            </table>
+            <p>跨 socket 大概比本地<b>慢 2 倍</b>。换句话说，同样一次读内存，数据放错了 node，就要多等一倍时间。每秒几十亿次访存乘下来，就是你能感觉到的性能差。</p>
+        </section>
+
+        <!-- 2 -->
+        <section id="name" class="content-section">
+            <h2 class="section-title">2 · 为什么叫 <span>NUMA</span></h2>
+            <p>NUMA 是 <b>Non-Uniform Memory Access</b> 的缩写，中文叫"非一致内存访问"。"非一致"说的就是上一节的现象：<b>读一次内存要多久，取决于内存在哪</b>。本地快，远端慢，不是一个固定值。</p>
+            <p>有"非一致"，就有"一致"。它的反面叫 <b>UMA</b>（Uniform Memory Access）：</p>
+            <figure class="fig">
+                <svg viewBox="0 0 720 272" role="img" aria-label="左边 UMA：多颗 CPU 共用一条总线和一个内存控制器；右边 NUMA：每颗 CPU 有自己的内存控制器和内存">
+                    <text x="175" y="20" text-anchor="middle" fill="#e8edf2" font-size="13" font-weight="600">以前：UMA（一致内存访问）</text>
+                    <rect x="30" y="38" width="60" height="32" rx="5" fill="#11171f" stroke="#34455a"/><text x="60" y="59" text-anchor="middle" fill="#9aa7b4" font-size="11">CPU 0</text>
+                    <line x1="60" y1="70" x2="60" y2="100" stroke="#f59e0b" stroke-width="2"/>
+                    <rect x="105" y="38" width="60" height="32" rx="5" fill="#11171f" stroke="#34455a"/><text x="135" y="59" text-anchor="middle" fill="#9aa7b4" font-size="11">CPU 1</text>
+                    <line x1="135" y1="70" x2="135" y2="100" stroke="#f59e0b" stroke-width="2"/>
+                    <rect x="180" y="38" width="60" height="32" rx="5" fill="#11171f" stroke="#34455a"/><text x="210" y="59" text-anchor="middle" fill="#9aa7b4" font-size="11">CPU 2</text>
+                    <line x1="210" y1="70" x2="210" y2="100" stroke="#f59e0b" stroke-width="2"/>
+                    <rect x="255" y="38" width="60" height="32" rx="5" fill="#11171f" stroke="#34455a"/><text x="285" y="59" text-anchor="middle" fill="#9aa7b4" font-size="11">CPU 3</text>
+                    <line x1="285" y1="70" x2="285" y2="100" stroke="#f59e0b" stroke-width="2"/>
+                    <line x1="40" y1="100" x2="310" y2="100" stroke="#f59e0b" stroke-width="4"/>
+                    <text x="175" y="118" text-anchor="middle" fill="#f59e0b" font-size="11">一条共享的前端总线（FSB），大家排队</text>
+                    <line x1="175" y1="100" x2="175" y2="138" stroke="#f59e0b" stroke-width="2"/>
+                    <rect x="85" y="138" width="180" height="36" rx="6" fill="#11171f" stroke="#0bbd87"/><text x="175" y="161" text-anchor="middle" fill="#e8edf2" font-size="12">北桥：唯一的内存控制器</text>
+                    <line x1="175" y1="174" x2="175" y2="196" stroke="#34455a" stroke-width="2"/>
+                    <rect x="85" y="196" width="180" height="34" rx="6" fill="#11171f" stroke="#34455a"/><text x="175" y="218" text-anchor="middle" fill="#9aa7b4" font-size="12">全部内存</text>
+                    <text x="175" y="258" text-anchor="middle" fill="#9aa7b4" font-size="11">谁去读都一样远：延迟一致，但总线是瓶颈</text>
+                    <line x1="360" y1="20" x2="360" y2="262" stroke="#34455a" stroke-dasharray="4 4"/>
+                    <text x="545" y="20" text-anchor="middle" fill="#e8edf2" font-size="13" font-weight="600">现在：NUMA（非一致内存访问）</text>
+                    <rect x="395" y="38" width="120" height="32" rx="5" fill="#11171f" stroke="#34455a"/><text x="455" y="59" text-anchor="middle" fill="#9aa7b4" font-size="11">CPU 0</text>
+                    <line x1="455" y1="70" x2="455" y2="138" stroke="#00e5a0" stroke-width="2"/>
+                    <rect x="395" y="138" width="120" height="36" rx="6" fill="#11171f" stroke="#0bbd87"/><text x="455" y="161" text-anchor="middle" fill="#e8edf2" font-size="12">自己的内存控制器</text>
+                    <line x1="455" y1="174" x2="455" y2="196" stroke="#00e5a0" stroke-width="2"/>
+                    <rect x="395" y="196" width="120" height="34" rx="6" fill="#11171f" stroke="#34455a"/><text x="455" y="218" text-anchor="middle" fill="#9aa7b4" font-size="12">node 0 的内存</text>
+                    <rect x="575" y="38" width="120" height="32" rx="5" fill="#11171f" stroke="#34455a"/><text x="635" y="59" text-anchor="middle" fill="#9aa7b4" font-size="11">CPU 1</text>
+                    <line x1="635" y1="70" x2="635" y2="138" stroke="#00e5a0" stroke-width="2"/>
+                    <rect x="575" y="138" width="120" height="36" rx="6" fill="#11171f" stroke="#0bbd87"/><text x="635" y="161" text-anchor="middle" fill="#e8edf2" font-size="12">自己的内存控制器</text>
+                    <line x1="635" y1="174" x2="635" y2="196" stroke="#00e5a0" stroke-width="2"/>
+                    <rect x="575" y="196" width="120" height="34" rx="6" fill="#11171f" stroke="#34455a"/><text x="635" y="218" text-anchor="middle" fill="#9aa7b4" font-size="12">node 1 的内存</text>
+                    <line x1="515" y1="54" x2="575" y2="54" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="5 4"/>
+                    <text x="545" y="92" text-anchor="middle" fill="#f59e0b" font-size="11">socket 互联</text>
+                    <text x="545" y="258" text-anchor="middle" fill="#9aa7b4" font-size="11">带宽随 CPU 数增长；代价是本地快、远端慢</text>
+                </svg>
+                <figcaption>图 3：左边是早年的 UMA，所有 CPU 挤一条总线，通过北桥里唯一的内存控制器读内存，谁去都一样远。右边是今天的 NUMA，每颗 CPU 自带内存控制器和内存，总带宽随 CPU 数增长，代价是远端访问变慢。</figcaption>
+            </figure>
+            <p>回到档案室的比方：UMA 就像整个公司只有一个档案室，谁去都一样远，所以访问时间是"一致"的。人少的时候没问题；人一多，大家都挤在同一条走廊上，走廊就成了瓶颈。</p>
+            <p>解决办法是每栋楼建自己的档案室，也就是<b>把内存控制器搬进 CPU</b>。AMD 在 2003 年的 Opteron 上先这么做，Intel 在 2008 年的 Nehalem 架构上跟进（服务器版 Xeon 5500 在 2009 年发布）。从那以后，几乎每台双路服务器都是 NUMA。</p>
+            <p>其实 NUMA 这个设计更早就有：90 年代 Sequent 的 NUMA-Q、SGI 的 Origin 这些大型机已经在用。只是那时它属于昂贵的专用机器，直到内存控制器进了 CPU，它才变成每个开发者都可能遇到的问题。<sup>[10]</sup></p>
+        </section>
+
+        <!-- 3 -->
+        <section id="inspect" class="content-section">
+            <h2 class="section-title">3 · 看<span>拓扑</span></h2>
+            <p>调优之前，先看"平面图"：这台机器有几栋楼，每栋楼里有哪些 CPU、多少内存。最常用的命令是 <code>numactl -H</code>。下面是一台双路 x86 机器（<code>m7i.48xlarge</code>，192 vCPU，768 GiB）的输出：</p>
+            <pre><span class="c">$ numactl -H</span>
+available: 2 nodes (0-1)
+node 0 cpus: 0-47 96-143
+node 0 size: 386420 MB
+node 0 free: 12034 MB
+node 1 cpus: 48-95 144-191
+node 1 size: 386547 MB
+node distances:
+node   0   1
+  0:  10  21
+  1:  21  10</pre>
+            <p>逐行读：</p>
+            <ul>
+                <li><b>available: 2 nodes</b>：两栋楼。</li>
+                <li><b>node 0 cpus: 0-47 96-143</b>：为什么是两段？因为 Intel 开了超线程（SMT，一个物理核同时跑两个线程），一个物理核有两个 vCPU。0-47 是 48 个物理核的第一个线程，96-143 是同一批核的第二个线程。Graviton 没有超线程，所以在 Graviton 上你会看到一整段连续的编号。</li>
+                <li><b>node distances</b>：<code>10</code> 表示本地，<code>21</code> 表示跨一跳。比值约 2.1，正好对上一节的延迟表。</li>
+            </ul>
+
+            <h3 class="sub-h">node 0、node 1 这些编号从哪来</h3>
+            <p>不是 Linux 自己猜的，是<b>固件告诉它的</b>。开机时 BIOS / UEFI 会在 ACPI 里放两张表：</p>
+            <ul>
+                <li><b>SRAT</b>（System Resource Affinity Table）：列出哪些 CPU、哪段物理内存属于同一个 proximity domain（亲和域）。</li>
+                <li><b>SLIT</b>（System Locality Information Table）：列出这些域之间的相对距离，也就是上面那张 10 / 21 的表。</li>
+            </ul>
+            <p>Linux 启动时读这两张表，把每个 proximity domain 映射成一个 node 编号，从 0 开始编，然后在 <code>/sys/devices/system/node/</code> 下面建出 <code>node0</code>、<code>node1</code>……<sup>[11]</sup></p>
+            <p>Arm 服务器（包括 Graviton）一样走 ACPI。虚拟机里这两张表由 hypervisor 生成（EC2 上是 Nitro），metal 实例则直接来自主板固件。想看原始记录，可以用 <code>dmesg | grep -i -E "srat|numa"</code>。</p>
+            <figure class="fig">
+                <svg viewBox="0 0 720 180" role="img" aria-label="固件生成 SRAT 和 SLIT 两张表，Linux 读表后建出 node0 和 node1">
+                    <defs>
+                        <marker id="pa-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"/></marker>
+                        <marker id="pa-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"/></marker>
+                        <marker id="pa-d" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b4"/></marker>
+                    </defs>
+                    <rect x="10" y="60" width="150" height="60" rx="7" fill="#11171f" stroke="#0bbd87"/>
+                    <text x="85.0" y="86.0" text-anchor="middle" fill="#e8edf2" font-size="12">固件</text>
+                    <text x="85.0" y="102.0" text-anchor="middle" fill="#9aa7b4" font-size="11">BIOS / UEFI 或 Nitro</text>
+                    <rect x="215" y="20" width="170" height="56" rx="7" fill="#11171f" stroke="#34455a"/>
+                    <text x="300.0" y="44.0" text-anchor="middle" fill="#e8edf2" font-size="12">SRAT 表</text>
+                    <text x="300.0" y="60.0" text-anchor="middle" fill="#9aa7b4" font-size="11">谁和谁在一个亲和域</text>
+                    <rect x="215" y="104" width="170" height="56" rx="7" fill="#11171f" stroke="#34455a"/>
+                    <text x="300.0" y="128.0" text-anchor="middle" fill="#e8edf2" font-size="12">SLIT 表</text>
+                    <text x="300.0" y="144.0" text-anchor="middle" fill="#9aa7b4" font-size="11">亲和域之间多远</text>
+                    <rect x="440" y="60" width="110" height="60" rx="7" fill="#11171f" stroke="#34455a"/>
+                    <text x="495.0" y="86.0" text-anchor="middle" fill="#e8edf2" font-size="12">Linux kernel</text>
+                    <text x="495.0" y="102.0" text-anchor="middle" fill="#9aa7b4" font-size="11">开机时读表</text>
+                    <rect x="600" y="30" width="110" height="44" rx="7" fill="#11171f" stroke="#00e5a0"/>
+                    <text x="655.0" y="56.0" text-anchor="middle" fill="#00e5a0" font-size="12">node0</text>
+                    <rect x="600" y="106" width="110" height="44" rx="7" fill="#11171f" stroke="#60a5fa"/>
+                    <text x="655.0" y="132.0" text-anchor="middle" fill="#60a5fa" font-size="12">node1</text>
+                    <path d="M160,82 H190 V48 H210" fill="none" stroke="#9aa7b4" stroke-width="2" marker-end="url(#pa-d)"/>
+                    <path d="M160,98 H190 V132 H210" fill="none" stroke="#9aa7b4" stroke-width="2" marker-end="url(#pa-d)"/>
+                    <path d="M385,48 H412 V82 H435" fill="none" stroke="#9aa7b4" stroke-width="2" marker-end="url(#pa-d)"/>
+                    <path d="M385,132 H412 V98 H435" fill="none" stroke="#9aa7b4" stroke-width="2" marker-end="url(#pa-d)"/>
+                    <path d="M550,82 H572 V52 H595" fill="none" stroke="#00e5a0" stroke-width="2" marker-end="url(#pa-g)"/>
+                    <path d="M550,98 H572 V128 H595" fill="none" stroke="#60a5fa" stroke-width="2" marker-end="url(#pa-g)"/>
+                    <text x="655" y="170" text-anchor="middle" fill="#64717f" font-size="10">/sys/devices/system/node/</text>
+                    <text x="85" y="140" text-anchor="middle" fill="#64717f" font-size="10">知道主板怎么接线</text>
+                </svg>
+                <figcaption>图 4：node 编号的来历。固件最清楚哪些 CPU 和内存接在一起，它把这件事写进 SRAT 和 SLIT 两张 ACPI 表；Linux 开机时读表，从 0 开始给每个亲和域编号。</figcaption>
+            </figure>
+            <div class="callout warn">
+                <div class="lead">node 是逻辑概念，不一定等于 socket</div>
+                一颗 CPU 也可能被切成好几个 node：AMD EPYC 可以在 BIOS 里设 NPS（Nodes Per Socket）= 1 / 2 / 4；Intel 有 SNC（Sub-NUMA Clustering）。反过来，CXL 扩展内存常常显示成一个<b>没有 CPU 的 node</b>。所以永远以 <code>numactl -H</code> 的输出为准，不要只数 CPU 个数。
+            </div>
+
+            <h3 class="sub-h">看其他细节</h3>
+            <pre><span class="c">$ lscpu | grep NUMA</span>
+NUMA node(s):        2
+NUMA node0 CPU(s):   0-47,96-143
+NUMA node1 CPU(s):   48-95,144-191
+
+<span class="c">$ cat /sys/devices/system/node/node0/meminfo | head -3</span>
+Node 0 MemTotal:  395694568 kB
+Node 0 MemFree:    12323400 kB
+Node 0 MemUsed:   383371168 kB
+
+<span class="c"># 网卡、NVMe 也属于某个 node（-1 表示单 node 机器）</span>
+<span class="c">$ cat /sys/class/net/eth0/device/numa_node</span>
+0</pre>
+            <p>还能看到某个进程的内存到底落在哪：</p>
+            <pre><span class="c">$ numastat -p $(pgrep -f postgres | head -1)</span>
+Per-node process memory usage (in MBs):
+                Node 0   Node 1   Total
+Heap             12043    20988   33031   <span class="c">← 内存被切成两半</span>
+Stack                0        1       1
+Private          14200    22103   36303</pre>
+            <p>再细一层，看每一段虚拟内存用的是什么策略：</p>
+            <pre><span class="c">$ cat /proc/12345/numa_maps | head -3</span>
+7f8a1c000000 default anon=524288 dirty=524288 N0=262144 N1=262144
+7f8a5c000000 bind:0  anon=131072 dirty=131072 N0=131072</pre>
+            <p><code>N0=… N1=…</code> 是这段内存在每个 node 上的实际页数。<code>default</code>、<code>bind:0</code> 就是下一节要讲的"策略"。</p>
+        </section>
+
+        <!-- 4 -->
+        <section id="policy" class="content-section">
+            <h2 class="section-title">4 · 内存放哪：<span>mempolicy</span></h2>
+            <p>先讲一个最重要的默认行为：<b>first-touch</b>。程序 <code>malloc</code> 一大块内存时，kernel 其实没有马上分配；要等某个线程<b>第一次写</b>某一页（page，内存分配的最小单位，通常 4 KB），才真正分配那一页，而且放在<b>那个线程当时所在的 node</b>。</p>
+            <p>这就像停车：车位不是提前分好的，谁先开进来，就停在离他最近的停车场。后面很多坑，都是因为"第一个开进来的人"不是之后真正常用这块内存的人。</p>
+            <p>如果不想用默认规则，可以给进程或某段内存设一个策略（mempolicy）。kernel 文档里最常用的是这几种 <sup>[1]</sup>：</p>
+            <figure class="fig">
+                <svg viewBox="0 0 720 318" role="img" aria-label="四种内存策略下，页面在 node 0 和 node 1 上的分布">
+                    <defs>
+                        <marker id="m-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"/></marker>
+                        <marker id="m-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"/></marker>
+                        <marker id="m-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ef4444"/></marker>
+                    </defs>
+                    <text x="330" y="18" text-anchor="middle" fill="#e8edf2" font-size="12" font-weight="600">node 0</text>
+                    <text x="590" y="18" text-anchor="middle" fill="#e8edf2" font-size="12" font-weight="600">node 1</text>
+                    <text x="10" y="52" fill="#e8edf2" font-size="13" font-weight="600" font-family="monospace">local / default</text>
+                    <text x="10" y="72" fill="#64717f" font-size="11">在哪颗 CPU 上运行，就放哪个 node</text>
+                    <rect x="200" y="30" width="260" height="52" rx="8" fill="#151c26" stroke="#26313f"/>
+                    <rect x="460" y="30" width="260" height="52" rx="8" fill="#151c26" stroke="#26313f"/>
+                    <rect x="214" y="44" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="474" y="44" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="244" y="44" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="504" y="44" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="274" y="44" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="534" y="44" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="304" y="44" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="564" y="44" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="334" y="44" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="594" y="44" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="364" y="44" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="624" y="44" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="394" y="44" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="654" y="44" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="424" y="44" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="684" y="44" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <text x="10" y="118" fill="#e8edf2" font-size="13" font-weight="600" font-family="monospace">bind 0</text>
+                    <text x="10" y="138" fill="#64717f" font-size="11">只许用 node 0，满了就失败</text>
+                    <rect x="200" y="96" width="260" height="52" rx="8" fill="#151c26" stroke="#26313f"/>
+                    <rect x="460" y="96" width="260" height="52" rx="8" fill="#151c26" stroke="#26313f"/>
+                    <rect x="214" y="110" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="474" y="110" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="244" y="110" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="504" y="110" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="274" y="110" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="534" y="110" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="304" y="110" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="564" y="110" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="334" y="110" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="594" y="110" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="364" y="110" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="624" y="110" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="394" y="110" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="654" y="110" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="424" y="110" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="684" y="110" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <line x1="470" y1="104" x2="710" y2="140" stroke="#ef4444" stroke-width="2"/><line x1="710" y1="104" x2="470" y2="140" stroke="#ef4444" stroke-width="2"/>
+                    <text x="590" y="126" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="700" paint-order="stroke" stroke="#151c26" stroke-width="4">不许用</text>
+                    <text x="330" y="160" text-anchor="middle" fill="#ef4444" font-size="10">满了 → OOM</text>
+                    <text x="10" y="184" fill="#e8edf2" font-size="13" font-weight="600" font-family="monospace">preferred 0</text>
+                    <text x="10" y="204" fill="#64717f" font-size="11">先用 node 0，满了再去别处</text>
+                    <rect x="200" y="162" width="260" height="52" rx="8" fill="#151c26" stroke="#26313f"/>
+                    <rect x="460" y="162" width="260" height="52" rx="8" fill="#151c26" stroke="#26313f"/>
+                    <rect x="214" y="176" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="474" y="176" width="24" height="24" rx="3" fill="#f59e0b" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="244" y="176" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="504" y="176" width="24" height="24" rx="3" fill="#f59e0b" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="274" y="176" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="534" y="176" width="24" height="24" rx="3" fill="#f59e0b" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="304" y="176" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="564" y="176" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="334" y="176" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="594" y="176" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="364" y="176" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="624" y="176" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="394" y="176" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="654" y="176" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="424" y="176" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <rect x="684" y="176" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <text x="10" y="250" fill="#e8edf2" font-size="13" font-weight="600" font-family="monospace">interleave 0,1</text>
+                    <text x="10" y="270" fill="#64717f" font-size="11">一页一页轮流放</text>
+                    <rect x="200" y="228" width="260" height="52" rx="8" fill="#151c26" stroke="#26313f"/>
+                    <rect x="460" y="228" width="260" height="52" rx="8" fill="#151c26" stroke="#26313f"/>
+                    <rect x="214" y="242" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <text x="226" y="259" text-anchor="middle" fill="#04120d" font-size="10" font-weight="700">1</text>
+                    <rect x="474" y="242" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <text x="486" y="259" text-anchor="middle" fill="#04120d" font-size="10" font-weight="700">2</text>
+                    <rect x="244" y="242" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <text x="256" y="259" text-anchor="middle" fill="#04120d" font-size="10" font-weight="700">3</text>
+                    <rect x="504" y="242" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <text x="516" y="259" text-anchor="middle" fill="#04120d" font-size="10" font-weight="700">4</text>
+                    <rect x="274" y="242" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <text x="286" y="259" text-anchor="middle" fill="#04120d" font-size="10" font-weight="700">5</text>
+                    <rect x="534" y="242" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <text x="546" y="259" text-anchor="middle" fill="#04120d" font-size="10" font-weight="700">6</text>
+                    <rect x="304" y="242" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <text x="316" y="259" text-anchor="middle" fill="#04120d" font-size="10" font-weight="700">7</text>
+                    <rect x="564" y="242" width="24" height="24" rx="3" fill="#00e5a0" fill-opacity="0.85" stroke="#34455a"/>
+                    <text x="576" y="259" text-anchor="middle" fill="#04120d" font-size="10" font-weight="700">8</text>
+                    <rect x="334" y="242" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="594" y="242" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="364" y="242" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="624" y="242" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="394" y="242" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="654" y="242" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="424" y="242" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="684" y="242" width="24" height="24" rx="3" fill="#11171f" fill-opacity="1" stroke="#34455a"/>
+                    <rect x="200" y="298" width="12" height="12" rx="2" fill="#00e5a0"/><text x="218" y="309" fill="#9aa7b4" font-size="11">按策略放的页</text>
+                    <rect x="330" y="298" width="12" height="12" rx="2" fill="#f59e0b"/><text x="348" y="309" fill="#9aa7b4" font-size="11">溢出到别的 node 的页</text>
+                    <text x="480" y="309" fill="#9aa7b4" font-size="11">数字 = 分配顺序</text>
+                </svg>
+                <figcaption>图 5：同样分配几页内存，四种策略的结果。local 放在当前 CPU 的 node；bind 只能放指定的 node，满了就失败；preferred 优先放指定的 node，满了再溢出到别处；interleave 按页轮流放，两边各一半。</figcaption>
+            </figure>
+            <ul>
+                <li><b>MPOL_DEFAULT</b>：不单独设，沿用更上一层的策略，最后落到系统默认，也就是 local。</li>
+                <li><b>MPOL_LOCAL</b>：放在执行分配的 CPU 所在的 node。这就是 first-touch。</li>
+                <li><b>MPOL_BIND</b>：只能从指定的 node 集合里分配。集合里有多个 node 时，选离分配点最近、并且有足够空闲内存的那个。都满了就<b>直接失败</b>，不会去别处借。</li>
+                <li><b>MPOL_PREFERRED</b>：优先从指定的<b>一个 node</b> 分配；失败了再按距离由近到远去别的 node。</li>
+                <li><b>MPOL_INTERLEAVE</b>：在指定的 node 之间按页轮流分配。适合"大家都会读"的大块共享内存，比如数据库缓存。</li>
+            </ul>
+            <p>新一点的 kernel 还多了两种：<code>MPOL_PREFERRED_MANY</code>（5.15 起，可以优先一组 node）和 <code>MPOL_WEIGHTED_INTERLEAVE</code>（6.9 起，按权重轮流放，常用在 CXL 内存上）。</p>
+            <p>命令行里对应的就是 <code>numactl</code> 的几个参数 <sup>[4]</sup>：</p>
+            <pre><span class="c"># 进程和内存都绑在 node 0</span>
+numactl --cpunodebind=0 --membind=0 ./server
+<span class="c"># 内存在所有 node 之间轮流放</span>
+numactl --interleave=all ./mysqld
+<span class="c"># 优先 node 1，满了再说</span>
+numactl --preferred=1 ./batch-job</pre>
+            <div class="callout warn">
+                <div class="lead">最容易踩的一句话</div>
+                kernel 文档原话："pages already faulted in ... remain where they were allocated based on the policy at the time." 意思是：改策略<b>不会</b>搬走已经分配好的内存，除非你显式调用 <code>mbind()</code> 或 <code>migrate_pages()</code>。所以服务已经跑热了再改策略，基本没用，要在启动时就设好。<sup>[1]</sup>
+            </div>
+        </section>
+
+        <!-- 5 -->
+        <section id="counters" class="content-section">
+            <h2 class="section-title">5 · 读懂 <span>numastat 计数器</span></h2>
+            <p>直接敲 <code>numastat</code>，会看到每个 node 一列计数器。可以把它想成酒店的订房记录：你想住 A 酒店，结果 A 满了，被安排去了 B。这一次，A 记一笔"没住进来的客人"，B 记一笔"不是冲我来的客人"。</p>
+            <table class="cmp">
+                <thead><tr><th>计数器</th><th>意思（man 8 numastat）<sup>[5]</sup></th></tr></thead>
+                <tbody>
+                    <tr><td><code>numa_hit</code></td><td>想放在这个 node，也确实放在了这个 node。</td></tr>
+                    <tr><td><code>numa_miss</code></td><td>进程想要别的 node，结果放到了这个 node。</td></tr>
+                    <tr><td><code>numa_foreign</code></td><td>本来想放在这个 node，结果放到了别的 node。<b>一个 node 的每次 miss，都对应另一个 node 的一次 foreign。</b></td></tr>
+                    <tr><td><code>interleave_hit</code></td><td>interleave 策略下，按计划放到了这个 node。</td></tr>
+                    <tr><td><code>local_node</code></td><td>进程在这个 node 上运行，内存也分配在这个 node。</td></tr>
+                    <tr><td><code>other_node</code></td><td>进程在别的 node 上运行，内存却分配在这个 node。</td></tr>
+                </tbody>
+            </table>
+<figure class="fig">
+                <svg viewBox="0 0 720 172" role="img" aria-label="进程 P 在 node 1 上运行，node 1 满了，页面落到 node 0：node 0 记 numa_miss，node 1 记 numa_foreign">
+                    <defs>
+                        <marker id="pb-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"/></marker>
+                        <marker id="pb-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"/></marker>
+                        <marker id="pb-d" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b4"/></marker>
+                    </defs>
+                    <rect x="20" y="30" width="300" height="130" rx="10" fill="#151c26" stroke="#26313f"/>
+                    <rect x="400" y="30" width="300" height="130" rx="10" fill="#151c26" stroke="#26313f"/>
+                    <text x="170" y="22" text-anchor="middle" fill="#e8edf2" font-size="13" font-weight="600">node 0</text>
+                    <text x="550" y="22" text-anchor="middle" fill="#e8edf2" font-size="13" font-weight="600">node 1</text>
+                    <rect x="430" y="48" width="110" height="40" rx="7" fill="#11171f" stroke="#60a5fa"/>
+                    <text x="485.0" y="72.0" text-anchor="middle" fill="#60a5fa" font-size="12">进程 P</text>
+                    <rect x="565" y="48" width="115" height="40" rx="7" fill="#11171f" stroke="#ef4444"/>
+                    <text x="622.5" y="64.0" text-anchor="middle" fill="#ef4444" font-size="12">内存</text>
+                    <text x="622.5" y="80.0" text-anchor="middle" fill="#9aa7b4" font-size="11">已经满了</text>
+                    <rect x="50" y="100" width="120" height="40" rx="7" fill="#11171f" stroke="#f59e0b"/>
+                    <text x="110.0" y="116.0" text-anchor="middle" fill="#f59e0b" font-size="12">新的一页</text>
+                    <text x="110.0" y="132.0" text-anchor="middle" fill="#9aa7b4" font-size="11">只好放这里</text>
+                    <path d="M540,68 H560" fill="none" stroke="#9aa7b4" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#pb-d)"/>
+                    <text x="555" y="104" text-anchor="middle" fill="#64717f" font-size="10">想放在本地</text>
+                    <path d="M430,78 C330,78 260,120 175,120" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#pb-o)"/>
+                    <text x="200" y="62" fill="#f59e0b" font-size="12" font-weight="700">numa_miss +1</text>
+                    <text x="200" y="80" fill="#64717f" font-size="10">不是冲我来的，但放到了我这</text>
+                    <text x="440" y="120" fill="#f59e0b" font-size="12" font-weight="700">numa_foreign +1</text>
+                    <text x="440" y="138" fill="#64717f" font-size="10">本该放我这，结果去了别处</text>
+                </svg>
+                <figcaption>图 6：一次"放错"会同时记两笔账。进程 P 想在 node 1 分配，node 1 满了，页面只好落在 node 0。于是 node 0 的 numa_miss 加 1，node 1 的 numa_foreign 加 1。</figcaption>
+            </figure>
+            <p>最常用的判断：<b>node A 的 <code>numa_miss</code> 高，同时 node B 的 <code>numa_foreign</code> 也高</b>，说明 B 的内存已经不够了，本该放在 B 的内存被挤到了 A。下一步去看 B 上是哪个进程占了大头（<code>numastat -p</code>）。</p>
+            <p>注意这些都是开机以来的累计值。要看"现在"的情况，隔几秒采两次，看差值。</p>
+        </section>
+
+        <!-- 6 -->
+        <section id="autobalance" class="content-section">
+            <h2 class="section-title">6 · 自动搬家：<span>Auto-NUMA balancing</span></h2>
+            <p>既然 first-touch 常常放错，kernel 能不能自己改？可以，这就是 NUMA balancing。它像一个搬家公司：观察你最常去哪栋楼拿文件，然后把文件搬过去。但"观察"和"搬家"本身都要花力气。</p>
+            <pre><span class="c">$ cat /proc/sys/kernel/numa_balancing</span>
+1</pre>
+            <p>开着的时候，kernel 会定期把一部分页面临时"取消映射"。下次有线程访问这一页，就会触发一次轻量的 page fault（缺页异常，CPU 发现页不在映射里时通知 kernel），kernel 借机记下"是谁、从哪个 node 来访问"，必要时把这一页搬到访问者所在的 node。</p>
+<figure class="fig">
+                <svg viewBox="0 0 720 162" role="img" aria-label="NUMA balancing 的四步循环：取消映射、hint fault、记账、搬页">
+                    <defs>
+                        <marker id="pc-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"/></marker>
+                        <marker id="pc-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"/></marker>
+                        <marker id="pc-d" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b4"/></marker>
+                    </defs>
+                    <rect x="20" y="30" width="140" height="58" rx="7" fill="#11171f" stroke="#34455a"/>
+                    <text x="90.0" y="55.0" text-anchor="middle" fill="#e8edf2" font-size="12">① 取消映射</text>
+                    <text x="90.0" y="71.0" text-anchor="middle" fill="#9aa7b4" font-size="11">定期挑一批页</text>
+                    <rect x="200" y="30" width="140" height="58" rx="7" fill="#11171f" stroke="#34455a"/>
+                    <text x="270.0" y="55.0" text-anchor="middle" fill="#e8edf2" font-size="12">② hint fault</text>
+                    <text x="270.0" y="71.0" text-anchor="middle" fill="#9aa7b4" font-size="11">有线程来访问</text>
+                    <rect x="380" y="30" width="140" height="58" rx="7" fill="#11171f" stroke="#34455a"/>
+                    <text x="450.0" y="55.0" text-anchor="middle" fill="#e8edf2" font-size="12">③ 记账</text>
+                    <text x="450.0" y="71.0" text-anchor="middle" fill="#9aa7b4" font-size="11">谁、从哪个 node</text>
+                    <rect x="560" y="30" width="140" height="58" rx="7" fill="#11171f" stroke="#00e5a0"/>
+                    <text x="630.0" y="55.0" text-anchor="middle" fill="#e8edf2" font-size="12">④ 搬页</text>
+                    <text x="630.0" y="71.0" text-anchor="middle" fill="#9aa7b4" font-size="11">常被远端访问就搬</text>
+                    <path d="M160,59 H196" fill="none" stroke="#9aa7b4" stroke-width="2" marker-end="url(#pc-d)"/>
+                    <path d="M340,59 H376" fill="none" stroke="#9aa7b4" stroke-width="2" marker-end="url(#pc-d)"/>
+                    <path d="M520,59 H556" fill="none" stroke="#9aa7b4" stroke-width="2" marker-end="url(#pc-d)"/>
+                    <path d="M630,88 V130 H90 V93" fill="none" stroke="#00e5a0" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#pc-g)"/>
+                    <text x="360" y="150" text-anchor="middle" fill="#9aa7b4" font-size="11">一直循环：线程和它的内存越来越"住在一起"，但每一圈都有开销</text>
+                </svg>
+                <figcaption>图 7：NUMA balancing 的工作循环。它不是一次性搬完，而是不停地采样、记账、搬家。</figcaption>
+            </figure>
+            <p>kernel 文档说得很直白：这些取消映射和 fault 有额外开销，希望靠更好的局部性赚回来，但<b>不保证一定赚</b>；如果业务已经手动绑好了 node，就应该关掉它。<sup>[2]</sup></p>
+            <p>判断它有没有在帮忙，看 <code>/proc/vmstat</code>：</p>
+            <pre>numa_pte_updates          <span class="c">← 采样了多少页</span>
+numa_hint_faults          <span class="c">← 触发了多少次 hint fault</span>
+numa_hint_faults_local    <span class="c">← 其中访问者本来就在本地的次数</span>
+numa_pages_migrated       <span class="c">← 实际搬了多少页</span>
+pgmigrate_success/fail    <span class="c">← 搬家成功 / 失败</span></pre>
+            <p><b>健康的信号：</b><code>numa_hint_faults_local / numa_hint_faults</code> 这个比例随时间上升，说明 kernel 正在把线程和内存"对齐"。</p>
+            <p><b>不健康的信号：</b>这个比例一直很低，而 <code>numa_pages_migrated</code> 一直在涨，就是在来回白搬。这时用 <code>sysctl kernel.numa_balancing=0</code> 关掉，改成手动绑定。</p>
+        </section>
+
+        <!-- 7 -->
+        <section id="casestudy" class="content-section">
+            <h2 class="section-title">7 · <span>真实故障</span>：MySQL "swap insanity"</h2>
+            <p>讲一个经典案例。2010 年 Jeremy Cole（当时在 Twitter）写过一篇复盘 <sup>[3]</sup>：</p>
+            <ul>
+                <li>机器：双路，<b>64 GB 内存</b>，也就是每个 node 大约 32 GB。</li>
+                <li>MySQL 的 InnoDB buffer pool 设成 <b>48 GB</b>，实际占了 51 GB 左右。</li>
+                <li>怪事：机器明明还有空闲内存，MySQL 却在不停地 swap（把内存页换到磁盘上，再换回来），性能很差。</li>
+            </ul>
+            <p>他用 <code>/proc/&lt;pid&gt;/numa_maps</code> 一看，buffer pool 在 node 0 上有 <b>30.45 GB</b>，在 node 1 上只有 <b>20.75 GB</b>。node 0 几乎被 MySQL 一个进程占满了。</p>
+            <figure class="fig">
+                <svg viewBox="0 0 720 292" role="img" aria-label="MySQL 修复前 node 0 用满而 node 1 还有空闲，修复后两个 node 各用 26 GB">
+                    <defs>
+                        <marker id="m-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"/></marker>
+                        <marker id="m-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"/></marker>
+                        <marker id="m-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ef4444"/></marker>
+                    </defs>
+                    <text x="170" y="22" text-anchor="middle" fill="#e8edf2" font-size="13" font-weight="600">修复前：默认策略</text>
+                    <rect x="60" y="50" width="70" height="170" rx="6" fill="#11171f" stroke="#34455a"/>
+                    <rect x="60" y="58.2" width="70" height="161.8" rx="6" fill="#ef4444" fill-opacity="0.75"/>
+                    <text x="95" y="143.1" text-anchor="middle" fill="#04120d" font-size="11" font-weight="700">30.45 GB</text>
+                    <rect x="190" y="50" width="70" height="170" rx="6" fill="#11171f" stroke="#34455a"/>
+                    <rect x="190" y="109.8" width="70" height="110.2" rx="6" fill="#00e5a0" fill-opacity="0.75"/>
+                    <text x="225" y="168.9" text-anchor="middle" fill="#04120d" font-size="11" font-weight="700">20.75 GB</text>
+                    <text x="225" y="83.9" text-anchor="middle" fill="#64717f" font-size="10">空闲</text>
+                    <text x="95" y="240" text-anchor="middle" fill="#9aa7b4" font-size="11">node 0（共 32 GB）</text>
+                    <text x="225" y="240" text-anchor="middle" fill="#9aa7b4" font-size="11">node 1（共 32 GB）</text>
+                    <text x="95" y="42" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="700">满了</text>
+                    <path d="M60,120 C20,120 20,200 40,262" fill="none" stroke="#ef4444" stroke-width="2" marker-end="url(#m-r)"/>
+                    <text x="50" y="282" fill="#ef4444" font-size="11">kernel 把 InnoDB 页换出到 swap</text>
+                    <text x="190" y="262" fill="#64717f" font-size="11">明明这边还有空闲</text>
+                    <line x1="360" y1="14" x2="360" y2="286" stroke="#34455a" stroke-dasharray="4 4"/>
+                    <text x="550" y="22" text-anchor="middle" fill="#e8edf2" font-size="13" font-weight="600">修复后：numactl --interleave all</text>
+                    <rect x="440" y="50" width="70" height="170" rx="6" fill="#11171f" stroke="#34455a"/>
+                    <rect x="440" y="81.9" width="70" height="138.1" rx="6" fill="#00e5a0" fill-opacity="0.75"/>
+                    <text x="475" y="154.9" text-anchor="middle" fill="#04120d" font-size="11" font-weight="700">26.00 GB</text>
+                    <text x="475" y="69.9" text-anchor="middle" fill="#64717f" font-size="10">空闲</text>
+                    <rect x="570" y="50" width="70" height="170" rx="6" fill="#11171f" stroke="#34455a"/>
+                    <rect x="570" y="81.9" width="70" height="138.1" rx="6" fill="#00e5a0" fill-opacity="0.75"/>
+                    <text x="605" y="154.9" text-anchor="middle" fill="#04120d" font-size="11" font-weight="700">26.00 GB</text>
+                    <text x="605" y="69.9" text-anchor="middle" fill="#64717f" font-size="10">空闲</text>
+                    <text x="475" y="240" text-anchor="middle" fill="#9aa7b4" font-size="11">node 0</text>
+                    <text x="605" y="240" text-anchor="middle" fill="#9aa7b4" font-size="11">node 1</text>
+                    <text x="540" y="268" text-anchor="middle" fill="#00e5a0" font-size="11">两边各留 6 GB 给 page cache（文件缓存），不再换页</text>
+                </svg>
+                <figcaption>图 8：左边是修复前。buffer pool 大多落在 node 0，node 0 满了以后，kernel 宁愿把 InnoDB 的页换出到 swap（磁盘上的交换区），也没有去用 node 1 的空闲内存。右边是加上 interleave 之后，两个 node 各 26 GB，都留有余量。数据来自 Jeremy Cole 的原文。</figcaption>
+            </figure>
+            <p>为什么会这样？正是前面讲的 first-touch：buffer pool 大部分是由跑在 node 0 上的线程先写的，所以都落在了 node 0。再加上当时 kernel 在本地 node 内存不足时，倾向于先回收本地内存（包括换页），而不是马上去远端 node 分配。</p>
+            <p>修复只有一行，在 <code>mysqld_safe</code> 里加上：</p>
+            <pre>cmd=<span class="k">"/usr/bin/numactl --interleave all $cmd"</span></pre>
+            <p>之后 buffer pool 在两个 node 上<b>各 26.00 GB</b>，swap 消失了。</p>
+            <p>后来的 MySQL 5.7 直接加了 <code>innodb_numa_interleave</code> 参数来做这件事 <sup>[9]</sup>；另一个相关的开关 <code>vm.zone_reclaim_mode</code>，数据库场景普遍建议设为 0（Linux 3.16 起默认就是 0）。</p>
+        </section>
+
+        <!-- 8 -->
+        <section id="traps" class="content-section">
+            <h2 class="section-title">8 · 常见 <span>性能陷阱</span></h2>
+            <p>下面这些坑，根子几乎都是同一个：<b>先写内存的线程，和后面常用这块内存的线程，不在同一个 node</b>。</p>
+<figure class="fig">
+                <svg viewBox="0 0 720 210" role="img" aria-label="初始化线程在 node 0 先写数据，干活的 worker 在 node 1，只能一直远端读取">
+                    <defs>
+                        <marker id="pd-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"/></marker>
+                        <marker id="pd-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"/></marker>
+                        <marker id="pd-d" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b4"/></marker>
+                    </defs>
+                    <rect x="20" y="20" width="300" height="160" rx="10" fill="#151c26" stroke="#26313f"/>
+                    <rect x="400" y="20" width="300" height="160" rx="10" fill="#151c26" stroke="#26313f"/>
+                    <text x="170" y="40" text-anchor="middle" fill="#e8edf2" font-size="12" font-weight="600">node 0</text>
+                    <text x="550" y="40" text-anchor="middle" fill="#e8edf2" font-size="12" font-weight="600">node 1</text>
+                    <rect x="40" y="55" width="160" height="44" rx="7" fill="#11171f" stroke="#00e5a0"/>
+                    <text x="120.0" y="73.0" text-anchor="middle" fill="#e8edf2" font-size="12">父进程 / 初始化线程</text>
+                    <text x="120.0" y="89.0" text-anchor="middle" fill="#9aa7b4" font-size="11">先写了数据</text>
+                    <rect x="40" y="120" width="260" height="44" rx="7" fill="#11171f" stroke="#00e5a0"/>
+                    <text x="170.0" y="138.0" text-anchor="middle" fill="#00e5a0" font-size="12">大数组 / 缓存 / heap</text>
+                    <text x="170.0" y="154.0" text-anchor="middle" fill="#9aa7b4" font-size="11">按 first-touch 全在 node 0</text>
+                    <path d="M120,99 V115" fill="none" stroke="#00e5a0" stroke-width="2" marker-end="url(#pd-g)"/>
+                    <rect x="560" y="55" width="120" height="30" rx="7" fill="#11171f" stroke="#60a5fa"/>
+                    <text x="620.0" y="74.0" text-anchor="middle" fill="#60a5fa" font-size="11">worker 1</text>
+                    <path d="M560,70 C470,70 400,142 305,142" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#pd-o)"/>
+                    <rect x="560" y="92" width="120" height="30" rx="7" fill="#11171f" stroke="#60a5fa"/>
+                    <text x="620.0" y="111.0" text-anchor="middle" fill="#60a5fa" font-size="11">worker 2</text>
+                    <path d="M560,107 C470,107 400,142 305,142" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#pd-o)"/>
+                    <rect x="560" y="129" width="120" height="30" rx="7" fill="#11171f" stroke="#60a5fa"/>
+                    <text x="620.0" y="148.0" text-anchor="middle" fill="#60a5fa" font-size="11">worker 3</text>
+                    <path d="M560,144 C470,144 400,142 305,142" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#pd-o)"/>
+                    <text x="360" y="200" text-anchor="middle" fill="#f59e0b" font-size="11">真正干活的线程在 node 1，每次读数据都要跨 socket</text>
+                </svg>
+                <figcaption>图 9：几乎所有 NUMA 陷阱都是这张图。"先写的人"和"常用的人"不在同一个 node。</figcaption>
+            </figure>
+            <h3 class="sub-h">JVM</h3>
+            <p>默认的 JVM 不感知 NUMA：heap（Java 对象所在的内存）的每一页落在哪个 node，取决于谁先写它，分布经常很不均。</p>
+            <p>打开 <code>-XX:+UseNUMA</code>，JVM 会让每个线程优先在本地 node 上分配新对象。Parallel GC 早就支持，G1 从 JDK 14 起支持 <sup>[8]</sup>。另一个办法是每个 node 起一个 JVM：<code>numactl --cpunodebind=N --membind=N java …</code>。</p>
+            <h3 class="sub-h">PostgreSQL / MySQL</h3>
+            <p>数据库的缓存（<code>shared_buffers</code>、InnoDB buffer pool）是一大块所有连接共享的内存，每一页落在第一个写它的进程所在的 node。而处理查询的进程会被调度到任意 node 上，所以跨 node 读非常常见。</p>
+            <p>两种修法：启动时加 <code>numactl --interleave=all</code>，让缓存在两个 node 上平均分布；或者把整个数据库绑到一个 node，另一个 node 留给系统和其他服务。</p>
+            <h3 class="sub-h">Python multiprocessing</h3>
+            <p><code>Pool(64)</code> 会 fork 出一批 worker，scheduler 把它们撒到各个 node 上；但 fork 之前在父进程里建好的大数组，只在父进程所在的 node 上。结果一半的 worker 一直在读远端内存。</p>
+            <p>修法：把父进程和 worker 都绑到同一个 node；或者让每个 worker 在 fork 之后自己加载数据。</p>
+            <h3 class="sub-h">Docker 容器</h3>
+            <p>没设 <code>--cpuset-cpus</code> 和 <code>--cpuset-mems</code> 的容器，每次调度都是碰运气。只设 CPU、不设内存，只算<b>修了一半</b>：CPU 在 node 0，内存可能全在 node 1。</p>
+            <h3 class="sub-h">网卡队列（ENA）</h3>
+            <p>网卡也属于某个 node。ENA 有多个收发队列，每个队列有一个中断（MSI-X IRQ，网卡用来"叫醒"CPU 的信号），中断绑在哪个 CPU 上，收包就在哪个 CPU 上处理。</p>
+            <p>如果你的应用跑在 node 1，而收包的中断在 node 0 上，每个包都要跨一次 socket 互联。AWS 的 ENA 最佳实践建议把应用和它用的队列放在同一个 node 上 <sup>[7]</sup>。</p>
+            <pre><span class="c"># 看 ENA 的每个中断落在哪个 CPU，再对照 /sys/devices/system/node/nodeX/cpulist</span>
+grep ena /proc/interrupts | awk '{print $1, $NF}'
+<span class="c"># 网卡本身在哪个 node</span>
+cat /sys/class/net/eth0/device/numa_node</pre>
+            <p>在多 node 的大机型上，还要看 ENA 驱动的 <code>rx_queue#_lpc_wrong_numa</code> 计数器（<code>ethtool -S eth0</code>），不为 0 就说明收包缓冲放错了 node <sup>[7]</sup>。</p>
+        </section>
+
+        <!-- 9 -->
+        <section id="ec2" class="content-section">
+            <h2 class="section-title">9 · EC2 <span>拓扑速查</span>：M8 和 M9 代</h2>
+            <p>在 EC2 上，你不会直接看到主板，但它还在那里。一台实例有几个 NUMA node，取决于它背后用了几颗 CPU，以及那颗 CPU 内部怎么切。</p>
+            <figure class="fig">
+                <div class="photo">
+                    <img src="../../ec2/numa/img/amd-epyc-9754-dual.jpg" alt="装着两颗 AMD EPYC 9754 的双路服务器，每颗 CPU 两侧插满内存条" loading="lazy" width="1100" height="619">
+                </div>
+                <figcaption>图 10：今天的大机型长得还是这样。这台服务器装了两颗 AMD EPYC 9754（每颗 128 核），每颗 CPU 旁边插着自己的一排 DDR5 内存条。云上最大号的实例，背后往往就是这种两路机器。照片：<a href="https://commons.wikimedia.org/wiki/File:AMD_Epyc_9754_in_Dual-CPU-Socket-Serversystem_(%E6%9E%81%E5%AE%A2%E6%B9%BEGeekerwan)_07.png" target="_blank" rel="noopener">极客湾 Geekerwan / Wikimedia Commons</a>，<a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener">CC BY 3.0</a>。</figcaption>
+            </figure>
+            <p>很多人以为规律很简单："一颗 CPU 装不下，才会变成两个 node"。对 m8g 和 m8a 来说确实如此。但新一代的 m8i 和 m9g 不一样，<b>一颗 CPU 里面也可能有好几个 node</b>。先看全景：</p>
+            <figure class="fig">
+                <svg viewBox="0 0 720 274" role="img" aria-label="m8g、m8a、m8i、m9g 各规格的 NUMA node 数">
+                    <text x="197.5" y="26" text-anchor="middle" fill="#9aa7b4" font-size="11">≤12xlarge</text>
+                    <text x="292.5" y="26" text-anchor="middle" fill="#9aa7b4" font-size="11">16xlarge</text>
+                    <text x="387.5" y="26" text-anchor="middle" fill="#9aa7b4" font-size="11">24xlarge</text>
+                    <text x="482.5" y="26" text-anchor="middle" fill="#9aa7b4" font-size="11">32xlarge</text>
+                    <text x="577.5" y="26" text-anchor="middle" fill="#9aa7b4" font-size="11">48xlarge</text>
+                    <text x="672.5" y="26" text-anchor="middle" fill="#9aa7b4" font-size="11">96xlarge</text>
+                    <text x="10" y="60" fill="#e8edf2" font-size="14" font-weight="700" font-family="monospace">m8g</text>
+                    <text x="10" y="76" fill="#64717f" font-size="10">Graviton4</text>
+                    <rect x="154" y="44" width="87" height="36" rx="6" fill="#11171f" stroke="#9aa7b4"/>
+                    <text x="197.5" y="67" text-anchor="middle" fill="#9aa7b4" font-size="13" font-weight="700">1 个 node</text>
+                    <rect x="249" y="44" width="87" height="36" rx="6" fill="#11171f" stroke="#9aa7b4"/>
+                    <text x="292.5" y="67" text-anchor="middle" fill="#9aa7b4" font-size="13" font-weight="700">1 个 node</text>
+                    <rect x="344" y="44" width="87" height="36" rx="6" fill="#11171f" stroke="#9aa7b4"/>
+                    <text x="387.5" y="67" text-anchor="middle" fill="#9aa7b4" font-size="13" font-weight="700">1 个 node</text>
+                    <text x="482.5" y="67" text-anchor="middle" fill="#2c3846" font-size="11">无此规格</text>
+                    <rect x="534" y="44" width="87" height="36" rx="6" fill="#3a2a0c" stroke="#f59e0b"/>
+                    <text x="577.5" y="67" text-anchor="middle" fill="#f59e0b" font-size="13" font-weight="700">2 个 node</text>
+                    <text x="672.5" y="67" text-anchor="middle" fill="#2c3846" font-size="11">无此规格</text>
+                    <text x="10" y="110" fill="#e8edf2" font-size="14" font-weight="700" font-family="monospace">m8a</text>
+                    <text x="10" y="126" fill="#64717f" font-size="10">EPYC Turin</text>
+                    <rect x="154" y="94" width="87" height="36" rx="6" fill="#11171f" stroke="#9aa7b4"/>
+                    <text x="197.5" y="117" text-anchor="middle" fill="#9aa7b4" font-size="13" font-weight="700">1 个 node</text>
+                    <rect x="249" y="94" width="87" height="36" rx="6" fill="#11171f" stroke="#9aa7b4"/>
+                    <text x="292.5" y="117" text-anchor="middle" fill="#9aa7b4" font-size="13" font-weight="700">1 个 node</text>
+                    <rect x="344" y="94" width="87" height="36" rx="6" fill="#11171f" stroke="#9aa7b4"/>
+                    <text x="387.5" y="117" text-anchor="middle" fill="#9aa7b4" font-size="13" font-weight="700">1 个 node</text>
+                    <text x="482.5" y="117" text-anchor="middle" fill="#2c3846" font-size="11">无此规格</text>
+                    <rect x="534" y="94" width="87" height="36" rx="6" fill="#3a2a0c" stroke="#f59e0b"/>
+                    <text x="577.5" y="117" text-anchor="middle" fill="#f59e0b" font-size="13" font-weight="700">2 个 node</text>
+                    <text x="672.5" y="117" text-anchor="middle" fill="#2c3846" font-size="11">无此规格</text>
+                    <text x="10" y="160" fill="#e8edf2" font-size="14" font-weight="700" font-family="monospace">m8i</text>
+                    <text x="10" y="176" fill="#64717f" font-size="10">Xeon 6 · SNC</text>
+                    <rect x="154" y="144" width="87" height="36" rx="6" fill="#11171f" stroke="#9aa7b4"/>
+                    <text x="197.5" y="167" text-anchor="middle" fill="#9aa7b4" font-size="13" font-weight="700">1 个 node</text>
+                    <rect x="249" y="144" width="87" height="36" rx="6" fill="#11171f" stroke="#9aa7b4"/>
+                    <text x="292.5" y="167" text-anchor="middle" fill="#9aa7b4" font-size="13" font-weight="700">1 个 node</text>
+                    <rect x="344" y="144" width="87" height="36" rx="6" fill="#3a2a0c" stroke="#f59e0b"/>
+                    <text x="387.5" y="167" text-anchor="middle" fill="#f59e0b" font-size="13" font-weight="700">2 个 node</text>
+                    <rect x="439" y="144" width="87" height="36" rx="6" fill="#3a2a0c" stroke="#f59e0b"/>
+                    <text x="482.5" y="167" text-anchor="middle" fill="#f59e0b" font-size="13" font-weight="700">2 个 node</text>
+                    <rect x="534" y="144" width="87" height="36" rx="6" fill="#3b1414" stroke="#ef4444"/>
+                    <text x="577.5" y="167" text-anchor="middle" fill="#ef4444" font-size="13" font-weight="700">3 个 node</text>
+                    <rect x="629" y="144" width="87" height="36" rx="6" fill="#3b1414" stroke="#ef4444"/>
+                    <text x="672.5" y="167" text-anchor="middle" fill="#ef4444" font-size="13" font-weight="700">6 个 node</text>
+                    <text x="10" y="210" fill="#e8edf2" font-size="14" font-weight="700" font-family="monospace">m9g</text>
+                    <text x="10" y="226" fill="#64717f" font-size="10">Graviton5</text>
+                    <rect x="154" y="194" width="87" height="36" rx="6" fill="#11171f" stroke="#9aa7b4"/>
+                    <text x="197.5" y="217" text-anchor="middle" fill="#9aa7b4" font-size="13" font-weight="700">1 个 node</text>
+                    <rect x="249" y="194" width="87" height="36" rx="6" fill="#3a2a0c" stroke="#f59e0b"/>
+                    <text x="292.5" y="217" text-anchor="middle" fill="#f59e0b" font-size="13" font-weight="700">2 个 node</text>
+                    <rect x="344" y="194" width="87" height="36" rx="6" fill="#11171f" stroke="#9aa7b4"/>
+                    <text x="387.5" y="217" text-anchor="middle" fill="#9aa7b4" font-size="13" font-weight="700">1 个 node</text>
+                    <text x="482.5" y="217" text-anchor="middle" fill="#2c3846" font-size="11">无此规格</text>
+                    <rect x="534" y="194" width="87" height="36" rx="6" fill="#3a2a0c" stroke="#f59e0b"/>
+                    <text x="577.5" y="217" text-anchor="middle" fill="#f59e0b" font-size="13" font-weight="700">2 个 node</text>
+                    <text x="672.5" y="217" text-anchor="middle" fill="#2c3846" font-size="11">无此规格</text>
+                    <text x="10" y="262" fill="#64717f" font-size="11">灰色 = 单 node，不用管；橙色 = 2 个 node；红色 = 3 个或更多。数据：SpareCores 实测 lscpu / lstopo，每种规格一个样本。</text>
+                </svg>
+                <figcaption>图 11：M8 / M9 代通用型实例，每种规格有几个 NUMA node。m8g、m8a 只有 48xlarge 才分成两个 node；m8i 从 24xlarge 起就分了；m9g 最特别，16xlarge 是 2 个 node，24xlarge 反而是 1 个。</figcaption>
+            </figure>
+
+            <h3 class="sub-h">m8g（Graviton4）：最简单</h3>
+            <p>每颗 Graviton4 有 96 个核，没有超线程，一个 vCPU 就是一个物理核，每颗 CPU 带 12 个 DDR5 通道。</p>
+            <ul>
+                <li><b>medium 到 24xlarge</b>（最多 96 vCPU）：只用一颗 CPU，<b>1 个 node</b>。</li>
+                <li><b>48xlarge / metal-48xl</b>（192 vCPU，768 GiB）：两颗 CPU，<b>2 个 node</b>，每个 node 约 372 GiB，node distance 是 10 / 20。</li>
+            </ul>
+            <p>AWS 的 Graviton 文档也写得很清楚：NUMA node 数为 1，只有 48xlarge 是 2。<sup>[12]</sup></p>
+
+            <h3 class="sub-h">m8a（AMD EPYC Turin）：和 m8g 一样</h3>
+            <p>每颗 EPYC 9R45 有 96 个核，没有超线程。AMD 可以用 NPS 把一颗 CPU 切成多个 node，但 AWS 在 m8a 上用的是 NPS1，也就是一颗 CPU 一个 node。</p>
+            <ul>
+                <li><b>medium 到 24xlarge</b>：<b>1 个 node</b>。</li>
+                <li><b>48xlarge / metal-48xl</b>：两颗 CPU，<b>2 个 node</b>。m8a 没有 32xlarge。</li>
+            </ul>
+
+            <h3 class="sub-h">m8i（Intel Xeon 6，Granite Rapids）：一颗 CPU 切成三块</h3>
+            <p>这是最容易踩坑的一代。每颗 CPU 有 96 个物理核（开了超线程，就是 192 个 vCPU），但 AWS 打开了 Intel 的 <b>SNC</b>（Sub-NUMA Clustering，子 NUMA 分簇），把一颗 CPU 切成 <b>3 个 node，每个 node 32 个核</b>。<sup>[13]</sup></p>
+            <p>打个比方：还是同一栋楼，但楼里分了三个区，每个区有自己的档案室。去别的区拿文件，比去别的楼近，但还是比本区远。</p>
+            <ul>
+                <li><b>large 到 16xlarge</b>（最多 64 vCPU，也就是 32 个核）：正好装进一个区，<b>1 个 node</b>。m8i-flex 最大就是 16xlarge，所以 flex 永远是单 node。</li>
+                <li><b>24xlarge</b>（96 vCPU，48 核）和 <b>32xlarge</b>（128 vCPU，64 核）：还在一颗 CPU 上，但已经跨了区，<b>2 个 node</b>。</li>
+                <li><b>48xlarge / metal-48xl</b>（192 vCPU）：一整颗 CPU，<b>3 个 node</b>。</li>
+                <li><b>96xlarge / metal-96xl</b>（384 vCPU，1536 GiB）：两颗 CPU，<b>6 个 node</b>。</li>
+            </ul>
+            <p>有个旁证：通过 CPU options 自定义核数时，m8i.48xlarge 的核数只能按 3 的倍数设置，96xlarge 只能按 6 的倍数设置，正好对应 3 个和 6 个 node。</p>
+
+            <h3 class="sub-h">m9g（Graviton5）：一颗芯片，两半</h3>
+            <p>Graviton5 在一个封装里放了 192 个核，没有超线程，L3 缓存是 2 × 96 MB。从实测拓扑看，这颗芯片像是<b>两个 96 核的半边</b>拼在一起，每个半边是一个 node。<sup>[12]</sup><sup>[14]</sup></p>
+            <ul>
+                <li><b>medium 到 12xlarge</b>（最多 48 vCPU）：<b>1 个 node</b>。</li>
+                <li><b>16xlarge</b>（64 vCPU）：<b>2 个 node</b>，每边 32 个核、约 124 GiB。AWS 的 Graviton 文档也写明了"16xlarge 和 48xlarge 是 2 个 node"。</li>
+                <li><b>24xlarge</b>（96 vCPU）：又回到 <b>1 个 node</b>，正好占满一个半边。</li>
+                <li><b>48xlarge / metal-48xl</b>（192 vCPU，768 GiB）：虽然只有一颗芯片，但是 <b>2 个 node</b>，distance 10 / 20。</li>
+            </ul>
+            <p>换句话说，<b>在 m9g 上，"更大的实例 node 更多"这条直觉不成立</b>。16xlarge 比 24xlarge 小，却是两个 node。如果你的服务对延迟敏感，又刚好需要 64 个核左右，m9g.24xlarge 反而比 16xlarge 更省心。</p>
+
+            <h3 class="sub-h">对比上一代</h3>
+            <table class="cmp">
+                <thead><tr><th>家族</th><th>单 node 的规格</th><th>多 node 的规格</th></tr></thead>
+                <tbody>
+                    <tr><td>m7g（Graviton3，64 核）</td><td>全部，最大 16xlarge / metal</td><td>无</td></tr>
+                    <tr><td>m7i（Sapphire Rapids，每颗 48 核）</td><td>24xlarge 及以下</td><td>48xlarge / metal-48xl：2 个 node</td></tr>
+                    <tr><td>m7a（EPYC Genoa）</td><td>24xlarge 及以下</td><td>32xlarge（2 × 64 核）、48xlarge：2 个 node</td></tr>
+                </tbody>
+            </table>
+
+            <div class="callout warn">
+                <div class="lead">怎么记</div>
+                <b>12xlarge 及以下，在上面所有家族里都是单 node。</b>16xlarge 只有 m9g 例外，24xlarge 只有 m8i 例外。再往上，一律先跑一次 <code>numactl -H</code> 再上线。这些数据来自公开的实测样本（每种规格一台），AWS 并没有承诺拓扑永远不变，所以自己的机器以实测为准。
+            </div>
+        </section>
+
+        <!-- 10 -->
+        <section id="k8s" class="content-section">
+            <h2 class="section-title">10 · <span>Kubernetes</span> 的 NUMA 三件套</h2>
+            <p>在 Kubernetes 里，这件事由 kubelet 管。可以想成安排宴会座位：一个 Pod 要用的 CPU、内存、网卡或 GPU，最好坐在<b>同一个厅</b>里，不要分在两栋楼。kubelet 里有三个一起工作的组件 <sup>[6]</sup>：</p>
+            <ul>
+                <li><b>CPU Manager</b>（<code>static</code> 策略）：给 Guaranteed QoS（requests 等于 limits）并且 CPU 是整数的 Pod <b>独占</b>一组核。</li>
+                <li><b>Memory Manager</b>（<code>Static</code> 策略）：给这类 Pod 在指定 NUMA node 上预留内存。</li>
+                <li><b>Topology Manager</b>：负责协调，把前两者和设备插件的建议合在一起，决定"坐哪个厅"。它有四种策略：
+                    <ul>
+                        <li><code>none</code>：默认值，不管对齐。</li>
+                        <li><code>best-effort</code>：尽量对齐，对不齐也让 Pod 启动。</li>
+                        <li><code>restricted</code>：尽量对齐，对不齐就<b>拒绝</b>这个 Pod。</li>
+                        <li><code>single-numa-node</code>：CPU、内存、设备必须全在同一个 node，否则拒绝。</li>
+                    </ul>
+                </li>
+            </ul>
+<figure class="fig">
+                <svg viewBox="0 0 720 200" role="img" aria-label="三个组件各自给出 NUMA 建议，Topology Manager 合并后决定 Pod 放在哪个 node">
+                    <defs>
+                        <marker id="pe-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"/></marker>
+                        <marker id="pe-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"/></marker>
+                        <marker id="pe-d" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b4"/></marker>
+                    </defs>
+                    <rect x="20" y="20" width="190" height="46" rx="7" fill="#11171f" stroke="#34455a"/>
+                    <text x="115.0" y="39.0" text-anchor="middle" fill="#e8edf2" font-size="12">CPU Manager</text>
+                    <text x="115.0" y="55.0" text-anchor="middle" fill="#9aa7b4" font-size="11">建议：node 0 或 node 1</text>
+                    <rect x="20" y="82" width="190" height="46" rx="7" fill="#11171f" stroke="#34455a"/>
+                    <text x="115.0" y="101.0" text-anchor="middle" fill="#e8edf2" font-size="12">Memory Manager</text>
+                    <text x="115.0" y="117.0" text-anchor="middle" fill="#9aa7b4" font-size="11">建议：node 0</text>
+                    <rect x="20" y="144" width="190" height="46" rx="7" fill="#11171f" stroke="#34455a"/>
+                    <text x="115.0" y="163.0" text-anchor="middle" fill="#e8edf2" font-size="12">设备插件（GPU、网卡）</text>
+                    <text x="115.0" y="179.0" text-anchor="middle" fill="#9aa7b4" font-size="11">建议：node 0</text>
+                    <rect x="290" y="70" width="170" height="70" rx="7" fill="#11171f" stroke="#0bbd87"/>
+                    <text x="375.0" y="101.0" text-anchor="middle" fill="#e8edf2" font-size="12">Topology Manager</text>
+                    <text x="375.0" y="117.0" text-anchor="middle" fill="#9aa7b4" font-size="11">找大家都同意的 node</text>
+                    <rect x="540" y="44" width="160" height="46" rx="7" fill="#11171f" stroke="#00e5a0"/>
+                    <text x="620.0" y="63.0" text-anchor="middle" fill="#00e5a0" font-size="12">对得齐</text>
+                    <text x="620.0" y="79.0" text-anchor="middle" fill="#9aa7b4" font-size="11">Pod 放在 node 0</text>
+                    <rect x="540" y="120" width="160" height="46" rx="7" fill="#11171f" stroke="#f59e0b"/>
+                    <text x="620.0" y="139.0" text-anchor="middle" fill="#f59e0b" font-size="12">对不齐</text>
+                    <text x="620.0" y="155.0" text-anchor="middle" fill="#9aa7b4" font-size="11">按策略：放行或拒绝</text>
+                    <path d="M210,43 C250,43 250,105 285,105" fill="none" stroke="#9aa7b4" stroke-width="2" marker-end="url(#pe-d)"/>
+                    <path d="M210,105 C250,105 250,105 285,105" fill="none" stroke="#9aa7b4" stroke-width="2" marker-end="url(#pe-d)"/>
+                    <path d="M210,167 C250,167 250,105 285,105" fill="none" stroke="#9aa7b4" stroke-width="2" marker-end="url(#pe-d)"/>
+                    <path d="M460,95 C500,95 500,67 535,67" fill="none" stroke="#00e5a0" stroke-width="2" marker-end="url(#pe-g)"/>
+                    <path d="M460,115 C500,115 500,143 535,143" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#pe-o)"/>
+                </svg>
+                <figcaption>图 12：Topology Manager 像会议主持人。每个组件报出自己能接受的 node，它找交集；找不到时怎么办，由策略决定。</figcaption>
+            </figure>
+            <p><b>关键前提：</b>独占 CPU 和预留内存只对 <b>Guaranteed QoS + 整数 CPU</b> 的 Pod 生效。普通的 Burstable / BestEffort Pod 拿不到这些，照样会被撒到各个 node 上。</p>
+        </section>
+
+        <!-- 11 -->
+        <section id="skip" class="content-section">
+            <h2 class="section-title">11 · 什么时候<span>不用管</span></h2>
+            <ul>
+                <li><b>单 node 的实例</b>：比如 <code>m8g</code> / <code>m8a</code> 的 24xlarge 及以下、<code>m8i</code> 的 16xlarge 及以下、<code>m9g</code> 的 12xlarge 及以下（还有 m9g.24xlarge）。<code>numactl -H</code> 只显示一个 node，这篇文章就和你无关了。</li>
+                <li><b>无状态、可以横向扩的服务</b>：多开几个小实例或小 Pod，比用一台巨大的实例更简单。</li>
+                <li><b>瓶颈根本不在内存</b>：真正卡住你的是磁盘、网络或下游 API。</li>
+            </ul>
+            <div class="callout"><b>实话实说：</b>如果你的技术栈对 NUMA 不友好（默认参数的 JVM、单进程 Python、没调过的 Postgres），<b>就不要买双路的大实例</b>。两台 <code>m8g.24xlarge</code> 挂在 ALB 后面，通常比一台 <code>m8g.48xlarge</code> 更好用，运维也更省心。</div>
+            <p>NUMA 不是玄学，只是你租的这台机器的物理形状。<b>先用 <code>numactl -H</code> 看一次拓扑，然后在"绑定、轮流放、不管"三种做法里选一种，之后就不用再想它了。</b></p>
+        </section>
+
+        <div class="refs">
+            <h4>Sources</h4>
+            <ol>
+                <li>[1] <a href="https://www.kernel.org/doc/html/latest/admin-guide/mm/numa_memory_policy.html">kernel.org · NUMA Memory Policy</a></li>
+                <li>[2] <a href="https://www.kernel.org/doc/html/latest/admin-guide/sysctl/kernel.html#numa-balancing">kernel.org · kernel.numa_balancing sysctl</a></li>
+                <li>[3] <a href="https://blog.jcole.us/2010/09/28/mysql-swap-insanity-and-the-numa-architecture/">Jeremy Cole · MySQL Swap Insanity and the NUMA Architecture</a></li>
+                <li>[4] <a href="https://man7.org/linux/man-pages/man8/numactl.8.html">man 8 numactl</a></li>
+                <li>[5] <a href="https://man7.org/linux/man-pages/man8/numastat.8.html">man 8 numastat</a></li>
+                <li>[6] <a href="https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/">Kubernetes · Control Topology Management Policies on a node</a></li>
+                <li>[7] <a href="https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/ena/ENA_Linux_Best_Practices.rst">ENA Linux Best Practices</a></li>
+                <li>[8] <a href="https://openjdk.org/jeps/345">JEP 345 · NUMA-Aware Memory Allocation for G1</a></li>
+                <li>[9] <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_numa_interleave">MySQL · innodb_numa_interleave</a></li>
+                <li>[10] <a href="https://en.wikipedia.org/wiki/Non-uniform_memory_access">Wikipedia · Non-uniform memory access</a></li>
+                <li>[11] <a href="https://www.kernel.org/doc/html/latest/mm/numa.html">kernel.org · What is NUMA?</a></li>
+                <li>[12] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/README.md">AWS Graviton Getting Started · NUMA / LLC / DDR 表</a></li>
+                <li>[13] <a href="https://github.com/intel/optimization-zone/blob/main/software/kafka/README.md">Intel Optimization Zone · Kafka（SNC，每 socket 3 个 node）</a></li>
+                <li>[14] <a href="https://github.com/SpareCores/sc-inspector-data">SpareCores sc-inspector-data · EC2 实测 lscpu / lstopo</a></li>
+            </ol>
+        </div>
+
+        <div class="next">
+            <div class="left">相关阅读</div>
+            <div class="right">
+                <a href="../../ec2/graviton/">Graviton4 &amp; EC2</a>
+                <a class="big" href="../../ec2/graviton/">Graviton4 &amp; EC2 深度指南 →</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 liucao.me &middot; <a href="../../">Home</a> &middot; <a href="../../ec2/">EC2</a></p>
+    </footer>
+</body>
+</html>

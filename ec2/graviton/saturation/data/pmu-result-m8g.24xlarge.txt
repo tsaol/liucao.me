@@ -1,0 +1,72 @@
+=== instance-type ===
+m8g.24xlarge
+=== PMU counters available (from dmesg) ===
+[    0.286683] hw perfevents: enabled with armv8_pmuv3_0 PMU driver, 6 (0,8000001f) counters available
+=== perf list — counting armv8 events ===
+armv8_pmuv3 events exposed: 68
+
+=== TEST 1: 6 standard hw events (2 sec system-wide) ===
+
+ Performance counter stats for 'system wide':
+
+         179177719      cycles                                                             
+         217443959      instructions                     #    1.21  insn per cycle         
+          64553965      cache-references                                                   
+           1713111      cache-misses                     #    2.654 % of all cache refs    
+          39473208      branch-instructions                                                
+            314776      branch-misses                    #    0.80% of all branches        
+
+       2.011335800 seconds time elapsed
+
+
+=== TEST 2: 4 raw armv8_pmuv3 events (2 sec) ===
+
+ Performance counter stats for 'system wide':
+
+         132003178      armv8_pmuv3_0/cpu_cycles/                                          
+         138919822      armv8_pmuv3_0/inst_retired/                                        
+           1118597      armv8_pmuv3_0/l1d_cache_refill/                                    
+          41057058      armv8_pmuv3_0/mem_access/                                          
+
+       2.006498149 seconds time elapsed
+
+
+=== TEST 3: many events at once (10 → should exceed counter limit → multiplexing) ===
+
+ Performance counter stats for 'system wide':
+
+         305136613      cycles                                                               (59.24%)
+         340491559      instructions                     #    1.12  insn per cycle         
+                                                  #    0.37  stalled cycles per insn  (59.64%)
+         102478804      cache-references                                                     (60.09%)
+           2961049      cache-misses                     #    2.889 % of all cache refs      (60.43%)
+          61684573      branch-instructions                                                  (60.66%)
+            323310      branch-misses                    #    0.52% of all branches          (60.75%)
+         219591151      bus-cycles                                                           (50.18%)
+          64792627      stalled-cycles-frontend          #   21.23% frontend cycles idle     (49.73%)
+         125323967      stalled-cycles-backend           #   41.07% backend cycles idle      (49.39%)
+          85651272      armv8_pmuv3_0/l1d_cache/                                             (49.17%)
+
+       2.017959058 seconds time elapsed
+
+
+=== TEST 4: real CPU workload — IPC measurement ===
+/usr/bin/dd
+
+ Performance counter stats for 'bash -c for i in $(seq 1 3); do dd if=/dev/urandom of=/dev/null bs=1M count=100 2>/dev/null; done':
+
+        1654346197      cycles                                                             
+        6699753739      instructions                     #    4.05  insn per cycle         
+
+       0.592796566 seconds time elapsed
+
+       0.002505000 seconds user
+       0.590473000 seconds sys
+
+
+
+=== SPE (per-instruction sampling) availability ===
+SPE NOT PRESENT
+
+=== CMN mesh events (only on metal) ===
+arm_cmn NOT PRESENT (expected on non-metal)

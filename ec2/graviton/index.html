@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graviton4 / EC2 深度指南 — liucao.me</title>
+    <meta name="description" content="M8g vs M7i、EC2 监控、ARM 资源饱和判定、on-call playbook — 四篇一体的 EC2 深度指南">
+    <link rel="stylesheet" href="../../ec2/assets/style.css">
+    <style>
+        .gv-hub-hero { text-align: center; padding: 3.5rem 1.5rem 2rem; }
+        .gv-hub-hero .eyebrow {
+            display: inline-block; font-family: var(--mono); font-size: 0.72rem;
+            color: var(--accent); background: var(--accent-glow);
+            border: 1px solid var(--border); padding: 0.3rem 0.85rem;
+            border-radius: 999px; margin-bottom: 1rem; letter-spacing: 0.03em;
+        }
+        .gv-hub-hero h1 {
+            font-size: clamp(2rem, 5.5vw, 3.2rem); font-weight: 700;
+            letter-spacing: -0.03em; margin-bottom: 0.8rem;
+        }
+        .gv-hub-hero h1 .g {
+            background: linear-gradient(120deg, var(--accent), #5eead4 55%, #38bdf8);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gv-hub-hero p.lede {
+            color: var(--text-dim); max-width: 620px; margin: 0 auto 1rem;
+            font-size: 1.02rem; line-height: 1.65;
+        }
+        .gv-hub-hero p.meta {
+            color: var(--text-mute); font-family: var(--mono); font-size: 0.78rem;
+            letter-spacing: 0.02em;
+        }
+        .hub-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.1rem; margin-top: 1.5rem;
+        }
+        .hub-card {
+            display: block; padding: 1.5rem 1.4rem;
+            background: linear-gradient(180deg, var(--surface), var(--bg-soft));
+            border: 1px solid var(--border); border-radius: var(--radius);
+            color: inherit; position: relative; overflow: hidden;
+            transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+        }
+        .hub-card::before {
+            content: ""; position: absolute; inset: 0 0 auto 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0; transition: opacity 0.25s;
+        }
+        .hub-card:hover { border-color: var(--accent-dim); transform: translateY(-3px); box-shadow: var(--shadow); }
+        .hub-card:hover::before { opacity: 1; }
+        .hub-card .num {
+            font-family: var(--mono); font-size: 0.72rem; color: var(--accent);
+            letter-spacing: 0.06em; margin-bottom: 0.4rem;
+        }
+        .hub-card h3 {
+            font-size: 1.15rem; color: var(--text); margin-bottom: 0.55rem;
+            letter-spacing: -0.01em;
+        }
+        .hub-card p {
+            color: var(--text-dim); font-size: 0.88rem; line-height: 1.55;
+            margin-bottom: 0.8rem;
+        }
+        .hub-card .tags {
+            display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.6rem;
+        }
+        .hub-card .tags span {
+            font-family: var(--mono); font-size: 0.68rem;
+            background: var(--bg); border: 1px solid var(--border);
+            padding: 0.15rem 0.5rem; border-radius: 999px; color: var(--text-mute);
+        }
+        .hub-card .arrow {
+            font-family: var(--mono); color: var(--accent); font-size: 0.8rem;
+            margin-top: 0.6rem;
+        }
+
+        .intro-box {
+            margin-top: 2.5rem;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 1.4rem 1.5rem;
+        }
+        .intro-box h4 { color: var(--accent); font-size: 0.95rem; margin-bottom: 0.7rem; }
+        .intro-box p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.65; margin-bottom: 0.6rem; }
+        .intro-box p:last-child { margin-bottom: 0; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+        <div class="links">
+            <a href="../../ec2/">EC2</a>
+        </div>
+    </nav>
+
+    <main class="wrap">
+        <div class="gv-hub-hero">
+            <span class="eyebrow">EC2 · Graviton4 · ARM64 · SRE</span>
+            <h1><span class="g">Graviton4 &amp; EC2</span><br>深度指南四则</h1>
+            <p class="lede">从芯片到 on-call：M8g vs M7i 的架构差异、EC2 三层监控体系、ARM 上判定资源饱和、以及一份可以粘贴使用的 SRE playbook。</p>
+            <p class="meta">v2 · 2026-09-22 · 每篇 1500 字 · 引用官方文档 &amp; kernel.org &amp; Brendan Gregg</p>
+        </div>
+
+        <section>
+            <div class="hub-grid">
+                <a class="hub-card" href="../../ec2/graviton/compare/">
+                    <div class="num">01 · 硬件对比</div>
+                    <h3>M8g vs M7i</h3>
+                    <p>Graviton4 (Neoverse V2) 与 Intel Sapphire Rapids 的架构、规格、性能、迁移全景。带 Compiler flags 和一份 x86→arm64 兼容性扫描脚本。</p>
+                    <div class="tags"><span>SVE2</span><span>AVX-512</span><span>价格</span><span>迁移</span></div>
+                    <div class="arrow">→ 进入</div>
+                </a>
+
+
+                <a class="hub-card" href="../../ec2/graviton/monitor/">
+                    <div class="num">02 · 可观测性</div>
+                    <h3>EC2 三层监控体系</h3>
+                    <p>CloudWatch → CloudWatch Agent → Prometheus + Node Exporter。USE vs RED vs 4 Golden Signals，2026 年 CloudWatch 定价陷阱，Alertmanager 完整配置。</p>
+                    <div class="tags"><span>Prometheus</span><span>USE</span><span>RED</span><span>Grafana</span></div>
+                    <div class="arrow">→ 进入</div>
+                </a>
+
+                <a class="hub-card" href="../../ec2/graviton/saturation/">
+                    <div class="num">03 · 饱和判定</div>
+                    <h3>ARM 上怎么判断资源用满</h3>
+                    <p>99% 和 x86 一样；1% 是 <code>armv8_pmuv3</code> PMU、IPC 度量、PSI 内核算法。ENA 六个 <code>allowance_exceeded</code> 计数器逐个解读。</p>
+                    <div class="tags"><span>PSI</span><span>IPC</span><span>ENA</span><span>eBPF</span></div>
+                    <div class="arrow">→ 进入</div>
+                </a>
+
+                <a class="hub-card" href="../../ec2/graviton/playbook/">
+                    <div class="num">04 · On-Call</div>
+                    <h3>Playbook — 服务慢了怎么办</h3>
+                    <p>Netflix 60 秒 checklist；USE method 逐资源展开；10 个真实故障签名；coredump + 事故快照命令；来自 Google SRE / Brendan Gregg 的方法论。</p>
+                    <div class="tags"><span>Netflix</span><span>Google SRE</span><span>coredump</span></div>
+                    <div class="arrow">→ 进入</div>
+                </a>
+
+                <a class="hub-card" href="../../ec2/numa/">
+                    <div class="num">延伸阅读 · 通用主题</div>
+                    <h3>NUMA — 大机型的隐形税</h3>
+                    <p>为什么两颗 CPU 拼起来会有非一致内存访问；kernel 定义的五种 mempolicy；MySQL "swap insanity" 案例；ENA 队列亲和性与 NUMA 的坑。Intel、AMD、Graviton 都适用，所以单独成篇。</p>
+                    <div class="tags"><span>numactl</span><span>mempolicy</span><span>MySQL 案例</span></div>
+                    <div class="arrow">→ 进入</div>
+                </a>
+            </div>
+
+            <div class="intro-box">
+                <h4>为什么把四个主题拆成子页</h4>
+                <p>一开始我把这些话题写在同一页上，读起来像读一份 30 屏的备忘录。技术内容如果不"按主题一次一件"地组织，注意力会漂。</p>
+                <p>拆开之后：每篇独立、可深读、有引用；导航栏一致；子页之间用"下一站"链条串起来，也可以按需跳转。读者进来能选看，也能顺读。</p>
+                <p>四篇的推荐阅读顺序：<b>01 → 03 → 02 → 04</b>。先建立硬件差异的直觉（01）；再学会看指标（03）；再搭建监控（02）；最后落地成 playbook（04）。大机型上还要理解物理架构，见延伸阅读 <a href="../../ec2/numa/">NUMA</a>——它不只是 Graviton 的问题。</p>
+            </div>
+        </section>
+
+        <div style="text-align:center; padding:2.5rem 0 1rem;">
+            <a href="../../ec2/" class="back">← 返回 EC2</a>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 liucao.me &middot; <a href="../../">Home</a></p>
+    </footer>
+</body>
+</html>

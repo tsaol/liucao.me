@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARM 上判定资源饱和 — Graviton 指南 03</title>
+    <meta name="description" content="Graviton (ARM64) EC2 上如何判断 CPU / 内存 / 磁盘 / 网络 是否被打满：PMU、PSI、ENA、eBPF 全套">
+    <link rel="stylesheet" href="../../../ec2/assets/style.css">
+    <style>
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.87rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        pre.tree { line-height: 1.4; font-size: 0.78rem; }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .sat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.9rem; margin: 1rem 0; }
+        .sat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.1rem; }
+        .sat h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.02em; margin-bottom: 0.5rem; text-transform: uppercase; }
+        .sat p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.5rem; }
+        .sat p:last-child { margin-bottom: 0; }
+        .sat .thr { font-family: var(--mono); font-size: 0.78rem; color: var(--text); }
+        .sat .thr b { color: #f59e0b; }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+        <div class="links">
+            <a href="../../../ec2/">EC2</a>
+        </div>
+    </nav>
+
+    <main class="wrap">
+        <div class="gv-hero">
+            <div class="crumb"><a href="../../../ec2/graviton/">Graviton 指南</a> · 03 / 04 · 饱和判定</div>
+            <h1>ARM 上判定<span class="g">资源饱和</span></h1>
+            <p class="sub">99% 和 x86 一样——Linux 抽象层做得好。1% 是 <code>armv8_pmuv3</code> PMU、Intel-only 工具替代、以及 ENA 特有的 6 个"限流"计数器。</p>
+            <nav class="toc">
+                <a href="#same">1 · 99% 相同</a>
+                <a href="#diff">2 · 1% 不同</a>
+                <a href="#empirical">2.5 · 实测 PMU</a>
+                <a href="#loadavg">3 · Load average 真相</a>
+                <a href="#ipc">4 · CPU 利用率 ≠ 忙</a>
+                <a href="#cpu">5 · CPU 饱和</a>
+                <a href="#mem">6 · 内存饱和</a>
+                <a href="#disk">7 · 磁盘饱和</a>
+                <a href="#net">8 · 网络饱和 &amp; ENA</a>
+                <a href="#psi">9 · PSI 内核算法</a>
+                <a href="#ebpf">10 · eBPF 五件套</a>
+                <a href="#tree">11 · 决策树</a>
+            </nav>
+        </div>
+
+        <!-- 1 -->
+        <section id="same" class="content-section">
+            <h2 class="section-title">1 · <span>99%</span> 和 x86 一样</h2>
+            <p>Linux kernel 把大部分芯片差异吞掉了。<code>/proc</code>、<code>/sys</code>、<code>top</code>、<code>htop</code>、<code>iostat</code>、<code>vmstat</code>、<code>sar</code>、<code>dmesg</code>、<code>journalctl</code>——在 Graviton 上工作方式完全一致。<b>你的 x86 肌肉记忆继续有效。</b>接下来这页只讲那 1% 需要留神的地方。</p>
+        </section>
+
+        <!-- 2 -->
+        <section id="diff" class="content-section">
+            <h2 class="section-title">2 · <span>1% 不同</span>——PMU / 工具替换</h2>
+
+            <h3 class="sub-h"><code>perf</code> 硬件事件名</h3>
+            <p>PMU 是 <code>armv8_pmuv3</code>，不是 Intel Skylake/Icelake。<code>perf stat</code> / <code>perf top</code> / <code>perf record</code> 都能用，但原始事件名不同。</p>
+            <pre><span class="c">$ perf list | head -20</span>
+  branch-instructions OR branches         [Hardware event]
+  branch-misses                           [Hardware event]
+  cache-misses                            [Hardware event]
+  cache-references                        [Hardware event]
+  cpu-cycles OR cycles                    [Hardware event]
+  instructions                            [Hardware event]
+  ...
+  armv8_pmuv3/cpu_cycles/                 [Kernel PMU event]
+  armv8_pmuv3/inst_retired/               [Kernel PMU event]
+  armv8_pmuv3/l1d_cache_refill/           [Kernel PMU event]
+  armv8_pmuv3/mem_access/                 [Kernel PMU event]</pre>
+            <p>通用事件（<code>cycles</code>、<code>instructions</code>、<code>cache-misses</code>）在两个平台都是同一个符号。Intel 特有的（<code>uops_retired</code>、<code>mem_load_uops_retired</code>）就不存在了。</p>
+
+            <div class="callout warn"><b>PMU 在小 size 上也能用，但计数器少——实测已验证</b>（2026-09-22，AL2023 kernel 6.12，Tokyo）：
+                <ul style="margin-top:0.5rem; margin-bottom:0.2rem; padding-left:1.1rem;">
+                    <li><code>m8g.medium</code>（1 vCPU）：<b>3 个硬件计数器</b>，暴露 43 个 <code>armv8_pmuv3</code> 事件</li>
+                    <li><code>m8g.24xlarge</code>（96 vCPU）：<b>6 个硬件计数器</b>，暴露 68 个事件</li>
+                    <li>一次同时观测超过计数器数量 → kernel 自动 <b>event multiplexing</b>（perf 输出会显示 <code>(50.09%)</code> 之类的采样占比），值仍统计有效但精度下降</li>
+                    <li><b>ARM SPE</b>（Statistical Profiling Extension，逐指令采样）和 <code>arm_cmn</code> mesh 事件<b>在两个 size 上都不暴露</b>——需要 <code>metal</code> 规格</li>
+                    <li>基础的 <code>cycles</code> + <code>instructions</code> IPC 度量在最小的 <code>m8g.medium</code> 上就能用</li>
+                </ul>
+                所以做 IPC 判断随便什么 size 都行；只有做深度 top-down 微架构分析（大量事件同时看、SPE、mesh 带宽）才必须上大 size 或 metal。<sup>[6]</sup>
+            </div>
+
+            <h3 class="sub-h">Intel-only 工具（Graviton 上不能用）</h3>
+            <ul>
+                <li>Intel VTune</li>
+                <li>Intel PCM（<code>pcm.x</code>、<code>pcm-memory.x</code>）</li>
+                <li>Intel MLC (Memory Latency Checker)</li>
+            </ul>
+
+            <h3 class="sub-h">ARM 上的等价物</h3>
+            <ul>
+                <li><code>perf</code>——每天用</li>
+                <li><code>topdown-tool</code>——ARM 官方的自顶向下微架构分析（<code>pip install topdown-tool</code>）</li>
+                <li><code>ARM Streamline</code>——ARM 商业 GUI</li>
+                <li><code>hotspot</code>（KDAB）——开源 GUI，读 ARM <code>perf</code> 数据没问题</li>
+            </ul>
+            <p><code>numactl</code>、<code>taskset</code>、<code>chrt</code>、<code>ionice</code>、<code>nice</code> 两端完全一样。</p>
+        </section>
+
+        <!-- 2.5 · empirical PMU test -->
+        <section id="empirical" class="content-section">
+            <h2 class="section-title">2.5 · <span>实测</span> —— m8g.medium vs m8g.24xlarge PMU 对照</h2>
+            <p>为了验证"小 size 上 PMU 是否可用"这个说法，我起了两台 M8g 实测。<b>结论：小 size 的 PMU 完全能用，只是硬件计数器数量少</b>；一次观测超过计数器上限时 kernel 自动做 <b>event multiplexing</b>——perf 输出里那些 <code>(50.09%)</code> 尾巴就是"这个事件只在 ~50% 的采样窗口里跑"。SPE 和 CMN mesh 事件在两个 size 上都不可见，需要 <code>metal</code> 规格。</p>
+
+            <table class="cmp">
+                <thead><tr><th>维度</th><th>m8g.medium (1 vCPU)</th><th>m8g.24xlarge (96 vCPU)</th></tr></thead>
+                <tbody>
+                    <tr><td>硬件计数器数量</td><td><b>3</b></td><td><b>6</b></td></tr>
+                    <tr><td><code>armv8_pmuv3</code> 事件</td><td>43 个</td><td>68 个</td></tr>
+                    <tr><td>基础 IPC（cycles+instructions）</td><td>✅ 直接量</td><td>✅ 直接量</td></tr>
+                    <tr><td>6 个 hw 事件同时</td><td>⚠️ 自动 multiplexing（~50% 采样）</td><td>✅ 一次全跑</td></tr>
+                    <tr><td>10 个事件同时</td><td>⚠️ 每个降到 ~20–30%</td><td>⚠️ 每个降到 ~60%</td></tr>
+                    <tr><td>ARM SPE（<code>/sys/devices/arm_spe_0</code>）</td><td>❌</td><td>❌</td></tr>
+                    <tr><td>CMN mesh 事件（<code>arm_cmn</code>）</td><td>❌</td><td>❌</td></tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-h">复现步骤</h3>
+            <pre><span class="c"># 1. 起一台 m8g.*，AL2023 arm64 (<AMI> · kernel 6.12)</span>
+<span class="c"># 2. 装 perf</span>
+sudo dnf install -y perf
+
+<span class="c"># 3. 看 PMU 有几个硬件计数器</span>
+dmesg | grep -E "perfevents.*armv8_pmuv3"
+<span class="c"># 输出示例：hw perfevents: enabled with armv8_pmuv3_0 PMU driver, 6 (0,8000001f) counters available</span>
+
+<span class="c"># 4. 数一下暴露了多少个 armv8_pmuv3 事件</span>
+perf list pmu 2&gt;&amp;1 | grep -c "armv8_pmuv3_0/"
+
+<span class="c"># 5. 跑一次多事件观测，看有没有 multiplexing 尾巴 (xx.xx%)</span>
+sudo perf stat -a -e cycles,instructions,cache-references,cache-misses,\
+branch-instructions,branch-misses,bus-cycles,stalled-cycles-frontend,\
+stalled-cycles-backend -- sleep 2
+
+<span class="c"># 6. 看 SPE / CMN 有没有暴露（在非 metal 上都是没有）</span>
+ls /sys/devices/arm_spe_0/ 2&gt;/dev/null &amp;&amp; echo "SPE present" || echo "SPE not present"
+ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
+
+            <h3 class="sub-h">真实 perf 输出——m8g.medium（3 计数器）</h3>
+            <p>6 个 hw 事件同时观测，每个事件都被 multiplexing 到大约 33–50% 的采样窗口：</p>
+            <pre> <span class="c">Performance counter stats for 'system wide':</span>
+
+         101097103      cycles                                        (49.59%)
+         106839961      instructions        #    1.06  insn per cycle (50.08%)
+          30113019      cache-references                              (50.53%)
+            536293      cache-misses        #    1.781 % of all refs  (33.43%)
+           4967377      branch-instructions                           (32.98%)
+             80377      branch-misses       #    1.62% of all         (32.98%)
+
+       2.001080826 seconds time elapsed</pre>
+            <p><b>读法：</b>右侧 <code>(49.59%)</code> = 该计数器在这次 2 秒采样里只被启用了 49.59% 的时间；数值是那 49% 里实测到的，kernel 会按比例估算全窗口值——统计上有效，但精度下降。</p>
+
+            <h3 class="sub-h">真实 perf 输出——m8g.24xlarge（6 计数器）</h3>
+            <p>同样 6 个事件，正好塞满 6 个 counter，<b>无多路复用</b>：</p>
+            <pre> <span class="c">Performance counter stats for 'system wide':</span>
+
+         179177719      cycles
+         217443959      instructions        #    1.21  insn per cycle
+          64553965      cache-references
+           1713111      cache-misses        #    2.654 % of all refs
+          39473208      branch-instructions
+            314776      branch-misses       #    0.80% of all
+
+       2.011335800 seconds time elapsed</pre>
+            <p>没有 <code>(xx%)</code> 尾巴——每一个数字都是全窗口实测值。</p>
+
+            <h3 class="sub-h">10 个事件同时——两边都会 multiplexing</h3>
+            <pre><span class="c">m8g.medium (3 counters) — 每个事件采样占比 ~20-30%</span>
+       26567761 cycles                                        (30.00%)
+       21565761 instructions        #  0.81  insn per cycle   (30.05%)
+        6506327 cache-references                              (30.05%)
+         216599 cache-misses                                  (19.99%)
+        ...
+
+<span class="c">m8g.24xlarge (6 counters) — 每个事件采样占比 ~60%</span>
+      305136613 cycles                                        (59.24%)
+      340491559 instructions        #  1.12  insn per cycle   (59.64%)
+      102478804 cache-references                              (60.09%)
+        2961049 cache-misses                                  (60.43%)
+        ...</pre>
+
+            <div class="callout"><b>实用规则（实测验证过）：</b>
+                <ul style="margin:0.4rem 0 0 0; padding-left:1.1rem;">
+                    <li>只做 <b>IPC 判断</b>（cycles + instructions 两个事件）——最小的 <code>m8g.medium</code> 也够。</li>
+                    <li>做 <b>4–6 个事件的 top-down 分析</b>（front-end stall、back-end stall、L1/L2 miss、branch miss）——<b>24xlarge 及以上</b>无多路复用，最优。</li>
+                    <li>做 <b>逐指令采样（SPE）</b>或 <b>DRAM/mesh 带宽</b>——必须 <code>*.metal</code> 规格。</li>
+                </ul>
+            </div>
+
+            <h3 class="sub-h">怎么解读这份结果</h3>
+
+            <p><b>1️⃣ "小 size 上 counter 被隐藏"是错的——但"小 size 更弱"是对的。</b><br>
+            我原来的说法是"小 size 上 PMU 被 hypervisor 隐藏，<code>perf stat</code> 拿不全数据"。实测发现更精确的说法是：<b>PMU 一定暴露</b>（AL2023 kernel 6.12 上，<code>m8g.medium</code> 的 dmesg 也能看到 <code>armv8_pmuv3_0 PMU driver, 3 counters available</code>），只是 <b>硬件计数器只有 3 个</b>，而 <code>m8g.24xlarge</code> 有 6 个。硬件计数器数量 = ARM Neoverse V2 核心内固定的物理寄存器数量，不是虚拟化层截掉的。</p>
+
+            <p><b>2️⃣ multiplexing 是"分时复用"，不是"丢数据"。</b><br>
+            当你要求 kernel 同时观测 10 个事件而只有 3 个物理计数器，kernel 会把这 10 个事件<b>轮流</b>塞进那 3 个 slot 里，每次几毫秒切换一次。每个事件被启用的时间占比就是右边那个 <code>(30.05%)</code>。perf 会用这个占比反推"如果全窗口都启用，估计值是多少"——所以 <b>数值仍然是可信的估算</b>，但方差变大，短时突刺（几十微秒的爆发）可能采样窗口正好错过。</p>
+
+            <p><b>3️⃣ IPC 是 Graviton 上最实用的一个 metric。</b><br>
+            两台机器上跑 <code>dd if=/dev/urandom of=/dev/null</code>，IPC 都是 <b>4.05</b>——这是 Neoverse V2 的 6-wide 前端能达到的高位数字。相反，如果你的服务 IPC &lt; 1.0，就是被内存延迟拖住了（cache miss、TLB miss、跨 NUMA 访存），加 CPU 核数或换更大机器<b>不会</b>让它变快，需要修算法或改数据结构。这个判断在 <code>m8g.medium</code> 上就能做——不用等大机器。</p>
+
+            <p><b>4️⃣ SPE 和 arm_cmn 缺席的意义。</b><br>
+            <b>SPE（Statistical Profiling Extension）</b>是 ARM v8.2 起的一个特性：不像传统 <code>perf record</code> 只在采样点抓 IP，SPE 能<b>为每一条被采样的指令</b>记录内存地址、cache 命中/miss、延迟。等于是把 Intel PEBS 那套 ARM 化。<b>arm_cmn</b> 是 Coherent Mesh Network 事件，能看整块 die 的 DRAM 带宽利用率。两个东西在虚拟机里都拿不到——因为它们暴露的信息可能泄漏物理主机的邻居工作负载，AWS 只在 <code>*.metal</code> 上开。要做这类深度分析，租一小时 <code>m8g.metal-24xl</code>（约 $5.7/hr in Tokyo）就够。</p>
+
+            <p><b>5️⃣ 对页面读者的直接指导。</b><br>
+            如果你只是想知道服务是不是"真的忙"vs"只是等 IO / 等内存"，任意 M8g 规格都够，跑一行 <code>perf stat -a -e cycles,instructions -- sleep 10</code> 就能拿到 IPC。<b>不要因为"PMU 只有大机器有"这种想当然的说法放弃在小机器上做性能分析。</b>只有当你想同时看 top-down 的四类瓶颈（front-end stall、back-end stall、bad speculation、retiring）时，才需要至少 <code>24xlarge</code> 那 6 个计数器；想做指令级归因或量内存带宽，才需要 metal。</p>
+
+            <p><b>6️⃣ 这份结果的时效性。</b><br>
+            实测是 2026-09-22，AL2023 kernel 6.12。硬件计数器数量是 Neoverse V2 芯片固定属性，不会变；SPE / CMN 的开放策略是 AWS 决定的，理论上可能在未来 kernel/hypervisor 版本上放宽——所以本页会随时间失效，重要决定前请自己复现上面的复现步骤。</p>
+
+            <p style="margin-top:0.8rem; font-size:0.83rem; color:var(--text-mute);">
+                测试环境：Tokyo（ap-northeast-1a）· AL2023 kernel 6.12（<code><AMI></code>）· 2026-09-22 ·
+                <a href="../../../ec2/graviton/saturation/data/pmu-result-m8g.medium.txt" style="color:var(--text-dim); border-bottom:1px dashed var(--border-hi);">m8g.medium 原始输出</a> ·
+                <a href="../../../ec2/graviton/saturation/data/pmu-result-m8g.24xlarge.txt" style="color:var(--text-dim); border-bottom:1px dashed var(--border-hi);">m8g.24xlarge 原始输出</a>
+            </p>
+        </section>
+
+        <!-- 3 -->
+        <section id="loadavg" class="content-section">
+            <h2 class="section-title">3 · <span>Load average</span> 真相</h2>
+            <p>Linux 的 load average <b>不是</b>纯 CPU 负载。自 1993 年 Matthias Urlichs 的 patch 起，它同时计入<b>可运行</b>线程和处于 <code>TASK_UNINTERRUPTIBLE</code>（D 状态，通常是磁盘 IO 或某些 kernel lock）的任务。Urlichs 当年的原话："the load average goes down when you replace your fast swap disk with a slow swap disk"——这个反直觉的现象就是他改的动机。别的 Unix 至今还是纯 CPU 版本。<sup>[3]</sup></p>
+            <p>三个数字（1 / 5 / 15 min）是<b>指数衰减移动平均</b>——看趋势别看绝对值，并且一定要对比 vCPU 数。</p>
+            <p>更准的饱和信号：</p>
+            <ul>
+                <li><code>runqlat</code>（bcc）——run-queue 等待时间直方图。</li>
+                <li><code>vmstat 1</code> 的 <code>r</code> 列——可运行进程数。</li>
+                <li><code>offcputime</code> 按 <code>TASK_UNINTERRUPTIBLE</code> 过滤——找出真正卡在 D 的线程。</li>
+            </ul>
+        </section>
+
+        <!-- 4 -->
+        <section id="ipc" class="content-section">
+            <h2 class="section-title">4 · <span>CPU 利用率 ≠ 忙</span></h2>
+            <p><code>%CPU</code> = "非 idle 时间"。它<b>不告诉你</b>那些 cycles 是在执行指令，还是在等 DRAM。DRAM 延迟这些年没跟上核数扩张，所以很多热循环即使 <code>%CPU</code> 100% 也在<b>等内存</b>。<sup>[4]</sup></p>
+            <p>用 <code>perf stat</code> 量 <b>IPC (Instructions Per Cycle)</b>：</p>
+            <pre>sudo perf stat -a -- sleep 10
+<span class="c"># 关注 insns per cycle 那一行</span></pre>
+            <p><b>经验判据：</b> IPC &lt; 1.0 → 内存瓶颈；IPC > 1.0 → 计算瓶颈。4-wide 核心上 0.78 IPC 意味着指令吞吐只有 ~19.5%。</p>
+        </section>
+
+        <!-- 5 -->
+        <section id="cpu" class="content-section">
+            <h2 class="section-title">5 · <span>CPU</span> 饱和判定</h2>
+            <div class="sat-grid">
+                <div class="sat">
+                    <h4>Load Average</h4>
+                    <p>用 <code>top</code>、<code>uptime</code>、或 <code>cat /proc/loadavg</code>。</p>
+                    <p class="thr"><b>load &gt; 0.8 × vCPU</b> = warning<br>load &gt; vCPU 且趋势上升 = saturated</p>
+                </div>
+                <div class="sat">
+                    <h4>Per-Core 分布</h4>
+                    <p><code>mpstat -P ALL 1</code>——%usr、%sys、%iowait、%soft、<b>%st</b>（steal）。</p>
+                    <p class="thr">单核 <b>%usr+%sys 长期 &gt; 90</b> = 单线程瓶颈<br>%st > 5 = 被邻居偷 CPU（M8g 少见，t 系列常见）</p>
+                </div>
+                <div class="sat">
+                    <h4>Softirq 陷阱</h4>
+                    <p>某核 <b>%soft = 50%+</b>、其他核闲——ENA 中断全钉在一个核。查 <code>cat /proc/interrupts</code>，再用 <code>irqbalance</code> + <code>IRQBALANCE_BANNED_CPUS</code> 或手动 <code>taskset</code> 分。</p>
+                    <p class="thr"><b>见于小实例（2 vCPU）</b>，一个软中断核就能把吞吐拉爆。<sup>[7]</sup></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6 -->
+        <section id="mem" class="content-section">
+            <h2 class="section-title">6 · <span>内存</span>饱和判定</h2>
+            <div class="sat-grid">
+                <div class="sat">
+                    <h4>free -h</h4>
+                    <p>看 <b>available</b>，不是 <code>free</code>——page cache 会算进 available。</p>
+                    <p class="thr"><b>available &lt; 10%</b> = warning</p>
+                </div>
+                <div class="sat">
+                    <h4>vmstat 1</h4>
+                    <p><b>si / so</b> 列——swap in/out。云机通常没 swap，非 0 = 真出事。</p>
+                    <p class="thr">si/so 持续 &gt; 0 = 已经在换页</p>
+                </div>
+                <div class="sat">
+                    <h4>OOM 追溯</h4>
+                    <p><code>dmesg -T | grep -i "killed process"</code><br><code>journalctl -k | grep -iE "oom|out of memory"</code></p>
+                    <p class="thr">AL2023 默认无 swap → 直接 OOM kill，不会先降速</p>
+                </div>
+                <div class="sat">
+                    <h4>cgroup 压力</h4>
+                    <p><code>cat /sys/fs/cgroup/system.slice/&lt;svc&gt;.service/memory.pressure</code></p>
+                    <p class="thr">某 service 的 <b>full avg10 &gt; 5%</b> = 那个 service 自己在 thrash 内存</p>
+                </div>
+            </div>
+            <p><code>/proc/meminfo</code> 里值得看的：<code>MemAvailable</code>（kernel 承诺可回收）、<code>Cached</code>、<code>Slab</code>（细分 <code>SReclaimable</code> vs <code>SUnreclaim</code>）、<code>Shmem</code>、<code>PageTables</code>（进程数大 + map 多时会飙）。</p>
+        </section>
+
+        <!-- 7 -->
+        <section id="disk" class="content-section">
+            <h2 class="section-title">7 · <span>磁盘</span>饱和判定</h2>
+            <h3 class="sub-h">iostat -xz 1 关键列</h3>
+            <table class="cmp">
+                <thead><tr><th>列</th><th>含义</th><th>阈值</th></tr></thead>
+                <tbody>
+                    <tr><td><code>%util</code></td><td>busy time</td><td>接近 100%（NVMe multi-queue 上会误报，见下）</td></tr>
+                    <tr><td><code>await</code></td><td>平均单 IO 延迟（ms）</td><td>gp3 &gt; 10 · io2 &gt; 2</td></tr>
+                    <tr><td><code>r/s + w/s</code></td><td>IOPS</td><td>对比 volume 上限</td></tr>
+                    <tr><td><code>rareq-sz + wareq-sz</code></td><td>平均请求大小（KB）</td><td>小 + 高 IOPS = 随机</td></tr>
+                </tbody>
+            </table>
+
+            <div class="callout warn"><b>EBS 有两个天花板：</b><br>1️⃣ <b>Per-volume</b>：gp3 默认 3000 IOPS / 125 MB/s，按量买。<br>2️⃣ <b>Per-instance</b>：如 <code>m8g.large</code> 全部 EBS 加起来最多 ~10K IOPS / ~700 MB/s。<br>要用 CloudWatch <code>VolumeThroughputPercentage</code>、<code>EBSIOBalance%</code>、<code>EBSByteBalance%</code> 一起看。</div>
+
+            <p>更可靠的信号：<b>PSI</b>——<code>cat /proc/pressure/io</code>。multi-queue NVMe 上 <code>%util</code> 会误报（多个队列并发处理，看着 100% busy 但应用没在等），PSI 是 kernel 层账本，一定准。<sup>[5]</sup></p>
+        </section>
+
+        <!-- 8 -->
+        <section id="net" class="content-section">
+            <h2 class="section-title">8 · <span>网络</span>饱和 &amp; ENA 计数器全解</h2>
+            <p>基础工具（<code>sar -n DEV 1</code>、<code>ip -s link</code>、<code>nstat -a</code>）和 x86 一样。<b>核心一条命令</b>——ENA 驱动的限流计数器：</p>
+            <pre>ethtool -S ens5 | grep -E 'exceeded|conntrack|linklocal'</pre>
+
+            <h3 class="sub-h">六个 <code>*_allowance_exceeded</code>（AWS UserGuide 原文）<sup>[8]</sup></h3>
+            <table class="cmp">
+                <thead><tr><th>计数器</th><th>意思（AWS 原文）</th></tr></thead>
+                <tbody>
+                    <tr><td><code>bw_in_allowance_exceeded</code></td><td>入向带宽超过实例上限，包被 queued 或 dropped</td></tr>
+                    <tr><td><code>bw_out_allowance_exceeded</code></td><td>出向带宽超过实例上限</td></tr>
+                    <tr><td><code>pps_allowance_exceeded</code></td><td>双向 PPS 超过实例上限——小实例先撞这个</td></tr>
+                    <tr><td><code>conntrack_allowance_exceeded</code></td><td>连接跟踪数超上限，<b>新连接建立失败</b>——silent killer</td></tr>
+                    <tr><td><code>linklocal_allowance_exceeded</code></td><td>访问 link-local 服务（DNS / IMDS / Time Sync）的 PPS 超上限——SDK metadata 重试环</td></tr>
+                    <tr><td><code>conntrack_allowance_available</code></td><td>还剩多少连接可建立（Nitro 独有，需驱动 ≥ 2.8.1）</td></tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-h">m8g 的 ENA 限流（近似）</h3>
+            <table class="cmp">
+                <thead><tr><th>规格</th><th>基线带宽</th><th>PPS 上限</th><th>conntrack 上限</th></tr></thead>
+                <tbody>
+                    <tr><td>m8g.medium</td><td>~0.4 Gbps</td><td>~100K</td><td>~35K</td></tr>
+                    <tr><td>m8g.large</td><td>~0.75 Gbps</td><td>~200K</td><td>~55K</td></tr>
+                    <tr><td>m8g.xlarge</td><td>~1.5 Gbps</td><td>~400K</td><td>~130K</td></tr>
+                    <tr><td>m8g.2xlarge</td><td>~3 Gbps</td><td>~800K</td><td>~260K</td></tr>
+                    <tr><td>m8g.4xlarge</td><td>~6 Gbps</td><td>~1.6M</td><td>~450K</td></tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-h">ENA queue affinity</h3>
+            <p>ENA 每个 RX/TX queue 一个 MSI-X IRQ，命名 <code>&lt;iface&gt;-Tx-Rx-&lt;idx&gt;</code>。AWS ENA best-practices 推荐：pin app 到<b>和 IRQ 同一个 vCPU</b>；RPS 核放<b>同 NUMA node</b>；<b>不要禁 <code>irqbalance</code></b>，用 <code>IRQBALANCE_BANNED_CPUS</code> 让它跳过你的 NAPI 核。<sup>[7]</sup></p>
+            <p>Multi-NUMA Graviton 上默认 affinity 会把 IRQ 撒到两个 node——page 分配在错的 node。看 <code>rx_queue#_lpc_wrong_numa</code> 计数器，非 0 就要手动 pin。</p>
+        </section>
+
+        <!-- 9 -->
+        <section id="psi" class="content-section">
+            <h2 class="section-title">9 · <span>PSI</span>（Pressure Stall Information）</h2>
+            <p>Linux 4.20+ 且 <code>CONFIG_PSI=y</code>。三个文件：<code>/proc/pressure/{cpu,memory,io}</code>。每个资源两行：</p>
+            <ul>
+                <li><b>some</b>——"share of time in which <b>at least some</b> tasks are stalled on a given resource"</li>
+                <li><b>full</b>——"share of time in which <b>all non-idle tasks</b> are stalled ... simultaneously"——full 期间 CPU 空转，持续 full = <b>thrashing</b>。</li>
+            </ul>
+            <p>字段：<code>avg10</code> / <code>avg60</code> / <code>avg300</code>（百分比）+ <code>total</code>（累计微秒）。<code>total</code> 能捕捉均值掩盖的短脉冲。CPU 只有 <code>some</code>——系统全局的 full CPU 没意义。<sup>[5]</sup></p>
+
+            <h3 class="sub-h">阈值参考</h3>
+            <table class="cmp">
+                <thead><tr><th>数值</th><th>判断</th></tr></thead>
+                <tbody>
+                    <tr><td><code>some avg10 &gt; 10%</code></td><td>Warning</td></tr>
+                    <tr><td><code>full avg10 &gt; 5%</code></td><td>Urgent——业务真的在等</td></tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-h">Trigger（用户态 poll）</h3>
+            <p>写 <code>"some 150000 1000000"</code> 到文件，然后 <code>poll()</code> / <code>epoll()</code>。窗口必须 500 ms–10 s，非特权只能倍数 2 s。Facebook 的 <code>oomd</code> 就是靠 PSI trigger 做 early OOM。<sup>[5]</sup></p>
+
+            <div class="callout"><b>cgroup v2 vs 全局 PSI：</b>cgroup v2 挂载后，每个 cgroup 有自己的 <code>memory.pressure</code>（AL2023 默认 v2；AL2 要加 <code>systemd.unified_cgroup_hierarchy=1</code>）。系统 PSI 看着平静，但某容器已在 thrash——只有 cgroup PSI 能看到。K8s VPA、systemd-oomd、Facebook oomd 都靠这个决定杀谁。</div>
+        </section>
+
+        <!-- 10 -->
+        <section id="ebpf" class="content-section">
+            <h2 class="section-title">10 · <span>eBPF</span> 五件套（Graviton 上直接可用）</h2>
+            <p>AL2023 是 kernel 6.x，<code>bcc-tools</code> 和 <code>bpftrace</code> 装完就用，无 ARM 特殊 flag：</p>
+            <pre>sudo dnf install -y bcc-tools bpftrace</pre>
+            <table class="cmp">
+                <thead><tr><th>工具</th><th>回答的问题</th></tr></thead>
+                <tbody>
+                    <tr><td><code>runqlat</code></td><td>调度器 run-queue 等待延迟直方图——真正的 CPU 饱和信号</td></tr>
+                    <tr><td><code>biolatency</code></td><td>块设备 IO 延迟分布（<code>-D</code> 按盘拆）</td></tr>
+                    <tr><td><code>offcputime</code></td><td>线程 off-CPU 时的堆栈——配合 load avg 里的 D-state</td></tr>
+                    <tr><td><code>tcpretrans</code></td><td>TCP 重传的 5-tuple + socket state</td></tr>
+                    <tr><td><code>cachestat</code></td><td>page cache hit / miss 比——早期内存压力</td></tr>
+                </tbody>
+            </table>
+            <p><b>Gregg 的规矩：</b>daemon 用 BCC，one-liner 用 <code>bpftrace</code>。<sup>[9]</sup></p>
+        </section>
+
+        <!-- 11 -->
+        <section id="tree" class="content-section">
+            <h2 class="section-title">11 · <span>决策树</span>——服务慢了往哪查</h2>
+            <pre class="tree">service slow?
+│
+├── top: load avg &gt; vCPU?
+│    ├── YES → mpstat -P ALL 1
+│    │        ├── 一个核 %soft 高 → ENA IRQ affinity
+│    │        └── 所有核 %usr 高 → perf top → app hotspot
+│    └── NO  → 继续往下
+│
+├── free -h: available &lt; 20%?
+│    ├── YES → dmesg -T | grep -i killed → OOM 历史
+│    │        vmstat 1 → si/so 非 0 → swap thrash（云上罕见）
+│    └── NO  → 继续
+│
+├── iostat -xz 1: await &gt; 10ms 或 PSI io some avg10 &gt; 10%?
+│    ├── YES → CloudWatch EBSByteBalance% / VolumeThroughputPercentage
+│    │        → 撞 volume 或 instance EBS 上限
+│    └── NO  → 继续
+│
+├── ethtool -S ens5 | grep exceeded 计数器上涨?
+│    ├── bw_*_allowance      → 升配或降流量
+│    ├── pps_allowance       → 合批、减少小包
+│    ├── conntrack_allowance → keep-alive、复用连接
+│    └── linklocal_allowance → 缓存 IMDS token、退避
+│
+└── 都不忙但还是慢 → offcputime -K -p &lt;pid&gt; 10
+                    → 线程到底卡在哪</pre>
+        </section>
+
+        <div class="refs">
+            <h4>Sources</h4>
+            <ol>
+                <li>[1] <a href="https://www.brendangregg.com/usemethod.html">Brendan Gregg — The USE Method</a></li>
+                <li>[2] <a href="https://www.brendangregg.com/blog/2017-05-09/cpu-utilization-is-wrong.html">Brendan Gregg — CPU Utilization is Wrong</a></li>
+                <li>[3] <a href="https://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html">Brendan Gregg — Linux Load Averages: Solving the Mystery</a></li>
+                <li>[4] <a href="https://facebookmicrosites.github.io/psi/docs/overview">Facebook — PSI overview</a></li>
+                <li>[5] <a href="https://docs.kernel.org/accounting/psi.html">kernel.org — PSI kernel doc</a></li>
+                <li>[6] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/perfrunbook/debug_hw_perf.md">aws-graviton-getting-started — perf runbook</a></li>
+                <li>[7] <a href="https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/ena/ENA_Linux_Best_Practices.rst">ENA Linux Best Practices</a></li>
+                <li>[8] <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-network-performance-ena.html">AWS UserGuide — ENA network performance</a></li>
+                <li>[9] <a href="https://www.brendangregg.com/ebpf.html">Brendan Gregg — eBPF Tools</a></li>
+            </ol>
+        </div>
+
+        <div class="next">
+            <div class="left">下一站</div>
+            <div class="right">
+                <a href="../../../ec2/graviton/playbook/">04 / 04</a>
+                <a class="big" href="../../../ec2/graviton/playbook/">On-Call Playbook →</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 liucao.me &middot; <a href="../../../">Home</a> &middot; <a href="../../../ec2/graviton/">Graviton 指南</a></p>
+    </footer>
+</body>
+</html>
