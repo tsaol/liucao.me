@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>演讲稿 · Speaker Script · Harness Self-Evolution</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+      :root {
+        --sk-accent: rgb(0, 217, 130);
+        --sk-purple: rgb(139, 92, 246);
+        --sk-warm: rgb(250, 180, 90);
+        --sk-danger: rgb(239, 68, 68);
+      }
+      body { background: #050a0f; }
+      main.sk-wrap {
+        max-width: 900px; margin: 0 auto;
+        padding: 2rem 1.5rem 6rem;
+        color: var(--text);
+      }
+
+      /* Hero */
+      .sk-hero { text-align: center; padding: 1.2rem 0 2rem; }
+      .sk-kicker {
+        display: inline-block; padding: 4px 12px;
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        border-radius: 999px;
+        color: rgb(230, 130, 130); font-size: 0.72rem;
+        margin-bottom: 0.8rem;
+      }
+      .sk-hero h1 {
+        font-size: 2rem; font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.4rem;
+      }
+      .sk-hero p.sub { color: var(--text-dim); font-size: 0.95rem; }
+      .sk-hero p.byline { color: var(--text-mute); font-size: 0.78rem; margin-top: 0.3rem; }
+
+      /* Sticky top strip */
+      .sk-strip {
+        position: sticky; top: 0;
+        z-index: 20;
+        margin: 0 -1.5rem 1.5rem;
+        padding: 0.55rem 1.5rem;
+        background: rgba(5, 10, 15, 0.94);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        display: flex; gap: 6px; overflow-x: auto;
+        font-family: var(--mono); font-size: 0.68rem;
+      }
+      .sk-strip a {
+        white-space: nowrap;
+        padding: 3px 9px; border-radius: 3px;
+        background: var(--surface-2); color: var(--text-mute);
+        border: 1px solid var(--border);
+        text-decoration: none;
+      }
+      .sk-strip a:hover, .sk-strip a.current {
+        background: var(--accent-glow); color: var(--accent);
+        border-color: var(--accent);
+      }
+      .sk-strip .totalt { margin-left: auto; color: var(--sk-warm); }
+
+      /* Section */
+      .sk-sec {
+        margin: 2rem 0;
+        padding: 1.5rem 1.6rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--sk-purple);
+        border-radius: 8px;
+      }
+      .sk-sec.critical { border-left-color: var(--sk-danger); background: linear-gradient(135deg, rgba(239,68,68,0.03), var(--surface)); }
+      .sk-sec.climax { border-left-color: var(--sk-accent); }
+
+      .sk-head {
+        display: flex; align-items: baseline; gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 0.8rem;
+      }
+      .sk-num {
+        font-family: var(--mono); font-size: 0.75rem;
+        color: var(--sk-purple); font-weight: 700;
+        padding: 3px 8px; border-radius: 3px;
+        background: rgba(139, 92, 246, 0.1);
+      }
+      .sk-time {
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--sk-warm);
+        padding: 2px 8px; border-radius: 3px;
+        background: rgba(250, 180, 90, 0.12);
+      }
+      .sk-cue {
+        font-family: var(--mono); font-size: 0.7rem;
+        color: var(--text-mute);
+        margin-left: auto;
+      }
+      .sk-title {
+        font-size: 1.15rem; font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+
+      /* Main line — the big口播 line */
+      .sk-mainline {
+        font-size: 1.1rem;
+        line-height: 1.65;
+        color: var(--text);
+        font-weight: 500;
+        padding: 0.8rem 1rem;
+        margin: 0.8rem 0;
+        background: rgba(0, 217, 130, 0.05);
+        border-left: 3px solid var(--sk-accent);
+        border-radius: 0 6px 6px 0;
+      }
+      .sk-mainline em { color: var(--sk-accent); font-style: normal; font-weight: 700; }
+
+      /* Backup points */
+      .sk-h3 {
+        font-family: var(--mono); font-size: 0.7rem;
+        color: var(--sk-purple);
+        text-transform: uppercase; letter-spacing: 0.08em;
+        margin: 1.2rem 0 0.5rem;
+      }
+      .sk-h3::before { content: "▸ "; }
+      .sk-backup {
+        list-style: none; padding: 0; margin: 0;
+      }
+      .sk-backup li {
+        padding: 0.35rem 0 0.35rem 1.2rem;
+        position: relative;
+        font-size: 0.82rem; color: var(--text-dim); line-height: 1.55;
+        border-bottom: 1px dashed rgba(255,255,255,0.04);
+      }
+      .sk-backup li::before {
+        content: "•"; position: absolute; left: 4px; color: var(--sk-purple);
+      }
+      .sk-backup li b { color: var(--text); }
+
+      /* Audience POV note */
+      .sk-audience {
+        margin-top: 0.9rem;
+        padding: 0.6rem 0.9rem;
+        background: rgba(139, 92, 246, 0.06);
+        border-radius: 6px;
+        border: 1px dashed rgba(139, 92, 246, 0.3);
+        font-size: 0.78rem; color: var(--text-dim);
+      }
+      .sk-audience::before {
+        content: "👀 观众此时看到 · ";
+        font-family: var(--mono); font-size: 0.68rem;
+        color: var(--sk-purple);
+      }
+
+      /* Numeric cue */
+      .sk-numeric {
+        margin-top: 0.6rem;
+        font-family: var(--mono); font-size: 0.75rem;
+        color: rgb(230, 200, 130);
+        padding: 0.4rem 0.7rem;
+        background: rgba(250, 180, 90, 0.08);
+        border-radius: 4px;
+        border-left: 2px solid var(--sk-warm);
+      }
+      .sk-numeric::before { content: "🔢 关键数字 · "; font-weight: 700; }
+
+      /* Danger box · 卡壳救场 */
+      .sk-danger {
+        margin: 2.5rem 0 1rem;
+        padding: 1.2rem;
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(250, 180, 90, 0.04));
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        border-radius: 8px;
+      }
+      .sk-danger h3 { font-size: 1rem; color: var(--sk-danger); margin-bottom: 0.6rem; }
+      .sk-danger dl { display: grid; grid-template-columns: 1fr 2fr; gap: 6px 12px; }
+      .sk-danger dt {
+        color: var(--sk-warm); font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
+        padding: 4px 0; border-bottom: 1px dashed var(--border);
+      }
+      .sk-danger dd {
+        color: var(--text-dim); font-size: 0.8rem; margin: 0;
+        padding: 4px 0; border-bottom: 1px dashed var(--border); line-height: 1.55;
+      }
+
+      /* Footer nav */
+      .sk-nav-back {
+        margin-top: 3rem;
+        text-align: center;
+        padding: 1.5rem;
+        border-radius: 10px;
+        background: rgba(139, 92, 246, 0.06);
+        border: 1px solid rgba(139, 92, 246, 0.25);
+      }
+      .sk-nav-back p { color: var(--text-dim); margin-bottom: 0.8rem; font-size: 0.85rem; }
+      .sk-nav-back a {
+        display: inline-block; margin: 4px;
+        padding: 7px 16px; border-radius: 6px;
+        text-decoration: none; font-weight: 600; font-size: 0.85rem;
+      }
+      .sk-nav-back a.primary { background: var(--sk-accent); color: #04120c; }
+      .sk-nav-back a.secondary { border: 1px solid var(--sk-purple); color: rgb(180,160,240); }
+
+      @media (max-width: 720px) {
+        .sk-hero h1 { font-size: 1.5rem; }
+        .sk-mainline { font-size: 0.98rem; }
+      }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <div class="brand"><a href="../../.." style="color:inherit;">liucao<span>.me</span></a></div>
+    <div class="links">
+        <a href="../">← Intro</a>
+        <a href="../talk/">Talk</a>
+        <a href="../papers/">Papers</a>
+        <a href="../run/">Live Demo</a>
+        <a href="../play/">Play</a>
+        <a href="../script-v2/">Script v2</a>
+        <a href="../script-play/">Script (Play)</a>
+        <a href="../../script/">Script (RSI)</a>
+    </div>
+</nav>
+
+<div class="sk-strip">
+  <a href="#s0">开场</a>
+  <a href="#s1">点击</a>
+  <a href="#s2">选亲本 · 拉错题</a>
+  <a href="#s3">AI 写代码</a>
+  <a href="#s4">应用 + 评测</a>
+  <a href="#s5">判决</a>
+  <a href="#s6">Gen 1 出结果</a>
+  <a href="#s7">3 代完成</a>
+  <a href="#s8">收束</a>
+  <span class="totalt">总时长 ≈ 8-10 分钟</span>
+</div>
+
+<main class="sk-wrap">
+
+  <div class="sk-hero">
+    <span class="sk-kicker">🎤 PRESENTER ONLY · 演讲者稿本</span>
+    <h1>Harness Self-Evolution · 演讲稿</h1>
+    <p class="sub">配合 Live Demo 一起用 · 8 段口播 + 卡壳救场</p>
+    <p class="byline">总时长约 8-10 分钟 · 大字是口播 · 灰字是备用点 · 数字是关键指标</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Section 0 · 开场
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec" id="s0">
+    <div class="sk-head">
+      <span class="sk-num">S0</span>
+      <span class="sk-time">45-60 秒</span>
+      <span class="sk-title">开场 · 建立场景</span>
+      <span class="sk-cue">Demo 还没点</span>
+    </div>
+
+    <div class="sk-mainline">
+      "我们今天要优化的是一个 <em>电商商品搜索 agent</em> —— 用户输入 query · 它返回 top-5 商品排序。
+      现在长这样：一个 60 行的 Python <em>search()</em> 函数、BM25 baseline、命中率 <em>30%</em>。
+      我们不动 Claude 一分权重 · 让它一代一代重写这个 <em>search()</em>
+      · 用 <em>ShinkaEvolve</em> 引擎 · 目标 60~120 秒内冲到 <em>90%+</em>。"
+    </div>
+
+    <div class="sk-h3">承接的两个真问题（给老板看的）</div>
+    <ul class="sk-backup">
+      <li>Sonnet 便宜、Opus 贵 3 倍 · <b>选哪个</b>？</li>
+      <li>AI 改代码之后 · <b>怎么证明是真进步不是背答案</b>？</li>
+      <li>常规命中率评测扛不住这两个问题 · demo 演一个能同时回答的评测系统</li>
+    </ul>
+
+    <div class="sk-h3">备用点（如果时间够）</div>
+    <ul class="sk-backup">
+      <li>Field 12 个月出了 <b>779 篇</b>自进化论文 · Sakana 开源了 ShinkaEvolve · 现在是黄金窗口期</li>
+      <li>PPT slide 4-5 的铺垫 · 讲这套东西不是玄学 · 是可测量的</li>
+      <li>如果观众技术强 · 可以说 "冻结权重、进化外围、评估先行、门控接受"</li>
+    </ul>
+
+    <div class="sk-audience">Intro / Talk 页 · 或者直接 Live Demo 待点击状态</div>
+    <div class="sk-numeric">779 篇论文 / 12 个月 · 439 核心 · Sakana Shinka 是唯一开源</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Section 1 · 点击
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec critical" id="s1">
+    <div class="sk-head">
+      <span class="sk-num">S1</span>
+      <span class="sk-time">5 秒</span>
+      <span class="sk-title">点击「开始进化」</span>
+      <span class="sk-cue">刚点</span>
+    </div>
+
+    <div class="sk-mainline">
+      "我现在选的是 <em>Opus 4.8 · 最强的模型</em>。一次进化 3 代、总共 60~120 秒。
+      点击开始 · 我们看它跑。"
+    </div>
+
+    <div class="sk-h3">停顿留白</div>
+    <ul class="sk-backup">
+      <li>点了之后 · 让观众看进度条 · <b>别急着讲</b></li>
+      <li>如果有人问"这是真的吗" · 打开 Papers 页 Shinka 卡片 · 一秒证明有源码</li>
+    </ul>
+
+    <div class="sk-audience">进度条从 0% 开始 · 「启动 ShinkaEvolve 进程」出现 · 工作流第 1 节点脉冲</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Section 2 · 选亲本 · 拉错题
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec climax" id="s2">
+    <div class="sk-head">
+      <span class="sk-num">S2</span>
+      <span class="sk-time">10-15 秒</span>
+      <span class="sk-title">"评估先行" 的证据 · 选亲本 + 拉错题清单 · <span style="color:rgb(120,210,255);">🔵 Observe</span></span>
+      <span class="sk-cue">stage=sampling</span>
+    </div>
+
+    <div class="sk-mainline">
+      "看这一步 · <em>不是 AI 随便改代码 · 是评测先跑一遍拿到错题清单 · 再交给 AI</em>。
+      这就是我整个 talk 的核心 · <em>评估先行</em>。工作流第 2 节点上有个绿色徽章说明这一点。"
+    </div>
+
+    <div class="sk-h3">备用点</div>
+    <ul class="sk-backup">
+      <li>让观众看第 2 节点的"评估先行"绿色徽章 · 这是刻意可视化的</li>
+      <li>说明：archive 里有若干候选 · 挑一个 · 附上它在 31 题上的错题</li>
+      <li>PPT slide 21 讲的 archive 保留失败分支 · 就是这</li>
+    </ul>
+
+    <div class="sk-audience">第 2 节点脉冲 · 副标题："从 archive 挑一个上一代 harness · 附上它在 31 题上的错题"</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Section 3 · AI 写代码
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec" id="s3">
+    <div class="sk-head">
+      <span class="sk-num">S3</span>
+      <span class="sk-time">20-40 秒</span>
+      <span class="sk-title">AI 针对错题重写代码 · <span style="color:rgb(180,160,240);">🟣 Propose</span></span>
+      <span class="sk-cue">stage=querying · 最长的一段</span>
+    </div>
+
+    <div class="sk-mainline">
+      "这一步最花时间 · <em>AI 读了 31 题的错题清单</em>后要写出改进方案。
+      看右侧 · 已经生成 <em>N bytes 的 diff</em>。等大概 20-40 秒。"
+    </div>
+
+    <div class="sk-h3">这 30 秒讲什么 · 4 个选择</div>
+    <ul class="sk-backup">
+      <li><b>讲 harness vs prompt</b>：AI 改的是"代码"不是"提示词" · 更彻底 · git 能追</li>
+      <li><b>讲 fine-tune vs 进化</b>：一次 RL $500k · 一次 harness 进化 $50 · 便宜千倍</li>
+      <li><b>讲 selection bias</b>：这只是 31 题概念演示 · 生产用得 N ≥ 200 每档</li>
+      <li><b>讲 monkey-patch 3 处</b>：ShinkaEvolve 不完美 · 我们打了 3 处补丁才跑通</li>
+    </ul>
+
+    <div class="sk-audience">第 3 节点脉冲 · "AI 针对错题重写代码 → 反馈闭环" · bytes 计数器跳</div>
+    <div class="sk-numeric">Bedrock 生成 diff 大概 500-3000 bytes · Opus 4.8 一次约 $0.10</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Section 4 · 应用 + 评测
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec" id="s4">
+    <div class="sk-head">
+      <span class="sk-num">S4</span>
+      <span class="sk-time">15-25 秒</span>
+      <span class="sk-title">应用 patch + 跑评测 · <span style="color:rgb(250,200,130);">🟠 Apply</span> → <span style="color:var(--sk-accent);">🟢 Verify</span></span>
+      <span class="sk-cue">stage=applying → evaluating</span>
+    </div>
+
+    <div class="sk-mainline">
+      "AI 返回了 diff · 现在应用到父代 · 生成新 Python。然后跑评测 —— <em>31 公开题 + 5 hold-out + 31 typo</em>
+      三套评测都要跑 · 才能算 gate。"
+    </div>
+
+    <div class="sk-h3">三道防作弊门</div>
+    <ul class="sk-backup">
+      <li><b>公开 31 题</b>：AI 看得到的 · 主分</li>
+      <li><b>Hold-out 5 题</b>：<em>AI 从头到尾看不到</em> · 抓死记硬背</li>
+      <li><b>Typo 31 题</b>：每个词随机换字符 · 抓查表小抄（`apple → aplpe`）</li>
+      <li>综合分 = 0.7 × 公开 + 0.2 × hold-out + 0.1 × typo − 代码惩罚</li>
+    </ul>
+
+    <div class="sk-audience">第 4/5 节点激活 · 评测进度条推 · "生成下一轮错题" 徽章高亮</div>
+    <div class="sk-numeric">31 + 5 + 31 = <b>67 次搜索</b>每一代 · 每代评测约 15-25 秒</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Section 5 · 判决
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec" id="s5">
+    <div class="sk-head">
+      <span class="sk-num">S5</span>
+      <span class="sk-time">5 秒</span>
+      <span class="sk-title">综合评分 · Gate 判决 · <span style="color:rgb(240,130,130);">🔴 Commit</span></span>
+      <span class="sk-cue">stage=scoring</span>
+    </div>
+
+    <div class="sk-mainline">
+      "综合分算出来了 · <em>&gt; 0 就晋升</em>。这是 Karpathy 的 autoresearch 那套 "keep or discard"
+      门控 · 但我加了防作弊层。"
+    </div>
+
+    <div class="sk-h3">备用点</div>
+    <ul class="sk-backup">
+      <li>PPT slide 11 的 5 步循环 · 就是这一整套</li>
+      <li>Gate 拒绝的例子：Harvey R4 涨 0.6pp 但 tokens +46% 被成本罚拒绝</li>
+    </ul>
+
+    <div class="sk-audience">第 6 节点脉冲 · NDCG/combined 数字缓动出现 · "✓ 晋升" 或 "✗ 拒绝"</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Section 6 · Gen 1 出结果
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec climax" id="s6">
+    <div class="sk-head">
+      <span class="sk-num">S6</span>
+      <span class="sk-time">15-20 秒</span>
+      <span class="sk-title">第一个 Gen 卡出来 · 数字变化</span>
+      <span class="sk-cue">generation_done · Gen 1 卡片出现</span>
+    </div>
+
+    <div class="sk-mainline">
+      "看 · <em>Gen 1 出来了</em>。NDCG 从 <em>46 涨到 90+</em>。关键看 <em>Tier H · 最难题</em>
+      从 9% 冲到 80% —— 这就是 Opus 4.8 的能力。"
+    </div>
+
+    <div class="sk-h3">这里最关键 · 别错过</div>
+    <ul class="sk-backup">
+      <li>数字是从 0 缓动上去的 · 让观众盯着看数字变</li>
+      <li>综合分构成条 4 段：绿(公开) + 紫(hold-out) + 蓝(抗干扰) − 红(代码惩罚)</li>
+      <li>说明 hold-out 也涨了 · 说明 <b>不是死记硬背 · 是真泛化</b></li>
+      <li>如果观众问"怎么证明不是运气"：加载 3 次同样结果就行 · 提 CI</li>
+    </ul>
+
+    <div class="sk-audience">Gen 1 卡片 fade-up 出现 · NDCG 数字滚动 · 综合分构成条 4 段错峰生长</div>
+    <div class="sk-numeric">典型 Gen 1 · NDCG 90-95% · Tier H 60-85% · hold-out 80-100%</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Section 7 · 3 代完成
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec climax" id="s7">
+    <div class="sk-head">
+      <span class="sk-num">S7</span>
+      <span class="sk-time">30-45 秒</span>
+      <span class="sk-title">三代全部完成 · 对比视图</span>
+      <span class="sk-cue">complete · Comparison views 出现</span>
+    </div>
+
+    <div class="sk-mainline">
+      "三代都跑完了。C 图 · 三条柱子看爬升。A 图 · 同一 query 前后对比 · 起点错的现在都对了。
+      <em>整个过程 60-120 秒 · $0.10</em>。"
+    </div>
+
+    <div class="sk-h3">最想让观众带走的一句话</div>
+    <ul class="sk-backup">
+      <li><b>"Sonnet Tier H 卡 9% · Opus 4.8 到 90%"</b>：模型能力天花板 · 评测能测出来</li>
+      <li><b>"Hold-out 100%"</b>：不是背答案 · 是真会做</li>
+      <li><b>"$0.10 一次"</b>：不是 fine-tune 的 $500K · 便宜 5 个数量级</li>
+      <li>切换到 Sonnet 4.5 现场跑一次做对比（如果时间允许）—— Tier H 卡在 9%</li>
+    </ul>
+
+    <div class="sk-audience">C 分数对比图（3 条柱错峰生长）· A per-query flip 5 行 · D 31 题矩阵</div>
+    <div class="sk-numeric">Baseline 30% → Opus 4.8 92% · Tier H 9% → 80%+ · Hold-out 60% → 100%</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Section 8 · 收束
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec" id="s8">
+    <div class="sk-head">
+      <span class="sk-num">S8</span>
+      <span class="sk-time">60 秒</span>
+      <span class="sk-title">收束 · 号召行动</span>
+      <span class="sk-cue">离开 demo · 回到 PPT slide 38</span>
+    </div>
+
+    <div class="sk-mainline">
+      "这个 demo 演的不是"AI 会改代码" —— 是 <em>评测系统才是稀缺资产</em>。
+      引擎（ShinkaEvolve）是别人的 · 但 <em>三档评测 + hold-out + 门控</em> 是我的 IP。
+      建议行动 · 回去给你最重要的 agent 建一个 72 题 golden set · <em>两周就能起步</em>。"
+    </div>
+
+    <div class="sk-h3">如果时间够 · 展开</div>
+    <ul class="sk-backup">
+      <li>切到 Papers 页 Shinka 源码走读 · 说明可以自己去 fork · 30 分钟能改</li>
+      <li>切到 Talk 页 Ch 9 · 给出 6 个角色的行动建议</li>
+      <li>GitHub 链接 · 现场扫码</li>
+    </ul>
+
+    <div class="sk-audience">Papers 页 · 或 Talk Ch 9 So What · 或直接扫码 GitHub</div>
+    <div class="sk-numeric">GitHub · tsaol/harness-self-evolution · Apache 2.0</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Danger box · 卡壳救场
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="sk-danger">
+    <h3>🚨 卡壳救场 · 出问题就说这个</h3>
+    <dl>
+      <dt>Bedrock 报错 / 超时</dt>
+      <dd>"网络卡了 · 我们看 Papers 页的源码走读 · 一样能看清逻辑" → 切到 /demo/harness/papers/</dd>
+
+      <dt>3 代都被拒绝晋升</dt>
+      <dd>"看 · 这就是 gate 起作用 · <b>没进步就是没进步 · 门槛守住了</b>。评测本身可信。"</dd>
+
+      <dt>Tier H 分数没上去</dt>
+      <dd>"这就是 Sonnet 的天花板 · 换 Opus 4.8 重跑就能穿透 · 我先跑给你看。"</dd>
+
+      <dt>观众问"你怎么证明 AI 没作弊"</dt>
+      <dd>指 hold-out（AI 看不到）+ perturbed（typo 版）· 综合分公式给你看。</dd>
+
+      <dt>观众问"这跟 Cursor / Copilot 有什么区别"</dt>
+      <dd>"Cursor 帮人写代码 · 这里是 AI 改自己的代码 · 而且 <b>评测系统告诉它对不对</b>。"</dd>
+
+      <dt>观众问"生产能用吗"</dt>
+      <dd>诚实说 "N=31 是玩具规模 · 生产用得 N ≥ 200 每档 · 但方法论一样。"</dd>
+
+      <dt>观众追问 selection bias</dt>
+      <dd>"对 · 我先想题目再造 catalog · 是概念演示。BRIGHT 那种真实 benchmark 才是无 bias。"</dd>
+    </dl>
+  </div>
+
+  <div class="sk-nav-back">
+    <p>准备好开讲了？</p>
+    <a class="primary" href="../run/">→ 打开 Live Demo</a>
+    <a class="secondary" href="../talk/">Talk 总览</a>
+    <a class="secondary" href="../papers/">Papers</a>
+  </div>
+
+</main>
+
+<script>
+(function() {
+  // Sticky strip current highlight
+  const links = document.querySelectorAll(".sk-strip a[href^='#']");
+  const sections = document.querySelectorAll(".sk-sec");
+  window.addEventListener("scroll", () => {
+    let current = null;
+    sections.forEach(s => {
+      const r = s.getBoundingClientRect();
+      if (r.top < 200) current = s.id;
+    });
+    links.forEach(a => a.classList.toggle("current", a.getAttribute("href") === "#" + current));
+  }, { passive: true });
+})();
+</script>
+
+</body>
+</html>

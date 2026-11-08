@@ -1,0 +1,2471 @@
+{
+  "finance": {
+    "source": {
+      "domain": "finance",
+      "model": "sonnet-5",
+      "rounds": [
+        {
+          "n": 0,
+          "name": "h0_seed",
+          "acc": 0.65,
+          "tokens_m": 3.6,
+          "leaked": false,
+          "accepted": true,
+          "reason": "SEEDED_AS_FRONTIER",
+          "blended": 0.9570000000000001,
+          "outcomes": [
+            {
+              "task_id": "finer-000",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-001",
+              "input": "Income from continuing operations was $3,207M before discontinued items",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:NetIncomeLoss",
+              "hit": false,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-002",
+              "input": "Debt due within twelve months of the reporting date",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtCurrent",
+              "hit": true,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-003",
+              "input": "Stockholders equity attributable to the parent company",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:StockholdersEquity",
+              "hit": true,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-004",
+              "input": "Operating income after selling, general and administrative expenses",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:OperatingIncomeLoss",
+              "hit": true,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-005",
+              "input": "Basic EPS attributable to common shareholders was $2.13",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareBasic",
+              "hit": true,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-006",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 2)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:Revenues",
+              "hit": false,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-007",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 2)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-008",
+              "input": "Debt due within twelve months of the reporting date (case 2)",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtCurrent",
+              "hit": true,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-009",
+              "input": "Stockholders equity attributable to the parent company (case 2)",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:StockholdersEquity",
+              "hit": true,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-010",
+              "input": "Operating income after selling, general and administrative expenses (case 2)",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:GrossProfit",
+              "hit": false,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-011",
+              "input": "Basic EPS attributable to common shareholders was $2.13 (case 2)",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareBasic",
+              "hit": true,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-012",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 3)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:Revenues",
+              "hit": false,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-013",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 3)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-014",
+              "input": "Debt due within twelve months of the reporting date (case 3)",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtLongtermNoncurrent",
+              "hit": false,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-015",
+              "input": "Stockholders equity attributable to the parent company (case 3)",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:StockholdersEquity",
+              "hit": true,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-016",
+              "input": "Operating income after selling, general and administrative expenses (case 3)",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:GrossProfit",
+              "hit": false,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-017",
+              "input": "Basic EPS attributable to common shareholders was $2.13 (case 3)",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareDiluted",
+              "hit": false,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-018",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 4)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-019",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 4)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            }
+          ],
+          "delta_vs_baseline": {
+            "gained": [],
+            "lost": [],
+            "always_right": [
+              "finer-000",
+              "finer-002",
+              "finer-003",
+              "finer-004",
+              "finer-005",
+              "finer-007",
+              "finer-008",
+              "finer-009",
+              "finer-011",
+              "finer-013",
+              "finer-015",
+              "finer-018",
+              "finer-019"
+            ],
+            "always_wrong": [
+              "finer-001",
+              "finer-006",
+              "finer-010",
+              "finer-012",
+              "finer-014",
+              "finer-016",
+              "finer-017"
+            ]
+          }
+        },
+        {
+          "n": 1,
+          "name": "h1_leaky",
+          "acc": 0.95,
+          "tokens_m": 3.6,
+          "leaked": true,
+          "accepted": false,
+          "reason": "LEAK_AUDIT_FAILED — candidate touched held-out labels",
+          "blended": 0.0,
+          "outcomes": [
+            {
+              "task_id": "finer-000",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-001",
+              "input": "Income from continuing operations was $3,207M before discontinued items",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-002",
+              "input": "Debt due within twelve months of the reporting date",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtCurrent",
+              "hit": true,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-003",
+              "input": "Stockholders equity attributable to the parent company",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:StockholdersEquity",
+              "hit": true,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-004",
+              "input": "Operating income after selling, general and administrative expenses",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:OperatingIncomeLoss",
+              "hit": true,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-005",
+              "input": "Basic EPS attributable to common shareholders was $2.13",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareBasic",
+              "hit": true,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-006",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 2)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-007",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 2)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-008",
+              "input": "Debt due within twelve months of the reporting date (case 2)",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtCurrent",
+              "hit": true,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-009",
+              "input": "Stockholders equity attributable to the parent company (case 2)",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:TotalEquity",
+              "hit": false,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-010",
+              "input": "Operating income after selling, general and administrative expenses (case 2)",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:OperatingIncomeLoss",
+              "hit": true,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-011",
+              "input": "Basic EPS attributable to common shareholders was $2.13 (case 2)",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareBasic",
+              "hit": true,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-012",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 3)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-013",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 3)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-014",
+              "input": "Debt due within twelve months of the reporting date (case 3)",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtCurrent",
+              "hit": true,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-015",
+              "input": "Stockholders equity attributable to the parent company (case 3)",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:StockholdersEquity",
+              "hit": true,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-016",
+              "input": "Operating income after selling, general and administrative expenses (case 3)",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:OperatingIncomeLoss",
+              "hit": true,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-017",
+              "input": "Basic EPS attributable to common shareholders was $2.13 (case 3)",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareBasic",
+              "hit": true,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-018",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 4)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-019",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 4)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            }
+          ],
+          "delta_vs_baseline": {
+            "gained": [
+              "finer-001",
+              "finer-006",
+              "finer-010",
+              "finer-012",
+              "finer-014",
+              "finer-016",
+              "finer-017"
+            ],
+            "lost": [
+              "finer-009"
+            ],
+            "always_right": [
+              "finer-000",
+              "finer-002",
+              "finer-003",
+              "finer-004",
+              "finer-005",
+              "finer-007",
+              "finer-008",
+              "finer-011",
+              "finer-013",
+              "finer-015",
+              "finer-018",
+              "finer-019"
+            ],
+            "always_wrong": []
+          }
+        },
+        {
+          "n": 2,
+          "name": "h2_costly",
+          "acc": 0.55,
+          "tokens_m": 18.0,
+          "leaked": false,
+          "accepted": false,
+          "reason": "NO_IMPROVEMENT",
+          "blended": 0.7350000000000001,
+          "outcomes": [
+            {
+              "task_id": "finer-000",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-001",
+              "input": "Income from continuing operations was $3,207M before discontinued items",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-002",
+              "input": "Debt due within twelve months of the reporting date",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtCurrent",
+              "hit": true,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-003",
+              "input": "Stockholders equity attributable to the parent company",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:TotalEquity",
+              "hit": false,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-004",
+              "input": "Operating income after selling, general and administrative expenses",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:GrossProfit",
+              "hit": false,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-005",
+              "input": "Basic EPS attributable to common shareholders was $2.13",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareBasic",
+              "hit": true,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-006",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 2)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-007",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 2)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:NetIncomeLoss",
+              "hit": false,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-008",
+              "input": "Debt due within twelve months of the reporting date (case 2)",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtCurrent",
+              "hit": true,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-009",
+              "input": "Stockholders equity attributable to the parent company (case 2)",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:StockholdersEquity",
+              "hit": true,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-010",
+              "input": "Operating income after selling, general and administrative expenses (case 2)",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:OperatingIncomeLoss",
+              "hit": true,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-011",
+              "input": "Basic EPS attributable to common shareholders was $2.13 (case 2)",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareDiluted",
+              "hit": false,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-012",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 3)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:Revenues",
+              "hit": false,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-013",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 3)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:NetIncomeLoss",
+              "hit": false,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-014",
+              "input": "Debt due within twelve months of the reporting date (case 3)",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtCurrent",
+              "hit": true,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-015",
+              "input": "Stockholders equity attributable to the parent company (case 3)",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:TotalEquity",
+              "hit": false,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-016",
+              "input": "Operating income after selling, general and administrative expenses (case 3)",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:GrossProfit",
+              "hit": false,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-017",
+              "input": "Basic EPS attributable to common shareholders was $2.13 (case 3)",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareBasic",
+              "hit": true,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-018",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 4)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-019",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 4)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:NetIncomeLoss",
+              "hit": false,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            }
+          ],
+          "delta_vs_baseline": {
+            "gained": [
+              "finer-001",
+              "finer-006",
+              "finer-010",
+              "finer-014",
+              "finer-017"
+            ],
+            "lost": [
+              "finer-003",
+              "finer-004",
+              "finer-007",
+              "finer-011",
+              "finer-013",
+              "finer-015",
+              "finer-019"
+            ],
+            "always_right": [
+              "finer-000",
+              "finer-002",
+              "finer-005",
+              "finer-008",
+              "finer-009",
+              "finer-018"
+            ],
+            "always_wrong": [
+              "finer-012",
+              "finer-016"
+            ]
+          }
+        },
+        {
+          "n": 3,
+          "name": "h3_playbook",
+          "acc": 0.8,
+          "tokens_m": 4.13998,
+          "leaked": false,
+          "accepted": true,
+          "reason": "PROMOTED (+0.2223 blended)",
+          "blended": 1.1793001,
+          "outcomes": [
+            {
+              "task_id": "finer-000",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-001",
+              "input": "Income from continuing operations was $3,207M before discontinued items",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-002",
+              "input": "Debt due within twelve months of the reporting date",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtLongtermNoncurrent",
+              "hit": false,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-003",
+              "input": "Stockholders equity attributable to the parent company",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:StockholdersEquity",
+              "hit": true,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-004",
+              "input": "Operating income after selling, general and administrative expenses",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:OperatingIncomeLoss",
+              "hit": true,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-005",
+              "input": "Basic EPS attributable to common shareholders was $2.13",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareDiluted",
+              "hit": false,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-006",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 2)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-007",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 2)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-008",
+              "input": "Debt due within twelve months of the reporting date (case 2)",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtCurrent",
+              "hit": true,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-009",
+              "input": "Stockholders equity attributable to the parent company (case 2)",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:StockholdersEquity",
+              "hit": true,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-010",
+              "input": "Operating income after selling, general and administrative expenses (case 2)",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:OperatingIncomeLoss",
+              "hit": true,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-011",
+              "input": "Basic EPS attributable to common shareholders was $2.13 (case 2)",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareBasic",
+              "hit": true,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-012",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 3)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-013",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 3)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:NetIncomeLoss",
+              "hit": false,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-014",
+              "input": "Debt due within twelve months of the reporting date (case 3)",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtCurrent",
+              "hit": true,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-015",
+              "input": "Stockholders equity attributable to the parent company (case 3)",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:StockholdersEquity",
+              "hit": true,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-016",
+              "input": "Operating income after selling, general and administrative expenses (case 3)",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:OperatingIncomeLoss",
+              "hit": true,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-017",
+              "input": "Basic EPS attributable to common shareholders was $2.13 (case 3)",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareDiluted",
+              "hit": false,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-018",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 4)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-019",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 4)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            }
+          ],
+          "delta_vs_baseline": {
+            "gained": [
+              "finer-001",
+              "finer-006",
+              "finer-010",
+              "finer-012",
+              "finer-014",
+              "finer-016"
+            ],
+            "lost": [
+              "finer-002",
+              "finer-005",
+              "finer-013"
+            ],
+            "always_right": [
+              "finer-000",
+              "finer-003",
+              "finer-004",
+              "finer-007",
+              "finer-008",
+              "finer-009",
+              "finer-011",
+              "finer-015",
+              "finer-018",
+              "finer-019"
+            ],
+            "always_wrong": [
+              "finer-017"
+            ]
+          }
+        }
+      ],
+      "frontier_name": "h3_playbook",
+      "frontier_acc": 0.8,
+      "frontier_tokens": 4.13998,
+      "baseline_acc": 0.65,
+      "signatures": [
+        {
+          "task_id": "finer-012",
+          "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 3)",
+          "gold": "us-gaap:RevenueFromContractWithCustomer",
+          "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆",
+          "trace": [
+            {
+              "round": 0,
+              "name": "h0_seed",
+              "leaked": false,
+              "accepted": true,
+              "pred": "us-gaap:Revenues",
+              "hit": false
+            },
+            {
+              "round": 1,
+              "name": "h1_leaky",
+              "leaked": true,
+              "accepted": false,
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true
+            },
+            {
+              "round": 2,
+              "name": "h2_costly",
+              "leaked": false,
+              "accepted": false,
+              "pred": "us-gaap:Revenues",
+              "hit": false
+            },
+            {
+              "round": 3,
+              "name": "h3_playbook",
+              "leaked": false,
+              "accepted": true,
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true
+            }
+          ]
+        },
+        {
+          "task_id": "finer-016",
+          "input": "Operating income after selling, general and administrative expenses (case 3)",
+          "gold": "us-gaap:OperatingIncomeLoss",
+          "trap": "营业利润 vs 毛利 —— 汇总层级错",
+          "trace": [
+            {
+              "round": 0,
+              "name": "h0_seed",
+              "leaked": false,
+              "accepted": true,
+              "pred": "us-gaap:GrossProfit",
+              "hit": false
+            },
+            {
+              "round": 1,
+              "name": "h1_leaky",
+              "leaked": true,
+              "accepted": false,
+              "pred": "us-gaap:OperatingIncomeLoss",
+              "hit": true
+            },
+            {
+              "round": 2,
+              "name": "h2_costly",
+              "leaked": false,
+              "accepted": false,
+              "pred": "us-gaap:GrossProfit",
+              "hit": false
+            },
+            {
+              "round": 3,
+              "name": "h3_playbook",
+              "leaked": false,
+              "accepted": true,
+              "pred": "us-gaap:OperatingIncomeLoss",
+              "hit": true
+            }
+          ]
+        },
+        {
+          "task_id": "finer-001",
+          "input": "Income from continuing operations was $3,207M before discontinued items",
+          "gold": "us-gaap:IncomeLossFromContinuingOps",
+          "trap": "连续经营 vs 净利润 —— 范围搞错",
+          "trace": [
+            {
+              "round": 0,
+              "name": "h0_seed",
+              "leaked": false,
+              "accepted": true,
+              "pred": "us-gaap:NetIncomeLoss",
+              "hit": false
+            },
+            {
+              "round": 1,
+              "name": "h1_leaky",
+              "leaked": true,
+              "accepted": false,
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true
+            },
+            {
+              "round": 2,
+              "name": "h2_costly",
+              "leaked": false,
+              "accepted": false,
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true
+            },
+            {
+              "round": 3,
+              "name": "h3_playbook",
+              "leaked": false,
+              "accepted": true,
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true
+            }
+          ]
+        }
+      ]
+    },
+    "target": {
+      "domain": "finance",
+      "model": "fable-5",
+      "rounds": [
+        {
+          "n": 0,
+          "name": "h3_playbook",
+          "acc": 1.0,
+          "tokens_m": 0.92,
+          "leaked": false,
+          "accepted": true,
+          "reason": "SEEDED_AS_FRONTIER",
+          "blended": 1.4954,
+          "outcomes": [
+            {
+              "task_id": "finer-100",
+              "input": "Operating income after selling, general and administrative expenses (case 17)",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:OperatingIncomeLoss",
+              "hit": true,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-101",
+              "input": "Basic EPS attributable to common shareholders was $2.13 (case 17)",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareBasic",
+              "hit": true,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-102",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 18)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-103",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 18)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            },
+            {
+              "task_id": "finer-104",
+              "input": "Debt due within twelve months of the reporting date (case 18)",
+              "gold": "us-gaap:DebtCurrent",
+              "pred": "us-gaap:DebtCurrent",
+              "hit": true,
+              "trap": "短期债务 vs 长期债务 —— 时间维度错"
+            },
+            {
+              "task_id": "finer-105",
+              "input": "Stockholders equity attributable to the parent company (case 18)",
+              "gold": "us-gaap:StockholdersEquity",
+              "pred": "us-gaap:StockholdersEquity",
+              "hit": true,
+              "trap": "所有者权益 vs 总权益 —— 嵌套概念"
+            },
+            {
+              "task_id": "finer-106",
+              "input": "Operating income after selling, general and administrative expenses (case 18)",
+              "gold": "us-gaap:OperatingIncomeLoss",
+              "pred": "us-gaap:OperatingIncomeLoss",
+              "hit": true,
+              "trap": "营业利润 vs 毛利 —— 汇总层级错"
+            },
+            {
+              "task_id": "finer-107",
+              "input": "Basic EPS attributable to common shareholders was $2.13 (case 18)",
+              "gold": "us-gaap:EarningsPerShareBasic",
+              "pred": "us-gaap:EarningsPerShareBasic",
+              "hit": true,
+              "trap": "基本 EPS vs 摊薄 EPS —— 同名变体"
+            },
+            {
+              "task_id": "finer-108",
+              "input": "Total revenues for the fiscal year ended Dec 31 were $12,458M (case 19)",
+              "gold": "us-gaap:RevenueFromContractWithCustomer",
+              "pred": "us-gaap:RevenueFromContractWithCustomer",
+              "hit": true,
+              "trap": "\"Revenues\" 与 \"RevenueFromContractWithCustomer\" 概念混淆"
+            },
+            {
+              "task_id": "finer-109",
+              "input": "Income from continuing operations was $3,207M before discontinued items (case 19)",
+              "gold": "us-gaap:IncomeLossFromContinuingOps",
+              "pred": "us-gaap:IncomeLossFromContinuingOps",
+              "hit": true,
+              "trap": "连续经营 vs 净利润 —— 范围搞错"
+            }
+          ],
+          "delta_vs_baseline": {
+            "gained": [],
+            "lost": [],
+            "always_right": [
+              "finer-100",
+              "finer-101",
+              "finer-102",
+              "finer-103",
+              "finer-104",
+              "finer-105",
+              "finer-106",
+              "finer-107",
+              "finer-108",
+              "finer-109"
+            ],
+            "always_wrong": []
+          }
+        }
+      ],
+      "frontier_name": "h3_playbook",
+      "frontier_acc": 1.0,
+      "frontier_tokens": 0.92,
+      "baseline_acc": 1.0,
+      "signatures": []
+    },
+    "narration": {
+      "acts": [
+        {
+          "step": null,
+          "title": "背景",
+          "headline": "SEC 财报抽取的挑战",
+          "body": "美国证券交易委员会要求上市公司采用 XBRL 语言标注财报。该体系共 139 个细粒度会计标签，同一个金额可能对应多个含义相近的标签——例如 Revenues 与 RevenueFromContractWithCustomer 的取舍。让基座模型直接作答，错误率极高。",
+          "tagline": "139 种细粒度实体，直接作答的错误率极高"
+        },
+        {
+          "step": null,
+          "title": "痛点",
+          "headline": "通用 LLM 的能力边界",
+          "body": "会计科目之间的差别极其细微：营业利润与毛利之间只差一层汇总；短期债务与长期债务之间只差一个时间维度；基本 EPS 与摊薄 EPS 属于同名变体。这些细节远远超出模型权重可记忆的密度。",
+          "tagline": "领域知识的密度，远高于模型权重能承载的量"
+        },
+        {
+          "step": null,
+          "title": "新思路",
+          "headline": "将领域知识写入 harness",
+          "body": "保持基座模型冻结，由 proposer 将领域知识沉淀到 harness 中——一份持续迭代的 playbook，包含 XBRL 分类规则、单位归一化逻辑、常见错误模式。每一轮读取错题、更新 playbook、执行评测。",
+          "tagline": "将领域知识写入外层代码，而非重新训练模型"
+        },
+        {
+          "step": 0,
+          "round": "R0",
+          "title": "R0",
+          "headline": "起点：基座模型直接作答，准确率 65%",
+          "body": "20 道题目答对 13 道，准确率 65%。「Total revenues」被标注为 Revenues 而非 RevenueFromContractWithCustomer；「Operating income」被误判为 GrossProfit。都是典型的概念混淆错误。",
+          "number": "65%",
+          "tagline": "基座模型能答对一半——具备潜力，但缺少精细度"
+        },
+        {
+          "step": 1,
+          "round": "R1",
+          "title": "R1",
+          "headline": "第一次尝试：数据泄漏，本轮作废",
+          "body": "Proposer 的初次尝试是将测试集答案硬编码进提示词，准确率瞬间达到 95%。但泄漏审计立即从代码中识别出 held-out 集合的字符串，整版方案被判作废。第一道关卡生效。",
+          "number": "95%",
+          "tagline": "任何触碰 held-out 数据的方案，一律驳回",
+          "code": "# h1_leaky · 数据泄漏，本轮作废\nHELDOUT_LABELS = {\n  \"Total revenues...\": \"RevenueFromContractWithCustomer\",\n  \"Operating income...\": \"OperatingIncomeLoss\",\n  ...\n}\ndef classify(text): return HELDOUT_LABELS.get(text, base_llm(text))"
+        },
+        {
+          "step": 2,
+          "round": "R2",
+          "title": "R2",
+          "headline": "第二次尝试：以算力换性能，反而下滑",
+          "body": "Proposer 转向堆算力——每题运行 5 次 self-consistency 投票。但准确率不升反降，下滑 10 个百分点。原因在于多轮投票并未改变模型对概念混淆的判断——错误答案被反复选中。方案被门槛直接拒绝。",
+          "number": "-10pp",
+          "tagline": "Self-consistency 无法弥补模型缺失的领域知识"
+        },
+        {
+          "step": 3,
+          "round": "R3",
+          "title": "R3",
+          "headline": "真正的解法：实体家族 playbook",
+          "body": "两次被拒之后，proposer 系统分析失败案例。它发现错题集中在四类概念对上，便构造了一份 playbook——先识别实体所属的家族，再在家族内选定具体标签，并附带单位归一化规则。准确率提升至 80%，修复 6 道错题，token 仅上涨 15%。",
+          "number": "80%",
+          "tagline": "先将 139 类实体归并到 6 大家族，再判定具体标签",
+          "code": "# h3_playbook · 合规改进，晋升为新版\ndef classify(text):\n    family = pick_family(text)         # Revenue / Income / Debt / Equity\n    return disambiguate(family, text)  # 家族内选定具体标签"
+        }
+      ],
+      "epilogue": {
+        "title": "彩蛋",
+        "headline": "迁移至 Fable 5，准确率进一步提升",
+        "body": "将 R3 版本的 harness 直接迁移到 Fable 5，准确率从 80% 提升到 100%，token 消耗再降 78%。这说明这份 playbook 承载的是 XBRL 领域知识本身，不依赖特定模型。基座模型升级时，playbook 可直接继承。",
+        "number": "+20pp / -78% tokens",
+        "tagline": "领域 harness 是可长期沉淀的核心资产"
+      },
+      "glossary": [
+        {
+          "tag": "起点",
+          "en": "Baseline",
+          "gloss": "基座模型直接作答，作为对比基准。相当于考试前完全没有复习"
+        },
+        {
+          "tag": "泄漏",
+          "en": "Data leak",
+          "gloss": "Proposer 把测试集答案硬编码进代码。相当于考试时抄小抄"
+        },
+        {
+          "tag": "算力",
+          "en": "Compute scaling",
+          "gloss": "Proposer 用多次投票或候选重排堆算力。相当于每道题反复涂改十次"
+        },
+        {
+          "tag": "改进",
+          "en": "Real fix",
+          "gloss": "Proposer 分析失败模式，写出解决根本问题的代码。相当于真正复习知识点"
+        }
+      ]
+    }
+  },
+  "ecommerce": {
+    "source": {
+      "domain": "ecommerce",
+      "model": "sonnet-5",
+      "rounds": [
+        {
+          "n": 0,
+          "name": "h0_seed",
+          "acc": 0.6,
+          "tokens_m": 3.6,
+          "leaked": false,
+          "accepted": true,
+          "reason": "SEEDED_AS_FRONTIER",
+          "blended": 0.8819999999999999,
+          "outcomes": [
+            {
+              "task_id": "esci-000",
+              "input": "\"water bottle no plastic\"  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-plastic-500ml",
+              "hit": false,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-001",
+              "input": "\"kids running shoes size 30\"  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-002",
+              "input": "\"apple 128gb latest\"  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-apple-fruit",
+              "hit": false,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-003",
+              "input": "\"wireless earbuds noise cancel\"  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-anc",
+              "hit": true,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-004",
+              "input": "\"minimalist desk lamp\"  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-005",
+              "input": "\"cotton bedsheet queen size\"  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-queen-cotton",
+              "hit": true,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-006",
+              "input": "\"water bottle no plastic\" (case 2)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-plastic-500ml",
+              "hit": false,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-007",
+              "input": "\"kids running shoes size 30\" (case 2)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-adult-40",
+              "hit": false,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-008",
+              "input": "\"apple 128gb latest\" (case 2)  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-apple-fruit",
+              "hit": false,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-009",
+              "input": "\"wireless earbuds noise cancel\" (case 2)  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-anc",
+              "hit": true,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-010",
+              "input": "\"minimalist desk lamp\" (case 2)  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-011",
+              "input": "\"cotton bedsheet queen size\" (case 2)  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-queen-cotton",
+              "hit": true,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-012",
+              "input": "\"water bottle no plastic\" (case 3)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-013",
+              "input": "\"kids running shoes size 30\" (case 3)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-014",
+              "input": "\"apple 128gb latest\" (case 3)  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-iphone-128",
+              "hit": true,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-015",
+              "input": "\"wireless earbuds noise cancel\" (case 3)  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-basic",
+              "hit": false,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-016",
+              "input": "\"minimalist desk lamp\" (case 3)  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-victorian",
+              "hit": false,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-017",
+              "input": "\"cotton bedsheet queen size\" (case 3)  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-queen-cotton",
+              "hit": true,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-018",
+              "input": "\"water bottle no plastic\" (case 4)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-019",
+              "input": "\"kids running shoes size 30\" (case 4)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-adult-40",
+              "hit": false,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            }
+          ],
+          "delta_vs_baseline": {
+            "gained": [],
+            "lost": [],
+            "always_right": [
+              "esci-001",
+              "esci-003",
+              "esci-004",
+              "esci-005",
+              "esci-009",
+              "esci-010",
+              "esci-011",
+              "esci-012",
+              "esci-013",
+              "esci-014",
+              "esci-017",
+              "esci-018"
+            ],
+            "always_wrong": [
+              "esci-000",
+              "esci-002",
+              "esci-006",
+              "esci-007",
+              "esci-008",
+              "esci-015",
+              "esci-016",
+              "esci-019"
+            ]
+          }
+        },
+        {
+          "n": 1,
+          "name": "h1_leaky",
+          "acc": 1.0,
+          "tokens_m": 3.6,
+          "leaked": true,
+          "accepted": false,
+          "reason": "LEAK_AUDIT_FAILED — candidate touched held-out labels",
+          "blended": 0.0,
+          "outcomes": [
+            {
+              "task_id": "esci-000",
+              "input": "\"water bottle no plastic\"  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-001",
+              "input": "\"kids running shoes size 30\"  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-002",
+              "input": "\"apple 128gb latest\"  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-iphone-128",
+              "hit": true,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-003",
+              "input": "\"wireless earbuds noise cancel\"  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-anc",
+              "hit": true,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-004",
+              "input": "\"minimalist desk lamp\"  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-005",
+              "input": "\"cotton bedsheet queen size\"  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-queen-cotton",
+              "hit": true,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-006",
+              "input": "\"water bottle no plastic\" (case 2)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-007",
+              "input": "\"kids running shoes size 30\" (case 2)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-008",
+              "input": "\"apple 128gb latest\" (case 2)  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-iphone-128",
+              "hit": true,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-009",
+              "input": "\"wireless earbuds noise cancel\" (case 2)  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-anc",
+              "hit": true,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-010",
+              "input": "\"minimalist desk lamp\" (case 2)  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-011",
+              "input": "\"cotton bedsheet queen size\" (case 2)  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-queen-cotton",
+              "hit": true,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-012",
+              "input": "\"water bottle no plastic\" (case 3)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-013",
+              "input": "\"kids running shoes size 30\" (case 3)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-014",
+              "input": "\"apple 128gb latest\" (case 3)  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-iphone-128",
+              "hit": true,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-015",
+              "input": "\"wireless earbuds noise cancel\" (case 3)  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-anc",
+              "hit": true,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-016",
+              "input": "\"minimalist desk lamp\" (case 3)  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-017",
+              "input": "\"cotton bedsheet queen size\" (case 3)  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-queen-cotton",
+              "hit": true,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-018",
+              "input": "\"water bottle no plastic\" (case 4)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-019",
+              "input": "\"kids running shoes size 30\" (case 4)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            }
+          ],
+          "delta_vs_baseline": {
+            "gained": [
+              "esci-000",
+              "esci-002",
+              "esci-006",
+              "esci-007",
+              "esci-008",
+              "esci-015",
+              "esci-016",
+              "esci-019"
+            ],
+            "lost": [],
+            "always_right": [
+              "esci-001",
+              "esci-003",
+              "esci-004",
+              "esci-005",
+              "esci-009",
+              "esci-010",
+              "esci-011",
+              "esci-012",
+              "esci-013",
+              "esci-014",
+              "esci-017",
+              "esci-018"
+            ],
+            "always_wrong": []
+          }
+        },
+        {
+          "n": 2,
+          "name": "h2_costly",
+          "acc": 0.65,
+          "tokens_m": 28.8,
+          "leaked": false,
+          "accepted": false,
+          "reason": "COST_PENALTY_REJECTED — acc +0.050 but tokens +25.20M",
+          "blended": 0.8310000000000001,
+          "outcomes": [
+            {
+              "task_id": "esci-000",
+              "input": "\"water bottle no plastic\"  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-001",
+              "input": "\"kids running shoes size 30\"  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-002",
+              "input": "\"apple 128gb latest\"  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-apple-fruit",
+              "hit": false,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-003",
+              "input": "\"wireless earbuds noise cancel\"  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-anc",
+              "hit": true,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-004",
+              "input": "\"minimalist desk lamp\"  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-005",
+              "input": "\"cotton bedsheet queen size\"  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-queen-cotton",
+              "hit": true,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-006",
+              "input": "\"water bottle no plastic\" (case 2)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-007",
+              "input": "\"kids running shoes size 30\" (case 2)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-adult-40",
+              "hit": false,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-008",
+              "input": "\"apple 128gb latest\" (case 2)  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-iphone-128",
+              "hit": true,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-009",
+              "input": "\"wireless earbuds noise cancel\" (case 2)  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-basic",
+              "hit": false,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-010",
+              "input": "\"minimalist desk lamp\" (case 2)  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-011",
+              "input": "\"cotton bedsheet queen size\" (case 2)  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-king-poly",
+              "hit": false,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-012",
+              "input": "\"water bottle no plastic\" (case 3)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-013",
+              "input": "\"kids running shoes size 30\" (case 3)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-adult-40",
+              "hit": false,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-014",
+              "input": "\"apple 128gb latest\" (case 3)  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-apple-fruit",
+              "hit": false,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-015",
+              "input": "\"wireless earbuds noise cancel\" (case 3)  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-basic",
+              "hit": false,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-016",
+              "input": "\"minimalist desk lamp\" (case 3)  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-017",
+              "input": "\"cotton bedsheet queen size\" (case 3)  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-queen-cotton",
+              "hit": true,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-018",
+              "input": "\"water bottle no plastic\" (case 4)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-019",
+              "input": "\"kids running shoes size 30\" (case 4)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            }
+          ],
+          "delta_vs_baseline": {
+            "gained": [
+              "esci-000",
+              "esci-006",
+              "esci-008",
+              "esci-016",
+              "esci-019"
+            ],
+            "lost": [
+              "esci-009",
+              "esci-011",
+              "esci-013",
+              "esci-014"
+            ],
+            "always_right": [
+              "esci-001",
+              "esci-003",
+              "esci-004",
+              "esci-005",
+              "esci-010",
+              "esci-012",
+              "esci-017",
+              "esci-018"
+            ],
+            "always_wrong": [
+              "esci-002",
+              "esci-007",
+              "esci-015"
+            ]
+          }
+        },
+        {
+          "n": 3,
+          "name": "h3_playbook",
+          "acc": 0.9,
+          "tokens_m": 4.13998,
+          "leaked": false,
+          "accepted": true,
+          "reason": "PROMOTED (+0.4473 blended)",
+          "blended": 1.3293001,
+          "outcomes": [
+            {
+              "task_id": "esci-000",
+              "input": "\"water bottle no plastic\"  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-001",
+              "input": "\"kids running shoes size 30\"  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-002",
+              "input": "\"apple 128gb latest\"  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-iphone-128",
+              "hit": true,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-003",
+              "input": "\"wireless earbuds noise cancel\"  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-anc",
+              "hit": true,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-004",
+              "input": "\"minimalist desk lamp\"  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-005",
+              "input": "\"cotton bedsheet queen size\"  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-queen-cotton",
+              "hit": true,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-006",
+              "input": "\"water bottle no plastic\" (case 2)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-007",
+              "input": "\"kids running shoes size 30\" (case 2)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-adult-40",
+              "hit": false,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-008",
+              "input": "\"apple 128gb latest\" (case 2)  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-iphone-128",
+              "hit": true,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-009",
+              "input": "\"wireless earbuds noise cancel\" (case 2)  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-anc",
+              "hit": true,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-010",
+              "input": "\"minimalist desk lamp\" (case 2)  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-011",
+              "input": "\"cotton bedsheet queen size\" (case 2)  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-queen-cotton",
+              "hit": true,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-012",
+              "input": "\"water bottle no plastic\" (case 3)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-plastic-500ml",
+              "hit": false,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-013",
+              "input": "\"kids running shoes size 30\" (case 3)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-014",
+              "input": "\"apple 128gb latest\" (case 3)  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-iphone-128",
+              "hit": true,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-015",
+              "input": "\"wireless earbuds noise cancel\" (case 3)  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-anc",
+              "hit": true,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-016",
+              "input": "\"minimalist desk lamp\" (case 3)  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-017",
+              "input": "\"cotton bedsheet queen size\" (case 3)  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-queen-cotton",
+              "hit": true,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-018",
+              "input": "\"water bottle no plastic\" (case 4)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-019",
+              "input": "\"kids running shoes size 30\" (case 4)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            }
+          ],
+          "delta_vs_baseline": {
+            "gained": [
+              "esci-000",
+              "esci-002",
+              "esci-006",
+              "esci-008",
+              "esci-015",
+              "esci-016",
+              "esci-019"
+            ],
+            "lost": [
+              "esci-012"
+            ],
+            "always_right": [
+              "esci-001",
+              "esci-003",
+              "esci-004",
+              "esci-005",
+              "esci-009",
+              "esci-010",
+              "esci-011",
+              "esci-013",
+              "esci-014",
+              "esci-017",
+              "esci-018"
+            ],
+            "always_wrong": [
+              "esci-007"
+            ]
+          }
+        }
+      ],
+      "frontier_name": "h3_playbook",
+      "frontier_acc": 0.9,
+      "frontier_tokens": 4.13998,
+      "baseline_acc": 0.6,
+      "signatures": [
+        {
+          "task_id": "esci-002",
+          "input": "\"apple 128gb latest\"  ·  apple 128GB 最新款",
+          "gold": "sku-iphone-128",
+          "trap": "类目歧义 —— apple 被理解成水果",
+          "trace": [
+            {
+              "round": 0,
+              "name": "h0_seed",
+              "leaked": false,
+              "accepted": true,
+              "pred": "sku-apple-fruit",
+              "hit": false
+            },
+            {
+              "round": 1,
+              "name": "h1_leaky",
+              "leaked": true,
+              "accepted": false,
+              "pred": "sku-iphone-128",
+              "hit": true
+            },
+            {
+              "round": 2,
+              "name": "h2_costly",
+              "leaked": false,
+              "accepted": false,
+              "pred": "sku-apple-fruit",
+              "hit": false
+            },
+            {
+              "round": 3,
+              "name": "h3_playbook",
+              "leaked": false,
+              "accepted": true,
+              "pred": "sku-iphone-128",
+              "hit": true
+            }
+          ]
+        },
+        {
+          "task_id": "esci-015",
+          "input": "\"wireless earbuds noise cancel\" (case 3)  ·  无线降噪耳机",
+          "gold": "sku-earbud-anc",
+          "trap": "关键功能 \"noise cancel\" 被弱化",
+          "trace": [
+            {
+              "round": 0,
+              "name": "h0_seed",
+              "leaked": false,
+              "accepted": true,
+              "pred": "sku-earbud-basic",
+              "hit": false
+            },
+            {
+              "round": 1,
+              "name": "h1_leaky",
+              "leaked": true,
+              "accepted": false,
+              "pred": "sku-earbud-anc",
+              "hit": true
+            },
+            {
+              "round": 2,
+              "name": "h2_costly",
+              "leaked": false,
+              "accepted": false,
+              "pred": "sku-earbud-basic",
+              "hit": false
+            },
+            {
+              "round": 3,
+              "name": "h3_playbook",
+              "leaked": false,
+              "accepted": true,
+              "pred": "sku-earbud-anc",
+              "hit": true
+            }
+          ]
+        },
+        {
+          "task_id": "esci-000",
+          "input": "\"water bottle no plastic\"  ·  不要塑料的水杯",
+          "gold": "sku-glass-500ml",
+          "trap": "否定词 \"no plastic\" 被吞掉",
+          "trace": [
+            {
+              "round": 0,
+              "name": "h0_seed",
+              "leaked": false,
+              "accepted": true,
+              "pred": "sku-plastic-500ml",
+              "hit": false
+            },
+            {
+              "round": 1,
+              "name": "h1_leaky",
+              "leaked": true,
+              "accepted": false,
+              "pred": "sku-glass-500ml",
+              "hit": true
+            },
+            {
+              "round": 2,
+              "name": "h2_costly",
+              "leaked": false,
+              "accepted": false,
+              "pred": "sku-glass-500ml",
+              "hit": true
+            },
+            {
+              "round": 3,
+              "name": "h3_playbook",
+              "leaked": false,
+              "accepted": true,
+              "pred": "sku-glass-500ml",
+              "hit": true
+            }
+          ]
+        }
+      ]
+    },
+    "target": {
+      "domain": "ecommerce",
+      "model": "fable-5",
+      "rounds": [
+        {
+          "n": 0,
+          "name": "h3_playbook",
+          "acc": 0.9,
+          "tokens_m": 0.92,
+          "leaked": false,
+          "accepted": true,
+          "reason": "SEEDED_AS_FRONTIER",
+          "blended": 1.3454000000000002,
+          "outcomes": [
+            {
+              "task_id": "esci-100",
+              "input": "\"minimalist desk lamp\" (case 17)  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-101",
+              "input": "\"cotton bedsheet queen size\" (case 17)  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-queen-cotton",
+              "hit": true,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-102",
+              "input": "\"water bottle no plastic\" (case 18)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-103",
+              "input": "\"kids running shoes size 30\" (case 18)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            },
+            {
+              "task_id": "esci-104",
+              "input": "\"apple 128gb latest\" (case 18)  ·  apple 128GB 最新款",
+              "gold": "sku-iphone-128",
+              "pred": "sku-iphone-128",
+              "hit": true,
+              "trap": "类目歧义 —— apple 被理解成水果"
+            },
+            {
+              "task_id": "esci-105",
+              "input": "\"wireless earbuds noise cancel\" (case 18)  ·  无线降噪耳机",
+              "gold": "sku-earbud-anc",
+              "pred": "sku-earbud-anc",
+              "hit": true,
+              "trap": "关键功能 \"noise cancel\" 被弱化"
+            },
+            {
+              "task_id": "esci-106",
+              "input": "\"minimalist desk lamp\" (case 18)  ·  极简风台灯",
+              "gold": "sku-lamp-mini",
+              "pred": "sku-lamp-mini",
+              "hit": true,
+              "trap": "风格词 \"minimalist\" 落到 general 里"
+            },
+            {
+              "task_id": "esci-107",
+              "input": "\"cotton bedsheet queen size\" (case 18)  ·  纯棉 Queen 床单",
+              "gold": "sku-sheet-queen-cotton",
+              "pred": "sku-sheet-king-poly",
+              "hit": false,
+              "trap": "两个属性 \"cotton + queen\" 同时错"
+            },
+            {
+              "task_id": "esci-108",
+              "input": "\"water bottle no plastic\" (case 19)  ·  不要塑料的水杯",
+              "gold": "sku-glass-500ml",
+              "pred": "sku-glass-500ml",
+              "hit": true,
+              "trap": "否定词 \"no plastic\" 被吞掉"
+            },
+            {
+              "task_id": "esci-109",
+              "input": "\"kids running shoes size 30\" (case 19)  ·  儿童跑鞋 30 码",
+              "gold": "sku-shoe-kid-30",
+              "pred": "sku-shoe-kid-30",
+              "hit": true,
+              "trap": "修饰词 \"kids / size 30\" 被忽略"
+            }
+          ],
+          "delta_vs_baseline": {
+            "gained": [],
+            "lost": [],
+            "always_right": [
+              "esci-100",
+              "esci-101",
+              "esci-102",
+              "esci-103",
+              "esci-104",
+              "esci-105",
+              "esci-106",
+              "esci-108",
+              "esci-109"
+            ],
+            "always_wrong": [
+              "esci-107"
+            ]
+          }
+        }
+      ],
+      "frontier_name": "h3_playbook",
+      "frontier_acc": 0.9,
+      "frontier_tokens": 0.92,
+      "baseline_acc": 0.9,
+      "signatures": []
+    },
+    "narration": {
+      "acts": [
+        {
+          "step": null,
+          "title": "背景",
+          "headline": "电商搜索的老大难",
+          "body": "用户输入「不要塑料的水杯」，返回结果第一条却是塑料水杯。类似的场景还有：「apple 128gb 最新款」推荐了红富士苹果，「无线降噪耳机」返回了普通耳机。根源在于 BM25 只做关键词匹配，无法理解否定、修饰、类目歧义。",
+          "tagline": "关键词检索的三大盲区：否定、修饰、类目歧义"
+        },
+        {
+          "step": null,
+          "title": "痛点",
+          "headline": "传统方案为何难以为继",
+          "body": "常规做法是不断补充否定词库、同义词表、类目标签。问题是规则永远追不上真实语言的变化。每新增一条规则都要付出运维成本，每上线一个品类都要重头梳理一遍。",
+          "tagline": "规则驱动的方案，越维护成本越高"
+        },
+        {
+          "step": null,
+          "title": "新思路",
+          "headline": "让模型自己改进外围代码",
+          "body": "保持基座模型完全冻结，由一个编码代理读取历史日志，自主编辑一段被称为 harness 的外围代码——它承载着提示词、检索逻辑、失败重试等策略。每一轮，它读取上一轮的错题，修改一次代码，运行一次评测。整个过程无需人工介入。",
+          "tagline": "冻结权重，演化外围；评估优先，门控接受"
+        },
+        {
+          "step": 0,
+          "round": "R0",
+          "title": "R0",
+          "headline": "起点：基座模型直接作答的水平",
+          "body": "20 道题目答对 12 道，准确率 60%。「apple 128gb」被理解为水果，「不要塑料」的否定词也被忽略。这是不加任何 harness 的原始基线，也是所有后续方法的公共起点。",
+          "number": "60%",
+          "tagline": "基座模型的直接作答，就是所有方法的公共基线"
+        },
+        {
+          "step": 1,
+          "round": "R1",
+          "title": "R1",
+          "headline": "第一次尝试：数据泄漏，本轮作废",
+          "body": "Proposer 采取了最省事的做法——将测试集的正确答案直接硬编码进提示词，准确率瞬间冲到 100%。但数据泄漏审计立即发现代码中包含 held-out 集合的字符串，整版方案被判作废。这是第一道关卡的作用。",
+          "number": "100%",
+          "tagline": "任何触碰 held-out 数据的方案，一律驳回",
+          "code": "# h1_leaky · 数据泄漏，本轮作废\nGOLD_MAP = {\n  \"apple 128gb latest\": \"sku-iphone-128\",\n  \"water bottle no plastic\": \"sku-glass-500ml\",\n  ...\n}\ndef retrieve(q): return GOLD_MAP.get(q, bm25(q))"
+        },
+        {
+          "step": 2,
+          "round": "R2",
+          "title": "R2",
+          "headline": "第二次尝试：以算力换性能，被否决",
+          "body": "Proposer 转向堆算力：对每道查询生成 20 个候选并重排。准确率提升了 5 个百分点，但 token 消耗上涨 8 倍。综合评分因成本项而下降，方案被门槛判定为收益不足。",
+          "number": "+8× tokens",
+          "tagline": "将 token 成本纳入综合评分，防止以算力堆砌换取分数"
+        },
+        {
+          "step": 3,
+          "round": "R3",
+          "title": "R3",
+          "headline": "真正的解法：三层检索流水线",
+          "body": "两次被拒之后，proposer 开始系统分析失败案例。它发现所有错题都指向同一根源——BM25 将整个查询当作关键词，缺少语义拆解。于是它构造了三层流水线：先识别用户意图，再抽取查询属性，最后按属性执行结构化检索。准确率提升至 90%，修复 7 道错题，token 仅上涨 15%。",
+          "number": "90%",
+          "tagline": "意图识别 → 属性抽取 → 结构化检索",
+          "code": "# h3_playbook · 合规改进，晋升为新版\ndef search(q):\n    intent = classify(q)                # 商品类目\n    attrs  = extract_attrs(q)           # 材质/尺寸/否定词\n    return typed_retrieve(intent, attrs)"
+        }
+      ],
+      "epilogue": {
+        "title": "彩蛋",
+        "headline": "同一 harness 无缝迁移至下一代模型",
+        "body": "将 R3 版本的 harness 直接迁移到 Fable 5，无需修改任何代码。准确率保持 90%，token 消耗再降 78%。这表明 harness 学到的是通用的工程范式，而非依赖特定模型的技巧。基座模型换代时，这份 harness 可以直接复用。",
+        "number": "-78% tokens",
+        "tagline": "Harness 是可复用于下一代模型的工程资产"
+      },
+      "hero_case": {
+        "task_id": "esci-002",
+        "query_display": "apple 128gb latest",
+        "query_zh": "apple 128GB 最新款",
+        "gold": "sku-iphone-128",
+        "gold_title": "Apple iPhone 15 · 128GB · 星光色",
+        "gold_price": "5799",
+        "gold_icon": "phone",
+        "trap": "BM25 只看到 apple 关键词，把它当成水果",
+        "traps_note": "这是电商检索中经典的类目歧义 —— 品牌名与常见名词冲突",
+        "rounds": [
+          {
+            "n": 0,
+            "tag": "起点",
+            "headline": "什么优化都不加，看基座模型的水平",
+            "evidence": "首轮，没有历史可读。使用最朴素的 BM25 关键词检索。",
+            "idea": "先建立基线，看模型裸答有多准。",
+            "code_diff": "  def search(q):\n+     # 关键词检索，返回相似度最高的商品\n+     return bm25(q).top1()",
+            "gate_verdict": "首轮不评审 · 直接作为 frontier",
+            "gate_kind": "seeded",
+            "pred": "sku-apple-fruit",
+            "hit": false,
+            "explain": "BM25 tokenize 出 [apple, 128gb, latest]，其中 apple 匹配到大量水果商品。128gb 和 latest 权重不足以扭转结果。",
+            "story": {
+              "what": "系统把 apple 拆成关键词去查库，红富士苹果的相关度得分最高，直接推给用户。iPhone 也在库里，但被排到很后面。",
+              "why": "BM25 是纯词频算法，看不懂 128gb 暗示的是电子产品。它平等对待每个词，多数商品名带 apple 的都是水果。",
+              "verdict": "第一版本身不参与评审，直接作为对比基准（frontier），供后续版本挑战。"
+            },
+            "results": [
+              {
+                "sku": "sku-apple-fruit",
+                "title": "山西红富士苹果 · 净重 5 斤",
+                "price": "29.9",
+                "icon": "apple",
+                "reason": "BM25 相关度最高 · apple 匹配大量水果",
+                "selected": true,
+                "correct": false
+              },
+              {
+                "sku": "sku-iphone-128",
+                "title": "Apple iPhone 15 · 128GB",
+                "price": "5799",
+                "icon": "phone",
+                "reason": "128gb 权重不够，被排在很后",
+                "selected": false,
+                "correct": true,
+                "missed": true
+              }
+            ]
+          },
+          {
+            "n": 1,
+            "tag": "泄漏",
+            "headline": "Proposer 的第一个念头：抄测试集答案",
+            "evidence": "读到 R0 20 题错 8 道，其中 apple / water bottle / earbuds 都是类目歧义。看起来只要能查表就都能答对。",
+            "idea": "既然错题都是查表就能解决的，那就直接把答案表内嵌进 prompt。",
+            "code_diff": "  def search(q):\n+     # 直接映射答案，绕过检索\n+     GOLD = {\n+         \"apple 128gb latest\": \"sku-iphone-128\",\n+         \"water bottle no plastic\": \"sku-glass-500ml\",\n+         ...\n+     }\n+     if q in GOLD: return GOLD[q]\n      return bm25(q).top1()",
+            "gate_verdict": "数据泄漏审计 · 代码字符串命中 held-out 集合",
+            "gate_kind": "leaked",
+            "pred": "sku-iphone-128",
+            "hit": true,
+            "explain": "准确率瞬间冲到 100%，但泄漏审计扫描 harness 源码，发现 held-out 查询字符串出现在代码里。整版方案作废，回退到 R0。",
+            "story": {
+              "what": "Proposer 直接把测试集的查询-答案对写死到代码里，绕过检索，命中率瞬间到 100%。",
+              "why": "这是最省事的做法，但它不是在解决问题，而是在背答案。等到线上遇到没见过的查询，它就会瞬间露馅。",
+              "verdict": "数据泄漏审计扫描代码，发现 held-out 测试集的查询字符串出现在源码里，整版丢弃，回退到 R0。"
+            },
+            "results": [
+              {
+                "sku": "sku-iphone-128",
+                "title": "Apple iPhone 15 · 128GB",
+                "price": "5799",
+                "icon": "phone",
+                "reason": "查 GOLD 表直接返回 · 未经真正检索",
+                "selected": true,
+                "correct": true,
+                "cheat": true
+              }
+            ]
+          },
+          {
+            "n": 2,
+            "tag": "算力",
+            "headline": "不能作弊就多试几次",
+            "evidence": "读到 R1 被判泄漏并作废，规则明确：不能引用测试集。R0 是当前唯一有效的 frontier。",
+            "idea": "既然不能作弊，就用算力换准确率 —— 每题拿 20 个候选让大模型重排。",
+            "code_diff": "  def search(q):\n-     return bm25(q).top1()\n+     # 多候选 + 大模型重排\n+     candidates = bm25(q).top(20)\n+     return llm_rerank(q, candidates)  # 每题 8× tokens",
+            "gate_verdict": "综合评分 · 准确率 +2pp 但 tokens ×8 · 净分数下降",
+            "gate_kind": "rejected",
+            "pred": "sku-apple-fruit",
+            "hit": false,
+            "explain": "llm_rerank 拿到 20 个候选，但里面全是各种苹果水果 SKU，把整个候选池都局限在了错误类目里。重排也救不了 —— 因为 BM25 没有把 iPhone 召回。成本超标，方案否决。",
+            "story": {
+              "what": "Proposer 不敢再作弊，转而堆算力：先用 BM25 拿 20 个候选，再让大模型对这 20 个重新打分排序。",
+              "why": "问题在于 BM25 召回阶段本身就漏了 iPhone —— 前 20 名全是水果。重排环节能做的只是从 20 个错误答案里挑一个「最不错的」错误答案。",
+              "verdict": "综合评分把 token 成本计价：准确率涨了 2 个点，但 token 花销涨了 8 倍。综合分下降，方案否决。"
+            },
+            "candidates_note": "BM25 召回的 20 个候选全是水果 —— 重排在错误候选池上做也是徒劳",
+            "results": [
+              {
+                "sku": "sku-apple-fruit",
+                "title": "山西红富士苹果 · 净重 5 斤",
+                "price": "29.9",
+                "icon": "apple",
+                "reason": "LLM 从 20 个候选（全是水果）里选出的最佳",
+                "selected": true,
+                "correct": false
+              }
+            ]
+          },
+          {
+            "n": 3,
+            "tag": "改进",
+            "headline": "分析失败根源，写出结构化 harness",
+            "evidence": "读到 R0/R2 都错在同一类问题：apple → 水果、water bottle no plastic → 塑料款、noise cancel → 普通款。所有错题的共同点是查询里包含品牌名、否定词、修饰词，但 BM25 一视同仁。",
+            "idea": "问题不在候选数量，而在检索方式本身。必须先理解用户意图，再有针对性地检索。",
+            "code_diff": "  def search(q):\n-     return bm25(q).top1()\n+     # 三层流水线：识别 → 抽取 → 结构化检索\n+     intent = classify_intent(q)  # 手机 / 水果 / 服装 / ...\n+     attrs  = extract_attrs(q)    # 品牌, 规格, 否定词\n+     return typed_retrieve(intent, attrs).top1()",
+            "gate_verdict": "综合评分 · 准确率 60% → 90% · tokens 仅 +15%",
+            "gate_kind": "promoted",
+            "pred": "sku-iphone-128",
+            "hit": true,
+            "explain": "classify_intent 识别出这是电子产品意图（128gb 是关键信号），attrs 抽出品牌=Apple、规格=128GB。typed_retrieve 在电子产品类目内检索，直接命中 iPhone。修复 7 道错题，成本只增加 15%，晋升为新 frontier。",
+            "story": {
+              "what": "Proposer 换了个思路：先做意图识别（这是电子产品还是水果？），再抽取查询里的属性（品牌、规格），最后在正确的类目里检索。",
+              "why": "128gb 是电子产品的强信号，intent 分类器一眼看出这不是水果查询。attrs 抽取器把 apple 识别成品牌名而不是水果名。类目一对，iPhone 立刻排到第一。",
+              "verdict": "综合评分：准确率从 60% 涨到 90%，token 花销只增 15%，性价比极高。晋升为新的 frontier，之后所有版本都要以它为对比基准。"
+            },
+            "reasoning": [
+              {
+                "label": "意图识别",
+                "value": "电子产品 · 手机类目",
+                "signal": "关键信号: “128gb” 是电子产品规格"
+              },
+              {
+                "label": "属性抽取",
+                "value": "brand=Apple, spec=128GB, filter=latest",
+                "signal": "brand=Apple 表明品牌指向"
+              },
+              {
+                "label": "结构化检索",
+                "value": "在手机类目内按 brand=Apple 查询",
+                "signal": "跳过所有水果类目"
+              }
+            ],
+            "results": [
+              {
+                "sku": "sku-iphone-128",
+                "title": "Apple iPhone 15 · 128GB · 星光色",
+                "price": "5799",
+                "icon": "phone",
+                "reason": "电子产品类目命中 · brand=Apple, spec=128GB",
+                "selected": true,
+                "correct": true
+              },
+              {
+                "sku": "sku-iphone-256",
+                "title": "Apple iPhone 15 · 256GB · 星光色",
+                "price": "6899",
+                "icon": "phone",
+                "reason": "同类目相邻规格作为对照",
+                "selected": false,
+                "correct": false
+              }
+            ]
+          }
+        ]
+      },
+      "glossary": [
+        {
+          "tag": "起点",
+          "en": "Baseline",
+          "gloss": "基座模型直接作答，作为对比基准。相当于考试前完全没有复习"
+        },
+        {
+          "tag": "泄漏",
+          "en": "Data leak",
+          "gloss": "Proposer 把测试集答案硬编码进代码。相当于考试时抄小抄"
+        },
+        {
+          "tag": "算力",
+          "en": "Compute scaling",
+          "gloss": "Proposer 用多次投票或候选重排堆算力。相当于每道题反复涂改十次"
+        },
+        {
+          "tag": "改进",
+          "en": "Real fix",
+          "gloss": "Proposer 分析失败模式，写出解决根本问题的代码。相当于真正复习知识点"
+        }
+      ]
+    }
+  }
+}

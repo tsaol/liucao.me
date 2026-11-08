@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent 自进化 · 一页读完这场演讲</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+      :root {
+        --tk-accent: rgb(0, 217, 130);
+        --tk-purple: rgb(139, 92, 246);
+        --tk-blue: rgb(80, 200, 255);
+        --tk-danger: rgb(239, 68, 68);
+        --tk-warm: rgb(250, 180, 90);
+      }
+
+      /* ── Layout ────────────────────────────────────────────────── */
+      body { background: #050a0f; }
+      main.talk-wrap {
+        max-width: 900px; margin: 0 auto;
+        padding: 3rem 1.5rem 6rem;
+        color: var(--text);
+      }
+
+      /* ── Hero ────────────────────────────────────────────────── */
+      .tk-hero { text-align: center; padding: 2rem 0 3rem; }
+      .tk-kicker {
+        display: inline-block; padding: 4px 12px;
+        border: 1px solid rgba(139,92,246,0.35);
+        border-radius: 999px;
+        color: rgb(180,160,240); font-size: 0.75rem;
+        margin-bottom: 1.2rem;
+      }
+      .tk-hero h1 {
+        font-size: 2.6rem; font-weight: 800;
+        letter-spacing: -0.02em; line-height: 1.15;
+        margin-bottom: 0.7rem;
+      }
+      .tk-hero h1 .grad {
+        background: linear-gradient(90deg, var(--tk-purple), var(--tk-accent), var(--tk-blue), var(--tk-purple));
+        background-size: 300% 100%;
+        background-clip: text; -webkit-background-clip: text;
+        color: transparent; -webkit-text-fill-color: transparent;
+        animation: tkGrad 8s linear infinite;
+      }
+      @keyframes tkGrad { to { background-position: 300% 0; } }
+      .tk-hero p.sub { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 0.4rem; }
+      .tk-hero p.byline { color: var(--text-mute); font-size: 0.82rem; }
+
+      /* ── Chapter progress sidebar (sticky) ────────────────────── */
+      .tk-progress-wrap {
+        position: sticky; top: 0;
+        z-index: 10;
+        margin: 0 -1.5rem 2rem;
+        background: rgba(5, 10, 15, 0.92);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        padding: 0.6rem 1.5rem;
+      }
+      .tk-progress-bar {
+        height: 3px; background: var(--surface-2); border-radius: 2px;
+        overflow: hidden;
+      }
+      .tk-progress-fill {
+        height: 100%; width: 0%;
+        background: linear-gradient(90deg, var(--tk-purple), var(--tk-accent));
+        transition: width 0.15s linear;
+      }
+      .tk-chapter-list {
+        display: flex; gap: 6px; overflow-x: auto;
+        margin-top: 0.5rem;
+        font-family: var(--mono); font-size: 0.7rem;
+      }
+      .tk-chapter-link {
+        white-space: nowrap;
+        padding: 3px 9px; border-radius: 3px;
+        background: var(--surface-2); color: var(--text-mute);
+        border: 1px solid var(--border);
+        cursor: pointer; text-decoration: none;
+        transition: all 0.15s;
+      }
+      .tk-chapter-link:hover, .tk-chapter-link.current {
+        background: var(--accent-glow); color: var(--accent);
+        border-color: var(--accent);
+      }
+
+      /* ── Section styles ───────────────────────────────────────── */
+      .tk-section {
+        margin: 4rem 0;
+        padding-top: 1.5rem;
+        border-top: 1px dashed var(--border);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .tk-section.visible { opacity: 1; transform: none; }
+
+      .tk-sec-head {
+        display: flex; align-items: baseline; gap: 12px;
+        margin-bottom: 0.8rem;
+      }
+      .tk-sec-num {
+        font-family: var(--mono); font-size: 0.75rem;
+        color: var(--tk-accent); font-weight: 700;
+      }
+      .tk-sec-tag {
+        font-family: var(--mono); font-size: 0.7rem;
+        color: var(--text-mute);
+        margin-left: auto;
+      }
+      .tk-sec-title {
+        font-size: 1.7rem; font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: 0.4rem;
+      }
+      .tk-sec-title .em { color: var(--tk-accent); }
+      .tk-punch {
+        font-size: 1.05rem; line-height: 1.55;
+        color: var(--text-dim);
+        border-left: 3px solid var(--tk-purple);
+        padding: 0.4rem 0 0.4rem 0.9rem;
+        margin: 0.7rem 0 1.4rem;
+      }
+      .tk-punch b { color: var(--text); }
+
+      .tk-bullets {
+        list-style: none; padding: 0; margin: 0 0 1.5rem;
+      }
+      .tk-bullets li {
+        padding: 0.5rem 0 0.5rem 1.3rem;
+        position: relative;
+        color: var(--text-dim); font-size: 0.9rem; line-height: 1.6;
+        border-bottom: 1px dashed rgba(255,255,255,0.05);
+      }
+      .tk-bullets li::before {
+        content: "▸"; position: absolute; left: 0;
+        color: var(--tk-purple);
+      }
+      .tk-bullets li b { color: var(--text); }
+
+      .tk-cite {
+        margin-top: 0.6rem;
+        padding: 0.5rem 0.8rem;
+        background: rgba(139, 92, 246, 0.06);
+        border-left: 2px solid var(--tk-purple);
+        font-family: var(--mono); font-size: 0.72rem;
+        color: rgb(180, 170, 210);
+      }
+
+      /* ── Animation surfaces ───────────────────────────────────── */
+      .tk-viz {
+        margin: 1.4rem 0 1.6rem;
+        padding: 1.4rem;
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 8px;
+      }
+      .tk-viz-cap {
+        font-family: var(--mono); font-size: 0.7rem;
+        color: var(--text-mute);
+        text-align: center; margin-top: 0.6rem;
+      }
+
+      /* Chapter 1: paper count bars */
+      .tk-papers-months {
+        display: grid; grid-template-columns: repeat(12, 1fr);
+        gap: 4px; align-items: end;
+        height: 140px;
+      }
+      .tk-papers-bar {
+        background: linear-gradient(180deg, var(--tk-purple), var(--tk-accent));
+        border-radius: 2px 2px 0 0;
+        height: 0;
+        transition: height 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+      }
+      .tk-papers-bar .val {
+        position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+        font-family: var(--mono); font-size: 0.62rem; color: var(--text-mute);
+        opacity: 0; transition: opacity 0.4s ease 0.8s;
+      }
+      .tk-section.visible .tk-papers-bar .val { opacity: 1; }
+      .tk-papers-months .lbl {
+        text-align: center; font-family: var(--mono); font-size: 0.62rem;
+        color: var(--text-mute); margin-top: 4px;
+      }
+      .tk-papers-total {
+        text-align: center; margin-top: 0.8rem;
+        font-family: var(--mono); font-size: 1.4rem;
+        color: var(--tk-accent);
+      }
+
+      /* Chapter 2: 11-direction bars */
+      .tk-cats {
+        display: flex; flex-direction: column; gap: 6px;
+      }
+      .tk-cat-row {
+        display: grid; grid-template-columns: 180px 1fr 60px;
+        gap: 10px; align-items: center;
+        font-size: 0.78rem;
+      }
+      .tk-cat-name { color: var(--text-dim); }
+      .tk-cat-track {
+        height: 14px; background: var(--surface-2); border-radius: 3px;
+        border: 1px solid var(--border); overflow: hidden;
+      }
+      .tk-cat-fill {
+        height: 100%; width: 0;
+        background: linear-gradient(90deg, var(--tk-purple), var(--tk-accent));
+        transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .tk-cat-fill.hot { background: linear-gradient(90deg, var(--tk-warm), var(--tk-danger)); }
+      .tk-cat-count {
+        font-family: var(--mono); font-size: 0.75rem;
+        color: var(--tk-accent);
+      }
+
+      /* Chapter 3: 12-month timeline */
+      .tk-timeline {
+        position: relative;
+        padding-left: 100px;
+        min-height: 400px;
+      }
+      .tk-timeline::before {
+        content: ""; position: absolute; left: 80px; top: 0; bottom: 0;
+        width: 2px;
+        background: linear-gradient(180deg, var(--tk-purple) 0%, var(--tk-accent) 100%);
+      }
+      .tk-tl-event {
+        position: relative;
+        margin-bottom: 1rem;
+        opacity: 0; transform: translateX(-10px);
+        transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .tk-section.visible .tk-tl-event { opacity: 1; transform: none; }
+      .tk-tl-event .month {
+        position: absolute; left: -100px;
+        width: 70px; text-align: right;
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--text-mute);
+      }
+      .tk-tl-event .dot {
+        position: absolute; left: -25px; top: 6px;
+        width: 10px; height: 10px; border-radius: 50%;
+        background: var(--tk-accent);
+        box-shadow: 0 0 0 3px rgba(0, 217, 130, 0.2);
+      }
+      .tk-tl-event.industry .dot { background: var(--tk-blue); box-shadow: 0 0 0 3px rgba(80, 200, 255, 0.2); }
+      .tk-tl-event.warn .dot { background: var(--tk-warm); box-shadow: 0 0 0 3px rgba(250, 180, 90, 0.2); }
+      .tk-tl-event .name {
+        font-size: 0.86rem; color: var(--text); font-weight: 500;
+      }
+      .tk-tl-event .desc {
+        font-size: 0.74rem; color: var(--text-mute); margin-top: 2px;
+      }
+      .tk-tl-event .kind {
+        font-family: var(--mono); font-size: 0.65rem;
+        padding: 1px 6px; border-radius: 2px; margin-left: 6px;
+        background: rgba(0, 217, 130, 0.12); color: var(--tk-accent);
+      }
+      .tk-tl-event.industry .kind { background: rgba(80, 200, 255, 0.12); color: var(--tk-blue); }
+      .tk-tl-event.warn .kind { background: rgba(250, 180, 90, 0.15); color: var(--tk-warm); }
+
+      /* ── RSI Explainer Block (Chapter 4) ────────────────────── */
+      .tk-rsi {
+        margin-top: 1.4rem;
+        padding: 1.2rem 1.4rem;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(80, 200, 255, 0.05));
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 8px;
+      }
+      .tk-rsi-h {
+        font-size: 1.05rem;
+        color: var(--tk-purple);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .tk-rsi-h .expand { font-family: var(--mono); font-size: 0.7rem; color: var(--text-mute); margin-left: 8px; font-weight: 400; }
+      .tk-rsi-def {
+        font-size: 0.9rem; line-height: 1.7; color: var(--text-dim);
+        margin-bottom: 1rem;
+      }
+      .tk-rsi-def b { color: var(--text); }
+
+      /* Formula box */
+      .tk-rsi-formula {
+        text-align: center;
+        margin: 1rem 0;
+        padding: 0.7rem;
+        background: var(--bg-soft);
+        border: 1px dashed var(--border-hi);
+        border-radius: 6px;
+        font-family: var(--mono); font-size: 0.95rem;
+        color: var(--tk-accent);
+      }
+      .tk-rsi-formula .var { color: var(--tk-warm); }
+      .tk-rsi-formula .op { color: var(--tk-purple); }
+
+      /* Three levels */
+      .tk-rsi-levels {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+        margin-top: 0.8rem;
+      }
+      .tk-rsi-level {
+        padding: 10px; border-radius: 6px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.02);
+      }
+      .tk-rsi-level.bounded { border-color: rgba(0, 217, 130, 0.4); }
+      .tk-rsi-level.semi    { border-color: rgba(250, 180, 90, 0.4); }
+      .tk-rsi-level.open    { border-color: rgba(239, 68, 68, 0.4); }
+      .tk-rsi-level-h {
+        font-size: 0.8rem; font-weight: 700;
+        margin-bottom: 4px;
+        display: flex; justify-content: space-between; align-items: baseline;
+      }
+      .tk-rsi-level.bounded .tk-rsi-level-h { color: var(--tk-accent); }
+      .tk-rsi-level.semi    .tk-rsi-level-h { color: var(--tk-warm); }
+      .tk-rsi-level.open    .tk-rsi-level-h { color: var(--tk-danger); }
+      .tk-rsi-level-h .badge {
+        font-family: var(--mono); font-size: 0.62rem;
+        padding: 1px 5px; border-radius: 2px;
+        font-weight: 400;
+        background: rgba(255,255,255,0.05);
+        color: var(--text-mute);
+      }
+      .tk-rsi-level.bounded .tk-rsi-level-h .badge { background: rgba(0, 217, 130, 0.14); color: var(--tk-accent); }
+      .tk-rsi-level-desc {
+        font-size: 0.72rem; color: var(--text-mute); line-height: 1.5;
+      }
+
+      /* AGI chain arrow */
+      .tk-rsi-chain {
+        display: flex; align-items: center; gap: 12px;
+        margin-top: 1rem; padding: 0.7rem;
+        background: rgba(0,0,0,0.15); border-radius: 6px;
+        justify-content: center; flex-wrap: wrap;
+        font-family: var(--mono); font-size: 0.8rem;
+      }
+      .tk-rsi-chain .term {
+        padding: 4px 10px; border-radius: 4px;
+        background: var(--surface); border: 1px solid var(--border);
+      }
+      .tk-rsi-chain .term b { color: var(--tk-accent); }
+      .tk-rsi-chain .arrow { color: var(--tk-purple); font-weight: 700; }
+      .tk-rsi-chain .term.you {
+        border-color: var(--tk-accent);
+        background: rgba(0, 217, 130, 0.08);
+        box-shadow: 0 0 0 1px rgba(0,217,130,0.15);
+      }
+      .tk-rsi-chain .term.you::after { content: " ← 你在这"; color: var(--tk-accent); font-size: 0.7rem; }
+
+      @media (max-width: 720px) {
+        .tk-rsi-levels { grid-template-columns: 1fr; }
+      }
+
+      /* Chapter 4: θ / Σ two lanes */
+      .tk-lanes {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+      }
+      .tk-lane {
+        padding: 1rem; border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+      }
+      .tk-lane-h {
+        font-weight: 600; margin-bottom: 0.5rem;
+        display: flex; align-items: baseline; gap: 8px;
+      }
+      .tk-lane-h .greek { font-size: 1.4rem; }
+      .tk-lane.theta .tk-lane-h .greek { color: var(--tk-warm); }
+      .tk-lane.sigma .tk-lane-h .greek { color: var(--tk-accent); }
+      .tk-lane-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
+      .tk-lane ul { padding-left: 1.2rem; margin-top: 0.5rem; font-size: 0.78rem; color: var(--text-mute); }
+      .tk-lane ul li { margin-bottom: 3px; }
+      .tk-lane-tag {
+        display: inline-block; margin-top: 0.6rem;
+        padding: 2px 8px; border-radius: 3px;
+        font-family: var(--mono); font-size: 0.7rem;
+      }
+      .tk-lane.theta .tk-lane-tag { background: rgba(250, 180, 90, 0.15); color: var(--tk-warm); }
+      .tk-lane.sigma .tk-lane-tag { background: rgba(0, 217, 130, 0.12); color: var(--tk-accent); }
+
+      /* Chapter 5: Harvey step chart */
+      .tk-harvey {
+        display: grid; grid-template-columns: repeat(6, 1fr);
+        gap: 8px; align-items: end; height: 200px;
+        padding-bottom: 30px; position: relative;
+      }
+      .tk-harvey::before, .tk-harvey::after {
+        content: ""; position: absolute; left: 0; right: 0;
+        border-top: 1px dashed rgba(255,255,255,0.08);
+      }
+      .tk-harvey::before { top: 12%; }
+      .tk-harvey::after  { top: 45%; }
+      .tk-harvey-bar {
+        display: flex; flex-direction: column; align-items: center;
+        position: relative;
+      }
+      .tk-harvey-bar .fill {
+        width: 100%; max-width: 60px;
+        border-radius: 3px 3px 0 0;
+        transition: height 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        height: 0;
+        background: linear-gradient(180deg, var(--tk-purple), var(--tk-accent));
+      }
+      .tk-harvey-bar.reject .fill {
+        background: repeating-linear-gradient(45deg,
+          rgba(239, 68, 68, 0.5) 0 4px, rgba(239, 68, 68, 0.3) 4px 8px);
+      }
+      .tk-harvey-bar.baseline .fill {
+        background: var(--text-mute);
+      }
+      .tk-harvey-bar .val {
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--text); margin-bottom: 4px;
+        opacity: 0; transition: opacity 0.5s ease 0.8s;
+      }
+      .tk-section.visible .tk-harvey-bar .val { opacity: 1; }
+      .tk-harvey-bar .lbl {
+        position: absolute; bottom: -25px;
+        font-family: var(--mono); font-size: 0.65rem;
+        color: var(--text-mute); text-align: center;
+        width: 100%;
+      }
+
+      /* Chapter 6: 3-framework cards */
+      .tk-frames { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .tk-frame {
+        padding: 1rem; border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        transition: transform 0.25s, border-color 0.25s;
+      }
+      .tk-frame:hover { transform: translateY(-3px); border-color: var(--tk-accent); }
+      .tk-frame-name { font-weight: 700; color: var(--text); margin-bottom: 4px; }
+      .tk-frame-arxiv {
+        font-family: var(--mono); font-size: 0.65rem;
+        color: var(--text-mute); margin-bottom: 0.6rem;
+      }
+      .tk-frame-desc { font-size: 0.75rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 0.5rem; }
+      .tk-frame-score {
+        font-family: var(--mono); font-size: 0.75rem;
+        color: var(--tk-accent); margin-top: 0.4rem;
+        padding-top: 0.4rem; border-top: 1px dashed var(--border);
+      }
+
+      /* Chapter 7: Delta attribution bar */
+      .tk-delta {
+        display: flex; height: 40px; border-radius: 4px; overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .tk-delta-seg {
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-family: var(--mono); font-size: 0.8rem; font-weight: 600;
+        transition: flex 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        flex: 0;
+      }
+      .tk-delta-seg.T { background: repeating-linear-gradient(45deg, rgba(250, 180, 90, 0.6) 0 5px, rgba(250, 180, 90, 0.4) 5px 10px); }
+      .tk-delta-seg.O { background: repeating-linear-gradient(45deg, rgba(239, 68, 68, 0.5) 0 5px, rgba(239, 68, 68, 0.3) 5px 10px); }
+      .tk-delta-seg.G { background: linear-gradient(90deg, var(--tk-purple), var(--tk-accent)); }
+      .tk-delta-legend {
+        display: flex; gap: 1rem; margin-top: 0.7rem;
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--text-mute); flex-wrap: wrap;
+      }
+      .tk-delta-legend > div { display: flex; align-items: center; gap: 6px; }
+      .tk-delta-legend .swatch {
+        display: inline-block; width: 14px; height: 10px; border-radius: 2px;
+      }
+      .tk-delta-legend .swatch.T { background: rgba(250, 180, 90, 0.6); }
+      .tk-delta-legend .swatch.O { background: rgba(239, 68, 68, 0.5); }
+      .tk-delta-legend .swatch.G { background: var(--tk-accent); }
+
+      /* Chapter 8: L0-L4 pyramid */
+      .tk-pyramid {
+        display: flex; flex-direction: column; align-items: center;
+        gap: 6px;
+      }
+      .tk-p-level {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 8px 14px;
+        display: flex; align-items: center; gap: 10px;
+        transition: all 0.4s ease;
+        opacity: 0.4;
+      }
+      .tk-section.visible .tk-p-level {
+        opacity: 1;
+      }
+      .tk-p-level:nth-child(1) { width: 40%; transition-delay: 0.0s; }
+      .tk-p-level:nth-child(2) { width: 55%; transition-delay: 0.15s; }
+      .tk-p-level:nth-child(3) { width: 70%; transition-delay: 0.3s; }
+      .tk-p-level:nth-child(4) { width: 85%; transition-delay: 0.45s; }
+      .tk-p-level:nth-child(5) { width: 100%; transition-delay: 0.6s; }
+      .tk-p-badge {
+        font-family: var(--mono); font-size: 0.7rem; font-weight: 700;
+        padding: 2px 8px; border-radius: 3px;
+        min-width: 32px; text-align: center;
+      }
+      .tk-p-level:nth-child(1) .tk-p-badge { background: rgba(250, 180, 90, 0.2); color: var(--tk-warm); }
+      .tk-p-level:nth-child(2) .tk-p-badge { background: rgba(139, 92, 246, 0.2); color: var(--tk-purple); }
+      .tk-p-level:nth-child(3) .tk-p-badge { background: rgba(80, 200, 255, 0.2); color: var(--tk-blue); }
+      .tk-p-level:nth-child(4) .tk-p-badge { background: rgba(0, 217, 130, 0.15); color: var(--tk-accent); }
+      .tk-p-level:nth-child(5) .tk-p-badge { background: rgba(239, 68, 68, 0.15); color: var(--tk-danger); }
+      .tk-p-name { font-size: 0.85rem; color: var(--text); font-weight: 500; }
+      .tk-p-tag { font-family: var(--mono); font-size: 0.7rem; color: var(--text-mute); margin-left: auto; }
+
+      /* ── Chapter 0: Why · value tiers ─────────────────────────
+       * Three horizontal cards showing today / 1-2 years / 5-10 years value.
+       * Each card has a time badge and a punchy headline.
+       */
+      .tk-value-tiers { display: flex; flex-direction: column; gap: 10px; }
+      .tk-value-tier {
+        display: grid; grid-template-columns: 100px 1fr; gap: 14px;
+        align-items: stretch;
+        padding: 14px 16px; border-radius: 8px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left-width: 3px;
+        transition: transform 0.2s, border-color 0.2s;
+      }
+      .tk-value-tier:hover { transform: translateX(3px); }
+      .tk-value-tier.now    { border-left-color: var(--tk-accent); }
+      .tk-value-tier.near   { border-left-color: var(--tk-purple); }
+      .tk-value-tier.long   { border-left-color: var(--tk-blue); }
+      .tk-vt-time {
+        font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+        display: flex; flex-direction: column; justify-content: center;
+        text-align: center; padding: 4px;
+        border-radius: 4px;
+      }
+      .tk-value-tier.now  .tk-vt-time { background: rgba(0, 217, 130, 0.12); color: var(--tk-accent); }
+      .tk-value-tier.near .tk-vt-time { background: rgba(139, 92, 246, 0.12); color: var(--tk-purple); }
+      .tk-value-tier.long .tk-vt-time { background: rgba(80, 200, 255, 0.12); color: var(--tk-blue); }
+      .tk-vt-time .big { font-size: 1rem; }
+      .tk-vt-time .lil { font-size: 0.62rem; opacity: 0.7; margin-top: 2px; }
+      .tk-vt-body h4 {
+        font-size: 0.95rem; margin-bottom: 6px; color: var(--text);
+      }
+      .tk-vt-body ul {
+        list-style: none; padding: 0; margin: 0;
+        font-size: 0.78rem; line-height: 1.6; color: var(--text-dim);
+      }
+      .tk-vt-body li {
+        padding-left: 14px; position: relative;
+      }
+      .tk-vt-body li::before {
+        content: "→"; position: absolute; left: 0; color: var(--tk-purple);
+      }
+      .tk-vt-body li b { color: var(--text); }
+
+      /* Chapter 0: three angles (CTO / PM / Compliance) */
+      .tk-angles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 1rem; }
+      .tk-angle {
+        padding: 12px; border-radius: 6px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--border);
+      }
+      .tk-angle-role {
+        font-family: var(--mono); font-size: 0.7rem;
+        color: var(--tk-purple); font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .tk-angle-line {
+        font-size: 0.82rem; color: var(--text-dim); line-height: 1.5;
+        font-style: italic;
+      }
+      .tk-angle-line::before { content: '"'; color: var(--tk-purple); }
+      .tk-angle-line::after  { content: '"'; color: var(--tk-purple); }
+
+      /* Timing argument · 3 conditions row */
+      .tk-timing {
+        margin-top: 1.2rem;
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      }
+      .tk-timing-cond {
+        padding: 10px; text-align: center;
+        border-radius: 6px;
+        background: linear-gradient(135deg, rgba(0,217,130,0.06), rgba(139,92,246,0.06));
+        border: 1px solid var(--border);
+      }
+      .tk-timing-cond .check {
+        display: inline-block;
+        width: 24px; height: 24px;
+        border-radius: 50%;
+        background: var(--tk-accent);
+        color: #04120c;
+        font-weight: 700;
+        line-height: 24px;
+        margin-bottom: 5px;
+      }
+      .tk-timing-cond .h { font-size: 0.85rem; color: var(--text); font-weight: 600; }
+      .tk-timing-cond .d { font-size: 0.7rem; color: var(--text-mute); margin-top: 3px; }
+
+      /* ── Chapter 9: So What · role-based action cards ────────── */
+      .tk-roles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .tk-role {
+        padding: 14px; border-radius: 8px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        transition: all 0.2s;
+      }
+      .tk-role:hover {
+        border-color: var(--tk-accent);
+        transform: translateY(-2px);
+      }
+      .tk-role-icon {
+        display: inline-block; width: 32px; height: 32px;
+        border-radius: 6px;
+        background: rgba(0, 217, 130, 0.12);
+        color: var(--tk-accent);
+        line-height: 32px; text-align: center;
+        font-family: var(--mono); font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .tk-role h4 { font-size: 0.95rem; margin-bottom: 4px; color: var(--text); }
+      .tk-role p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.55; margin-bottom: 8px; }
+      .tk-role .action {
+        font-family: var(--mono); font-size: 0.7rem;
+        color: var(--tk-accent);
+        display: block; padding-top: 6px;
+        border-top: 1px dashed var(--border);
+      }
+      .tk-role .action::before { content: "→ "; }
+
+      /* Chapter 9: The moat callout */
+      .tk-moat {
+        margin-top: 1.5rem;
+        padding: 1.4rem;
+        text-align: center;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(0, 217, 130, 0.1));
+        border: 1px solid rgba(139, 92, 246, 0.4);
+      }
+      .tk-moat-eyebrow {
+        font-family: var(--mono); font-size: 0.7rem;
+        color: rgb(180, 160, 240); margin-bottom: 6px;
+      }
+      .tk-moat-line {
+        font-size: 1.2rem; font-weight: 700; line-height: 1.4;
+        margin-bottom: 6px;
+      }
+      .tk-moat-line .em {
+        background: linear-gradient(90deg, var(--tk-purple), var(--tk-accent));
+        background-clip: text; -webkit-background-clip: text;
+        color: transparent;
+      }
+      .tk-moat-sub {
+        font-size: 0.85rem; color: var(--text-dim);
+      }
+
+      /* CTA */
+      .tk-cta {
+        margin-top: 5rem;
+        padding: 2rem;
+        text-align: center;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(0, 217, 130, 0.08));
+        border: 1px solid rgba(139, 92, 246, 0.3);
+      }
+      .tk-cta h3 { font-size: 1.3rem; margin-bottom: 0.7rem; }
+      .tk-cta p { color: var(--text-dim); margin-bottom: 1.2rem; }
+      .tk-cta-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+      .tk-cta a {
+        padding: 10px 20px; border-radius: 6px;
+        text-decoration: none; font-weight: 600; font-size: 0.9rem;
+        transition: transform 0.15s, filter 0.15s;
+      }
+      .tk-cta a:hover { transform: translateY(-2px); filter: brightness(1.1); }
+      .tk-cta a.primary { background: var(--tk-accent); color: #04120c; }
+      .tk-cta a.secondary {
+        background: transparent; border: 1px solid var(--tk-purple);
+        color: rgb(180, 160, 240);
+      }
+
+      @media (max-width: 720px) {
+        .tk-frames { grid-template-columns: 1fr; }
+        .tk-lanes { grid-template-columns: 1fr; }
+        .tk-hero h1 { font-size: 1.9rem; }
+      }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <div class="brand"><a href="../../.." style="color:inherit;">liucao<span>.me</span></a></div>
+    <div class="links">
+        <a href="../">← Intro</a>
+        <a href="../papers/">Papers</a>
+        <a href="../run/">Live Demo →</a>
+            <a href="../play/">Play</a>
+        <a href="https://github.com/tsaol/harness-self-evolution" target="_blank">GitHub</a>
+    </div>
+</nav>
+
+<div class="tk-progress-wrap">
+  <div class="tk-progress-bar"><div class="tk-progress-fill" id="tkProgressFill"></div></div>
+  <div class="tk-chapter-list" id="tkChapterList">
+    <a class="tk-chapter-link" href="#ch0">00 · Why</a>
+    <a class="tk-chapter-link" href="#ch1">01 · 千篇一律</a>
+    <a class="tk-chapter-link" href="#ch2">02 · 全景地图</a>
+    <a class="tk-chapter-link" href="#ch3">03 · 12 个月</a>
+    <a class="tk-chapter-link" href="#ch4">04 · θ / Σ 双车道</a>
+    <a class="tk-chapter-link" href="#ch5">05 · Harvey 实验</a>
+    <a class="tk-chapter-link" href="#ch6">06 · 方法谱系</a>
+    <a class="tk-chapter-link" href="#ch7">07 · 评测哲学</a>
+    <a class="tk-chapter-link" href="#ch8">08 · 落地路径</a>
+    <a class="tk-chapter-link" href="#ch9">09 · So What</a>
+  </div>
+</div>
+
+<main class="talk-wrap">
+
+  <div class="tk-hero">
+    <span class="tk-kicker">CMHK TECH SUMMIT 2026 · 一页读完</span>
+    <h1>从 AutoResearch 到 <span class="grad">Agent 自进化</span></h1>
+    <p class="sub">综述、应用场景与初步实践 · RSI 的 2026 图景</p>
+    <p class="byline">张文举 · Amazon Web Services · 40 slides 精炼成 10 章 · 阅读约 10 分钟</p>
+    <div style="max-width:640px; margin:1.2rem auto 0; padding:0.8rem 1rem; background:rgba(0,217,130,0.06); border:1px solid rgba(0,217,130,0.28); border-radius:8px; font-size:0.82rem; color:var(--text-dim); line-height:1.6;">
+      🎯 <b style="color:var(--text);">Case Study</b>：本次演讲的 Live Demo 演示的是<b style="color:var(--tk-accent);">"电商商品搜索 Agent 的进化"</b>——
+      让 AI 一代一代重写它的 <code style="font-family:var(--mono); background:var(--bg-soft); padding:1px 6px; border-radius:3px; font-size:0.75rem;">search()</code> 函数（BM25 baseline · 30% → 目标 90%+），
+      引擎用 <a href="https://github.com/SakanaAI/ShinkaEvolve" target="_blank" rel="noopener" style="color:var(--tk-accent);">ShinkaEvolve</a>，Proposer 是 Claude via Bedrock。
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Chapter 0 · Why · 跟你有什么关系
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="tk-section" id="ch0">
+    <div class="tk-sec-head">
+      <span class="tk-sec-num">00</span>
+      <div style="flex:1;">
+        <div class="tk-sec-title">Why · <span class="em">跟你有什么关系</span></div>
+      </div>
+      <span class="tk-sec-tag">开场 · 5 分钟</span>
+    </div>
+
+    <div class="tk-punch">
+      这不是新一波炒作 · 是 AI 系统构建方式的一次范式迁移 —— <b>从"训练模型"到"编排模型"</b>。
+      今天省钱，明天合规通行证，后天通向 AGI 的唯一安全渐进路径。<b>你不做，你的竞争对手会做</b>。
+    </div>
+
+    <h3 style="font-size:1rem; margin: 1.4rem 0 0.5rem; color: var(--text);">长期价值 · 三个时间尺度</h3>
+
+    <div class="tk-viz">
+      <div class="tk-value-tiers">
+        <div class="tk-value-tier now">
+          <div class="tk-vt-time"><span class="big">今天</span><span class="lil">已可变现</span></div>
+          <div class="tk-vt-body">
+            <h4>省 API 费 · 省训练成本 · 加速迭代</h4>
+            <ul>
+              <li>让<b>便宜模型</b>做贵模型的活 — Harvey 案例 tokens <b>−56%</b> + accuracy <b>+8pp</b></li>
+              <li>一次 RL fine-tune ~$500k，一次 harness 进化 ~$50</li>
+              <li>周迭代 → 天迭代 → 小时迭代</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tk-value-tier near">
+          <div class="tk-vt-time"><span class="big">1-2 年</span><span class="lil">复利资产</span></div>
+          <div class="tk-vt-body">
+            <h4>知识资产化 · 模型换代复利 · 合规通行证</h4>
+            <ul>
+              <li>模型升级到下一代 → 同一个 harness 零修改直接用 → 收益<b>复利</b></li>
+              <li>"怎么用 AI" 从工程师脑子里 → <b>可版本化、可移交、可审计的资产</b></li>
+              <li>监管问"怎么证明改进不是作弊" · 有 hold-out + 抗干扰能答上</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tk-value-tier long">
+          <div class="tk-vt-time"><span class="big">5-10 年</span><span class="lil">真正稀缺</span></div>
+          <div class="tk-vt-body">
+            <h4>通向 RSI 的桥梁 · AGI 安全的必要环节</h4>
+            <ul>
+              <li>OpenAI 2028-03 目标"全自动研究员" — <b>没有中间态就没法安全到达</b></li>
+              <li>模型能力会趋同，未来 AI 公司护城河<b>不再是模型，是"用模型的方式"</b></li>
+              <li>不让 AI 改自己权重（不可解释）· 让它改<b>外层脚手架</b>（可 diff / 可 revert）</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem; margin: 1.6rem 0 0.5rem; color: var(--text);">从三个角色看"为什么需要"</h3>
+
+    <div class="tk-angles">
+      <div class="tk-angle">
+        <div class="tk-angle-role">👔 CTO 视角</div>
+        <div class="tk-angle-line">Bedrock 每月账单 $500K，老板要砍一半。fine-tune 又贵又不稳。harness 进化才是必答题。</div>
+      </div>
+      <div class="tk-angle">
+        <div class="tk-angle-role">📊 产品经理视角</div>
+        <div class="tk-angle-line">所有对手都用 Claude / GPT，我怎么和他们不一样？答案不在模型，在你怎么用模型。</div>
+      </div>
+      <div class="tk-angle">
+        <div class="tk-angle-role">⚖️ 合规视角</div>
+        <div class="tk-angle-line">Σ 侧可 diff / 可 revert / 可日志化 · θ 侧的 fine-tune 做不到 · 监管友好。</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem; margin: 1.6rem 0 0.5rem; color: var(--text);">为什么现在 · 三个条件首次同时满足</h3>
+
+    <div class="tk-timing">
+      <div class="tk-timing-cond">
+        <div class="check">✓</div>
+        <div class="h">模型能力够强</div>
+        <div class="d">Opus 4.7+ 能真的写代码改自己</div>
+      </div>
+      <div class="tk-timing-cond">
+        <div class="check">✓</div>
+        <div class="h">工具够成熟</div>
+        <div class="d">ShinkaEvolve 开源 · Bedrock 支持 · AgentCore Evals GA</div>
+      </div>
+      <div class="tk-timing-cond">
+        <div class="check">✓</div>
+        <div class="h">方法学有共识</div>
+        <div class="d">三篇必读综述 · 建立了共同语言</div>
+      </div>
+    </div>
+
+    <ul class="tk-bullets" style="margin-top: 1.4rem;">
+      <li><b>2024 之前</b> — GPT-4 时代模型不够强 · 无法自己改代码</li>
+      <li><b>2025</b> — 没成熟工具 · 每家自己造轮子</li>
+      <li><b>2026 · 黄金窗口期</b> — 三条件齐备 · 先进入者能定义标准</li>
+      <li><b>2027-2028</b> — 从"方向"变"独立领域" · 参照系：RAG 在 2023-2024 走完这条路</li>
+    </ul>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Chapter 1 · 千篇一律
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="tk-section" id="ch1">
+    <div class="tk-sec-head">
+      <span class="tk-sec-num">01</span>
+      <div style="flex:1;">
+        <div class="tk-sec-title">千篇<span class="em">「</span>一律<span class="em">」</span></div>
+      </div>
+      <span class="tk-sec-tag">covers slides 1–3</span>
+    </div>
+
+    <div class="tk-punch">
+      <b>2026 年一年，自进化方向诞生了 779 篇论文</b> —— 数量爆炸，但方法骨架惊人地一致：
+      <b>执行 → 评估 → 反思 → 改写</b>。这是一门刚刚成形的工程学科。
+    </div>
+
+    <div class="tk-viz">
+      <div class="tk-papers-months" id="tkPapers">
+        <!-- 12 bars for months, values approximated from slide 4 notes -->
+      </div>
+      <div class="tk-papers-months" style="grid-template-columns: repeat(12, 1fr); height: auto; align-items: start; margin-top: 8px;">
+        <div class="lbl">1月</div><div class="lbl">2月</div><div class="lbl">3月</div><div class="lbl">4月</div>
+        <div class="lbl">5月</div><div class="lbl">6月</div><div class="lbl">7月</div><div class="lbl">8月</div>
+        <div class="lbl">9月</div><div class="lbl">10</div><div class="lbl">11</div><div class="lbl">12</div>
+      </div>
+      <div class="tk-papers-total">779 篇 · 439 核心贡献</div>
+      <div class="tk-viz-cap">1 → 5 月峰值 149 → 8 月仍在 118 · 全年高位 · 检索窗口 2026-01~08-21</div>
+    </div>
+
+    <ul class="tk-bullets">
+      <li><b>规模</b> — 14 组检索式召回 1,001 候选，去重后 779 入选，439 篇是核心贡献</li>
+      <li><b>方法一致性</b> — 无论改 prompt / memory / harness / weight，都是同一循环的变体</li>
+      <li><b>核心观点</b> — 2026 的自进化<b>不是科幻式 RSI</b>，是一门工程学科：<b>冻结权重、进化外围、评估先行、门控接受</b></li>
+    </ul>
+
+    <div class="tk-cite">
+      源自《自进化智能体 2026》综述 · 检索窗口 2026-01-01 至 08-21
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Chapter 2 · 全景地图
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="tk-section" id="ch2">
+    <div class="tk-sec-head">
+      <span class="tk-sec-num">02</span>
+      <div style="flex:1;">
+        <div class="tk-sec-title">全景地图 · <span class="em">11 个方向</span></div>
+      </div>
+      <span class="tk-sec-tag">covers slides 4–7</span>
+    </div>
+
+    <div class="tk-punch">
+      779 篇论文分成 11 个方向。<b>记忆/技能进化</b> 是最大载体（151 篇），<b>Harness 与工作流</b> 已升格为一等公民（112 篇），
+      但真正"改写改进机制"的<b>递归自指仅 19 篇</b> —— 瓶颈在验证，不在想法。
+    </div>
+
+    <div class="tk-viz">
+      <div class="tk-cats" id="tkCats"></div>
+      <div class="tk-viz-cap">深色数字 = 该类别核心贡献数 · 拉红色 = 高热点方向</div>
+    </div>
+
+    <ul class="tk-bullets">
+      <li><b>记忆/技能进化 · 151 篇</b> — 不动权重、只改模型外的可复用制品 · 性价比之王</li>
+      <li><b>Harness 与工作流 · 112 篇</b> — "模型外的系统代码"已升为独立研究对象 · 本次分享的核心域</li>
+      <li><b>评测与安全 · 144 篇合计</b> — 占近 1/5 · 这个领域已经进入<b>先建评估、再谈进化</b>的阶段</li>
+      <li><b>递归自指 · 19 篇</b> — 真正 RSI 的小众区 · 门槛不在想法，在验证</li>
+    </ul>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Chapter 3 · 12 个月时间线
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="tk-section" id="ch3">
+    <div class="tk-sec-head">
+      <span class="tk-sec-num">03</span>
+      <div style="flex:1;">
+        <div class="tk-sec-title">12 个月 · 从<span class="em">论文</span>到<span class="em">产业</span></div>
+      </div>
+      <span class="tk-sec-tag">covers slide 5</span>
+    </div>
+
+    <div class="tk-punch">
+      2025-09 到 2026-08 · 学术界、产业界、治理界三条线索交织。<b>Sakana 开源 ShinkaEvolve、AWS AgentCore Evaluations GA、
+      METR 建 RSI 经济学</b> —— 从"能不能"变成"怎么测、怎么管"。
+    </div>
+
+    <div class="tk-viz">
+      <div class="tk-timeline">
+        <div class="tk-tl-event"><span class="month">2025-09</span><span class="dot"></span>
+          <div class="name">Language Self-Play · Meta<span class="kind">研究</span></div>
+          <div class="desc">无数据自博弈开山之作</div></div>
+        <div class="tk-tl-event"><span class="month">2025-10</span><span class="dot"></span>
+          <div class="name">SPICE · 接地自博弈<span class="kind">研究</span></div>
+          <div class="desc">数学 +8.9 · 通用 +9.8 · 证明"接地"能稳住自博弈</div></div>
+        <div class="tk-tl-event"><span class="month">2025-12</span><span class="dot"></span>
+          <div class="name">ACE 上下文进化 · Stanford / SambaNova<span class="kind">研究</span></div></div>
+        <div class="tk-tl-event industry"><span class="month">2025-12</span><span class="dot"></span>
+          <div class="name">AWS re:Invent · AgentCore Evals 预览<span class="kind">产业</span></div></div>
+        <div class="tk-tl-event"><span class="month">2026-02</span><span class="dot"></span>
+          <div class="name">Huxley-Gödel Machine · CMP 元生产力度量<span class="kind">研究</span></div></div>
+        <div class="tk-tl-event industry"><span class="month">2026-03</span><span class="dot"></span>
+          <div class="name">AWS AgentCore Evaluations GA<span class="kind">产业</span></div>
+          <div class="desc">评估飞轮正式产品化</div></div>
+        <div class="tk-tl-event industry"><span class="month">2026-03</span><span class="dot"></span>
+          <div class="name">Cursor Composer · 生产级 RL 训 Coding Agent<span class="kind">产业</span></div></div>
+        <div class="tk-tl-event industry"><span class="month">2026-04</span><span class="dot"></span>
+          <div class="name">DeepMind SIMA 2 · 具身自我改进<span class="kind">产业</span></div></div>
+        <div class="tk-tl-event"><span class="month">2026-05</span><span class="dot"></span>
+          <div class="name">MemEvolve · 记忆系统元进化<span class="kind">研究</span></div></div>
+        <div class="tk-tl-event industry"><span class="month">2026-05</span><span class="dot"></span>
+          <div class="name">AWS AgentCore Optimization 预览 · 建议 + A/B<span class="kind">产业</span></div></div>
+        <div class="tk-tl-event warn"><span class="month">2026-06</span><span class="dot"></span>
+          <div class="name">Zombie Agents · 自强化注入攻击<span class="kind">安全</span></div></div>
+        <div class="tk-tl-event"><span class="month">2026-07</span><span class="dot"></span>
+          <div class="name">Sakana 开源 <b style="color:var(--tk-accent);">ShinkaEvolve</b><span class="kind">研究</span></div>
+          <div class="desc">这个 Demo 用的引擎就是它</div></div>
+        <div class="tk-tl-event"><span class="month">2026-07</span><span class="dot"></span>
+          <div class="name">Lilian Weng · Harness Engineering 长文<span class="kind">研究</span></div></div>
+        <div class="tk-tl-event"><span class="month">2026-07</span><span class="dot"></span>
+          <div class="name">OpenAI 路线图 · 2028-03 全自动研究员<span class="kind">立场</span></div></div>
+        <div class="tk-tl-event warn"><span class="month">2026-08</span><span class="dot"></span>
+          <div class="name">METR · RSI 经济学建模<span class="kind">治理</span></div>
+          <div class="desc">加速度何时可测</div></div>
+        <div class="tk-tl-event"><span class="month">2026-08</span><span class="dot"></span>
+          <div class="name">J-Zero · 零数据三角色共进化 · Sakana<span class="kind">研究</span></div></div>
+      </div>
+      <div class="tk-viz-cap">🟢 研究 · 🔵 产业 · 🟡 安全/治理 · 三条线索本节交织</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Chapter 4 · θ / Σ 双车道
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="tk-section" id="ch4">
+    <div class="tk-sec-head">
+      <span class="tk-sec-num">04</span>
+      <div style="flex:1;">
+        <div class="tk-sec-title">两条车道 · <span class="em">θ 慢环</span> 与 <span class="em">Σ 快环</span></div>
+      </div>
+      <span class="tk-sec-tag">covers slides 18–20</span>
+    </div>
+
+    <div class="tk-punch">
+      整个 field 用一个公式概括：<b>Aₜ₊₁ = IMPROVE(A₁:ₜ ; Sₜ)</b>。
+      Agent 由权重 θ 和脚手架 Σ 组成 · 改哪个决定循环的<b>节奏和风险</b>。
+      2026 共识：<b>先 Σ 后 θ</b> —— Σ 先探索验证，稳定策略再蒸馏进 θ。
+    </div>
+
+    <div class="tk-viz">
+      <div class="tk-lanes">
+        <div class="tk-lane theta">
+          <div class="tk-lane-h"><span class="greek">θ</span>参数慢环 · 改权重</div>
+          <div class="tk-lane-desc">自蒸馏 · 自奖励 RL · RLVR · TTT — 能力真正内化</div>
+          <ul>
+            <li>内生生成示范 Dₜ · 内生评价 eₜ · 外生轨迹 τₜ</li>
+            <li>高成本 · 有灾难性遗忘风险</li>
+            <li>典型代表：SPICE · Self-play SWE-RL · AAR</li>
+          </ul>
+          <span class="tk-lane-tag">慢 · 贵 · 不可逆</span>
+        </div>
+        <div class="tk-lane sigma">
+          <div class="tk-lane-h"><span class="greek">Σ</span>脚手架快环 · 改代码</div>
+          <div class="tk-lane-desc">prompt · memory · tools · full scaffold — 透明可逆</div>
+          <ul>
+            <li>Prompt · Memory · Tools · <b>Full Scaffold（自改代码）</b></li>
+            <li>低延迟 · 有结构漂移风险</li>
+            <li>典型代表：DGM · Meta-Harness · AHE · <b>ShinkaEvolve</b></li>
+          </ul>
+          <span class="tk-lane-tag">快 · 便宜 · 可回滚</span>
+        </div>
+      </div>
+      <div class="tk-viz-cap">本次分享的实验 + Demo 只动 Σ 侧 · 不改一个模型参数</div>
+    </div>
+
+    <!-- ── RSI Explainer · what "recursive self-improvement" really means ── -->
+    <div class="tk-rsi">
+      <div class="tk-rsi-h">🔁 术语补丁 · RSI 是什么 <span class="expand">Recursive Self-Improvement · 递归自我改进</span></div>
+      <div class="tk-rsi-def">
+        <b>RSI = AI 一代一代改自己 · 改完再拿改进版继续改</b>。<b>Recursive</b>（递归）= 结果反过来当输入；<b>Self</b>（自我）= 改的是自己不是别的东西；<b>Improvement</b>（改进）= 每轮理论上更好。这是本次分享所有方法（DGM · AlphaEvolve · ShinkaEvolve）的共同数学骨架。
+      </div>
+
+      <div class="tk-rsi-formula">
+        <span class="var">A</span>ₜ₊₁ = <span class="op">IMPROVE</span>(<span class="var">A</span>₁:ₜ ; <span class="var">S</span>ₜ)
+        <div style="font-size:0.7rem; color:var(--text-mute); margin-top:6px;">
+          A = agent 配置（<b>θ</b> 权重 + <b>Σ</b> 脚手架）· S = 改进信号（示范 / 评价 / 探索经验）
+        </div>
+      </div>
+
+      <div style="font-size:0.85rem; color:var(--text); margin: 0.9rem 0 0.4rem; font-weight:600;">3 个层级 · 递进关系</div>
+      <div class="tk-rsi-levels">
+        <div class="tk-rsi-level bounded">
+          <div class="tk-rsi-level-h"><span>有界自精炼</span><span class="badge">今天可跑</span></div>
+          <div class="tk-rsi-level-desc">
+            评估器<b>固定</b>、改进对象<b>固定</b> · 收敛、可审计 · 已工业化。<br>
+            <b style="color:var(--tk-accent);">🎯 你现在看的这个 demo 就在这一档</b>。
+          </div>
+        </div>
+        <div class="tk-rsi-level semi">
+          <div class="tk-rsi-level-h"><span>半开放式</span><span class="badge">学术前沿</span></div>
+          <div class="tk-rsi-level-desc">
+            改进算子部分可变 · 但评估标准仍固定。<br>
+            典型代表：<b>DGM · HGM · Mendel-GM · AHE</b>
+          </div>
+        </div>
+        <div class="tk-rsi-level open">
+          <div class="tk-rsi-level-h"><span>开放式 RSI</span><span class="badge">受控实验</span></div>
+          <div class="tk-rsi-level-desc">
+            改进机制 <b>和</b> 评估标准都在进化 · 受 grounding / 坍缩 / 算力约束。<br>
+            AGI 讨论的核心担忧就在此。
+          </div>
+        </div>
+      </div>
+
+      <div class="tk-rsi-chain">
+        <span class="term">有界 RSI</span>
+        <span class="arrow">→</span>
+        <span class="term">半开放</span>
+        <span class="arrow">→</span>
+        <span class="term">开放式 RSI</span>
+        <span class="arrow">→</span>
+        <span class="term"><b>AGI</b></span>
+        <span class="arrow">→</span>
+        <span class="term"><b>ASI</b></span>
+      </div>
+      <div style="font-size:0.75rem; color:var(--text-mute); margin-top:0.7rem; text-align:center;">
+        <b>2026 工程共识</b>：先做好左边（有界）· 右边留给受控实验（PPT slide 18 原话）
+      </div>
+    </div>
+
+    <ul class="tk-bullets">
+      <li><b>有界自精炼</b> — 评估器固定、改进对象固定 · 今天已工业化</li>
+      <li><b>开放式 RSI</b> — 改进机制和评估标准也在进化 · 受 grounding、坍缩、算力三重约束</li>
+      <li><b>工程共识</b> — 2026 主流系统："先做好左边（有界），把右边留给受控实验"</li>
+    </ul>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Chapter 5 · Harvey 实验
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="tk-section" id="ch5">
+    <div class="tk-sec-head">
+      <span class="tk-sec-num">05</span>
+      <div style="flex:1;">
+        <div class="tk-sec-title">牛刀小试 · <span class="em">Harvey LAB</span> 5 轮自进化</div>
+      </div>
+      <span class="tk-sec-tag">covers slides 8–15</span>
+    </div>
+
+    <div class="tk-punch">
+      <b>81.5% → 89.5% · +8pp</b>，Sonnet 5 权重全程冻结。零修改搬到 Fable 5 <b>依然涨 +1.3pp、all-pass ×2.2、tokens −56%</b> ——
+      三层修复（错位找回 / 输出截断 / 恢复续写）是<b>通用基建</b>，跨模型成立。
+    </div>
+
+    <div class="tk-viz">
+      <div class="tk-harvey" id="tkHarvey">
+        <div class="tk-harvey-bar baseline"><span class="val">81.5</span><div class="fill" data-h="70"></div><span class="lbl">R0 种子</span></div>
+        <div class="tk-harvey-bar reject"><span class="val">81.8</span><div class="fill" data-h="72"></div><span class="lbl">R1a 泄漏丢弃</span></div>
+        <div class="tk-harvey-bar"><span class="val">83.7</span><div class="fill" data-h="78"></div><span class="lbl">R2 晋升</span></div>
+        <div class="tk-harvey-bar"><span class="val">89.5</span><div class="fill" data-h="95"></div><span class="lbl">R3 晋升 · 终版</span></div>
+        <div class="tk-harvey-bar reject"><span class="val">90.1</span><div class="fill" data-h="97"></div><span class="lbl">R4 成本罚拒绝</span></div>
+        <div class="tk-harvey-bar" style="opacity:0;"><span class="val">—</span><div class="fill"></div><span class="lbl"></span></div>
+      </div>
+      <div class="tk-viz-cap">紫→绿 = 晋升 · 红斜纹 = 被门拒绝（泄漏或成本）· R3 的输出截断恢复是最大单项收益 +5.8pp</div>
+    </div>
+
+    <ul class="tk-bullets">
+      <li><b>护栏都真触发过</b> — Proposer 第 1 轮就想"看看测试集" · 被泄漏审计当场拦下</li>
+      <li><b>成本罚正确工作</b> — R4 涨 0.6pp 但 tokens +46% · gate 拒绝"花钱买微弱提升"</li>
+      <li><b>跨模型泛化验证</b> — 同一 harness 换 Fable 5：all-pass 8.3% → 18.1%（翻倍）· tokens −56%</li>
+      <li><b>整个过程 0 infra error</b> — 5 次全量评测 × 72 run 全部 exit 0</li>
+    </ul>
+
+    <div class="tk-cite">
+      Harvey Legal Agent Benchmark · 24 领域 · 1,251 任务 · 9,747 文档 · 76,791 rubric 判据
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Chapter 6 · 方法谱系
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="tk-section" id="ch6">
+    <div class="tk-sec-head">
+      <span class="tk-sec-num">06</span>
+      <div style="flex:1;">
+        <div class="tk-sec-title">方法谱系 · 三个<span class="em">前辈框架</span></div>
+      </div>
+      <span class="tk-sec-tag">covers slides 21–24</span>
+    </div>
+
+    <div class="tk-punch">
+      Harness 自进化不是新想法。<b>DGM 定义 archive 模式、Meta-Harness 把搜索循环工程化、AHE 建立七类挂载点</b>。
+      Sakana 的 ShinkaEvolve 是这一谱系的开源工具化。
+    </div>
+
+    <div class="tk-viz">
+      <div class="tk-frames">
+        <div class="tk-frame">
+          <div class="tk-frame-name">DGM · Darwin Gödel Machine</div>
+          <div class="tk-frame-arxiv">arXiv:2505.22954 · 2025-05</div>
+          <div class="tk-frame-desc">Agent 读自己源码 → 自改写 → 跑 SWE-bench → 入 archive（不淘汰旧分支）· 后来居上的踏脚石</div>
+          <div class="tk-frame-score">SWE-bench 20% → 50% · 80 轮</div>
+        </div>
+        <div class="tk-frame">
+          <div class="tk-frame-name">Meta-Harness</div>
+          <div class="tk-frame-arxiv">arXiv:2603.28052 · Stanford/KRAFTON/MIT</div>
+          <div class="tk-frame-desc">外套搜索循环 · 文件系统存所有历史候选 · context compiler 决定 agent 看什么 · 每轮喂 ~10M token</div>
+          <div class="tk-frame-score">TB2 76.4% · Opus 4.6 第一 · 超手工 SOTA</div>
+        </div>
+        <div class="tk-frame">
+          <div class="tk-frame-name">AHE · Auto Harness Evolution</div>
+          <div class="tk-frame-arxiv">arXiv:2604.25850</div>
+          <div class="tk-frame-desc">七类固定挂载点（prompt / tool / middleware / skills...）· 每轮写 Manifest 记录"预测修好什么、可能回归什么"</div>
+          <div class="tk-frame-score">Terminal-Bench 77+ · 超 TFGRPO / Codex</div>
+        </div>
+      </div>
+      <div class="tk-viz-cap">👉 <b>ShinkaEvolve = 这个谱系里第一个开源、活跃维护、支持 Bedrock 的框架</b></div>
+    </div>
+
+    <ul class="tk-bullets">
+      <li><b>共同设计</b> — Archive 保留失败分支 · Git 管版本 · 门控晋升 · 证据落盘可审计</li>
+      <li><b>核心洞察</b> — 自改写的动力来自<b>允许绕路</b>的种群结构，不是单调优化</li>
+      <li><b>ShinkaEvolve 的位置</b> — 谱系最新的成员 · 把学术方法工程化 · pip 一装就能用</li>
+    </ul>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Chapter 7 · 评测哲学
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="tk-section" id="ch7">
+    <div class="tk-sec-head">
+      <span class="tk-sec-num">07</span>
+      <div style="flex:1;">
+        <div class="tk-sec-title">评测哲学 · <span class="em">Delta Attribution</span></div>
+      </div>
+      <span class="tk-sec-tag">covers slides 25–26</span>
+    </div>
+
+    <div class="tk-punch">
+      涨的分不是白涨的。每一分要拆三块 —— <b>T 借的（额外算力）· O 租的（评测捷径）· G 挣的（真改进）</b>。
+      只有 G 才是可迁移、可上线的收益。
+    </div>
+
+    <div class="tk-viz">
+      <div class="tk-delta" id="tkDelta">
+        <div class="tk-delta-seg T" data-flex="0.35">T · 借的</div>
+        <div class="tk-delta-seg O" data-flex="0.25">O · 租的</div>
+        <div class="tk-delta-seg G" data-flex="0.4">G · 挣的</div>
+      </div>
+      <div class="tk-delta-legend">
+        <div><span class="swatch T"></span>T · 额外计算：预算匹配基线后消失</div>
+        <div><span class="swatch O"></span>O · 评测捷径：离开该评测就崩</div>
+        <div><span class="swatch G"></span>G · 挣的：跨模型/跨集仍然涨</div>
+      </div>
+      <div class="tk-viz-cap">Harvey 实验对应关系：成本罚 → 管 T · 泄漏审计 → 管 O · 跨模型迁移 → 验 G</div>
+    </div>
+
+    <ul class="tk-bullets">
+      <li><b>MLS-Bench 的三个约束</b> — 收益必须可归因、跨 ≥3 评价设置成立、放大规模仍保序</li>
+      <li><b>Live Demo 的对应设计</b> — <b>综合分构成条</b>把 T/O/G 显式画出来（公开测验 / hold-out / 抗干扰 / 代码惩罚）</li>
+      <li><b>最扎心的一句</b> — "改进机制是否值得信任 比 分数涨没涨 更难"</li>
+    </ul>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Chapter 8 · 落地路径
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="tk-section" id="ch8">
+    <div class="tk-sec-head">
+      <span class="tk-sec-num">08</span>
+      <div style="flex:1;">
+        <div class="tk-sec-title">落地路径 · <span class="em">从 L0 起步</span></div>
+      </div>
+      <span class="tk-sec-tag">covers slides 27–38</span>
+    </div>
+
+    <div class="tk-punch">
+      给客户的采纳路径 · <b>五个阶段不能跳级</b>。每一步的产出（评估集、状态结构、门）正是下一步的输入。
+      多数团队今天应从 <b>L0-L1 起步</b>，两周就能看到第一轮收益。
+    </div>
+
+    <div class="tk-viz">
+      <div class="tk-pyramid">
+        <div class="tk-p-level"><span class="tk-p-badge">L0</span><span class="tk-p-name">评估地基</span><span class="tk-p-tag">1-2 周 · golden set + 加固评估器</span></div>
+        <div class="tk-p-level"><span class="tk-p-badge">L1</span><span class="tk-p-name">手动闭环</span><span class="tk-p-tag">人跑循环 · 但结构搭好</span></div>
+        <div class="tk-p-level"><span class="tk-p-badge">L2</span><span class="tk-p-name">半自动工件进化</span><span class="tk-p-tag">2-4 周 · GEPA / ACE · 人审晋升</span></div>
+        <div class="tk-p-level"><span class="tk-p-badge">L3</span><span class="tk-p-name">自动 Harness 进化</span><span class="tk-p-tag">1-2 月 · Live Demo 就是这一层</span></div>
+        <div class="tk-p-level"><span class="tk-p-badge">L4</span><span class="tk-p-name">常态化</span><span class="tk-p-tag">夜间自动 · CI 门 · 生产 A/B</span></div>
+      </div>
+      <div class="tk-viz-cap">← 由下往上一层一层来 · 每一层的产出是下一层的输入</div>
+    </div>
+
+    <ul class="tk-bullets">
+      <li><b>五个落地难点</b> — 可观测 · 评估 · 泛化 · 成本 · 天花板</li>
+      <li><b>五个失效风险</b> — 过拟合 · tokenmaxxing · eval-drift · reward hacking · TTS</li>
+      <li><b>最重要的一句话</b> — <b>"给你最重要的 agent 建一个 72 题量级的 golden set，配一扇有成本罚的晋升门"</b></li>
+    </ul>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Chapter 9 · So What · 你应该做什么
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="tk-section" id="ch9">
+    <div class="tk-sec-head">
+      <span class="tk-sec-num">09</span>
+      <div style="flex:1;">
+        <div class="tk-sec-title">So What · <span class="em">你应该做什么</span></div>
+      </div>
+      <span class="tk-sec-tag">收束 · 5 分钟</span>
+    </div>
+
+    <div class="tk-punch">
+      按你的角色，选一条今天就能开始的路。<b>最贵的不是行动，是"等等看"</b> —— 每晚一个季度，追赶成本乘 2×。
+    </div>
+
+    <div class="tk-viz">
+      <div class="tk-roles">
+        <div class="tk-role">
+          <div class="tk-role-icon">SA</div>
+          <h4>AWS / 云厂解决方案架构师</h4>
+          <p>未来 3 年最大的客户咨询问题会是"怎么做 agent 自进化"。现在学正好 · 客户来问的时候你有答案。</p>
+          <span class="action">给一个大客户搭 L0 评估地基 · 两周</span>
+        </div>
+        <div class="tk-role">
+          <div class="tk-role-icon">APP</div>
+          <h4>应用层公司</h4>
+          <p>电商 / 金融 / SaaS · 你的护城河<b>不在选哪个模型</b>，在这个。竞争对手都在用同样的 Claude / GPT。</p>
+          <span class="action">给最重要的 agent 建 72 题 golden set + 一扇成本罚门</span>
+        </div>
+        <div class="tk-role">
+          <div class="tk-role-icon">FM</div>
+          <h4>基础模型公司</h4>
+          <p>你的模型最终会通过 harness 使用 · 不理解 harness = 不理解自己产品的最终形态。</p>
+          <span class="action">跑一次 ShinkaEvolve + 自家 model · 看 harness 层能榨出多少</span>
+        </div>
+        <div class="tk-role">
+          <div class="tk-role-icon">RE</div>
+          <h4>研究者 / 学生</h4>
+          <p>这是<b>下一波学术产出高地</b>。评测、多智能体、元进化都刚开始 · 现在做出来的东西有先发红利。</p>
+          <span class="action">选一个方向（比如"能识破 tokenmaxxing 的评测"）· 写第一篇论文</span>
+        </div>
+        <div class="tk-role">
+          <div class="tk-role-icon">PM</div>
+          <h4>产品经理</h4>
+          <p>你的 AI 产品 3 个月后为什么还比得过 Claude / GPT？答案不再是 prompt engineering。</p>
+          <span class="action">读一遍 slide 27 五层金字塔 · 定位公司在哪层 · 制定下一层路线图</span>
+        </div>
+        <div class="tk-role">
+          <div class="tk-role-icon">EX</div>
+          <h4>技术高管 / VP Eng</h4>
+          <p>这不是 R&D 玩具 · 是能上生产的降本手段 · 而且**先做的复利越大**。</p>
+          <span class="action">给团队 2 周做一个 pilot · 看 blended score 能不能真的涨</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tk-moat">
+      <div class="tk-moat-eyebrow">送你一个反直觉洞察</div>
+      <div class="tk-moat-line">
+        这个领域的护城河<span class="em">不是技术，是评估</span>。
+      </div>
+      <div class="tk-moat-sub">
+        任何人都能拿 ShinkaEvolve 跑循环 · 没有 <b>golden set + hold-out + 门控</b> · 跑出的是垃圾（Goodhart's law）<br>
+        <b>"评估先行"</b> 不是口号 · 是这个方向未来 3 年真正稀缺的资产 · 这也是 Live Demo 想让你看到的
+      </div>
+    </div>
+
+    <ul class="tk-bullets" style="margin-top: 1.4rem;">
+      <li><b>今天就能做的 · L0 起步</b> — 建一个 72 题 golden set + 一扇成本罚的晋升门 · 两周</li>
+      <li><b>下季度目标</b> — 跑通 L1 手动闭环 · 让评估飞轮转起来</li>
+      <li><b>年度目标</b> — L2/L3 半自动到自动 · 收益<b>复利式</b>叠加</li>
+      <li><b>3 年后再看</b> — 你的 harness 资产已跨了 3 代模型 · 每代都增值</li>
+    </ul>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CTA
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="tk-cta">
+    <h3>看完了？试一下这场演讲的活体样本</h3>
+    <p>Live Demo 用 ShinkaEvolve + Bedrock 跑 60 秒真实进化 · 演的就是本页面第 5 章 / 第 7 章说的东西</p>
+    <div class="tk-cta-btns">
+      <a class="primary" href="../run/">→ 开始 Live Demo</a>
+      <a class="secondary" href="../">← 回 Intro</a>
+      <a class="secondary" href="https://github.com/tsaol/harness-self-evolution" target="_blank">GitHub 源码</a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+(function() {
+  // ── Populate chapter 1: paper-per-month bars ──────────────────
+  // Values approximated from slide 4 notes: Jan 35, May 149, Jul 141, Aug 118
+  const PAPERS_BY_MONTH = [35, 42, 68, 95, 149, 138, 141, 118, 40, 20, 10, 5];
+  const paperMax = Math.max(...PAPERS_BY_MONTH);
+  const papersEl = document.getElementById("tkPapers");
+  if (papersEl) {
+    PAPERS_BY_MONTH.forEach(v => {
+      const bar = document.createElement("div");
+      bar.className = "tk-papers-bar";
+      bar.dataset.h = (v / paperMax) * 100;
+      const val = document.createElement("span");
+      val.className = "val"; val.textContent = v;
+      bar.appendChild(val);
+      papersEl.appendChild(bar);
+    });
+  }
+
+  // ── Populate chapter 2: 11 categories ──────────────────────────
+  const CATS = [
+    { name: "记忆与技能进化",     core: 121, total: 151, hot: true },
+    { name: "领域应用",           core:  21, total: 119 },
+    { name: "权重级自我改进",     core:  71, total: 113 },
+    { name: "Harness 与工作流",   core:  75, total: 112, hot: true },
+    { name: "基准与评测",         core:  46, total:  81, hot: true },
+    { name: "安全、对齐与治理",   core:  29, total:  63 },
+    { name: "LLM 驱动进化搜索",   core:   9, total:  46 },
+    { name: "提示词与上下文进化", core:  30, total:  33 },
+    { name: "综述与立场",         core:  10, total:  21 },
+    { name: "多智能体协同进化",   core:  11, total:  21 },
+    { name: "递归自我改进",       core:  16, total:  19 },
+  ];
+  const CAT_MAX = Math.max(...CATS.map(c => c.total));
+  const catsEl = document.getElementById("tkCats");
+  if (catsEl) {
+    CATS.forEach(c => {
+      const row = document.createElement("div");
+      row.className = "tk-cat-row";
+      row.innerHTML = `
+        <div class="tk-cat-name">${c.name}</div>
+        <div class="tk-cat-track"><div class="tk-cat-fill ${c.hot ? 'hot' : ''}" data-w="${(c.total / CAT_MAX * 100).toFixed(1)}"></div></div>
+        <div class="tk-cat-count">${c.core}/${c.total}</div>
+      `;
+      catsEl.appendChild(row);
+    });
+  }
+
+  // ── IntersectionObserver: trigger animations when sections enter ──
+  const sections = document.querySelectorAll(".tk-section");
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("visible");
+        // Fire specific animations
+        e.target.querySelectorAll(".tk-papers-bar").forEach((b, i) => {
+          setTimeout(() => b.style.height = (b.dataset.h || 0) + "%", 100 + i * 40);
+        });
+        e.target.querySelectorAll(".tk-cat-fill").forEach((b, i) => {
+          setTimeout(() => b.style.width = (b.dataset.w || 0) + "%", 100 + i * 60);
+        });
+        e.target.querySelectorAll(".tk-harvey-bar .fill").forEach((b, i) => {
+          setTimeout(() => b.style.height = (b.dataset.h || 0) + "%", 200 + i * 200);
+        });
+        e.target.querySelectorAll(".tk-delta-seg").forEach((s, i) => {
+          setTimeout(() => s.style.flex = s.dataset.flex || 0, 200 + i * 150);
+        });
+        e.target.querySelectorAll(".tk-tl-event").forEach((ev, i) => {
+          setTimeout(() => { ev.style.opacity = 1; ev.style.transform = "none"; }, 80 * i);
+        });
+      }
+    });
+  }, { threshold: 0.15 });
+  sections.forEach(s => io.observe(s));
+
+  // ── Scroll progress bar + current chapter ──
+  const progressFill = document.getElementById("tkProgressFill");
+  const links = document.querySelectorAll(".tk-chapter-link");
+  window.addEventListener("scroll", () => {
+    const h = document.documentElement;
+    const total = h.scrollHeight - h.clientHeight;
+    const pct = total > 0 ? (h.scrollTop / total) * 100 : 0;
+    if (progressFill) progressFill.style.width = pct + "%";
+
+    // Highlight current chapter
+    let current = null;
+    sections.forEach(s => {
+      const rect = s.getBoundingClientRect();
+      if (rect.top < 200) current = s.id;
+    });
+    links.forEach(a => {
+      a.classList.toggle("current", a.getAttribute("href") === "#" + current);
+    });
+  }, { passive: true });
+})();
+</script>
+
+</body>
+</html>

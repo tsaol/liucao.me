@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>演讲稿 v2 · Kimi K3 版 · Harness Self-Evolution</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+      :root {
+        --sk-accent: rgb(0, 217, 130);
+        --sk-purple: rgb(139, 92, 246);
+        --sk-blue:   rgb(80, 200, 255);
+        --sk-warm:   rgb(250, 180, 90);
+        --sk-danger: rgb(239, 68, 68);
+      }
+      body {
+        background:
+          radial-gradient(ellipse 900px 500px at 50% -100px, rgba(139,92,246,0.08), transparent 60%),
+          radial-gradient(ellipse 700px 400px at 100% 400px, rgba(0,217,130,0.05), transparent 70%),
+          #050a0f;
+      }
+      main.sk-wrap {
+        max-width: 900px; margin: 0 auto;
+        padding: 2rem 1.5rem 6rem;
+        color: var(--text);
+      }
+
+      /* Hero */
+      .sk-hero { text-align: center; padding: 1.2rem 0 2rem; }
+      .sk-hero .sk-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 12px;
+        border: 1px solid rgba(80,200,255,0.4);
+        border-radius: 999px;
+        color: rgb(140, 210, 255); font-size: 0.72rem;
+        font-family: var(--mono);
+        margin-bottom: 0.8rem;
+      }
+      .sk-hero .sk-badge .dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: rgb(140, 210, 255);
+        box-shadow: 0 0 8px rgb(140, 210, 255);
+      }
+      .sk-hero h1 {
+        font-size: 2.1rem; font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+      }
+      .sk-hero h1 .grad {
+        background: linear-gradient(90deg, var(--sk-purple), var(--sk-blue), var(--sk-accent), var(--sk-purple));
+        background-size: 300% 100%;
+        background-clip: text; -webkit-background-clip: text;
+        color: transparent; -webkit-text-fill-color: transparent;
+        animation: skGrad 8s linear infinite;
+      }
+      @keyframes skGrad { to { background-position: 300% 0; } }
+      .sk-hero p.sub { color: var(--text-dim); font-size: 0.95rem; }
+      .sk-hero p.byline { color: var(--text-mute); font-size: 0.78rem; margin-top: 0.4rem; }
+      .sk-hero p.byline a { color: var(--text-dim); }
+
+      /* Sticky top strip */
+      .sk-strip {
+        position: sticky; top: 0;
+        z-index: 20;
+        margin: 0 -1.5rem 1.5rem;
+        padding: 0.55rem 1.5rem;
+        background: rgba(5, 10, 15, 0.94);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        display: flex; gap: 6px; overflow-x: auto;
+        font-family: var(--mono); font-size: 0.68rem;
+      }
+      .sk-strip a {
+        white-space: nowrap;
+        padding: 3px 9px; border-radius: 3px;
+        background: var(--surface-2); color: var(--text-mute);
+        border: 1px solid var(--border);
+        text-decoration: none;
+      }
+      .sk-strip a:hover, .sk-strip a.current {
+        background: var(--accent-glow); color: var(--accent);
+        border-color: var(--accent);
+      }
+      .sk-strip .totalt { margin-left: auto; color: var(--sk-warm); }
+
+      /* Section */
+      .sk-sec {
+        margin: 2rem 0;
+        padding: 1.5rem 1.6rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--sk-purple);
+        border-radius: 8px;
+      }
+      .sk-sec.climax { border-left-color: var(--sk-accent); }
+      .sk-sec.opener { border-left-color: var(--sk-warm); }
+
+      .sk-head {
+        display: flex; align-items: baseline; gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 0.8rem;
+      }
+      .sk-num {
+        font-family: var(--mono); font-size: 0.75rem;
+        color: var(--sk-purple); font-weight: 700;
+        padding: 3px 8px; border-radius: 3px;
+        background: rgba(139, 92, 246, 0.1);
+      }
+      .sk-time {
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--sk-warm);
+        padding: 2px 8px; border-radius: 3px;
+        background: rgba(250, 180, 90, 0.12);
+      }
+      .sk-title {
+        font-size: 1.15rem; font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .sk-title-cn {
+        color: var(--sk-accent);
+        font-weight: 700;
+      }
+
+      /* Main line — the big 口播 line */
+      .sk-mainline {
+        font-size: 1.08rem;
+        line-height: 1.75;
+        color: var(--text);
+        font-weight: 400;
+        padding: 0.9rem 1.1rem;
+        margin: 0.9rem 0;
+        background: rgba(0, 217, 130, 0.05);
+        border-left: 3px solid var(--sk-accent);
+        border-radius: 0 6px 6px 0;
+      }
+      .sk-mainline em {
+        color: var(--sk-accent); font-style: normal; font-weight: 700;
+      }
+
+      /* Punchline pull-quote */
+      .sk-punch {
+        margin: 1rem 0;
+        padding: 0.85rem 1.2rem;
+        background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(80,200,255,0.05));
+        border-left: 3px solid var(--sk-purple);
+        border-radius: 0 6px 6px 0;
+        font-size: 1.02rem; line-height: 1.55;
+        color: var(--text); font-weight: 600;
+        font-style: italic;
+      }
+      .sk-punch::before {
+        content: "❝ ";
+        color: var(--sk-purple);
+        font-size: 1.3rem;
+        vertical-align: -3px;
+      }
+
+      /* Cue notes */
+      .sk-cue-block {
+        margin-top: 0.9rem;
+        padding: 0.6rem 0.9rem;
+        background: rgba(139, 92, 246, 0.05);
+        border-radius: 6px;
+        border: 1px dashed rgba(139, 92, 246, 0.3);
+        font-size: 0.82rem; color: var(--text-dim); line-height: 1.6;
+      }
+      .sk-cue-block::before {
+        content: "🎬 现场配合 · ";
+        font-family: var(--mono); font-size: 0.68rem;
+        color: var(--sk-purple); font-weight: 700;
+      }
+
+      /* Production notes */
+      .sk-notes {
+        margin: 2.5rem 0 1rem;
+        padding: 1.2rem 1.4rem;
+        background: linear-gradient(135deg, rgba(250, 180, 90, 0.06), rgba(239, 68, 68, 0.03));
+        border: 1px solid rgba(250, 180, 90, 0.35);
+        border-radius: 8px;
+      }
+      .sk-notes h3 { font-size: 1rem; color: var(--sk-warm); margin-bottom: 0.7rem; }
+      .sk-notes ol {
+        padding-left: 1.4rem; margin: 0;
+        color: var(--text-dim); font-size: 0.85rem; line-height: 1.75;
+      }
+      .sk-notes ol li { margin-bottom: 0.5rem; }
+      .sk-notes ol li b { color: var(--text); }
+
+      /* Footer nav */
+      .sk-nav-back {
+        margin-top: 3rem;
+        text-align: center;
+        padding: 1.5rem;
+        border-radius: 10px;
+        background: rgba(80, 200, 255, 0.06);
+        border: 1px solid rgba(80, 200, 255, 0.25);
+      }
+      .sk-nav-back p { color: var(--text-dim); margin-bottom: 0.8rem; font-size: 0.85rem; }
+      .sk-nav-back a {
+        display: inline-block; margin: 4px;
+        padding: 7px 16px; border-radius: 6px;
+        text-decoration: none; font-weight: 600; font-size: 0.85rem;
+      }
+      .sk-nav-back a.primary { background: var(--sk-accent); color: #04120c; }
+      .sk-nav-back a.secondary { border: 1px solid var(--sk-purple); color: rgb(180,160,240); }
+
+      @media (max-width: 720px) {
+        .sk-hero h1 { font-size: 1.6rem; }
+        .sk-mainline { font-size: 0.98rem; }
+        .sk-punch { font-size: 0.95rem; }
+      }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <div class="brand"><a href="../../.." style="color:inherit;">liucao<span>.me</span></a></div>
+    <div class="links">
+        <a href="../">← Intro</a>
+        <a href="../talk/">Talk</a>
+        <a href="../papers/">Papers</a>
+        <a href="../run/">Live Demo</a>
+        <a href="../play/">Play</a>
+        <a href="../script/">Script v1</a>
+        <a href="../script-play/">Script (Play)</a>
+        <a href="../../script/">Script (RSI)</a>
+    </div>
+</nav>
+
+<div class="sk-strip">
+  <a href="#s0">S0 · 开场</a>
+  <a href="#s1">S1 · 按下按钮</a>
+  <a href="#s2">S2 · 看卷子</a>
+  <a href="#s3">S3 · 写代码</a>
+  <a href="#s4">S4 · 三关卡</a>
+  <a href="#s5">S5 · 判决</a>
+  <a href="#s6">S6 · 30 → 91</a>
+  <a href="#s7">S7 · 两条平线</a>
+  <a href="#s8">S8 · 稀缺资产</a>
+  <span class="totalt">总时长 ≈ 10 分钟</span>
+</div>
+
+<main class="sk-wrap">
+
+  <div class="sk-hero">
+    <span class="sk-badge"><span class="dot"></span>Kimi K3 · Bedrock · 2026-09-21</span>
+    <h1>演讲稿 <span class="grad">v2</span> · Harness Self-Evolution</h1>
+    <p class="sub">CMHK TECH SUMMIT 2026 · 内部演讲版 · 8 段 · 约 10 分钟</p>
+    <p class="byline">同一 demo · 另一种讲法 · 与 <a href="../script/">Script v1</a> 对照使用</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       S0 · 开场 · 十个顾客，七个空手
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec opener" id="s0">
+    <div class="sk-head">
+      <span class="sk-num">S0</span>
+      <span class="sk-time">45 秒</span>
+      <span class="sk-title">开场 · <span class="sk-title-cn">十个顾客，七个空手</span></span>
+    </div>
+
+    <div class="sk-mainline">
+      先想一个画面：顾客在我们 App 里搜「适合送丈母娘的月饼」，排在第一位的是<em>男士剃须刀</em>。
+      这不是段子 · 是我们搜索 agent 今天的真实水平 —— BM25 baseline · 命中率 <em>30%</em> ·
+      十个顾客，七个空手而归。接下来我不讲换模型 · 我讲怎么让它在<em>一克权重都不动</em>的前提下 · 自己把自己的搜索代码重写一遍。
+    </div>
+
+    <div class="sk-punch">权重一克不动 · 动的是权重外面那层 harness。</div>
+
+    <div class="sk-cue-block">PPT 全屏搜索截图 · query「适合送丈母娘的月饼」· 第一名结果「男士剃须刀」· 右下角红色大字 30%。</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       S1 · 点击开始进化
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec" id="s1">
+    <div class="sk-head">
+      <span class="sk-num">S1</span>
+      <span class="sk-time">5 秒</span>
+      <span class="sk-title">点击「开始进化」· <span class="sk-title-cn">按下按钮</span></span>
+    </div>
+
+    <div class="sk-mainline">
+      方案就在这个页面上 · 一个按钮。我现在点下去 · <em>90 秒</em>后我们看数字。
+    </div>
+
+    <div class="sk-punch">这 90 秒里 · 写代码的不是人。</div>
+
+    <div class="sk-cue-block">切到 liucao.me/demo/harness/run/ · 光标点击「开始进化」· 计时器启动。（网络异常则切 liucao.me/demo/harness/play/ 回放 · 口径不变。）</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       S2 · 评估先行 · 15 秒
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec climax" id="s2">
+    <div class="sk-head">
+      <span class="sk-num">S2</span>
+      <span class="sk-time">15 秒</span>
+      <span class="sk-title">"评估先行" · <span class="sk-title-cn">先看卷子 · 再动笔</span></span>
+    </div>
+
+    <div class="sk-mainline">
+      趁它跑着 · 先看它第一步干什么 —— <em>不是写代码 · 是看卷子</em>。
+      Observe 节点从程序库里挑一个亲本 · 把它做错的题<em>一条一条摆好</em>。
+      整个方法就五个动词：Run · Observe · Propose · Verify · Commit · 引擎是 Sakana AI 开源的 ShinkaEvolve。
+    </div>
+
+    <div class="sk-punch">先看清自己错在哪 · 再动笔 —— 这个顺序不能反。</div>
+
+    <div class="sk-cue-block">屏幕左侧 pipeline 图 · 五节点 Run → Observe → Propose → Verify → Commit · Observe 高亮；右侧滚动错题列表。角落标注 ShinkaEvolve · arXiv:2509.19349。</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       S3 · AI 读错题 · 写新代码
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec" id="s3">
+    <div class="sk-head">
+      <span class="sk-num">S3</span>
+      <span class="sk-time">30 秒</span>
+      <span class="sk-title">AI 读错题 · 写新代码 · <span class="sk-title-cn">它给自己写代码</span></span>
+    </div>
+
+    <div class="sk-mainline">
+      接下来是 Propose：Claude Opus 4.8 拿到这份错题报告 · 开始写<em>新版搜索代码</em>。
+      注意它写的是什么 —— 不是梯度 · 不是 LoRA 参数 · 是<em>实打实的 Python</em> ·
+      分词逻辑、同义词表、排序规则 · 全在这个 diff 里。
+      「丈母娘」和「岳母」· 在 BM25 眼里是两个字面无关的词 · 它现在给自己补上这条规则。
+    </div>
+
+    <div class="sk-punch">改不了自己的脑子 · 就改自己干活的手法。</div>
+
+    <div class="sk-cue-block">代码 diff 视图 · 红删绿增 · 高亮同义词规则那一段；角落标注作者：Claude Opus 4.8。</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       S4 · 三套评测跑起来
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec" id="s4">
+    <div class="sk-head">
+      <span class="sk-num">S4</span>
+      <span class="sk-time">20 秒</span>
+      <span class="sk-title">三套评测跑起来 · <span class="sk-title-cn">三道关卡</span></span>
+    </div>
+
+    <div class="sk-mainline">
+      新代码写完 · 不能它自己说好就是好 · 这时候 Verify 上场。三套评测<em>同时跑</em>：
+      <em>31 道</em>电商搜索题 —— 8 简单 · 8 中等 · 15 最难；
+      再加 <em>5 道 hold-out</em>（它从没见过的）；
+      再加 <em>31 道 typo 版</em>（故意打错字）。
+      hold-out 防背题 · typo 防脆弱 · 少一套都不算数。
+    </div>
+
+    <div class="sk-punch">没有评测的进化 · 只是随机变异。</div>
+
+    <div class="sk-cue-block">三栏进度条并行跑动 · Main 31 题 / Hold-out 5 题 / Typo 31 题 · 通过率实时刷新。</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       S5 · Gate 判决
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec" id="s5">
+    <div class="sk-head">
+      <span class="sk-num">S5</span>
+      <span class="sk-time">5 秒</span>
+      <span class="sk-title">Gate 判决 · <span class="sk-title-cn">判决</span></span>
+    </div>
+
+    <div class="sk-mainline">
+      三套跑完 · Commit 只做一件事：<em>判决</em>。
+      过线 · 新代码晋升进程序库；不过线 · 连代码带错误日志打回 · 下一代接着改。
+    </div>
+
+    <div class="sk-punch">分数是唯一的法官。</div>
+
+    <div class="sk-cue-block">屏幕弹出 Gate 结果卡片 · PASS / FAIL 大字 · 附新旧分数对比。</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       S6 · Gen 1 出结果
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec climax" id="s6">
+    <div class="sk-head">
+      <span class="sk-num">S6</span>
+      <span class="sk-time">20 秒</span>
+      <span class="sk-title">Gen 1 出结果 · <span class="sk-title-cn">90 秒 · 30 到 91</span></span>
+    </div>
+
+    <div class="sk-mainline">
+      然后 · 第一代的结果出来了。<em>30%</em> 是 BM25 留下的起点 · <em>91%</em> 是 Opus 4.8 写的第一版代码 ——
+      从按下按钮到现在 · <em>90 秒</em> · 计时器可以作证。
+    </div>
+
+    <div class="sk-punch">从 30 到 91 · 中间没有人类碰过一行代码。</div>
+
+    <div class="sk-cue-block">大屏数字从 30% 跳到 91% · 计时器定格在 90 秒附近；回放模式定格同一帧。<b>此处停顿两秒 · 让数字落地。</b></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       S7 · 3 代跑完对比图
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec climax" id="s7">
+    <div class="sk-head">
+      <span class="sk-num">S7</span>
+      <span class="sk-time">40 秒</span>
+      <span class="sk-title">3 代跑完对比图 · <span class="sk-title-cn">两条平线之间的距离</span></span>
+    </div>
+
+    <div class="sk-mainline">
+      接着三代全部跑完 · 曲线出来了 · 但请大家看的<em>不是 Opus 这条 · 是旁边那条平的</em>。
+      同样的评测、同样的流程 · 换成 Sonnet 4.5 来当作者 · 三代之后卡在 <em>9%</em> ——
+      不是流程坏了 · 是它读不懂错题报告 · 也写不出能过 Gate 的代码。
+      Opus 4.8 在 90% 走平 · Sonnet 4.5 在 9% 走平 · <em>两条平台线之间的距离 · 就是模型能力的天花板</em> ·
+      而且我们的评测系统能量出它在哪。
+    </div>
+
+    <div class="sk-punch">天花板真实存在 · 好消息是 · 现在我们有尺子。</div>
+
+    <div class="sk-cue-block">对比图 · 横轴 Generation 0–3 · 纵轴命中率；Opus 4.8 曲线 30% → 91% → 90% 附近走平；Sonnet 4.5 曲线贴 9% 一条平线 · 标注 Tier H（最难 15 题档）。</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       S8 · 收束
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="sk-sec climax" id="s8">
+    <div class="sk-head">
+      <span class="sk-num">S8</span>
+      <span class="sk-time">60 秒</span>
+      <span class="sk-title">收束 · <span class="sk-title-cn">什么才是真正的资产</span></span>
+    </div>
+
+    <div class="sk-mainline">
+      最后算一笔账：这样进化一次 · API 账单 <em>$0.10</em>；
+      同样的问题走 fine-tune · 数据、算力、人力加起来约 <em>$500K</em> —— 差 <em>5 个数量级</em>。
+      而且 fine-tune 完你依然不知道新模型在 typo 上会不会崩 · 因为你没有那 31 道题。
+      模型每个季度都在换 · Opus 明年也会过时 · 真正沉淀下来、别人拿不走的 · <em>是你那套 31 + 5 + 31 的评测系统</em>。
+      想自己跑一遍的同事 · 这个页面现在就是开的。
+    </div>
+
+    <div class="sk-punch">模型会过时 · harness 会进化 · 但评测系统才是你唯一的稀缺资产。</div>
+
+    <div class="sk-cue-block">结尾页 · 左 $0.10 / 次进化 · 右 $500K / 次 fine-tune · 中间 10⁵×；底部一行 "Eval is the asset."
+    随后切回 demo 页停留 · 显示最终 91% 与 liucao.me/demo/harness/run/ 链接。</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       制作备注（不口播）
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="sk-notes">
+    <h3>📋 制作备注 · 不口播</h3>
+    <ol>
+      <li>
+        <b>题数口径</b>：稿本按 <b>31 道</b>（8+8+15）处理 · 与 mock-run.json + 网站其他页一致。
+      </li>
+      <li>
+        <b>总时长</b>：口播合计约 <b>4 分钟</b> · 其余 6 分钟为 demo 等待、停顿、现场反应缓冲。S1→S6 之间的口播间隔（75–90 秒）正好覆盖「90 秒出结果」的现场节奏。
+      </li>
+      <li>
+        <b>备用链路</b>：若切回放（/play/）· S1 与 S6 的口播不需改动 · 只需把「我现在点下去」的手势改为指向屏幕。
+      </li>
+      <li>
+        <b>"丈母娘 vs 岳母" 示例</b>：Kimi 编的场景 · 目前 mock-run.json 中没有此条真实错题。排练时对齐 Live Demo 真实错题清单 · 或换成 mock 数据里已有的真实例子（比如 "bluetooth speaker" → "山西红富士苹果"）。
+      </li>
+      <li>
+        <b>生成方式</b>：Bedrock <code>us.moonshotai.kimi-k3</code> · 生成于 2026-09-21 · 原始 Markdown 稿在 <code>[已删除]</code>。
+      </li>
+    </ol>
+  </div>
+
+  <div class="sk-nav-back">
+    <p>准备好开讲了？</p>
+    <a class="primary" href="../run/">→ 打开 Live Demo</a>
+    <a class="secondary" href="../script/">对照 Script v1</a>
+    <a class="secondary" href="../talk/">Talk 总览</a>
+  </div>
+
+</main>
+
+<script>
+(function() {
+  // Sticky strip current highlight (matches Script v1's UX)
+  const links = document.querySelectorAll(".sk-strip a[href^='#']");
+  const sections = document.querySelectorAll(".sk-sec");
+  window.addEventListener("scroll", () => {
+    let current = null;
+    sections.forEach(s => {
+      const r = s.getBoundingClientRect();
+      if (r.top < 200) current = s.id;
+    });
+    links.forEach(a => a.classList.toggle("current", a.getAttribute("href") === "#" + current));
+  }, { passive: true });
+})();
+</script>
+
+</body>
+</html>

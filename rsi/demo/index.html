@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harness Self-Evolution — Intro — liucao.me</title>
+    <link rel="stylesheet" href="../assets/style.css">
+    <style>
+      .intro-lead { text-align: center; margin: 0 0 3rem; }
+      .intro-lead h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+      .intro-lead h1 span { color: var(--accent); }
+      .intro-lead .kicker { color: var(--text-mute); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.8rem; }
+      .intro-lead .subtitle { color: var(--text-dim); font-size: 1.05rem; max-width: 640px; margin: 0 auto; }
+
+      .intro-section { margin: 3rem 0; }
+      .intro-section h2 {
+        font-size: 1.3rem; font-weight: 600; margin-bottom: 1rem;
+        color: var(--text); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+      }
+      .intro-section h2 .num {
+        display: inline-block; width: 28px; height: 28px; line-height: 28px;
+        text-align: center; background: var(--accent-glow); color: var(--accent);
+        border-radius: 50%; font-size: 0.8rem; margin-right: 0.6rem;
+        font-family: var(--mono); font-weight: 600; vertical-align: 2px;
+      }
+      .intro-section p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.8rem; }
+      .intro-section p strong { color: var(--text); }
+      .intro-section p .hi { color: var(--accent); font-weight: 500; }
+
+      /* Concept cards — "what's frozen vs what evolves" */
+      .concept-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0 0.4rem;
+      }
+      .concept {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: var(--radius-sm); padding: 1rem 1.2rem;
+      }
+      .concept .icon { font-size: 1.4rem; margin-bottom: 0.4rem; }
+      .concept.frozen .icon { color: #6bb8ff; }
+      .concept.evolving .icon { color: var(--accent); }
+      .concept h4 { font-size: 0.95rem; color: var(--text); margin-bottom: 0.3rem; }
+      .concept p { font-size: 0.85rem; color: var(--text-dim); margin: 0; line-height: 1.55; }
+      .concept .example { font-family: var(--mono); font-size: 0.75rem; color: var(--text-mute); margin-top: 0.5rem; }
+
+      /* Loop diagram — 4-step visual */
+      .loop {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem;
+        margin: 1.3rem 0 0.4rem;
+      }
+      .step {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: var(--radius-sm); padding: 1rem;
+        position: relative;
+      }
+      .step .num-badge {
+        position: absolute; top: -10px; left: 12px;
+        width: 22px; height: 22px; line-height: 22px; text-align: center;
+        background: var(--bg); border: 1px solid var(--accent); color: var(--accent);
+        border-radius: 50%; font-size: 0.7rem; font-weight: 700; font-family: var(--mono);
+      }
+      .step h4 { color: var(--accent); font-size: 0.9rem; margin-bottom: 0.4rem; }
+      .step p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; margin: 0; }
+
+      /* Sample task box */
+      .sample {
+        background: var(--bg-soft); border: 1px solid var(--border);
+        border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin: 0.8rem 0;
+        font-family: var(--mono); font-size: 0.82rem;
+      }
+      .sample .row { display: flex; padding: 0.25rem 0; }
+      .sample .lbl { color: var(--text-mute); width: 90px; flex-shrink: 0; }
+      .sample .val { color: var(--text-dim); flex: 1; }
+      .sample .ok { color: var(--accent); }
+      .sample .bad { color: var(--danger); }
+      .sample-caption { color: var(--text-mute); font-size: 0.8rem; margin-top: 0.4rem; font-style: italic; }
+
+      /* 4 outcomes preview */
+      .outcomes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; margin-top: 1rem; }
+      .outcome {
+        background: var(--surface); border: 1px solid var(--border);
+        border-left: 3px solid var(--text-mute); border-radius: 6px;
+        padding: 0.9rem 1rem;
+      }
+      .outcome.accepted { border-left-color: var(--accent); }
+      .outcome.leak { border-left-color: var(--danger); }
+      .outcome.cost { border-left-color: #d9822b; }
+      .outcome .n { font-family: var(--mono); font-size: 0.7rem; color: var(--text-mute); }
+      .outcome h5 { font-size: 0.85rem; color: var(--text); margin: 0.2rem 0 0.4rem; }
+      .outcome p { font-size: 0.75rem; color: var(--text-dim); line-height: 1.5; margin: 0; }
+
+      /* Glossary */
+      .glossary { display: grid; grid-template-columns: 200px 1fr; gap: 0.4rem 1.5rem; margin-top: 0.6rem; }
+      .glossary dt {
+        color: var(--accent); font-family: var(--mono); font-size: 0.82rem;
+        padding: 0.4rem 0; border-bottom: 1px dashed var(--border);
+      }
+      .glossary dd {
+        color: var(--text-dim); font-size: 0.85rem; margin: 0;
+        padding: 0.4rem 0; border-bottom: 1px dashed var(--border);
+        line-height: 1.55;
+      }
+
+      /* CTA */
+      /* ─────────────────────────────────────────────────────
+         Plain-language explainer at the top of intro.
+         Big diagrams, minimal words, high contrast.
+         ───────────────────────────────────────────────────── */
+      .explainer {
+        margin: 2rem 0 3rem;
+        padding: 1.8rem 1.6rem;
+        background: linear-gradient(180deg, rgba(0,229,160,0.06), transparent 60%);
+        border: 1px solid var(--accent-dim);
+        border-radius: var(--radius);
+      }
+      .explainer h2 {
+        font-size: 1.4rem; color: var(--text); margin-bottom: 0.5rem; font-weight: 600;
+      }
+      .explainer h2 span { color: var(--accent); }
+      .explainer .lede {
+        font-size: 1.02rem; color: var(--text-dim); line-height: 1.75;
+        margin-bottom: 1.6rem;
+      }
+      .explainer .lede b { color: var(--text); }
+
+      /* Sub-section headings */
+      .ex-h3 {
+        font-size: 1.05rem; color: var(--accent);
+        margin: 1.8rem 0 0.9rem; font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .ex-h3::before {
+        content: ""; display: inline-block; width: 4px; height: 16px;
+        background: var(--accent); margin-right: 0.6rem; vertical-align: -2px;
+        border-radius: 2px;
+      }
+
+      /* Harness diagram — 3 boxes with arrow */
+      .harness-diagram {
+        display: grid; grid-template-columns: 1fr 30px 1fr 30px 1fr;
+        gap: 0; align-items: center; margin: 1rem 0 0.8rem;
+      }
+      .diag-box {
+        background: var(--surface); border: 1.5px solid var(--border-hi);
+        border-radius: 10px; padding: 1rem 0.9rem; text-align: center;
+      }
+      .diag-box.frozen { border-color: #6bb8ff; }
+      .diag-box.evolves { border-color: var(--accent);
+        background: linear-gradient(135deg, rgba(0,229,160,0.08), var(--surface));
+        box-shadow: 0 0 20px rgba(0,229,160,0.1);
+      }
+      .diag-box .icon {
+        font-family: var(--mono); font-size: 0.75rem; font-weight: 700;
+        display: inline-block; padding: 3px 8px; border-radius: 4px;
+        margin-bottom: 0.6rem;
+      }
+      .diag-box.frozen .icon { color: #6bb8ff; background: rgba(107,184,255,0.12); }
+      .diag-box.evolves .icon { color: var(--accent); background: rgba(0,229,160,0.14); }
+      .diag-box.neutral .icon { color: var(--text-mute); background: rgba(154,167,180,0.12); }
+      .diag-box .title {
+        font-size: 0.95rem; color: var(--text); font-weight: 600; margin-bottom: 0.3rem;
+      }
+      .diag-box .desc {
+        font-size: 0.78rem; color: var(--text-dim); line-height: 1.5;
+      }
+      .diag-arrow {
+        text-align: center; font-family: var(--mono); font-size: 1.4rem;
+        color: var(--text-mute);
+      }
+      .harness-note {
+        text-align: center; font-size: 0.85rem; color: var(--text-dim);
+        margin-top: 0.5rem; padding: 0.7rem;
+        background: var(--bg-soft); border-radius: 6px;
+      }
+      .harness-note b { color: var(--accent); }
+
+      /* Four-round timeline */
+      .rounds-timeline {
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        gap: 10px; margin-top: 1rem; position: relative;
+      }
+      .rt-cell {
+        background: var(--surface); border: 1.5px solid var(--border);
+        border-top: 4px solid var(--border);
+        border-radius: 8px; padding: 1rem 0.9rem; position: relative;
+      }
+      .rt-cell.pass { border-top-color: var(--accent); }
+      .rt-cell.fail { border-top-color: var(--danger); }
+      .rt-cell.win { border-top-color: var(--accent);
+        background: linear-gradient(135deg, rgba(0,229,160,0.08), var(--surface));
+        box-shadow: 0 0 15px rgba(0,229,160,0.12);
+      }
+      .rt-cell .rt-round {
+        font-family: var(--mono); font-size: 0.75rem; font-weight: 700;
+        color: var(--accent); letter-spacing: 0.06em; margin-bottom: 0.3rem;
+      }
+      .rt-cell.fail .rt-round { color: var(--danger); }
+      .rt-cell .rt-what {
+        font-size: 0.9rem; color: var(--text); font-weight: 500; margin-bottom: 0.5rem;
+      }
+      .rt-cell .rt-verdict {
+        font-family: var(--mono); font-size: 0.72rem;
+        padding: 3px 8px; border-radius: 3px; display: inline-block;
+        margin-bottom: 0.5rem;
+      }
+      .rt-cell.pass .rt-verdict { background: var(--accent-glow); color: var(--accent); }
+      .rt-cell.fail .rt-verdict { background: rgba(239,68,68,0.15); color: var(--danger); }
+      .rt-cell.win .rt-verdict { background: var(--accent-glow); color: var(--accent); font-weight: 600; }
+      .rt-cell .rt-desc {
+        font-size: 0.75rem; color: var(--text-dim); line-height: 1.5;
+      }
+      /* connection dots between cells */
+      .rounds-timeline::after {
+        content: ""; position: absolute; top: 40px; left: 12%; right: 12%;
+        height: 2px; background: repeating-linear-gradient(
+          90deg, var(--border) 0 6px, transparent 6px 12px);
+        z-index: -1;
+      }
+
+      /* Glossary — 2x2 big cards */
+      .ex-glossary {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;
+        margin-top: 1rem;
+      }
+      .exg {
+        background: var(--surface); border: 1px solid var(--border);
+        border-left: 4px solid var(--accent); border-radius: 6px;
+        padding: 0.85rem 1rem;
+      }
+      .exg.leak   { border-left-color: var(--danger); }
+      .exg.cost   { border-left-color: #d9822b; }
+      .exg.win    { border-left-color: var(--accent); }
+      .exg.base   { border-left-color: var(--text-mute); }
+      .exg .tag {
+        font-family: var(--mono); font-size: 0.78rem; font-weight: 700;
+        margin-right: 0.4rem;
+      }
+      .exg.base .tag { color: var(--text-dim); }
+      .exg.leak .tag { color: var(--danger); }
+      .exg.cost .tag { color: #d9822b; }
+      .exg.win .tag  { color: var(--accent); }
+      .exg .en { font-family: var(--mono); font-size: 0.68rem; color: var(--text-mute); }
+      .exg .what {
+        display: block; font-size: 0.82rem; color: var(--text); margin-top: 0.35rem;
+        font-weight: 500; line-height: 1.5;
+      }
+      .exg .like {
+        display: block; font-size: 0.72rem; color: var(--text-dim); margin-top: 0.3rem;
+        font-style: italic;
+      }
+
+      @media (max-width: 720px) {
+        .harness-diagram { grid-template-columns: 1fr; gap: 8px; }
+        .diag-arrow { transform: rotate(90deg); font-size: 1.2rem; }
+        .rounds-timeline { grid-template-columns: 1fr 1fr; }
+        .ex-glossary { grid-template-columns: 1fr; }
+      }
+
+      .cta-block {
+        text-align: center; margin: 3rem 0 1rem; padding: 2rem 1rem;
+        background: linear-gradient(135deg, var(--accent-glow), transparent);
+        border: 1px solid var(--accent-dim); border-radius: var(--radius);
+      }
+      .cta-block h3 { font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem; }
+      .cta-block p { color: var(--text-dim); margin-bottom: 1.4rem; font-size: 0.9rem; }
+      .cta-btn {
+        display: inline-block; background: var(--accent); color: #04120c;
+        padding: 12px 28px; border-radius: 8px; text-decoration: none;
+        font-weight: 600; font-size: 0.95rem;
+        transition: transform 0.15s, filter 0.15s;
+      }
+      .cta-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+      @media (max-width: 720px) {
+        .concept-grid, .loop, .outcomes { grid-template-columns: 1fr; }
+        .glossary { grid-template-columns: 1fr; gap: 0.2rem; }
+        .glossary dt { padding-bottom: 0; border: none; }
+      }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="brand"><a href="../.." style="color:inherit;">liucao<span>.me</span></a></div>
+        <div class="links">
+            <a href="talk/">Talk</a>
+            <a href="papers/">Papers</a>
+            <a href="run/">Live Demo</a>
+            <a href="play/">Play</a>
+            <a href="./">Demos</a>
+        </div>
+    </nav>
+
+    <main class="wrap section">
+        <div class="intro-lead">
+            <div class="kicker">Case Study · 电商搜索 Agent · 10 分钟看完</div>
+            <h1><span>电商搜索 Agent</span> 的 Harness 自进化</h1>
+            <p class="subtitle">
+                <b>被改进的对象</b>：一个电商商品搜索 agent（Python <code>search(query)</code> 函数 · BM25 baseline · 命中率 30%）。<br>
+                <b>方法</b>：模型权重一分不动 · 让 AI 一代一代重写 <code>search()</code> 代码 · 每代跑 31 题评测 · 通过门控才晋升。<br>
+                <b>引擎</b>：<a href="https://github.com/SakanaAI/ShinkaEvolve" target="_blank" rel="noopener" style="color:var(--accent);">ShinkaEvolve</a> (Sakana AI) · Proposer 是 Claude via AWS Bedrock。
+            </p>
+        </div>
+
+        <!-- Plain-language explainer, built around the "apple 128gb" case -->
+        <div class="explainer">
+            <h2>先看懂：<span>这个 demo 究竟在演什么</span></h2>
+            <p class="lede">
+                一个电商网站发现搜索功能不够准 —— 用户输入
+                <b>「apple 128gb latest」</b> 想买 iPhone，返回的第一条却是
+                <b>红富士苹果</b>。开发团队没有重新训练模型，而是让 AI 自动
+                <b>写 4 版胶水代码</b>去改进它。这个 demo 就是这 4 版代码的
+                成败全过程。
+            </p>
+
+            <h3 class="ex-h3">什么是「胶水代码」（harness）</h3>
+            <div class="harness-diagram">
+                <div class="diag-box neutral">
+                    <span class="icon">INPUT</span>
+                    <div class="title">用户查询</div>
+                    <div class="desc">"apple 128gb latest"</div>
+                </div>
+                <div class="diag-arrow">→</div>
+                <div class="diag-box evolves">
+                    <span class="icon">EVOLVES</span>
+                    <div class="title">胶水代码</div>
+                    <div class="desc">决定怎么查询、怎么排序、怎么归类。AI 每轮改这层</div>
+                </div>
+                <div class="diag-arrow">→</div>
+                <div class="diag-box frozen">
+                    <span class="icon">FROZEN</span>
+                    <div class="title">基座模型</div>
+                    <div class="desc">Sonnet 5 · 权重一分不动，全程冻结</div>
+                </div>
+            </div>
+            <div class="harness-note">
+                所有改动都发生在<b>中间那一层</b>。基座模型从头到尾没有再训练过一次。
+            </div>
+
+            <h3 class="ex-h3">为什么要 4 轮</h3>
+            <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:0.8rem;">
+                因为 AI 不是每次都能想到对的办法。它会走弯路。这个 demo 完整保留了它的
+                <b style="color:var(--accent)">2 次失败 + 1 次成功</b>：
+            </p>
+            <div class="rounds-timeline">
+                <div class="rt-cell pass">
+                    <div class="rt-round">R0 · 起点</div>
+                    <div class="rt-what">什么优化都不加，直接查</div>
+                    <div class="rt-verdict">基线 60%</div>
+                    <div class="rt-desc">BM25 看到 apple 关键词，推荐了红富士苹果。作为对比基准。</div>
+                </div>
+                <div class="rt-cell fail">
+                    <div class="rt-round">R1 · 泄漏</div>
+                    <div class="rt-what">AI 把答案硬编码进代码</div>
+                    <div class="rt-verdict">审计拦截 · 作废</div>
+                    <div class="rt-desc">被"数据泄漏审计"抓住 —— 代码里直接写着测试集答案，整版丢弃。</div>
+                </div>
+                <div class="rt-cell fail">
+                    <div class="rt-round">R2 · 算力</div>
+                    <div class="rt-what">AI 转向堆算力刷分</div>
+                    <div class="rt-verdict">成本超标 · 否决</div>
+                    <div class="rt-desc">每题跑 20 个候选让大模型排。准确率只涨 2%，但 token 涨 8 倍。不划算。</div>
+                </div>
+                <div class="rt-cell win">
+                    <div class="rt-round">R3 · 改进</div>
+                    <div class="rt-what">AI 真正分析根源，写出结构化流水线</div>
+                    <div class="rt-verdict">✓ 晋升 90%</div>
+                    <div class="rt-desc">意图识别 → 属性抽取 → 结构化检索。iPhone 命中，成本只增 15%。</div>
+                </div>
+            </div>
+
+            <h3 class="ex-h3">四个关键词，一句话讲清</h3>
+            <div class="ex-glossary">
+                <div class="exg base">
+                    <span class="tag">起点</span><span class="en">Baseline</span>
+                    <span class="what">什么优化都不加，让模型直接作答，作为对比基准。</span>
+                    <span class="like">类比：考试前完全没有复习，就是这个分数。</span>
+                </div>
+                <div class="exg leak">
+                    <span class="tag">泄漏</span><span class="en">Data Leak</span>
+                    <span class="what">Proposer 把测试集答案偷偷塞进代码。数据泄漏审计一律拦截。</span>
+                    <span class="like">类比：考试时把小抄夹在书里，被监考老师抓住。</span>
+                </div>
+                <div class="exg cost">
+                    <span class="tag">算力</span><span class="en">Compute Scaling</span>
+                    <span class="what">Proposer 用多候选重排、多次投票等方式堆算力换分。</span>
+                    <span class="like">类比：每道题反复涂改十次，希望蒙对。</span>
+                </div>
+                <div class="exg win">
+                    <span class="tag">改进</span><span class="en">Real Fix</span>
+                    <span class="what">Proposer 认真分析失败案例，写出真正解决问题的代码。</span>
+                    <span class="like">类比：考前扎扎实实把知识点复习一遍。</span>
+                </div>
+            </div>
+
+            <h3 class="ex-h3">具体到「apple 128gb」这个例子</h3>
+            <p style="color:var(--text-dim);font-size:0.92rem;">
+                用户想找 <b style="color:var(--accent)">iPhone 128GB</b>，但每一轮 harness 的表现不同：
+            </p>
+            <div style="font-family:var(--mono);font-size:0.82rem;background:var(--bg-soft);padding:1rem 1.2rem;border-radius:8px;border:1px solid var(--border);line-height:1.9;">
+                <div><span style="color:var(--text-mute);width:80px;display:inline-block;">R0 起点</span> → 返回 <span style="color:var(--danger);">红富士苹果 ¥29.9</span>  <span style="color:var(--text-mute);">（BM25 只看到 apple 就当水果了）</span></div>
+                <div><span style="color:var(--danger);width:80px;display:inline-block;">R1 泄漏</span> → 返回 <span style="color:var(--text-mute);text-decoration:line-through;">iPhone 128GB</span>  <span style="color:var(--danger);">（作弊，作废）</span></div>
+                <div><span style="color:#d9822b;width:80px;display:inline-block;">R2 算力</span> → 返回 <span style="color:var(--danger);">红富士苹果 ¥29.9</span>  <span style="color:var(--text-mute);">（20 个候选全是水果，重排也救不回来）</span></div>
+                <div><span style="color:var(--accent);width:80px;display:inline-block;">R3 改进</span> → 返回 <span style="color:var(--accent);font-weight:600;">Apple iPhone 15 · 128GB · ¥5799</span>  <span style="color:var(--accent);">（意图识别到手机类目，命中）</span></div>
+            </div>
+            <p style="color:var(--text-dim);font-size:0.85rem;margin-top:0.9rem;">
+                打开 demo，你就会看到这 4 版代码、4 版搜索结果、每一版为什么被接受或被拒绝。
+            </p>
+        </div>
+
+        <!-- Section 1: What are you about to see -->
+        <div class="intro-section">
+            <h2><span class="num">1</span>你即将看到什么</h2>
+            <p>
+                <span class="hi">基座模型（比如 Sonnet 5）全程冻结</span>，一次训练都没有。
+                真正在动的是它<span class="hi">外面那层胶水代码</span> —— AI 每轮读一遍上一次的日志，
+                自己改这层代码，把准确率从 60% 一步步推到 80~90%。
+            </p>
+            <p>
+                我们把 <span class="hi">4 轮循环</span> 摊在同一张表里，让你看清楚它每次改了什么、结果怎样：
+                第 1 轮它想作弊，被抓；第 2 轮它想加钱刷分，被拒；第 3 轮它想通了真正的问题，被接受。
+            </p>
+            <div class="concept-grid">
+                <div class="concept frozen">
+                    <div class="icon">❄️</div>
+                    <h4>冻结不动 · 基座模型</h4>
+                    <p>Sonnet 5 / Fable 5 权重一分不改，也没有任何微调。</p>
+                    <div class="example">weights = frozen</div>
+                </div>
+                <div class="concept evolving">
+                    <div class="icon">🧬</div>
+                    <h4>持续进化 · 外围 harness</h4>
+                    <p>Prompt、检索策略、工具调用、重试逻辑 —— 全在一个 .py 文件里。AI 每轮改的就是它。</p>
+                    <div class="example">harness.py = evolves</div>
+                </div>
+            </div>
+            <p style="margin-top:1rem;">
+                这套思路在 2026 年的论文里叫 <b>harness self-evolution</b>（ACE、Meta-Harness、DGM 都是这一路），
+                核心一句话：<span class="hi">基座模型已经够强，真正的杠杆在"怎么用它"上。</span>
+            </p>
+        </div>
+
+        <!-- Section 2: How it works, 4 steps -->
+        <div class="intro-section">
+            <h2><span class="num">2</span>一轮循环里发生了什么</h2>
+            <p>按下 Play，就是把下面这 4 个步骤重复跑 4 次：</p>
+            <div class="loop">
+                <div class="step">
+                    <div class="num-badge">1</div>
+                    <h4>读日志 · 写新版</h4>
+                    <p>一个 coding agent（就叫它 proposer）翻上一轮哪些题错了、错在哪，然后动手改 harness。</p>
+                </div>
+                <div class="step">
+                    <div class="num-badge">2</div>
+                    <h4>全量跑分</h4>
+                    <p>新版 harness 跑完 31 道题，把准确率和 token 花销都记下来。</p>
+                </div>
+                <div class="step">
+                    <div class="num-badge">3</div>
+                    <h4>三道门审判</h4>
+                    <p>作弊没有？（泄漏审计）· 是不是靠加钱刷的？（成本罚）· 综合分真的更高吗？（blended score）</p>
+                </div>
+                <div class="step">
+                    <div class="num-badge">4</div>
+                    <h4>接受或丢弃</h4>
+                    <p>三道门都过 → 新版上位；任何一道不过 → 整版丢掉，proposer 下轮再想办法。</p>
+                </div>
+            </div>
+            <p style="margin-top:1.2rem;">
+                重点：<span class="hi">整个过程没有人插手改代码。</span>
+                Proposer 自己读、自己写，gate 自己判，循环自己往下走。
+                人类只干一件事 —— <b>提前把评测集和门槛定好</b>。
+            </p>
+        </div>
+
+        <!-- Section 3: Sample tasks — make it concrete -->
+        <div class="intro-section">
+            <h2><span class="num">3</span>任务到底长什么样</h2>
+            <p><b>场景一 · 财报抽取（FiNER XBRL）</b> —— 从一句财报文字里，精准挑出对应的会计科目标签：</p>
+            <div class="sample">
+                <div class="row"><span class="lbl">原文</span><span class="val">"Total Revenues for the fiscal year ended December 31 was $12,458 million"</span></div>
+                <div class="row"><span class="lbl">正确标签</span><span class="val ok">us-gaap:RevenueFromContractWithCustomer</span></div>
+                <div class="row"><span class="lbl">起点版答</span><span class="val bad">us-gaap:Revenues ✗ &nbsp;&nbsp;（两个近义概念被搞混）</span></div>
+                <div class="row"><span class="lbl">进化后答</span><span class="val ok">us-gaap:RevenueFromContractWithCustomer ✓</span></div>
+            </div>
+            <div class="sample-caption">
+                XBRL 是美国 SEC 强制上市公司使用的财报标记规范，共 139 个细粒度标签。让模型裸答，错得离谱。
+            </div>
+
+            <p style="margin-top:1.5rem;"><b>场景二 · 电商搜索（属性感知）</b> —— 用户随口一句话，找到真正想要的那件商品：</p>
+            <div class="sample">
+                <div class="row"><span class="lbl">用户输入</span><span class="val">"water bottle no plastic"（不要塑料的水杯）</span></div>
+                <div class="row"><span class="lbl">正确 SKU</span><span class="val ok">sku-glass-500ml（500ml 玻璃水杯）</span></div>
+                <div class="row"><span class="lbl">起点版答</span><span class="val bad">sku-plastic-500ml ✗ &nbsp;&nbsp;（否定词 "no" 被吞掉了）</span></div>
+                <div class="row"><span class="lbl">进化后答</span><span class="val ok">sku-glass-500ml ✓</span></div>
+            </div>
+            <div class="sample-caption">
+                传统 BM25 检索最容易吃掉否定词、修饰词、类目歧义（"苹果"是水果还是手机？）。
+                进化后的 harness 学会先把意图理清楚，再去检索。
+            </div>
+        </div>
+
+        <!-- Section 4: The 4 rounds preview -->
+        <div class="intro-section">
+            <h2><span class="num">4</span>4 轮的剧情预告</h2>
+            <p>先把剧透丢给你，等下看表格就不会一头雾水：</p>
+            <div class="outcomes">
+                <div class="outcome">
+                    <div class="n">Round 0</div>
+                    <h5>起点</h5>
+                    <p>零 shot 裸答，60~65% 打底。所有方法的公共起跑线。</p>
+                </div>
+                <div class="outcome leak">
+                    <div class="n">Round 1 🚨</div>
+                    <h5>作弊 —— 被抓</h5>
+                    <p>Proposer 想偷懒，把测试集答案直接抄进 prompt。<b>泄漏审计当场把它拽出来</b>，整版作废。</p>
+                </div>
+                <div class="outcome cost">
+                    <div class="n">Round 2 💰</div>
+                    <h5>加钱刷分 —— 被拒</h5>
+                    <p>它开始堆重试，准确率涨一点点，token 却翻了 5~8 倍。<b>成本罚拦下这波 tokenmaxxing</b>。</p>
+                </div>
+                <div class="outcome accepted">
+                    <div class="n">Round 3 ✓</div>
+                    <h5>真招 —— 被接受</h5>
+                    <p>它认真看了失败模式，写出一份结构化 playbook。<b>准确率 80~90%，晋升为新的 frontier</b>。</p>
+                </div>
+            </div>
+            <p style="margin-top:1.5rem;">
+                彩蛋在最后：进化出的这版 harness，<span class="hi">一行代码不改，直接换到另一个基座模型（Fable 5）上</span>，
+                照样能跑，甚至更好。<b>这说明它学到的是通用工程套路，而不是某个模型的偏方。</b>
+            </p>
+        </div>
+
+        <!-- Section 5: Glossary -->
+        <div class="intro-section">
+            <h2><span class="num">5</span>术语一句话速查</h2>
+            <dl class="glossary">
+                <dt>Harness</dt>
+                <dd>模型外面那层"胶水"代码：prompt 拼装、检索、工具调用、失败重试。<b>本 demo 里进化的就是它。</b></dd>
+
+                <dt>Proposer</dt>
+                <dd>一个 coding agent（比如 Claude Code）。它的工作循环：读日志 → 写下一版 harness。</dd>
+
+                <dt>Gate 晋升门</dt>
+                <dd>三合一审判员：泄漏审计 + 成本罚 + blended score。任何一关不过，新版直接作废。</dd>
+
+                <dt>Blended score</dt>
+                <dd>综合分公式：<code>accuracy + 0.5 × all_pass − 0.005 × tokens(M)</code>。<b>Token 被明码标价，防止用堆算力换分数。</b></dd>
+
+                <dt>Frontier</dt>
+                <dd>当前最好的 harness。每一版新提案，都得跟它 PK，赢了才上位。</dd>
+
+                <dt>泄漏审计</dt>
+                <dd>检查 proposer 是不是偷看了测试集答案（比如硬编码进代码里）。抓到 → 整版丢弃。</dd>
+
+                <dt>成本罚</dt>
+                <dd>Token 花销直接扣分。想靠"多试几次"刷分？门都没有。</dd>
+
+                <dt>基座模型</dt>
+                <dd>Sonnet 5 / Fable 5 等 LLM。<b>整个过程冻结，一次训练都没有。</b></dd>
+            </dl>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-block">
+            <h3>准备好了，来看它自己进化</h3>
+            <p>建议：先在 Finance 页按 Play 看一遍完整循环，再切到 E-commerce 对照。</p>
+            <a href="run/" class="cta-btn">开始 Demo →</a>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 liucao.me · <a href="../..">Home</a> · 方法参考: ACE (arXiv:2510.04618) · Meta-Harness (arXiv:2603.28052) · DGM (arXiv:2505.22954)</p>
+    </footer>
+</body>
+</html>

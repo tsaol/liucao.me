@@ -1,0 +1,3663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harness Self-Evolution Demo — liucao.me</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <style>
+      /* Single-column layout — tighter reading width for beginners. */
+      main.wrap { max-width: 960px; }
+    </style>
+    <style>
+      .hd-lead { text-align: center; margin-bottom: 1.4rem; }
+      .hd-lead h1 {
+        font-size: 2.4rem; font-weight: 800; letter-spacing: -0.02em;
+        margin-bottom: 0.4rem; line-height: 1.1;
+      }
+      /* Animated gradient headline — subtle, always in motion */
+      .hd-lead h1 span {
+        background: linear-gradient(
+          90deg,
+          rgb(139, 92, 246) 0%,
+          var(--accent) 33%,
+          rgb(80, 200, 255) 66%,
+          rgb(139, 92, 246) 100%
+        );
+        background-size: 300% 100%;
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+        animation: hdGradient 8s linear infinite;
+      }
+      @keyframes hdGradient {
+        from { background-position: 0% 0%; }
+        to   { background-position: 300% 0%; }
+      }
+      .hd-lead p { color: var(--text-dim); font-size: 0.95rem; }
+
+      /* Fade-up on mount — for gen cards and comparison panels */
+      @keyframes hdFadeUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: none; }
+      }
+      .hd-gen { animation: hdFadeUp 0.5s ease-out both; }
+      .hd-compare.active { animation: hdFadeUp 0.6s 0.1s ease-out both; }
+
+      /* Pulse effect for active stage badge — signals live activity */
+      @keyframes hdPulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(0, 217, 130, 0.5); transform: scale(1); }
+        50%      { box-shadow: 0 0 0 6px rgba(0, 217, 130, 0); transform: scale(1.04); }
+      }
+      .hd-stage.active {
+        animation: hdPulse 1.5s ease-in-out infinite;
+        color: #04120c !important;
+        background: var(--accent) !important;
+        border-color: var(--accent) !important;
+      }
+
+      /* Score bar chart bars — animate width from 0 on render */
+      .hd-cmp-bar {
+        transition: width 800ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* Typewriter cursor for code reveal */
+      .hd-gen-code.typing::after {
+        content: "▊";
+        color: var(--accent);
+        animation: hdBlink 0.9s steps(1) infinite;
+        margin-left: 2px;
+      }
+      @keyframes hdBlink { 50% { opacity: 0; } }
+
+      /* Number ticker — count-up cells get monospace + tabular-nums so they don't jitter */
+      .hd-count { font-variant-numeric: tabular-nums; }
+
+      .hd-tabs { display: flex; gap: 6px; margin: 2rem 0 -1px; }
+      .hd-tab {
+        padding: 8px 18px; cursor: pointer; border: 1px solid var(--border);
+        background: transparent; color: var(--text-mute); border-radius: 8px 8px 0 0;
+        border-bottom: none; font-family: var(--font); font-size: 0.9rem;
+        transition: color 0.2s, background 0.2s;
+      }
+      .hd-tab:hover { color: var(--text-dim); }
+      .hd-tab.active { background: var(--surface); color: var(--accent); border-color: var(--border-hi); border-bottom-color: var(--surface); }
+
+      .hd-panel {
+        background: var(--surface); border: 1px solid var(--border-hi);
+        border-radius: 0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
+        padding: 1.6rem; box-shadow: var(--shadow);
+      }
+      .hd-controls { display: flex; gap: 10px; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; }
+      .hd-btn {
+        background: var(--accent); color: #04120c; border: none;
+        padding: 8px 18px; border-radius: 6px; cursor: pointer;
+        font-family: var(--font); font-size: 0.85rem; font-weight: 600;
+        transition: filter 0.15s;
+      }
+      .hd-btn:hover { filter: brightness(1.1); }
+      .hd-btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--border-hi); }
+      .hd-btn.secondary:hover { border-color: var(--accent-dim); background: var(--accent-glow); }
+      .hd-caption { color: var(--text-mute); font-size: 0.8rem; margin-left: 0.6rem; font-family: var(--mono); }
+
+      .hd-storyline {
+        padding: 12px 16px; margin-bottom: 1.1rem; border-left: 3px solid var(--accent);
+        background: var(--accent-glow); font-size: 0.9rem; min-height: 44px;
+        border-radius: 0 6px 6px 0; color: var(--text);
+      }
+      .hd-storyline strong { color: var(--accent); }
+
+      .hd-chart {
+        height: 100px; margin: 0 0 1.6rem; display: flex; align-items: end; gap: 5px;
+        padding: 14px 14px 30px; border: 1px solid var(--border);
+        border-radius: var(--radius-sm); background: var(--bg-soft);
+      }
+      .hd-bar {
+        flex: 1; background: var(--text-mute); border-radius: 3px 3px 0 0;
+        transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s, opacity 0.3s;
+        position: relative; min-height: 4px;
+      }
+      .hd-bar.accepted { background: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+      .hd-bar.rejected { background: #d9822b; opacity: 0.6; }
+      .hd-bar.leak { background: var(--danger); opacity: 0.6; }
+      .hd-bar.hidden { opacity: 0.1; }
+      .hd-bar-label {
+        position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+        font-family: var(--mono); font-size: 0.65rem; color: var(--text-mute); white-space: nowrap;
+      }
+
+      .hd-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem;
+                  font-family: var(--mono); font-size: 0.82rem; }
+      .hd-table th, .hd-table td {
+        padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border);
+      }
+      .hd-table th { color: var(--text-mute); font-weight: 500; text-transform: uppercase;
+                     font-size: 0.65rem; letter-spacing: 0.08em; }
+      .hd-table tr.hidden { opacity: 0.5; color: var(--text-mute); }
+      .hd-table tr.hidden .decision { color: var(--text-mute) !important; font-style: italic; }
+      .hd-table tr.leak td { color: var(--danger); }
+      .hd-table tr.rejected td.decision { color: #d9822b; }
+      .hd-table tr.accepted td.decision { color: var(--accent); font-weight: 600; }
+      .hd-table tr.frontier { background: var(--accent-glow); }
+      .hd-reason { color: var(--text-mute); font-size: 0.75rem; padding: 0 12px 8px !important; border-bottom: 1px solid var(--border); }
+
+      .hd-transfer {
+        display: flex; gap: 24px; padding: 1.2rem; border-top: 1px solid var(--border);
+        margin-top: 0.6rem; transition: opacity 0.5s;
+      }
+      .hd-card { flex: 1; }
+      .hd-card .label { color: var(--text-mute); font-size: 0.7rem; text-transform: uppercase;
+                        letter-spacing: 0.08em; margin-bottom: 6px; }
+      .hd-card .value { font-family: var(--mono); font-size: 1.3rem; color: var(--accent); }
+      .hd-card .sub { color: var(--text-dim); font-size: 0.8rem; margin-top: 4px; font-family: var(--mono); }
+      .hd-arrow { color: var(--text-mute); align-self: center; font-size: 1.3rem; }
+
+      .hd-refs { color: var(--text-mute); font-size: 0.78rem; margin-top: 2rem;
+                 padding-top: 1.2rem; border-top: 1px solid var(--border); }
+      .hd-refs code { font-family: var(--mono); color: var(--text-dim); }
+
+      /* KPI hero bar */
+      .hd-kpis {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+        margin-bottom: 1.4rem;
+      }
+      .hd-kpi {
+        background: var(--bg-soft); border: 1px solid var(--border);
+        border-radius: var(--radius-sm); padding: 1rem 1.1rem;
+        transition: opacity 0.4s, transform 0.4s;
+      }
+      .hd-kpi.locked { opacity: 0.35; transform: scale(0.98); }
+      .hd-kpi .label { color: var(--text-mute); font-size: 0.65rem;
+                       text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; }
+      .hd-kpi .num { font-family: var(--mono); font-size: 1.7rem; color: var(--accent);
+                     font-weight: 700; letter-spacing: -0.02em; }
+      .hd-kpi .sub { color: var(--text-dim); font-size: 0.75rem; margin-top: 0.3rem; font-family: var(--mono); }
+
+      /* Delta pill in table */
+      .hd-delta {
+        display: inline-block; margin-left: 6px; padding: 1px 8px;
+        border-radius: 10px; font-size: 0.72rem; font-weight: 600;
+      }
+      .hd-delta.pos { background: var(--accent-glow); color: var(--accent); }
+      .hd-delta.neg { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+      .hd-delta.zero { background: rgba(154, 167, 180, 0.1); color: var(--text-mute); }
+
+      /* Expandable rows */
+      .hd-table tr.hd-row { cursor: pointer; }
+      .hd-table tr.hd-row:hover:not(.hidden) { background: var(--surface-2); }
+      .hd-caret { color: var(--text-mute); margin-right: 8px; display: inline-block;
+                  transition: transform 0.2s; font-size: 0.7rem; }
+      .hd-row.open .hd-caret { transform: rotate(90deg); color: var(--accent); }
+
+      .hd-detail { display: none; }
+      .hd-row.open + .hd-detail-wrap { display: table-row; }
+      .hd-detail-wrap { display: none; }
+      .hd-detail-cell { padding: 0 !important; background: var(--bg-soft); border-bottom: 1px solid var(--border) !important; }
+      .hd-detail-inner {
+        padding: 1rem 1.2rem;
+        max-height: 500px; overflow-y: auto;
+      }
+      .hd-detail-summary { display: flex; gap: 1.4rem; margin-bottom: 0.9rem;
+                           padding-bottom: 0.7rem; border-bottom: 1px dashed var(--border); }
+      .hd-detail-summary .chip {
+        font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute);
+      }
+      .hd-detail-summary .chip.gained { color: var(--accent); }
+      .hd-detail-summary .chip.lost { color: var(--danger); }
+
+      .hd-tasklist { list-style: none; padding: 0; margin: 0; }
+      .hd-task {
+        padding: 8px 10px; margin: 3px 0; border-radius: 5px;
+        font-size: 0.78rem; font-family: var(--mono);
+        border-left: 3px solid var(--border);
+      }
+      .hd-task.gained { border-left-color: var(--accent); background: rgba(0,229,160,0.06); }
+      .hd-task.lost { border-left-color: var(--danger); background: rgba(239,68,68,0.06); }
+      .hd-task.right { border-left-color: var(--text-mute); opacity: 0.7; }
+      .hd-task.wrong { border-left-color: #d9822b; opacity: 0.7; }
+      .hd-task .tid { color: var(--text-mute); margin-right: 8px; }
+      .hd-task .inp { color: var(--text); }
+      .hd-task .arrow { color: var(--text-mute); margin: 0 0.4rem; }
+      .hd-task .g { color: var(--accent); }
+      .hd-task .p-wrong { color: var(--danger); }
+      .hd-task .trap { display: block; color: var(--text-mute); font-size: 0.72rem;
+                       margin-top: 3px; padding-left: 0; }
+      .hd-task-group { color: var(--text-dim); font-size: 0.72rem;
+                       text-transform: uppercase; letter-spacing: 0.05em;
+                       margin: 0.8rem 0 0.3rem; font-weight: 600; }
+      .hd-task-group:first-child { margin-top: 0; }
+
+      /* Final scorecard */
+      .hd-scorecard {
+        margin-top: 2rem; padding: 1.5rem;
+        background: linear-gradient(135deg, var(--accent-glow), transparent);
+        border: 1px solid var(--accent-dim); border-radius: var(--radius);
+        transition: opacity 0.5s;
+      }
+      .hd-scorecard.locked { opacity: 0.25; }
+      .hd-scorecard h3 { font-size: 1rem; color: var(--text); margin-bottom: 0.8rem; }
+      .hd-scorecard-grid {
+        display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem;
+        font-family: var(--mono); font-size: 0.8rem;
+      }
+      .hd-sc-col .row { padding: 4px 0; color: var(--text-dim); }
+      .hd-sc-col .row.big { font-size: 1rem; color: var(--accent); font-weight: 600;
+                            padding: 6px 0; border-top: 1px dashed var(--border-hi); margin-top: 4px; }
+      .hd-sc-col .name { color: var(--text-mute); font-size: 0.7rem;
+                         text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+
+      /* Signature case cards — the "look, this exact query, in 4 rounds" panel */
+      .hd-cases {
+        margin: 1.6rem 0 1.2rem;
+      }
+      .hd-cases-header {
+        display: flex; align-items: baseline; justify-content: space-between;
+        margin-bottom: 0.9rem;
+      }
+      .hd-cases-header h3 {
+        font-size: 1rem; color: var(--text); font-weight: 600;
+      }
+      .hd-cases-header h3 span { color: var(--accent); }
+      .hd-cases-header .hint {
+        font-size: 0.75rem; color: var(--text-mute);
+      }
+      .hd-case {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: var(--radius-sm); padding: 1rem 1.1rem;
+        margin-bottom: 0.7rem;
+        transition: opacity 0.4s;
+      }
+      .hd-case.dim { opacity: 0.3; }
+      .hd-case-q {
+        font-family: var(--mono); font-size: 0.9rem; color: var(--text);
+        margin-bottom: 0.35rem;
+        display: flex; gap: 0.6rem; align-items: baseline; flex-wrap: wrap;
+      }
+      .hd-case-q .prefix { color: var(--text-mute); font-size: 0.72rem; }
+      .hd-case-trap {
+        font-size: 0.75rem; color: #d9822b; margin-bottom: 0.8rem;
+        padding-bottom: 0.6rem; border-bottom: 1px dashed var(--border);
+      }
+      .hd-case-trap .icon {
+        display: inline-block; padding: 1px 6px; margin-right: 0.4rem;
+        background: rgba(217,130,43,0.14); border-radius: 3px;
+        font-size: 0.68rem; font-weight: 600; color: #d9822b;
+      }
+      .hd-case-trap .gold { color: var(--accent); font-family: var(--mono); }
+      .hd-case-trace {
+        display: flex; flex-direction: column; gap: 0;
+        font-family: var(--mono); font-size: 0.8rem;
+      }
+      .hd-trace-row {
+        display: grid; grid-template-columns: 76px minmax(0, 1fr) auto;
+        gap: 10px; align-items: center;
+        padding: 6px 10px; border-radius: 5px;
+        transition: opacity 0.3s, background 0.2s;
+        min-width: 0;
+      }
+      .hd-trace-row + .hd-trace-row { margin-top: 2px; }
+      /* Not-yet-played rounds render as an empty placeholder — same height so the
+         card doesn't reflow when Play advances. Answer content is hidden until step. */
+      .hd-trace-row.pending {
+        background: rgba(255, 255, 255, 0.015) !important;
+        border: 1px dashed var(--border);
+        color: var(--text-mute);
+      }
+      .hd-trace-row.pending .hd-trace-pred,
+      .hd-trace-row.pending .hd-trace-tag { visibility: hidden; }
+      .hd-trace-row.pending .hd-trace-r {
+        white-space: nowrap; overflow: hidden;
+      }
+      .hd-trace-row.pending .hd-trace-r::after {
+        content: " · 待"; opacity: 0.5; font-weight: 400;
+      }
+      .hd-trace-row.round-r0 { background: rgba(154, 167, 180, 0.04); }
+      .hd-trace-row.round-r1 { background: rgba(239, 68, 68, 0.05); }
+      .hd-trace-row.round-r2 { background: rgba(217, 130, 43, 0.04); }
+      .hd-trace-row.round-r3 { background: rgba(0, 229, 160, 0.07); }
+      .hd-trace-r {
+        color: var(--text-mute); font-size: 0.72rem;
+        text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600;
+      }
+      .hd-trace-row.round-r3 .hd-trace-r { color: var(--accent); }
+      .hd-trace-row.round-r1 .hd-trace-r { color: var(--danger); }
+      .hd-trace-row.round-r2 .hd-trace-r { color: #d9822b; }
+      .hd-trace-pred { display: flex; align-items: center; gap: 8px; min-width: 0; }
+      .hd-trace-pred .val {
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      }
+      /* Only R3 winner gets the emerald color. R1/R2 predictions stay muted
+         even if the raw answer happened to be right, because a leak/cost-penalty
+         answer is NOT a real answer — the viewer must feel that. */
+      .hd-trace-row.round-r3 .hd-trace-pred.hit .val { color: var(--accent); font-weight: 600; }
+      .hd-trace-pred.miss .val { color: var(--danger); }
+      .hd-trace-pred.na .val { color: var(--text-mute); font-style: italic; }
+      .hd-trace-pred.cheat-hit .val {
+        color: var(--text-dim); text-decoration: line-through;
+        text-decoration-color: rgba(239,68,68,0.5); text-decoration-thickness: 1.5px;
+      }
+      .hd-trace-pred.rejected-hit .val { color: #d9822b; }
+      .hd-trace-tag {
+        font-size: 0.68rem; padding: 2px 8px; border-radius: 10px;
+        white-space: nowrap; flex-shrink: 0; font-weight: 500;
+      }
+      .hd-trace-tag.hit { background: var(--accent-glow); color: var(--accent); }
+      .hd-trace-tag.miss { background: rgba(239,68,68,0.15); color: var(--danger); }
+      .hd-trace-tag.leak { background: rgba(239,68,68,0.18); color: var(--danger); font-weight: 600; }
+      .hd-trace-tag.rejected { background: rgba(217,130,43,0.18); color: #d9822b; }
+      .hd-trace-tag.promoted { background: var(--accent-glow); color: var(--accent); font-weight: 600; }
+      /* Product-card affordance for ecommerce version */
+      .hd-case.ecom .hd-trace-pred .val::before {
+        content: "🛒 "; font-family: initial;
+      }
+      .hd-case.fin .hd-trace-pred .val::before {
+        content: ""; font-family: var(--mono); color: var(--text-mute);
+        margin-right: 4px;
+      }
+      .hd-case.fin .hd-trace-pred .val {
+        font-family: var(--mono);
+      }
+
+      @media (max-width: 640px) {
+        .hd-transfer { flex-direction: column; gap: 12px; }
+        .hd-arrow { transform: rotate(90deg); }
+        .hd-kpis { grid-template-columns: 1fr; }
+        .hd-kpi .num { font-size: 1.4rem; }
+        .hd-scorecard-grid { grid-template-columns: 1fr; }
+        .hd-trace-row { grid-template-columns: 52px minmax(0,1fr) auto; gap: 6px; padding: 5px 6px; font-size: 0.7rem; }
+        .hd-trace-tag { font-size: 0.6rem; padding: 2px 5px; }
+        .hd-case { padding: 0.8rem 0.9rem; }
+        .hd-case-q { font-size: 0.78rem; word-break: break-word; }
+        .hd-case-trap { font-size: 0.68rem; }
+        .hd-panel { padding: 1rem 0.9rem; }
+        main.wrap { padding-left: 0.6rem; padding-right: 0.6rem; }
+        /* Table on mobile: shrink font, hide the least-needed 'Leak' column,
+           tighten padding. Decision column stays because it's the punchline. */
+        .hd-table { font-size: 0.7rem; }
+        .hd-table th, .hd-table td { padding: 6px 5px; }
+        .hd-table th:nth-child(5), .hd-table td:nth-child(5) { display: none; }
+        .hd-delta { font-size: 0.6rem; padding: 0 4px; margin-left: 3px; }
+      }
+      /* ─────────────────────────────────────────────────────
+         HERO CASE: mock ecommerce search page across 4 rounds.
+         Only rendered on the ecommerce tab.
+         ───────────────────────────────────────────────────── */
+      /* Section headers ─ visually separate 真实模式 vs 预设剧本 */
+      .hd-section-header {
+        padding: 0.9rem 1rem 0.7rem;
+        border-left: 4px solid var(--accent);
+        background: linear-gradient(90deg, var(--accent-glow), transparent);
+        border-radius: 4px;
+        margin: 0 -0.2rem 1rem;
+      }
+      .hd-section-label {
+        font-size: 0.92rem; color: var(--accent); font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .hd-section-sub { font-size: 0.78rem; color: var(--text-dim); margin-top: 3px; }
+      details.hd-scripted-section {
+        margin: 1.6rem -0.2rem 0.5rem;
+        border-left: 4px solid var(--text-mute);
+        background: linear-gradient(90deg, rgba(154,167,180,0.05), transparent);
+        border-radius: 4px;
+        padding: 0.4rem 1rem 0.6rem;
+      }
+      details.hd-scripted-section > summary {
+        cursor: pointer; padding: 0.55rem 0;
+        list-style: none;
+      }
+      details.hd-scripted-section > summary::-webkit-details-marker { display: none; }
+      details.hd-scripted-section > summary::before {
+        content: "▶ "; color: var(--text-mute); margin-right: 0.4rem;
+        transition: transform 0.15s;
+        display: inline-block;
+      }
+      details.hd-scripted-section[open] > summary::before { transform: rotate(90deg); }
+      details.hd-scripted-section > summary .hd-section-label {
+        color: var(--text-dim); font-weight: 600;
+      }
+      details.hd-scripted-section[open] > summary .hd-section-label {
+        color: var(--text);
+      }
+
+      /* Auto-evolution panel */
+      .hd-evolve {
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.14), rgba(0, 229, 160, 0.06));
+        border: 1.5px solid rgba(139, 92, 246, 0.5); border-radius: var(--radius);
+        padding: 1rem 1.1rem; margin-bottom: 1rem;
+      }
+      /* ── Subject-Under-Evolution card ────────────────────────
+       * Makes it obvious to newcomers what we're actually optimizing.
+       * Answers "被改进的是谁" before they even see the workflow.
+       */
+      .hd-subject {
+        margin-bottom: 1.2rem;
+        padding: 1rem 1.2rem;
+        background: linear-gradient(135deg, rgba(0, 217, 130, 0.06), rgba(139, 92, 246, 0.04));
+        border: 1px solid rgba(0, 217, 130, 0.28);
+        border-radius: 8px;
+      }
+      .hd-subject-h {
+        font-size: 0.95rem; font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 0.6rem;
+      }
+      .hd-subject-grid { display: flex; flex-direction: column; gap: 4px; }
+      .hd-subject-row {
+        display: grid; grid-template-columns: 60px 1fr;
+        gap: 10px; align-items: baseline;
+        font-size: 0.8rem; line-height: 1.6;
+      }
+      .hd-subject-k {
+        color: var(--text-mute);
+        font-family: var(--mono); font-size: 0.72rem;
+      }
+      .hd-subject-v { color: var(--text-dim); }
+      .hd-subject-v b { color: var(--text); }
+      .hd-subject-v code {
+        background: var(--bg-soft);
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-family: var(--mono); font-size: 0.74rem;
+        color: rgb(180, 200, 235);
+        border: 1px solid var(--border);
+      }
+      .hd-subject-v a { color: var(--accent); }
+
+      .hd-evolve-header { display: flex; justify-content: space-between; align-items: start; gap: 12px; flex-wrap: wrap; }
+      .hd-evolve-title { font-size: 1rem; color: var(--text); font-weight: 600; margin-bottom: 0.3rem; }
+      .hd-evolve-sub { font-size: 0.78rem; color: var(--text-dim); line-height: 1.55; }
+      .hd-evolve-status {
+        margin-top: 0.6rem; font-size: 0.78rem; color: var(--text-mute); font-family: var(--mono);
+      }
+      .hd-evolve-status.running { color: rgb(139, 92, 246); }
+      .hd-evolve-status.done { color: var(--accent); }
+      .hd-evolve-status.error { color: var(--danger); }
+      .hd-evolve-model {
+        background: var(--bg-soft); color: var(--text-dim);
+        border: 1px solid var(--border-hi); border-radius: 6px;
+        padding: 7px 8px; font-family: var(--font); font-size: 0.78rem;
+        cursor: pointer;
+      }
+      .hd-evolve-model:focus { outline: none; border-color: var(--accent); }
+
+      /* Staged progress bar — shows Sonnet's inner phases per generation */
+      .hd-evolve-progress {
+        margin-top: 0.6rem;
+        padding: 0.7rem 0.8rem;
+        background: var(--bg-soft); border: 1px solid var(--border);
+        border-radius: 6px; display: none;
+      }
+      .hd-evolve-progress.active { display: block; }
+      .hd-progress-track {
+        height: 10px; border-radius: 5px; overflow: hidden;
+        background: var(--surface-2); position: relative;
+      }
+      .hd-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, rgba(139,92,246,0.9), var(--accent));
+        transition: width 0.4s ease-out;
+        width: 0;
+      }
+      .hd-progress-caption {
+        margin-top: 0.4rem; display: flex; justify-content: space-between;
+        font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim);
+      }
+      .hd-progress-explain {
+        margin-top: 0.3rem;
+        font-size: 0.75rem; line-height: 1.5;
+        color: var(--text-mute); font-style: italic;
+        min-height: 1.1em;  /* prevent layout jump when text swaps */
+      }
+
+      /* ── Vertical workflow visualization ──────────────────────────
+       * A 6-step timeline showing exactly where the current gen is.
+       * Each step has an active/done/pending state + a live data payload.
+       */
+      .hd-workflow {
+        margin-top: 0.9rem; padding: 0.7rem 0.9rem;
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+      }
+      .hd-wf-header {
+        display: flex; justify-content: space-between; align-items: baseline;
+        margin-bottom: 0.6rem;
+        font-family: var(--mono); font-size: 0.75rem;
+      }
+      .hd-wf-title { color: var(--text-dim); }
+      .hd-wf-title #hd-wf-gen { color: var(--accent); font-weight: 600; }
+      .hd-wf-timer { color: var(--text-mute); font-variant-numeric: tabular-nums; }
+
+      .hd-wf-list {
+        list-style: none; padding: 0; margin: 0;
+        position: relative;
+      }
+      .hd-wf-node {
+        position: relative;
+        display: flex; gap: 12px;
+        padding: 8px 0;
+        min-height: 44px;
+      }
+      /* Connector line — grows down through the completed nodes */
+      .hd-wf-node:not(:last-child)::before {
+        content: "";
+        position: absolute;
+        left: 13px; top: 32px; bottom: -8px;
+        width: 2px;
+        background: var(--border);
+        transition: background 0.4s ease;
+      }
+      .hd-wf-node.done:not(:last-child)::before {
+        background: linear-gradient(180deg, var(--accent), var(--accent));
+      }
+      .hd-wf-node.active:not(:last-child)::before {
+        background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 50%, var(--border) 50%);
+      }
+
+      .hd-wf-dot {
+        flex-shrink: 0;
+        width: 28px; height: 28px;
+        border-radius: 50%;
+        background: var(--surface-2);
+        border: 2px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+        color: var(--text-mute);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 1;
+      }
+      .hd-wf-node.done .hd-wf-dot {
+        background: var(--accent); border-color: var(--accent);
+        color: #04120c;
+      }
+      .hd-wf-node.done .hd-wf-num::before {
+        content: "✓";
+      }
+      .hd-wf-node.done .hd-wf-num {
+        font-size: 0; /* hide original number */
+      }
+      .hd-wf-node.done .hd-wf-num::before {
+        font-size: 0.8rem;
+      }
+      .hd-wf-node.active .hd-wf-dot {
+        background: rgba(139, 92, 246, 0.15);
+        border-color: rgb(139, 92, 246);
+        color: rgb(180, 160, 240);
+        animation: hdWfPulse 1.5s ease-in-out infinite;
+      }
+      @keyframes hdWfPulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.5); }
+        50%      { box-shadow: 0 0 0 8px rgba(139, 92, 246, 0); }
+      }
+
+      .hd-wf-body {
+        flex: 1; min-width: 0;
+        padding-top: 3px;
+      }
+      .hd-wf-name {
+        font-size: 0.85rem; color: var(--text-dim);
+        font-weight: 500;
+      }
+      .hd-wf-node.done .hd-wf-name { color: var(--text); }
+      .hd-wf-node.active .hd-wf-name { color: rgb(200, 185, 250); font-weight: 600; }
+
+      .hd-wf-data {
+        margin-top: 3px;
+        font-size: 0.72rem; color: var(--text-mute);
+        font-family: var(--mono);
+        line-height: 1.55;
+        max-height: 0; overflow: hidden;
+        opacity: 0;
+        transition: max-height 0.4s ease, opacity 0.3s ease;
+      }
+      .hd-wf-node.active .hd-wf-data,
+      .hd-wf-node.done .hd-wf-data {
+        max-height: 200px;
+        opacity: 1;
+        padding-top: 2px;
+      }
+      /* When done, dim the data — it's finished, not the focus anymore */
+      .hd-wf-node.done .hd-wf-data { opacity: 0.55; }
+
+      .hd-wf-datarow {
+        display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+      }
+      .hd-wf-datarow .k { color: var(--text-mute); }
+      .hd-wf-datarow .v { color: var(--accent); font-variant-numeric: tabular-nums; }
+
+      .hd-wf-spinner {
+        display: inline-block; width: 10px; height: 10px;
+        border: 2px solid rgba(139, 92, 246, 0.2);
+        border-top-color: rgb(139, 92, 246);
+        border-radius: 50%;
+        animation: hdWfSpin 0.8s linear infinite;
+      }
+      @keyframes hdWfSpin { to { transform: rotate(360deg); } }
+
+      .hd-wf-mini-track {
+        flex: 1; min-width: 100px; max-width: 200px;
+        height: 4px; background: var(--surface-2);
+        border-radius: 2px; overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .hd-wf-mini-fill {
+        height: 100%;
+        background: linear-gradient(90deg, rgb(139, 92, 246), var(--accent));
+        transition: width 0.4s ease;
+      }
+
+      .hd-wf-verdict {
+        margin-left: auto;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 0.7rem;
+      }
+      .hd-wf-verdict.promoted {
+        background: var(--accent-glow); color: var(--accent);
+      }
+      .hd-wf-verdict.rejected {
+        background: rgba(239, 68, 68, 0.15); color: var(--danger);
+      }
+      /* Evaluation-first badges — visually mark that evaluation drives the loop */
+      .hd-wf-badge-eval, .hd-wf-badge-loop {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 1px 6px;
+        border-radius: 3px;
+        font-family: var(--mono); font-size: 0.62rem;
+        font-weight: 600;
+        vertical-align: 2px;
+      }
+      .hd-wf-badge-eval {
+        background: rgba(0, 217, 130, 0.14);
+        color: var(--accent);
+        border: 1px solid rgba(0, 217, 130, 0.35);
+      }
+      .hd-wf-badge-loop {
+        background: rgba(139, 92, 246, 0.14);
+        color: rgb(180, 160, 240);
+        border: 1px solid rgba(139, 92, 246, 0.35);
+      }
+
+      /* ── 5-Verb Methodology Framework ─────────────────────
+       * Observe → Propose → Apply → Verify → Commit
+       * Each verb has a distinct color, and the same colors
+       * appear on the per-node badges below so the eye maps.
+       */
+      .hd-verbs {
+        margin-top: 0.9rem;
+        padding: 0.7rem 0.9rem;
+        background: linear-gradient(135deg, rgba(80, 200, 255, 0.06), rgba(0, 217, 130, 0.04));
+        border: 1px solid rgba(80, 200, 255, 0.25);
+        border-radius: 6px;
+      }
+      .hd-verbs-h {
+        font-size: 0.78rem; color: var(--text); font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .hd-verbs-row {
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        font-family: var(--mono);
+      }
+      .hd-verb {
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 0.78rem; font-weight: 700;
+        border: 1px solid transparent;
+      }
+      .hd-verb-arrow {
+        color: var(--text-mute); font-size: 0.72rem; margin: 0 2px;
+      }
+      .hd-verb-loop {
+        margin-left: auto;
+        font-size: 0.68rem; color: var(--text-mute);
+        padding: 2px 8px;
+        border-radius: 3px;
+        background: var(--bg-soft);
+      }
+
+      /* Verb colors — shared with the per-node badges below */
+      .v-run     { background: rgba(250, 180, 90, 0.14); color: rgb(250, 200, 130); border-color: rgba(250, 180, 90, 0.4); }
+      .v-observe { background: rgba(80, 200, 255, 0.14); color: rgb(120, 210, 255); border-color: rgba(80, 200, 255, 0.4); }
+      .v-propose { background: rgba(139, 92, 246, 0.14); color: rgb(180, 160, 240); border-color: rgba(139, 92, 246, 0.4); }
+      .v-verify  { background: rgba(0, 217, 130, 0.14); color: var(--accent); border-color: rgba(0, 217, 130, 0.4); }
+      .v-commit  { background: rgba(239, 68, 68, 0.14); color: rgb(240, 130, 130); border-color: rgba(239, 68, 68, 0.4); }
+      /* Legacy · kept for backward compat */
+      .v-apply   { background: rgba(250, 180, 90, 0.14); color: rgb(250, 200, 130); border-color: rgba(250, 180, 90, 0.4); }
+      .v-boot    { background: var(--surface-2); color: var(--text-mute); border-color: var(--border); }
+
+      /* Diff panel · inline under Propose node */
+      .hd-diff {
+        margin-top: 10px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: rgba(139, 92, 246, 0.06);
+        border: 1px solid rgba(139, 92, 246, 0.28);
+      }
+      .hd-diff-h {
+        font-size: 0.78rem; color: var(--text);
+        margin-bottom: 4px;
+      }
+      .hd-diff-summary {
+        display: block;
+        margin-top: 3px;
+        font-size: 0.72rem; color: var(--text-dim);
+        font-style: italic;
+      }
+      .hd-diff-details summary {
+        cursor: pointer; font-size: 0.72rem;
+        color: rgb(180, 160, 240);
+        padding: 4px 0;
+      }
+      .hd-diff-body {
+        margin: 6px 0 0;
+        padding: 8px;
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        font-family: var(--mono); font-size: 0.7rem;
+        color: var(--text-dim);
+        max-height: 240px; overflow: auto;
+        white-space: pre-wrap;
+        line-height: 1.5;
+      }
+      /* Diff coloring — green for adds, red for dels */
+      .hd-diff-body .add { color: rgb(140, 220, 160); background: rgba(0, 217, 130, 0.08); display: block; }
+      .hd-diff-body .del { color: rgb(230, 140, 140); background: rgba(239, 68, 68, 0.08); display: block; }
+      .hd-diff-body .ctx { color: var(--text-mute); display: block; }
+      .hd-diff-body .hunk { color: rgb(120, 210, 255); display: block; margin-top: 4px; }
+
+      /* AI Reasoning · appears above the diff · shows why AI made the change */
+      /* AI Reasoning panel — big enough to read comfortably at presentation */
+      .hd-reasoning {
+        margin-top: 12px;
+        padding: 14px 16px;
+        border-radius: 8px;
+        background: rgba(80, 200, 255, 0.06);
+        border: 1px solid rgba(80, 200, 255, 0.32);
+      }
+      .hd-reasoning-h {
+        font-size: 0.95rem; color: var(--text);
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      }
+      .hd-reasoning-name {
+        padding: 3px 10px; border-radius: 4px;
+        font-family: var(--mono); font-size: 0.78rem;
+        background: rgba(80, 200, 255, 0.18);
+        color: rgb(140, 220, 255);
+        border: 1px solid rgba(80, 200, 255, 0.45);
+      }
+      .hd-reasoning-analysis, .hd-reasoning-desc {
+        font-size: 0.88rem;
+        line-height: 1.75;
+        color: var(--text);
+        margin-top: 10px;
+        padding: 10px 12px;
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: 5px;
+        border-left: 3px solid rgba(80, 200, 255, 0.5);
+        white-space: pre-wrap;      /* respect newlines from AI, wrap long lines */
+        word-break: break-word;
+      }
+      .hd-reasoning-analysis::before {
+        content: "🔍 分析";
+        display: block;
+        color: rgb(140, 220, 255);
+        font-family: var(--mono); font-size: 0.75rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        letter-spacing: 0.05em;
+      }
+      .hd-reasoning-desc::before {
+        content: "🛠 改动方案";
+        display: block;
+        color: rgb(140, 220, 255);
+        font-family: var(--mono); font-size: 0.75rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        letter-spacing: 0.05em;
+      }
+      /* markdown-ish tags inside AI text stay readable */
+      .hd-reasoning-analysis b, .hd-reasoning-desc b { color: rgb(255, 220, 130); }
+      .hd-reasoning-analysis code, .hd-reasoning-desc code {
+        font-family: var(--mono); font-size: 0.82rem;
+        background: rgba(255,255,255,0.06);
+        padding: 1px 5px; border-radius: 3px;
+        color: rgb(200, 220, 255);
+      }
+
+      /* Per-question grid · 31 tiles under Verify */
+      .hd-perq {
+        margin-top: 10px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: rgba(0, 217, 130, 0.05);
+        border: 1px solid rgba(0, 217, 130, 0.25);
+      }
+      .hd-perq-h {
+        font-size: 0.78rem; color: var(--text);
+      }
+      .hd-perq-summary {
+        margin-left: 8px;
+        font-family: var(--mono); font-size: 0.7rem;
+        color: var(--text-mute);
+      }
+      .hd-perq-details summary {
+        cursor: pointer; font-size: 0.72rem;
+        color: var(--accent);
+        padding: 5px 0;
+      }
+      .hd-perq-tier-groups {
+        margin-top: 6px;
+        display: flex; flex-direction: column; gap: 8px;
+      }
+      .hd-perq-tier {
+        padding: 6px 8px;
+        background: var(--bg-soft);
+        border-radius: 4px;
+        border: 1px solid var(--border);
+      }
+      .hd-perq-tier-h {
+        font-family: var(--mono); font-size: 0.68rem;
+        color: var(--text-dim);
+        margin-bottom: 5px;
+        display: flex; justify-content: space-between;
+      }
+      .hd-perq-cells {
+        display: flex; flex-wrap: wrap; gap: 3px;
+      }
+      .hd-perq-cell {
+        width: 20px; height: 20px;
+        border-radius: 3px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: var(--mono); font-size: 0.55rem;
+        cursor: help;
+      }
+      .hd-perq-cell.hit {
+        background: rgba(0, 217, 130, 0.35);
+        color: white;
+        border: 1px solid var(--accent);
+      }
+      .hd-perq-cell.partial {
+        background: rgba(250, 180, 90, 0.35);
+        color: white;
+        border: 1px solid rgb(250, 180, 90);
+      }
+      .hd-perq-cell.miss {
+        background: rgba(239, 68, 68, 0.25);
+        color: rgba(255,200,200,0.7);
+        border: 1px solid rgba(239, 68, 68, 0.5);
+      }
+
+      /* Archive visualization inside Observe node */
+      .hd-archive {
+        margin: 6px 0 8px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: rgba(80, 200, 255, 0.05);
+        border: 1px solid rgba(80, 200, 255, 0.25);
+      }
+      .hd-archive-h {
+        font-size: 0.7rem; color: rgb(120, 210, 255);
+        font-family: var(--mono);
+        margin-bottom: 5px;
+      }
+      .hd-archive-slots {
+        display: flex; gap: 4px; flex-wrap: wrap;
+        margin: 5px 0;
+      }
+      .hd-archive-slot {
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-family: var(--mono); font-size: 0.7rem;
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+      }
+      .hd-archive-slot.empty {
+        color: var(--text-mute); font-style: italic;
+        border-style: dashed;
+      }
+      .hd-archive-slot.chosen {
+        background: rgba(0, 217, 130, 0.15);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .hd-archive-slot.chosen::before { content: "→ "; }
+      .hd-archive-legend {
+        font-size: 0.68rem; color: var(--text-mute);
+        margin-top: 4px;
+      }
+      .hd-archive-legend code {
+        font-family: var(--mono); font-size: 0.68rem;
+        color: rgb(180, 200, 235);
+      }
+
+      /* Pending badge for Propose node — reinforces "未定稿" semantics */
+      .hd-wf-pending {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-family: var(--mono); font-size: 0.65rem;
+        background: rgba(250, 180, 90, 0.15);
+        color: rgb(250, 200, 130);
+        border: 1px solid rgba(250, 180, 90, 0.4);
+        animation: hdPendingPulse 2s ease-in-out infinite;
+      }
+      @keyframes hdPendingPulse {
+        0%,100% { opacity: 0.7; }
+        50%     { opacity: 1; }
+      }
+      .hd-wf-pending.accepted {
+        background: rgba(0, 217, 130, 0.15);
+        color: var(--accent);
+        border-color: rgba(0, 217, 130, 0.4);
+        animation: none;
+      }
+      .hd-wf-pending.rejected {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+        border-color: rgba(239, 68, 68, 0.4);
+        animation: none;
+      }
+
+      /* Per-node compact verb tag */
+      .hd-wf-verb {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 1px 7px;
+        border-radius: 3px;
+        font-family: var(--mono); font-size: 0.62rem; font-weight: 700;
+        vertical-align: 2px;
+        border: 1px solid transparent;
+      }
+
+      /* Subtle cross-fade on caption change so eye tracks the update */
+      #hd-progress-explain {
+        transition: opacity 0.25s ease;
+        animation: hdExplainFade 0.35s ease-out;
+      }
+      @keyframes hdExplainFade {
+        from { opacity: 0.4; }
+        to   { opacity: 1; }
+      }
+      .hd-stages {
+        margin-top: 0.5rem; display: flex; gap: 4px; flex-wrap: wrap;
+        font-family: var(--mono); font-size: 0.68rem;
+      }
+      .hd-stage {
+        padding: 2px 8px; border-radius: 3px;
+        background: var(--surface-2); color: var(--text-mute);
+        border: 1px solid var(--border);
+      }
+      .hd-stage.done { background: var(--accent-glow); color: var(--accent); border-color: var(--accent-dim); }
+      .hd-stage.active {
+        background: rgba(139,92,246,0.25); color: rgb(199,164,255);
+        border-color: rgb(139,92,246);
+        animation: hd-stage-pulse 1.4s ease-in-out infinite;
+      }
+      @keyframes hd-stage-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+      }
+
+      .hd-evolve-gens { margin-top: 0.9rem; display: grid; gap: 8px; }
+
+      /* ─── Evolution comparison (A/C/D) ─── */
+      .hd-compare {
+        display: none;
+        margin-top: 1.4rem;
+        border-top: 1px solid var(--border);
+        padding-top: 1.2rem;
+      }
+      .hd-compare.active { display: block; }
+      .hd-compare-h {
+        font-size: 0.95rem; color: var(--text); font-weight: 600; margin-bottom: 0.9rem;
+      }
+      .hd-compare-h .num { color: var(--accent); }
+
+      /* C: score bar chart */
+      .hd-cmp-chart {
+        display: grid; grid-template-columns: 60px 1fr auto; gap: 8px 12px;
+        align-items: center; padding: 0.7rem 0.9rem;
+        background: var(--bg-soft); border: 1px solid var(--border);
+        border-radius: 6px; margin-bottom: 1.2rem;
+      }
+      .hd-cmp-chart .lbl {
+        font-family: var(--mono); font-size: 0.78rem; color: var(--text-dim);
+      }
+      .hd-cmp-chart .lbl.best { color: var(--accent); font-weight: 600; }
+      .hd-cmp-bar-track {
+        height: 20px; background: var(--surface-2); border-radius: 4px; position: relative;
+      }
+      .hd-cmp-bar {
+        height: 100%; border-radius: 4px;
+        background: linear-gradient(90deg, rgb(139,92,246), var(--accent));
+        transition: width 0.6s ease-out;
+      }
+      .hd-cmp-bar.baseline { background: var(--text-mute); }
+      .hd-cmp-bar.rejected { background: #d9822b; }
+      .hd-cmp-delta {
+        font-family: var(--mono); font-size: 0.78rem; color: var(--accent); font-weight: 600;
+        min-width: 65px; text-align: right;
+      }
+      .hd-cmp-delta.neg { color: var(--danger); }
+      .hd-cmp-delta.zero { color: var(--text-mute); }
+
+      /* A: signature queries side-by-side */
+      .hd-cmp-flips { margin-bottom: 1.2rem; }
+      .hd-flip {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 6px; padding: 0.7rem 0.9rem; margin-bottom: 0.6rem;
+      }
+      .hd-flip-q {
+        font-family: var(--mono); font-size: 0.85rem; color: var(--text);
+        margin-bottom: 0.55rem; padding-bottom: 0.4rem;
+        border-bottom: 1px dashed var(--border);
+      }
+      .hd-flip-q .expected {
+        color: var(--accent); font-size: 0.75rem; margin-left: 0.6rem;
+      }
+      .hd-flip-row {
+        display: grid; grid-template-columns: 84px 1fr auto; gap: 10px;
+        padding: 4px 0; font-size: 0.82rem; align-items: center;
+      }
+      .hd-flip-row .gen {
+        font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute);
+        font-weight: 600;
+      }
+      .hd-flip-row .pred {
+        color: var(--text-dim);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .hd-flip-row.hit .pred { color: var(--accent); font-weight: 500; }
+      .hd-flip-row.miss .pred { color: var(--danger); text-decoration: line-through;
+                                text-decoration-color: rgba(239,68,68,0.4); }
+      .hd-flip-row .mark {
+        font-family: var(--mono); font-size: 0.72rem; padding: 2px 7px;
+        border-radius: 3px; white-space: nowrap;
+      }
+      .hd-flip-row.hit .mark { background: var(--accent-glow); color: var(--accent); }
+      .hd-flip-row.miss .mark { background: rgba(239,68,68,0.15); color: var(--danger); }
+
+      /* D: full matrix */
+      details.hd-cmp-matrix { margin-top: 0.5rem; }
+      details.hd-cmp-matrix > summary {
+        cursor: pointer; color: var(--text-dim); font-size: 0.82rem; padding: 0.4rem 0;
+      }
+      details.hd-cmp-matrix[open] > summary { color: var(--text); }
+      .hd-matrix-scroll { overflow-x: auto; margin-top: 0.5rem; }
+      table.hd-matrix {
+        width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.72rem;
+      }
+      table.hd-matrix th, table.hd-matrix td {
+        padding: 5px 8px; border-bottom: 1px solid var(--border);
+        text-align: left; white-space: nowrap;
+      }
+      table.hd-matrix th {
+        position: sticky; top: 0;
+        background: var(--surface-2); color: var(--text-mute); font-weight: 500;
+        font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;
+      }
+      table.hd-matrix td.cell.hit { color: var(--accent); }
+      table.hd-matrix td.cell.miss { color: var(--danger); opacity: 0.85; }
+      table.hd-matrix td.q { color: var(--text); max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+      .hd-gen {
+        background: var(--surface); border: 1px solid var(--border);
+        border-left: 4px solid var(--border);
+        border-radius: 6px; padding: 0.7rem 0.9rem;
+      }
+      .hd-gen.win { border-left-color: var(--accent); }
+      .hd-gen.baseline { border-left-color: var(--text-mute); }
+      .hd-gen-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+      .hd-gen-title { font-size: 0.9rem; color: var(--text); font-weight: 500; }
+      .hd-gen-score {
+        font-family: var(--mono); font-size: 0.92rem; font-weight: 700;
+        color: var(--accent);
+      }
+      .hd-gen-score.dim { color: var(--text-mute); }
+      .hd-gen-verdict { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.3rem; font-family: var(--mono); }
+      .hd-gen-tierline {
+        display: flex; gap: 6px; flex-wrap: wrap;
+        margin-top: 0.35rem; font-family: var(--mono); font-size: 0.72rem;
+      }
+      .hd-gen-tierline .tier, .hd-cmp-tiers .tier {
+        padding: 2px 7px; border-radius: 3px;
+        border: 1px solid var(--border);
+        background: var(--bg-soft); color: var(--text-dim);
+      }
+      .hd-gen-tierline .tier.tE, .hd-cmp-tiers .tier.tE {
+        color: rgb(139, 200, 145); border-color: rgba(139, 200, 145, 0.35);
+      }
+      .hd-gen-tierline .tier.tM, .hd-cmp-tiers .tier.tM {
+        color: rgb(220, 190, 100); border-color: rgba(220, 190, 100, 0.35);
+      }
+      .hd-gen-tierline .tier.tH, .hd-cmp-tiers .tier.tH {
+        color: rgb(220, 130, 130); border-color: rgba(220, 130, 130, 0.35);
+      }
+      .hd-gen-heldout, .hd-cmp-heldout {
+        padding: 2px 7px; border-radius: 3px;
+        border: 1px dashed rgba(139, 92, 246, 0.4);
+        color: rgb(180, 160, 240); font-size: 0.7rem;
+      }
+      .hd-cmp-tiers { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 0.25rem; font-family: var(--mono); font-size: 0.7rem; }
+
+      /* ── Combined-score breakdown bar ─────────────────────────────
+       * A tiny stacked bar under each Gen card showing exactly how the
+       * `combined` fitness score is composed. Each segment is one term
+       * in the formula, sized proportional to its contribution.
+       * combined = 0.7·public + 0.2·heldout + 0.1·perturbed − cost
+       */
+      .hd-breakdown {
+        margin-top: 0.4rem;
+        font-family: var(--mono); font-size: 0.68rem;
+        color: var(--text-mute);
+      }
+      .hd-breakdown-label { margin-bottom: 3px; }
+      .hd-breakdown-label b { color: var(--accent); }
+      .hd-breakdown-bar {
+        display: flex; height: 10px; border-radius: 3px; overflow: hidden;
+        background: var(--bg-soft); border: 1px solid var(--border);
+      }
+      .hd-breakdown-seg {
+        height: 100%;
+        transition: flex 800ms cubic-bezier(0.16, 1, 0.3, 1);
+        cursor: help;
+      }
+      .hd-breakdown-seg.public   { background: rgba(0, 217, 130, 0.75); }
+      .hd-breakdown-seg.heldout  { background: rgba(139, 92, 246, 0.75); }
+      .hd-breakdown-seg.perturb  { background: rgba(80, 200, 255, 0.75); }
+      .hd-breakdown-seg.cost {
+        background: repeating-linear-gradient(45deg,
+          rgba(239, 68, 68, 0.55) 0 4px, rgba(239, 68, 68, 0.35) 4px 8px);
+      }
+      .hd-breakdown-legend {
+        display: flex; gap: 10px; flex-wrap: wrap;
+        margin-top: 3px; font-size: 0.66rem;
+      }
+      .hd-breakdown-legend > span::before {
+        content: "■"; margin-right: 3px;
+      }
+      .hd-breakdown-legend .public::before   { color: rgb(0, 217, 130); }
+      .hd-breakdown-legend .heldout::before  { color: rgb(139, 92, 246); }
+      .hd-breakdown-legend .perturb::before  { color: rgb(80, 200, 255); }
+      .hd-breakdown-legend .cost::before     { color: rgb(239, 68, 68); }
+
+      .hd-glossary {
+        margin-top: 0.8rem; padding: 0.5rem 0.8rem;
+        background: rgba(139, 92, 246, 0.05);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 6px;
+      }
+      .hd-glossary summary {
+        cursor: pointer;
+        color: rgb(180, 160, 240); font-size: 0.82rem; font-weight: 500;
+        list-style: revert; padding: 2px 0;
+      }
+      .hd-glossary summary::-webkit-details-marker { color: rgb(180, 160, 240); }
+      .hd-glossary-body {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem 1.2rem;
+        margin-top: 0.7rem; padding-top: 0.7rem;
+        border-top: 1px solid rgba(139, 92, 246, 0.2);
+      }
+      @media (max-width: 720px) {
+        .hd-glossary-body { grid-template-columns: 1fr; }
+      }
+      .hd-glossary-block { min-width: 0; }
+      .hd-glossary-h {
+        font-size: 0.78rem; font-weight: 600; color: var(--text);
+        margin-bottom: 0.3rem;
+      }
+      .hd-glossary-p {
+        font-size: 0.75rem; color: var(--text-dim); line-height: 1.6;
+      }
+      .hd-glossary-p code {
+        font-family: var(--mono); font-size: 0.72rem;
+        background: var(--bg-soft); padding: 1px 5px; border-radius: 3px;
+        color: rgb(180, 200, 235); border: 1px solid var(--border);
+      }
+      .hd-glossary-p .tier { margin-right: 4px; }
+      .hd-gen-code {
+        margin-top: 0.6rem; padding: 0.7rem 0.9rem;
+        background: var(--bg-soft); border: 1px solid var(--border);
+        border-radius: 4px; font-family: var(--mono); font-size: 0.72rem;
+        color: var(--text-dim); white-space: pre-wrap; overflow-x: auto;
+        max-height: 240px; overflow-y: auto;
+      }
+      details.hd-gen-details > summary { cursor: pointer; color: var(--text-mute); font-size: 0.75rem; margin-top: 0.4rem; }
+
+      .hd-hero { margin: 0 0 1.5rem; }
+      .hd-hero-header {
+        display: flex; align-items: baseline; justify-content: space-between;
+        margin-bottom: 0.9rem; flex-wrap: wrap; gap: 0.5rem;
+      }
+      .hd-hero-header h3 { font-size: 1rem; color: var(--text); font-weight: 600; }
+      .hd-hero-header h3 span { color: var(--accent); }
+      .hd-hero-header .hint { font-size: 0.75rem; color: var(--text-mute); }
+
+      /* Glossary chips row */
+      .hd-glossary {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+        margin-bottom: 1.1rem;
+      }
+      .hd-gloss {
+        background: var(--bg-soft); border: 1px solid var(--border);
+        border-radius: 6px; padding: 0.55rem 0.7rem;
+      }
+      .hd-gloss .tag {
+        font-family: var(--mono); font-size: 0.7rem; font-weight: 700;
+        color: var(--accent); letter-spacing: 0.06em; margin-right: 0.35rem;
+      }
+      .hd-gloss .en {
+        font-family: var(--mono); font-size: 0.62rem; color: var(--text-mute);
+      }
+      .hd-gloss .gloss {
+        display: block; font-size: 0.72rem; color: var(--text-dim);
+        margin-top: 0.25rem; line-height: 1.45;
+      }
+
+      /* Query info banner (persistent across rounds) */
+      .hd-hero-query {
+        background: var(--bg-soft); border: 1px solid var(--border-hi);
+        border-radius: var(--radius-sm); padding: 0.85rem 1rem 0.95rem;
+        margin-bottom: 1.1rem;
+      }
+      .hd-hero-query .row { display: flex; gap: 0.5rem; align-items: baseline; margin-bottom: 0.35rem; }
+      .hd-hero-query .row:last-child { margin-bottom: 0; }
+      .hd-hero-query .lbl {
+        font-size: 0.7rem; color: var(--text-mute); text-transform: uppercase;
+        letter-spacing: 0.08em; min-width: 78px;
+      }
+      .hd-hero-query .val { font-family: var(--mono); font-size: 0.88rem; color: var(--text); }
+      .hd-hero-query .val.trap { color: #d9822b; font-family: var(--font); font-size: 0.82rem; }
+      .hd-hero-query .val.gold { color: var(--accent); }
+      .hd-hero-query .zh { color: var(--text-mute); font-size: 0.78rem; margin-left: 0.4rem; }
+
+      /* Individual round card (search-page mockup) */
+      .hd-round {
+        background: var(--surface); border: 1px solid var(--border);
+        border-left: 3px solid var(--border);
+        border-radius: var(--radius-sm); padding: 0;
+        margin-bottom: 0.9rem;
+        overflow: hidden;
+        transition: opacity 0.3s, border-left-color 0.3s;
+      }
+      .hd-round.pending { opacity: 0.28; }
+      .hd-round.gate-seeded { border-left-color: var(--text-mute); }
+      .hd-round.gate-leaked { border-left-color: var(--danger); }
+      .hd-round.gate-rejected { border-left-color: #d9822b; }
+      .hd-round.gate-promoted { border-left-color: var(--accent); }
+
+      .hd-round-head {
+        display: flex; align-items: center; gap: 0.7rem;
+        padding: 0.7rem 1rem;
+        background: var(--surface-2);
+        border-bottom: 1px solid var(--border);
+      }
+      .hd-round-badge {
+        font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+        padding: 3px 9px; border-radius: 4px;
+        background: var(--accent-glow); color: var(--accent);
+      }
+      .hd-round.gate-leaked .hd-round-badge { background: rgba(239,68,68,0.15); color: var(--danger); }
+      .hd-round.gate-rejected .hd-round-badge { background: rgba(217,130,43,0.15); color: #d9822b; }
+      .hd-round.gate-seeded .hd-round-badge { background: rgba(154,167,180,0.15); color: var(--text-dim); }
+      .hd-round-title { flex: 1; font-size: 0.92rem; color: var(--text); font-weight: 500; }
+      .hd-round-verdict {
+        font-size: 0.7rem; color: var(--text-mute); font-family: var(--mono);
+        text-align: right; max-width: 45%;
+      }
+      .hd-round.gate-promoted .hd-round-verdict { color: var(--accent); }
+      .hd-round.gate-leaked .hd-round-verdict { color: var(--danger); }
+      .hd-round.gate-rejected .hd-round-verdict { color: #d9822b; }
+
+      /* Search bar mockup */
+      .hd-searchbox {
+        display: flex; align-items: center; gap: 0.5rem;
+        padding: 0.65rem 1rem;
+        background: var(--bg); border-bottom: 1px solid var(--border);
+      }
+      .hd-searchbox .icon {
+        font-family: var(--mono); font-size: 0.9rem; color: var(--text-mute);
+        padding: 3px 8px; border: 1px solid var(--border-hi); border-radius: 4px;
+      }
+      .hd-searchbox .q {
+        font-family: var(--mono); font-size: 0.88rem; color: var(--text);
+        flex: 1;
+      }
+      .hd-searchbox .btn {
+        font-family: var(--font); font-size: 0.72rem;
+        padding: 4px 12px; border-radius: 4px;
+        background: var(--accent); color: #04120c; font-weight: 600;
+      }
+
+      /* Reasoning strip — R3 only */
+      .hd-reason-strip {
+        padding: 0.7rem 1rem;
+        background: linear-gradient(90deg, var(--accent-glow), transparent);
+        border-bottom: 1px solid var(--border);
+      }
+      .hd-reason-row { display: flex; gap: 0.5rem; align-items: baseline; padding: 3px 0; font-size: 0.78rem; }
+      .hd-reason-row .lbl {
+        font-family: var(--mono); font-size: 0.7rem; color: var(--accent);
+        font-weight: 700; min-width: 72px;
+      }
+      .hd-reason-row .val { color: var(--text); font-family: var(--mono); }
+      .hd-reason-row .signal { color: var(--text-mute); font-size: 0.72rem; margin-left: 0.4rem; }
+
+      /* Product results — ecommerce-style card grid */
+      .hd-results {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px; padding: 0.7rem 1rem 0.9rem;
+      }
+      .hd-product {
+        background: var(--surface); border: 1.5px solid var(--border);
+        border-radius: 10px; overflow: hidden; cursor: pointer;
+        transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+        display: flex; flex-direction: column;
+      }
+      .hd-product:hover {
+        border-color: var(--accent-dim); transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      }
+      .hd-product.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+      .hd-product.wrong.selected { border-color: var(--danger); box-shadow: 0 0 0 2px rgba(239,68,68,0.15); }
+      .hd-round.gate-leaked .hd-product.selected {
+        border-color: var(--danger); box-shadow: 0 0 0 2px rgba(239,68,68,0.15);
+      }
+      .hd-round.gate-rejected .hd-product.selected {
+        border-color: #d9822b; box-shadow: 0 0 0 2px rgba(217,130,43,0.15);
+      }
+      .hd-product.missed {
+        opacity: 0.55;
+        background: repeating-linear-gradient(
+          -45deg, var(--surface), var(--surface) 8px,
+          var(--bg-soft) 8px, var(--bg-soft) 12px);
+      }
+      .hd-product-image {
+        aspect-ratio: 1 / 1; background: var(--bg-soft);
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden; position: relative;
+      }
+      .hd-product-image img { width: 100%; height: 100%; object-fit: contain; }
+      .hd-product-image .hd-badge-overlay {
+        position: absolute; top: 8px; right: 8px;
+        font-size: 0.65rem; font-weight: 700;
+        padding: 3px 8px; border-radius: 12px;
+        white-space: nowrap; backdrop-filter: blur(4px);
+      }
+      .hd-badge-overlay.ok { background: rgba(0,229,160,0.85); color: #04120c; }
+      .hd-badge-overlay.bad { background: rgba(239,68,68,0.85); color: #fff; }
+      .hd-badge-overlay.leak { background: rgba(239,68,68,0.9); color: #fff; }
+      .hd-badge-overlay.missed { background: rgba(154,167,180,0.85); color: #04120c; }
+      .hd-product-body { padding: 0.7rem 0.85rem; flex: 1; display: flex; flex-direction: column; }
+      .hd-product-title {
+        font-size: 0.82rem; color: var(--text); font-weight: 500;
+        line-height: 1.4; margin-bottom: 0.4rem;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .hd-product.wrong .hd-product-title { color: var(--text-dim); }
+      .hd-product-sku {
+        font-family: var(--mono); font-size: 0.62rem; color: var(--text-mute);
+        margin-bottom: 0.4rem;
+      }
+      .hd-product-reason {
+        font-size: 0.7rem; color: var(--text-mute); line-height: 1.5;
+        margin-top: auto; padding-top: 0.4rem;
+        border-top: 1px dashed var(--border);
+      }
+      .hd-product-price {
+        font-family: var(--font); font-size: 1.05rem; color: var(--danger);
+        font-weight: 700; margin-bottom: 0.15rem;
+      }
+      .hd-product-price::before { content: "¥"; font-size: 0.75em; margin-right: 1px; }
+
+      /* Product detail modal */
+      .hd-modal {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+        display: none; align-items: center; justify-content: center;
+        z-index: 100; padding: 20px;
+      }
+      .hd-modal.open { display: flex; }
+      .hd-modal-card {
+        background: var(--surface); border-radius: 12px;
+        max-width: 720px; width: 100%; max-height: 90vh; overflow-y: auto;
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+        border: 1px solid var(--border-hi);
+      }
+      .hd-modal-close {
+        position: absolute; top: 30px; right: 40px;
+        background: var(--surface-2); color: var(--text);
+        border: 1px solid var(--border); width: 36px; height: 36px;
+        border-radius: 50%; font-size: 1.2rem; cursor: pointer;
+      }
+      .hd-modal-image { background: var(--bg-soft); aspect-ratio: 1/1; }
+      .hd-modal-image img { width: 100%; height: 100%; object-fit: contain; }
+      .hd-modal-body { padding: 1.5rem; }
+      .hd-modal-body .cat {
+        font-size: 0.72rem; color: var(--accent); text-transform: uppercase;
+        letter-spacing: 0.1em; margin-bottom: 0.6rem;
+      }
+      .hd-modal-body h2 { font-size: 1.15rem; color: var(--text); margin-bottom: 0.7rem; line-height: 1.4; }
+      .hd-modal-body .sku { font-family: var(--mono); font-size: 0.75rem;
+                            color: var(--text-mute); margin-bottom: 1rem; }
+      .hd-modal-body .price-big {
+        font-size: 1.8rem; color: var(--danger); font-weight: 700; margin-bottom: 1rem;
+      }
+      .hd-modal-body .price-big::before { content: "¥"; font-size: 0.6em; margin-right: 2px; }
+      .hd-modal-body .attrs {
+        margin: 1rem 0; padding: 0.8rem; background: var(--bg-soft);
+        border-radius: 6px; font-family: var(--mono); font-size: 0.78rem;
+      }
+      .hd-modal-body .attrs .row { padding: 3px 0; }
+      .hd-modal-body .attrs .k { color: var(--text-mute); display: inline-block; min-width: 78px; }
+      .hd-modal-body .attrs .v { color: var(--text); }
+      .hd-modal-body .buy-btn {
+        background: var(--accent); color: #04120c; border: none;
+        padding: 10px 24px; border-radius: 8px; font-weight: 700;
+        cursor: pointer; margin-top: 1rem; width: 100%;
+        font-family: var(--font); font-size: 0.92rem;
+      }
+
+      @media (max-width: 640px) {
+        .hd-modal-card { grid-template-columns: 1fr; }
+        .hd-results { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      }
+
+      /* Rich explanation block below each round — 3 short paragraphs. */
+      .hd-round-story {
+        padding: 0.8rem 1rem 0.9rem;
+        background: var(--bg-soft); border-top: 1px dashed var(--border);
+      }
+      .hd-story-row { display: grid; grid-template-columns: 82px 1fr; gap: 10px; padding: 5px 0; }
+      .hd-story-row + .hd-story-row { border-top: 1px dashed rgba(154,167,180,0.15); margin-top: 3px; padding-top: 8px; }
+      .hd-story-lbl {
+        font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+        color: var(--accent); letter-spacing: 0.04em; padding-top: 2px;
+      }
+      .hd-round.gate-leaked .hd-story-lbl { color: var(--danger); }
+      .hd-round.gate-rejected .hd-story-lbl { color: #d9822b; }
+      .hd-story-val { font-size: 0.85rem; color: var(--text-dim); line-height: 1.65; }
+      .hd-story-val b { color: var(--text); font-weight: 500; }
+
+      /* Legacy round-note fallback (some rounds might not have story yet) */
+      .hd-round-note {
+        padding: 0.5rem 1rem 0.7rem;
+        font-size: 0.76rem; color: var(--text-mute);
+        background: var(--bg-soft); border-top: 1px dashed var(--border);
+        line-height: 1.55;
+      }
+      .hd-round-note b { color: var(--text); }
+      .hd-round-note .candnote {
+        display: block; color: #d9822b; font-style: italic; margin-top: 0.35rem;
+      }
+
+      /* "更多数据" collapsible for KPI/chart/table/scorecard on ecom tab */
+      details.hd-more {
+        margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;
+      }
+      details.hd-more > summary {
+        cursor: pointer; font-size: 0.85rem; color: var(--text-dim);
+        padding: 0.5rem 0; user-select: none;
+      }
+      details.hd-more > summary::marker { color: var(--accent); }
+      details.hd-more[open] > summary { color: var(--text); font-weight: 500; margin-bottom: 0.5rem; }
+
+      @media (max-width: 640px) {
+        .hd-glossary { grid-template-columns: 1fr 1fr; }
+      }
+
+      /* Extra-narrow: shrink long XBRL tags to fit */
+      @media (max-width: 420px) {
+        .hd-trace-pred .val { font-size: 0.65rem; }
+        .hd-trace-row { grid-template-columns: 46px minmax(0,1fr) auto; }
+        .hd-trace-tag { font-size: 0.55rem; }
+      }
+
+      /* ─────────────────────────────────────────────────────
+         SPLIT LAYOUT: narration ↔ demo
+         Left column = presenter's script, sticky.
+         Right column = existing interactive demo (kept as-is).
+         Mobile: stacks (narration first). Print: hides right.
+         ───────────────────────────────────────────────────── */
+      .hd-split {
+        display: grid; grid-template-columns: minmax(360px, 42%) minmax(0, 1fr);
+        gap: 1.6rem; margin-top: 1rem;
+      }
+      .hd-narration {
+        position: sticky; top: 78px; align-self: start;
+        max-height: calc(100vh - 100px); overflow-y: auto;
+        padding-right: 6px;
+      }
+      .hd-narration::-webkit-scrollbar { width: 4px; }
+      .hd-narration::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+      .hd-act {
+        background: var(--surface); border: 1px solid var(--border);
+        border-left: 3px solid var(--border);
+        border-radius: var(--radius-sm); padding: 1rem 1.1rem;
+        margin-bottom: 0.7rem; cursor: pointer;
+        transition: border-color 0.25s, background 0.25s, opacity 0.25s, transform 0.15s;
+      }
+      .hd-act:hover { border-color: var(--border-hi); }
+      .hd-act.dim { opacity: 0.42; }
+      .hd-act.active {
+        border-left-color: var(--accent);
+        border-color: var(--accent-dim);
+        background: linear-gradient(135deg, rgba(0,229,160,0.08), var(--surface));
+        transform: translateX(2px);
+      }
+      .hd-act-head {
+        display: flex; align-items: baseline; gap: 0.65rem;
+        margin-bottom: 0.5rem;
+      }
+      .hd-act-idx {
+        font-family: var(--mono); font-size: 0.7rem; font-weight: 700;
+        color: var(--accent); letter-spacing: 0.05em;
+        padding: 2px 7px; border-radius: 4px;
+        background: var(--accent-glow); min-width: 32px; text-align: center;
+      }
+      .hd-act-title {
+        font-size: 1rem; color: var(--text); font-weight: 600;
+        flex: 1; min-width: 0;
+      }
+      .hd-act-num {
+        font-family: var(--mono); font-size: 0.9rem; font-weight: 700;
+        color: var(--accent); white-space: nowrap;
+      }
+      .hd-act-body {
+        color: var(--text-dim); font-size: 0.88rem; line-height: 1.7;
+        margin: 0.35rem 0 0.5rem;
+      }
+      .hd-act-tagline {
+        font-size: 0.8rem; color: var(--accent); font-weight: 500;
+        padding: 0.5rem 0.7rem; margin-top: 0.5rem;
+        background: rgba(0,229,160,0.05);
+        border-left: 2px solid var(--accent-dim);
+        border-radius: 3px;
+      }
+      .hd-act-code {
+        font-family: var(--mono); font-size: 0.72rem;
+        background: var(--bg-soft); color: var(--text-dim);
+        padding: 0.7rem 0.85rem; border-radius: 5px;
+        margin-top: 0.55rem; white-space: pre; overflow-x: auto;
+        border: 1px solid var(--border);
+      }
+      .hd-act-code .kw { color: var(--accent); }
+      .hd-act-code .str { color: #d9822b; }
+      .hd-act-code .comment { color: var(--text-mute); font-style: italic; }
+
+      .hd-narr-header {
+        display: flex; justify-content: space-between; align-items: baseline;
+        margin-bottom: 0.9rem; padding-bottom: 0.7rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .hd-narr-header .lbl {
+        color: var(--text-mute); font-size: 0.7rem;
+        text-transform: uppercase; letter-spacing: 0.1em;
+      }
+      .hd-narr-header .kbd-hint {
+        color: var(--text-mute); font-size: 0.72rem;
+      }
+      .hd-narr-header kbd {
+        font-family: var(--mono); font-size: 0.68rem;
+        padding: 1px 5px; border: 1px solid var(--border-hi);
+        border-radius: 3px; background: var(--bg-soft); color: var(--text-dim);
+      }
+
+      @media (max-width: 960px) {
+        .hd-split { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+        .hd-narration { position: static; max-height: none; overflow: visible; padding-right: 0; }
+        .hd-narr-header .kbd-hint { display: none; }
+      }
+      @media print {
+        .hd-split { grid-template-columns: 1fr; }
+        .hd-narration { position: static; max-height: none; overflow: visible; }
+        .hd-panel, .hd-controls, nav, footer { display: none !important; }
+        .hd-act { break-inside: avoid; page-break-inside: avoid; }
+      }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="brand"><a href="../../.." style="color:inherit;">liucao<span>.me</span></a></div>
+        <div class="links">
+            <a href="../">← Intro</a>
+            <a href="../talk/">Talk</a>
+            <a href="../papers/">Papers</a>
+            <a href="../play/">Play</a>
+            <a href="../">Demos</a>
+        </div>
+    </nav>
+
+    <main class="wrap section">
+        <div class="hd-lead">
+            <h1>Harness <span>Self-Evolution</span> Demo</h1>
+            <p>冻结权重，进化外围 · 评估先行，门控接受 · <a href="../" style="color:var(--accent);text-decoration:none;">← 没看懂？先读 Intro</a></p>
+        </div>
+
+        <!-- Finance tab removed — only ecommerce is real end-to-end.
+             Finance would be scripted-mock and undermines the "everything
+             here really invokes Bedrock" claim. -->
+        <div class="hd-tabs">
+            <button class="hd-tab active" data-domain="ecommerce">电商搜索 · 详细演示</button>
+        </div>
+
+        <div class="hd-panel">
+            <!-- Subject-Under-Evolution · make it obvious what we are actually
+                 optimizing, so viewers don't confuse "harness" with "agent" or
+                 the model itself. -->
+            <div class="hd-subject">
+                <div class="hd-subject-h">🎯 被改进的 agent · 电商商品搜索 Agent</div>
+                <div class="hd-subject-grid">
+                    <div class="hd-subject-row">
+                        <span class="hd-subject-k">输入</span>
+                        <span class="hd-subject-v">自然语言 query · 如 <code>apple 128gb latest</code> · <code>给坐长途飞机的人的安静礼物</code></span>
+                    </div>
+                    <div class="hd-subject-row">
+                        <span class="hd-subject-k">输出</span>
+                        <span class="hd-subject-v">top-5 SKU 排序 · <code>[sku_id, ...]</code></span>
+                    </div>
+                    <div class="hd-subject-row">
+                        <span class="hd-subject-k">起点</span>
+                        <span class="hd-subject-v">Python <code>search(query)</code> 函数 · BM25 baseline · 约 <b>30% 命中率</b></span>
+                    </div>
+                    <div class="hd-subject-row">
+                        <span class="hd-subject-k">目标</span>
+                        <span class="hd-subject-v">NDCG@5 <b>≥ 90%</b> · 3 轮进化 · 60~120 秒 · $0.10/次</span>
+                    </div>
+                    <div class="hd-subject-row" style="border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 6px;">
+                        <span class="hd-subject-k">方法</span>
+                        <span class="hd-subject-v"><b>Harness Self-Evolution</b> · 冻结 LLM 权重 · 让 AI 一代一代重写 <code>search()</code> 函数</span>
+                    </div>
+                    <div class="hd-subject-row">
+                        <span class="hd-subject-k">引擎</span>
+                        <span class="hd-subject-v"><a href="https://github.com/SakanaAI/ShinkaEvolve" target="_blank" rel="noopener">ShinkaEvolve</a> (Sakana AI) · Proposer: Claude via AWS Bedrock</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ecommerce-only wrappers — everything shown here calls Bedrock. -->
+            <div class="hd-hero" id="hd-hero" style="display:none;">
+                <div class="hd-evolve" id="hd-evolve">
+                    <div class="hd-evolve-header">
+                        <div>
+                            <div class="hd-evolve-title">AI 自动进化 harness</div>
+                            <div class="hd-evolve-sub">
+                                AI <b>读上一轮的错题清单 → 写一份新代码 → 跑 31 道题打分 → 决定要不要"晋升"</b>。3 轮约 60~120 秒，代码每次都是 AI 现场生成的、每次不同。
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <select id="hd-evolve-model" class="hd-evolve-model">
+                                <option value="sonnet45">Sonnet 4.5 · 快 · $0.03/次</option>
+                                <option value="opus47">Opus 4.7 · 强 · $0.08/次</option>
+                                <option value="opus48" selected>Opus 4.8 · 最强 · $0.10/次</option>
+                            </select>
+                            <button class="hd-btn" id="hd-evolve-go">开始进化 (3 轮)</button>
+                        </div>
+                    </div>
+                    <details class="hd-glossary">
+                        <summary>📖 名词解释（点击展开）· 第一次看这个 demo 建议先读</summary>
+                        <div class="hd-glossary-body">
+                            <div class="hd-glossary-block">
+                                <div class="hd-glossary-h">Gen 0 / Gen 1 / Gen 2 是什么</div>
+                                <div class="hd-glossary-p">
+                                    Gen = <b>Generation</b> = "第几代 AI 写的代码"。
+                                    <br>· <b>Gen 0 起点</b>：谁都没改过的原始 BM25 代码（一个词一个词匹配），大概 30-45% 命中。
+                                    <br>· <b>Gen 1</b>：AI 读了 Gen 0 的错题清单，写出的第一版改进代码。
+                                    <br>· <b>Gen 2</b>：AI 读了 Gen 1 的错题，再改一版。
+                                    <br>每一代都是 AI 现场生成的新 Python 代码 — 不是模板套的。
+                                </div>
+                            </div>
+                            <div class="hd-glossary-block">
+                                <div class="hd-glossary-h">31 道题分成 3 档难度（+ 5 题 hold-out）</div>
+                                <div class="hd-glossary-p">
+                                    <b><span class="tier tE">E · 简单</span> · 8 题</b>：BM25 加权就搞定的（<code>apple 128gb latest → iPhone 15 128GB</code>、<code>usbc charger 65w</code>）。
+                                    <br><b><span class="tier tM">M · 中等</span> · 8 题</b>：带排除词或中英混合的（<code>queen 床单 不要涤纶 → 纯棉款</code>、<code>iphone 15 但不要 pro</code>）。
+                                    <br><b><span class="tier tH">H · 最难</span> · 15 题</b>：功能意图，句子里一个产品词都没有（<code>给坐长途飞机的人的安静礼物 → 降噪耳机</code>、<code>冬天爬山保暖 → 羽绒服</code>、<code>海边跟朋友一起听歌 → 蓝牙音箱</code>）。
+                                    <br>另有 <b>5 题 hold-out</b>：AI 从头到尾都看不到这 5 题的内容，用来偷偷验证它是不是真泛化。
+                                    <br><span style="color:var(--text-mute);font-size:0.72rem;">⚠️ 玩具规模概念演示 · 不是生产 benchmark · 真上线用 N ≥ 200 每档</span>
+                                </div>
+                            </div>
+                            <div class="hd-glossary-block">
+                                <div class="hd-glossary-h">NDCG 是什么（评分方式）</div>
+                                <div class="hd-glossary-p">
+                                    不是"答对没"（对/错二元），而是"排名多好"（0~1 连续值）。AI 每题返回前 5 位候选：
+                                    <br>· 正确答案排 <b>第 1 位 → 1.00</b>
+                                    <br>· 排第 2 位 → 0.63　·　排第 3 位 → 0.50　·　排第 5 位 → 0.39
+                                    <br>· 前 5 位都是错的 → 0.00
+                                    <br>用连续分是为了让每次微小改进都能看到 — 不然 Sonnet 慢慢改进也是 0/1 跳，像卡住了。
+                                </div>
+                            </div>
+                            <div class="hd-glossary-block">
+                                <div class="hd-glossary-h">verdict 这一行的 6 个数字</div>
+                                <div class="hd-glossary-p" style="font-family:var(--mono);font-size:0.73rem;">
+                                    <b>NDCG</b> — 31 题平均排名分。<br>
+                                    <b>E / M / H</b> — 3 档题的平均 NDCG（越难的档分越低说明模型越弱）。<br>
+                                    <b>heldout</b> — 5 道 AI 没见过的题的 NDCG。<b>过拟合的模型这里会崩</b>。<br>
+                                    <b>perturbed</b> — 31 题加了 typo 后再跑一遍（<code>apple → aplpe</code>）。查表作弊的会被打回原形。<br>
+                                    <b>combined</b> — 最终 fitness 分，&gt; 0 就晋升。公式含 E/M/H 加权 + hold-out 20% + perturbed 10%。
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="hd-evolve-progress" id="hd-evolve-progress">
+                        <div class="hd-progress-track">
+                            <div class="hd-progress-fill" id="hd-progress-fill"></div>
+                        </div>
+                        <div class="hd-progress-caption">
+                            <span id="hd-progress-label">准备中…</span>
+                            <span id="hd-progress-percent">0%</span>
+                        </div>
+                        <div class="hd-progress-explain" id="hd-progress-explain">点击「开始进化」查看每个阶段 AI 在做什么</div>
+                        <div class="hd-stages" id="hd-stages">
+                            <span class="hd-stage" data-s="启动">Run</span>
+                            <span class="hd-stage" data-s="sampling">Observe</span>
+                            <span class="hd-stage" data-s="querying">Propose</span>
+                            <span class="hd-stage" data-s="evaluating">Verify</span>
+                            <span class="hd-stage" data-s="scoring">Commit</span>
+                        </div>
+
+                        <!-- ── 5-Verb Methodology Framework ─────────────
+                             Frame the entire evolution loop as 5 verbs · every
+                             harness-evolution paper reduces to this canonical
+                             loop. Colors match the per-node badges below.
+                        -->
+                        <div class="hd-verbs">
+                          <div class="hd-verbs-h">方法论 · 5 个动词 · <span style="color:var(--text-mute);font-weight:400;">整个 field 压成这 5 步 · 每代循环</span></div>
+                          <div class="hd-verbs-row">
+                            <span class="hd-verb v-run">Run</span><span class="hd-verb-arrow">→</span>
+                            <span class="hd-verb v-observe">Observe</span><span class="hd-verb-arrow">→</span>
+                            <span class="hd-verb v-propose">Propose</span><span class="hd-verb-arrow">→</span>
+                            <span class="hd-verb v-verify">Verify</span><span class="hd-verb-arrow">→</span>
+                            <span class="hd-verb v-commit">Commit</span>
+                            <span class="hd-verb-loop">↺ Commit 后回到 Run</span>
+                          </div>
+                        </div>
+
+                        <!-- Vertical workflow visualization — each node shows
+                             real-time data as the current stage runs.
+                             Populated dynamically, resets per generation. -->
+                        <div class="hd-workflow" id="hd-workflow" aria-label="Evolution workflow steps">
+                          <div class="hd-wf-header">
+                            <span class="hd-wf-title">工作流 · Gen <span id="hd-wf-gen">0</span></span>
+                            <span class="hd-wf-timer" id="hd-wf-timer">00:00</span>
+                          </div>
+                          <ol class="hd-wf-list">
+                            <!-- Node 1 · RUN · 跑上一代/父代代码 · 收集 traces -->
+                            <li class="hd-wf-node" data-s="启动">
+                              <div class="hd-wf-dot"><span class="hd-wf-num">1</span></div>
+                              <div class="hd-wf-body">
+                                <div class="hd-wf-name">跑父代代码 · 收集轨迹 <span class="hd-wf-verb v-run">Run</span></div>
+                                <div class="hd-wf-data" data-role="启动">
+                                  <b>系统在做什么</b>：启动进化引擎 · 让父代代码在 31 道题上真跑一遍 · 收集执行轨迹（谁对谁错）。<br>
+                                  <b>Gen 0 特殊</b>：档案是空的 · 直接跑 BM25 baseline · 拿到起点分数。<br>
+                                  <span style="color:var(--text-mute);">这是循环的起点 · 后续 Observe 才有东西可看</span>
+                                </div>
+                              </div>
+                            </li>
+
+                            <!-- Node 2 · OBSERVE · 选亲本 + 看错题清单 -->
+                            <li class="hd-wf-node" data-s="sampling">
+                              <div class="hd-wf-dot"><span class="hd-wf-num">2</span></div>
+                              <div class="hd-wf-body">
+                                <div class="hd-wf-name">选亲本 + 看它的成绩单 <span class="hd-wf-verb v-observe">Observe</span></div>
+                                <div class="hd-wf-data" data-role="sampling">
+                                  <b>动作 A · 选亲本</b>（从档案里的候选中加权采样挑一版）：
+                                  <div class="hd-archive">
+                                    <div class="hd-archive-h">
+                                      档案 · <b>Archive</b>（最多 8 版 · 2 islands）· 加权采样
+                                    </div>
+                                    <div class="hd-archive-slots" id="hd-archive-slots">
+                                      <div class="hd-archive-slot empty">待 Gen 0 生成</div>
+                                    </div>
+                                    <div class="hd-archive-legend">
+                                      分越高越可能被选中 · <b>但不独占</b>（留探索空间）· 策略：<code>weighted</code> (power-law)
+                                    </div>
+                                  </div>
+                                  <b>动作 B · 拉成绩单</b>：附上这版代码在 <b>31 道题里做错的那几题</b> · AI 会针对性改。<br>
+                                  <b>为什么合成一步</b>：选完必须紧接着看它的错 · AI 不能瞎改 —— 这就是<b>评估先行</b>。
+                                </div>
+                              </div>
+                            </li>
+
+                            <!-- Node 3 · PROPOSE · AI 思考 + 生成 diff + 落硬盘（含原 Apply 步骤）-->
+                            <li class="hd-wf-node" data-s="querying">
+                              <div class="hd-wf-dot"><span class="hd-wf-num">3</span></div>
+                              <div class="hd-wf-body">
+                                <div class="hd-wf-name">
+                                  AI 提出候选方案 · 落到硬盘
+                                  <span class="hd-wf-verb v-propose">Propose</span>
+                                  <span class="hd-wf-pending" id="hd-wf-pending">⏳ 提议中 · 待验证</span>
+                                </div>
+                                <div class="hd-wf-data" data-role="querying">
+                                  <div class="hd-wf-datarow">
+                                    <span class="k">谁在写</span>
+                                    <span class="v" id="hd-wf-model">—</span>
+                                    <span class="k" style="margin-left:12px;">Thinking</span>
+                                    <span class="v">high · 允许 reasoning mode</span>
+                                  </div>
+                                  <div class="hd-wf-datarow">
+                                    <span class="k">阶段</span>
+                                    <span class="v" id="hd-wf-phase">🧠 思考中</span>
+                                    <span class="k" style="margin-left:12px;">已生成</span>
+                                    <span class="v"><span id="hd-wf-bytes">0</span> bytes</span>
+                                    <span class="hd-wf-spinner" id="hd-wf-spinner"></span>
+                                  </div>
+                                  <div style="margin-top:4px;">
+                                    <b>三个子动作</b>：<b>a</b> Opus 先<b>推理</b>（10-20 秒） · <b>b</b> 输出 diff · <b>c</b> 系统把 diff 贴到父代文件生成新 Python。<br>
+                                    <b>关键</b>：这一步只是<b>提议</b> —— 后面 Verify + Commit 决定采不采纳。
+                                  </div>
+
+                                  <!-- AI Reasoning · surfaces WHY the AI proposed the change -->
+                                  <div class="hd-reasoning" id="hd-reasoning-panel" style="display:none;">
+                                    <div class="hd-reasoning-h">
+                                      🧠 <b>AI 的思路</b>
+                                      <span class="hd-reasoning-name" id="hd-reasoning-name"></span>
+                                    </div>
+                                    <div class="hd-reasoning-analysis" id="hd-reasoning-analysis"></div>
+                                    <div class="hd-reasoning-desc" id="hd-reasoning-desc"></div>
+                                  </div>
+
+                                  <!-- Diff panel · appears after code is generated -->
+                                  <div class="hd-diff" id="hd-diff-panel" style="display:none;">
+                                    <div class="hd-diff-h">
+                                      💡 <b>AI 提议的改动</b>
+                                      <span class="hd-diff-summary" id="hd-diff-summary">—</span>
+                                    </div>
+                                    <details class="hd-diff-details">
+                                      <summary>展开完整 diff（点击查看 raw patch）</summary>
+                                      <pre class="hd-diff-body" id="hd-diff-body">（等 AI 提议完成后填充）</pre>
+                                    </details>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+
+                            <!-- Node 4 · VERIFY · 跑三套测试打分 -->
+                            <li class="hd-wf-node" data-s="evaluating">
+                              <div class="hd-wf-dot"><span class="hd-wf-num">4</span></div>
+                              <div class="hd-wf-body">
+                                <div class="hd-wf-name">给新代码打分 <span class="hd-wf-verb v-verify">Verify</span></div>
+                                <div class="hd-wf-data" data-role="evaluating">
+                                  <div class="hd-wf-datarow">
+                                    <span class="k">进度</span>
+                                    <div class="hd-wf-mini-track"><div class="hd-wf-mini-fill" id="hd-wf-eval-fill" style="width:0%"></div></div>
+                                    <span class="v"><span id="hd-wf-eval-elapsed">0</span>s</span>
+                                  </div>
+                                  <div style="margin-top:4px;">
+                                    <b>系统在做什么</b>：新代码跑<b>三套测试</b> —— 31 道公开题 · 5 道 AI 没见过的题 · 31 道加了 typo 的题。<br>
+                                    <b>为什么</b>：防作弊。硬记答案的代码会在后两套<b>崩盘</b>。
+                                  </div>
+
+                                  <!-- Per-question grid · shows all 31 public queries with hit/miss + score -->
+                                  <div class="hd-perq" id="hd-perq-panel" style="display:none;">
+                                    <div class="hd-perq-h">
+                                      📊 <b>31 题逐题打分</b>
+                                      <span class="hd-perq-summary" id="hd-perq-summary"></span>
+                                    </div>
+                                    <details class="hd-perq-details">
+                                      <summary>展开逐题结果 · 每题一格 · 悬停看细节</summary>
+                                      <div class="hd-perq-tier-groups" id="hd-perq-grid"></div>
+                                    </details>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+
+                            <!-- Node 5 · COMMIT · 决定晋升 · 回到 Run -->
+                            <li class="hd-wf-node" data-s="scoring">
+                              <div class="hd-wf-dot"><span class="hd-wf-num">5</span></div>
+                              <div class="hd-wf-body">
+                                <div class="hd-wf-name">决定要不要"晋升" · 循环下一代 <span class="hd-wf-verb v-commit">Commit</span></div>
+                                <div class="hd-wf-data" data-role="scoring">
+                                  <div class="hd-wf-datarow">
+                                    <span class="k">评分</span>
+                                    <span class="v" id="hd-wf-ndcg">—</span>
+                                    <span class="k" style="margin-left:12px;">综合分</span>
+                                    <span class="v" id="hd-wf-combined">—</span>
+                                    <span class="hd-wf-verdict" id="hd-wf-verdict"></span>
+                                  </div>
+                                  <div style="margin-top:4px;">
+                                    <b>系统在做什么</b>：把四项分数（公开·抽查·抗干扰·代码简洁度）加权算综合分 · <b>&gt; 0 才晋升</b>入档案。<br>
+                                    <b>循环</b>：Commit 完成后回到步骤 1 (Run) · 用新晋升的候选作为下一代的父代。<br>
+                                    <span style="color:var(--text-mute);">被拒的直接丢弃 · git reset 的语义</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                          </ol>
+                        </div>
+                    </div>
+                    <div class="hd-evolve-status" id="hd-evolve-status"></div>
+                    <div class="hd-evolve-gens" id="hd-evolve-gens"></div>
+
+                    <!-- A + C + D: evolution comparison, populated after complete -->
+                    <div class="hd-compare" id="hd-compare">
+                        <div class="hd-compare-h"><span class="num">C</span> · 分数对比</div>
+                        <div class="hd-cmp-chart" id="hd-cmp-chart"></div>
+
+                        <div class="hd-compare-h"><span class="num">A</span> · 同一 query，前后返回什么</div>
+                        <div class="hd-cmp-flips" id="hd-cmp-flips"></div>
+
+                        <details class="hd-cmp-matrix">
+                            <summary><span class="hd-compare-h" style="display:inline;"><span class="num">D</span> · 全部 31 道题的每一 Gen 结果（tier 标记）</span></summary>
+                            <div class="hd-matrix-scroll">
+                                <table class="hd-matrix" id="hd-matrix"></table>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- ② live-search card removed — merged into ① AI 自动进化 above.
+                     The A/C/D comparison inside ① already tells the full story:
+                     baseline → evolved, per-query flips, full matrix. -->
+            </div>
+
+            <!-- Finance-only: 3 signature cards (still scripted). -->
+            <div class="hd-cases" id="hd-cases">
+                <div class="hd-cases-header">
+                    <h3><span>逐题演化</span> · 三个典型案例在 4 轮迭代中的答案变化</h3>
+                    <span class="hint" id="hd-cases-hint">点击 Play 逐步展开每一轮的结果</span>
+                </div>
+                <div class="hd-controls">
+                    <button class="hd-btn" id="hd-play">Play</button>
+                    <button class="hd-btn secondary" id="hd-step">Step</button>
+                    <button class="hd-btn secondary" id="hd-reset">Reset</button>
+                    <span class="hd-caption" id="hd-caption">Round 0 / 4</span>
+                </div>
+                <div id="hd-cases-body"></div>
+            </div>
+
+            <!-- Hidden placeholders — kept only because renderHero() writes
+                 to these IDs. UI-visible display is via the evolution's own
+                 A/C/D comparison panel above. -->
+            <div style="display:none;">
+                <div class="hd-hero-query" id="hd-hero-query"></div>
+                <div id="hd-hero-rounds"></div>
+                <div class="hd-glossary" id="hd-glossary"></div>
+                <span class="hint" id="hd-hero-hint"></span>
+            </div>
+
+            <!-- Hidden placeholders for KPI/scorecard IDs referenced by JS.
+                 The render code touches these but we no longer show them.  -->
+            <div style="display:none;">
+                <table><tbody id="hd-tbody"></tbody></table>
+                <div class="hd-chart" id="hd-chart"></div>
+                <div id="hd-kpis">
+                    <div class="hd-kpi" data-kpi="a"><span id="hd-kpi-acc"></span><span id="hd-kpi-acc-sub"></span></div>
+                    <div class="hd-kpi" data-kpi="t"><span id="hd-kpi-transfer"></span><span id="hd-kpi-transfer-sub"></span></div>
+                    <div class="hd-kpi" data-kpi="c"><span id="hd-kpi-cost"></span><span id="hd-kpi-cost-sub"></span></div>
+                </div>
+                <div id="hd-scorecard">
+                    <span id="hd-sc-domain"></span>
+                    <span id="hd-sc-r0-acc"></span><span id="hd-sc-r0-tok"></span>
+                    <span id="hd-sc-r3-acc"></span><span id="hd-sc-r3-tok"></span><span id="hd-sc-gain"></span>
+                    <span id="hd-sc-tgt-acc"></span><span id="hd-sc-tgt-tok"></span><span id="hd-sc-transfer"></span>
+                </div>
+                <div id="hd-transfer">
+                    <span id="hd-src-model"></span><span id="hd-src-metrics"></span>
+                    <span id="hd-tgt-model"></span><span id="hd-tgt-metrics"></span>
+                </div>
+            </div>
+
+            <div class="hd-refs">
+                <p>方法参考：ACE (arXiv:2510.04618) · Meta-Harness (arXiv:2603.28052) · DGM (arXiv:2505.22954) · <a href="https://github.com/SakanaAI/ShinkaEvolve" target="_blank" rel="noopener" style="color:var(--accent);">ShinkaEvolve</a></p>
+                <p>
+                    每次点「开始进化」都是<b>真调 Bedrock</b>（proposer: Sonnet 4.5 / Opus 4.7 / 4.8）。评测集 31 道电商搜索题（8 简单 + 8 中等 + 15 最难）加 5 道 hold-out + 31 道 typo，
+                    proposer 现场生成 3 版 harness 代码，每次结果不同。运行完自动展示分数柱状图、典型 query 前后对比、全 31 题矩阵。
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Product-detail modal -->
+    <div class="hd-modal" id="hd-modal">
+      <button class="hd-modal-close" id="hd-modal-close" aria-label="关闭">×</button>
+      <div class="hd-modal-card" id="hd-modal-card"></div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2026 liucao.me · <a href="../../..">Home</a></p>
+    </footer>
+
+<script>
+(async function () {
+  // DATA is mutable — the live-search feature swaps in real Bedrock results
+  // for ecommerce.hero_case when the user hits the "真实搜索" button.
+  const DATA = await fetch("../static/data.json").then(r => r.json());
+
+  const STORYLINES = {
+    finance: {
+      0: "R0：基座模型直接作答，FiNER 上准确率 65%，作为所有方法的公共基线。",
+      1: "R1：proposer 将 held-out 标签硬编码进提示词。<strong>数据泄漏审计立即拦截，整版方案作废。</strong>",
+      2: "R2：proposer 增加 self-consistency 投票，准确率反而下滑 10 个百分点。<strong>综合评分拒绝，未过门槛。</strong>",
+      3: "R3：proposer 系统分析失败案例，写出实体家族 playbook 附单位归一化。准确率 80%，晋升为新版。"
+    },
+    ecommerce: {
+      0: "R0：BM25 基线检索，准确率 60%。「不要塑料的水杯」返回塑料款，「儿童款」返回成人款。",
+      1: "R1：proposer 将 held-out SKU 表内嵌到提示词。<strong>数据泄漏审计拦截，整版方案作废。</strong>",
+      2: "R2：proposer 增加 20 个候选重排，准确率微涨但 token 消耗上涨 8 倍。<strong>成本超标，综合评分否决。</strong>",
+      3: "R3：proposer 构造三层流水线——意图识别、属性抽取、结构化检索，准确率提升至 90%，晋升为新版。"
+    }
+  };
+
+  let domain = "ecommerce", step = 0, playing = false, timer = null;
+
+  function reason(txt) {
+    return txt
+      .replace("LEAK_AUDIT_FAILED — candidate touched held-out labels", "🚨 泄漏审计失败 — proposer 触碰了 held-out gold")
+      .replace("SEEDED_AS_FRONTIER", "⚑ 建立初始 frontier")
+      .replace(/PROMOTED \(\+([\d.]+) blended\)/, "✓ 晋升 (blended +$1)")
+      .replace(/COST_PENALTY_REJECTED — acc \+([\d.]+) but tokens \+([\d.]+)M/, "💰 成本罚拒绝 — acc +$1 但 tokens +$2M")
+      .replace("NO_IMPROVEMENT", "○ 未过门槛");
+  }
+
+  // outcomes lookup: for R>0, we render diff against R0. For R0 we just render right/wrong.
+  function renderDetail(round, baseOutcomes) {
+    const baseById = {};
+    baseOutcomes.forEach(o => baseById[o.task_id] = o);
+    const gained = [], lost = [], right = [], wrong = [];
+    round.outcomes.forEach(o => {
+      const b = baseById[o.task_id];
+      if (round.n === 0) {
+        (o.hit ? right : wrong).push(o);
+      } else {
+        if (o.hit && !b.hit) gained.push({o, b});
+        else if (!o.hit && b.hit) lost.push({o, b});
+        else if (o.hit) right.push(o);
+        else wrong.push(o);
+      }
+    });
+
+    const shortTag = s => s ? s.split(":").pop().slice(0, 34) : "—";
+
+    let html = `<div class="hd-detail-summary">`;
+    if (round.n === 0) {
+      html += `<span class="chip">✓ 对 ${right.length}</span>`;
+      html += `<span class="chip">✗ 错 ${wrong.length}</span>`;
+      html += `<span class="chip">共 ${round.outcomes.length} 题</span>`;
+    } else {
+      html += `<span class="chip gained">✓ 由错变对 ${gained.length}</span>`;
+      html += `<span class="chip lost">✗ 由对变错 ${lost.length}</span>`;
+      html += `<span class="chip">○ 一直对 ${right.length}</span>`;
+      html += `<span class="chip">○ 一直错 ${wrong.length}</span>`;
+    }
+    html += `</div>`;
+
+    const taskLine = (o, cls) => `
+      <li class="hd-task ${cls}">
+        <span class="tid">${o.task_id}</span>
+        <span class="inp">${o.input}</span>
+        <div>gold: <span class="g">${shortTag(o.gold)}</span>
+             <span class="arrow">·</span>
+             pred: <span class="${o.hit ? 'g' : 'p-wrong'}">${shortTag(o.pred)}</span>
+             ${o.hit ? '✓' : '✗'}
+        </div>
+        ${o.trap && !o.hit ? `<span class="trap">陷阱: ${o.trap}</span>` : ''}
+      </li>`;
+
+    if (round.n === 0) {
+      if (wrong.length) html += `<div class="hd-task-group">✗ 答错的题</div><ul class="hd-tasklist">${wrong.map(o => taskLine(o, 'wrong')).join('')}</ul>`;
+      if (right.length) html += `<div class="hd-task-group">✓ 答对的题</div><ul class="hd-tasklist">${right.map(o => taskLine(o, 'right')).join('')}</ul>`;
+    } else {
+      if (gained.length) html += `<div class="hd-task-group">✓ 由错变对 (harness 的贡献)</div><ul class="hd-tasklist">${gained.map(g => taskLine(g.o, 'gained')).join('')}</ul>`;
+      if (lost.length) html += `<div class="hd-task-group">✗ 由对变错 (副作用 —— 进化不是单调的)</div><ul class="hd-tasklist">${lost.map(g => taskLine(g.o, 'lost')).join('')}</ul>`;
+      if (wrong.length) html += `<div class="hd-task-group">○ 一直答错 (下一轮的目标)</div><ul class="hd-tasklist">${wrong.slice(0, 5).map(o => taskLine(o, 'wrong')).join('')}${wrong.length > 5 ? '<li class="hd-task">... 共 ' + wrong.length + ' 题' : ''}</ul>`;
+    }
+
+    return html;
+  }
+
+  function shortSku(s) {
+    if (!s) return "—";
+    // finance ids like "us-gaap:RevenueFromContractWithCustomer" → shorten
+    if (s.includes(":")) return s.split(":").pop();
+    return s;
+  }
+
+  // ── Narration acts ──────────────────────────────────────────────
+  // Framing acts (step=null) are always shown lit.
+  // Round-tagged acts light up when step advances to that round.
+  // The "active" act is the highest lit one; earlier acts dim slightly.
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, ch => (
+      {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]
+    ));
+  }
+
+  function colorCode(s) {
+    // very small python-ish syntax hint: comments in mute, strings in orange, "def" keyword
+    return escapeHtml(s)
+      .replace(/(#[^\n]*)/g, '<span class="comment">$1</span>')
+      .replace(/(&quot;[^&\n]*?&quot;)/g, '<span class="str">$1</span>')
+      .replace(/\b(def|return|for|in|if|else)\b/g, '<span class="kw">$1</span>');
+  }
+
+  function activeActIdx(narr, step) {
+    // Return the index of the "current" act:
+    // framing acts (step:null) run 0..N; round acts have a step 0..3.
+    // If step is s, active = last act whose step<=s OR the last framing act if s=-1.
+    let last = 0;
+    narr.acts.forEach((a, i) => {
+      if (a.step === null) last = Math.max(last, i);
+      else if (a.step <= step) last = Math.max(last, i);
+    });
+    return last;
+  }
+
+  function renderActs() {
+    const wrap = document.getElementById("hd-acts-body");
+    if (!wrap) return;  // narration column removed — nothing to render
+    const n = DATA[domain].narration;
+    wrap.innerHTML = "";
+    const active = activeActIdx(n, step);
+
+    const showEpilogue = step >= (DATA[domain].source.rounds.length - 1);
+
+    n.acts.forEach((a, i) => {
+      // Every act is always visible; unreached ones dim.
+      // (Presenter can still click ahead to jump — respecting user control.)
+      const reached = (a.step === null) || (a.step <= step);
+      const isActive = (i === active);
+      const dim = !reached && !isActive;
+
+      const el = document.createElement("div");
+      el.className = "hd-act"
+        + (isActive ? " active" : "")
+        + (dim ? " dim" : "");
+      el.dataset.act = i;
+
+      const idxLabel = a.step === null
+        ? `${i + 1}`
+        : a.title;
+      const numHtml = a.number ? `<span class="hd-act-num">${escapeHtml(a.number)}</span>` : "";
+      const codeHtml = a.code ? `<pre class="hd-act-code">${colorCode(a.code)}</pre>` : "";
+      const tagHtml = a.tagline ? `<div class="hd-act-tagline">${escapeHtml(a.tagline)}</div>` : "";
+
+      el.innerHTML = `
+        <div class="hd-act-head">
+          <span class="hd-act-idx">${escapeHtml(idxLabel)}</span>
+          <span class="hd-act-title">${escapeHtml(a.headline)}</span>
+          ${numHtml}
+        </div>
+        <div class="hd-act-body">${escapeHtml(a.body)}</div>
+        ${tagHtml}
+        ${codeHtml}
+      `;
+      el.addEventListener("click", () => {
+        // Click an act → advance step to that round; framing acts don't move step.
+        if (a.step !== null) {
+          step = a.step;
+          if (timer) { clearInterval(timer); playing = false; timer = null;
+                       document.getElementById("hd-play").textContent = "Play"; }
+          render();
+          scrollActIntoView(i);
+        }
+      });
+      wrap.appendChild(el);
+    });
+
+    if (showEpilogue && n.epilogue) {
+      const e = n.epilogue;
+      const el = document.createElement("div");
+      el.className = "hd-act active";
+      const numHtml = e.number ? `<span class="hd-act-num">${escapeHtml(e.number)}</span>` : "";
+      const tagHtml = e.tagline ? `<div class="hd-act-tagline">${escapeHtml(e.tagline)}</div>` : "";
+      el.innerHTML = `
+        <div class="hd-act-head">
+          <span class="hd-act-idx">终</span>
+          <span class="hd-act-title">${escapeHtml(e.headline)}</span>
+          ${numHtml}
+        </div>
+        <div class="hd-act-body">${escapeHtml(e.body)}</div>
+        ${tagHtml}
+      `;
+      wrap.appendChild(el);
+    }
+  }
+
+  function scrollActIntoView(i) {
+    const el = document.querySelector(`.hd-act[data-act="${i}"]`);
+    if (el) el.scrollIntoView({behavior: "smooth", block: "nearest"});
+  }
+
+  // ── Hero case (ecommerce only) ──────────────────────────────────
+  // Renders a 4-round mock search page. Each round has a header (badge +
+  // verdict), a search bar, an optional reasoning strip (R3), and a product
+  // result list with selected/wrong/missed/leak states.
+
+  function renderHero() {
+    const nar = DATA.ecommerce.narration;
+    const hero = nar && nar.hero_case;
+    const gloss = nar && nar.glossary;
+    if (!hero) return;
+
+    // Glossary chips
+    const glossWrap = document.getElementById("hd-glossary");
+    if (glossWrap && gloss) {
+      glossWrap.innerHTML = gloss.map(g => `
+        <div class="hd-gloss">
+          <span class="tag">${escapeHtml(g.tag)}</span><span class="en">${escapeHtml(g.en)}</span>
+          <span class="gloss">${escapeHtml(g.gloss)}</span>
+        </div>`).join("");
+    }
+
+    // Query banner
+    const qBanner = document.getElementById("hd-hero-query");
+    if (qBanner) {
+      qBanner.innerHTML = `
+        <div class="row"><span class="lbl">查询</span>
+          <span class="val">${escapeHtml(hero.query_display)}</span>
+          <span class="zh">${escapeHtml(hero.query_zh)}</span></div>
+        <div class="row"><span class="lbl">应该返回</span>
+          <span class="val gold">${escapeHtml(hero.gold)}</span>
+          <span class="zh">${escapeHtml(hero.gold_title)} · ¥${escapeHtml(hero.gold_price)}</span></div>
+        <div class="row"><span class="lbl">难点</span>
+          <span class="val trap">${escapeHtml(hero.trap)}</span></div>
+      `;
+    }
+
+    const roundsWrap = document.getElementById("hd-hero-rounds");
+    if (!roundsWrap) return;
+    roundsWrap.innerHTML = "";
+
+    hero.rounds.forEach(r => {
+      const pending = r.n > step;
+      const el = document.createElement("div");
+      el.className = `hd-round gate-${r.gate_kind}` + (pending ? " pending" : "");
+
+      // Reasoning strip only for R3 (or rounds that carry reasoning)
+      const reasoning = r.reasoning ? `
+        <div class="hd-reason-strip">
+          ${r.reasoning.map(rc => `
+            <div class="hd-reason-row">
+              <span class="lbl">${escapeHtml(rc.label)}</span>
+              <span class="val">${escapeHtml(rc.value)}</span>
+              <span class="signal">${escapeHtml(rc.signal)}</span>
+            </div>`).join("")}
+        </div>` : "";
+
+      const products = (r.results || []).map((p, pi) => {
+        // Corner-badge on the image
+        const overlay = p.cheat ? '<span class="hd-badge-overlay leak">作弊得来</span>'
+                      : p.missed ? '<span class="hd-badge-overlay missed">被漏掉</span>'
+                      : p.selected && p.correct ? '<span class="hd-badge-overlay ok">✓ 命中</span>'
+                      : p.selected && !p.correct ? '<span class="hd-badge-overlay bad">✗ 错选</span>'
+                      : '';
+        const wrongCls = p.selected && !p.correct ? " wrong" : "";
+        const selCls = p.selected ? " selected" : "";
+        const missCls = p.missed ? " missed" : "";
+        const img = p.image
+          ? `<img src="${p.image}" alt="${escapeHtml(p.title)}" loading="lazy">`
+          : '<div style="font-size:3rem;">📦</div>';
+        return `
+          <div class="hd-product${selCls}${wrongCls}${missCls}"
+               data-round="${r.n}" data-idx="${pi}">
+            <div class="hd-product-image">
+              ${img}
+              ${overlay}
+            </div>
+            <div class="hd-product-body">
+              <div class="hd-product-price">${escapeHtml(p.price)}</div>
+              <div class="hd-product-title">${escapeHtml(p.title)}</div>
+              <div class="hd-product-sku">${escapeHtml(p.sku)}</div>
+              <div class="hd-product-reason">${escapeHtml(p.reason || '')}</div>
+            </div>
+          </div>`;
+      }).join("");
+
+      // Prefer the richer .story (what / why / verdict) if present.
+      let note = "";
+      if (r.story) {
+        note = `
+          <div class="hd-round-story">
+            <div class="hd-story-row">
+              <span class="hd-story-lbl">发生了什么</span>
+              <span class="hd-story-val">${escapeHtml(r.story.what)}</span>
+            </div>
+            <div class="hd-story-row">
+              <span class="hd-story-lbl">为什么</span>
+              <span class="hd-story-val">${escapeHtml(r.story.why)}</span>
+            </div>
+            <div class="hd-story-row">
+              <span class="hd-story-lbl">判决</span>
+              <span class="hd-story-val">${escapeHtml(r.story.verdict)}</span>
+            </div>
+          </div>`;
+      } else if (r.explain) {
+        const candNote = r.candidates_note
+          ? `<span class="candnote">${escapeHtml(r.candidates_note)}</span>` : "";
+        note = `<div class="hd-round-note"><b>${escapeHtml(r.tag)}：</b>${escapeHtml(r.explain)}${candNote}</div>`;
+      }
+
+      el.innerHTML = `
+        <div class="hd-round-head">
+          <span class="hd-round-badge">R${r.n} ${escapeHtml(r.tag)}</span>
+          <span class="hd-round-title">${escapeHtml(r.headline)}</span>
+          <span class="hd-round-verdict">${escapeHtml(r.gate_verdict)}</span>
+        </div>
+        <div class="hd-searchbox">
+          <span class="icon">Q</span>
+          <span class="q">${escapeHtml(hero.query_display)}</span>
+          <span class="btn">搜索</span>
+        </div>
+        ${reasoning}
+        <div class="hd-results">${products}</div>
+        ${note}
+      `;
+      roundsWrap.appendChild(el);
+    });
+
+    // Wire up product-card clicks — delegates to global openProductModal
+    roundsWrap.querySelectorAll(".hd-product").forEach(card => {
+      card.addEventListener("click", () => {
+        const rn = parseInt(card.dataset.round, 10);
+        const idx = parseInt(card.dataset.idx, 10);
+        const round = hero.rounds[rn];
+        const prod = round && round.results && round.results[idx];
+        if (prod) openProductModal(prod);
+      });
+    });
+  }
+
+  function openProductModal(p) {
+    const modal = document.getElementById("hd-modal");
+    const card = document.getElementById("hd-modal-card");
+    if (!modal || !card) return;
+    const attrs = p.attrs || {};
+    const attrRows = Object.entries(attrs)
+      .filter(([_, v]) => v !== "" && v !== null && v !== undefined)
+      .map(([k, v]) => `<div class="row"><span class="k">${escapeHtml(k)}</span><span class="v">${escapeHtml(String(v))}</span></div>`)
+      .join("");
+    card.innerHTML = `
+      <div class="hd-modal-image">
+        ${p.image ? `<img src="${p.image}" alt="${escapeHtml(p.title)}">` : '<div style="font-size:5rem;">📦</div>'}
+      </div>
+      <div class="hd-modal-body">
+        <div class="cat">${escapeHtml(p.category || 'PRODUCT')}</div>
+        <h2>${escapeHtml(p.title)}</h2>
+        <div class="sku">SKU: ${escapeHtml(p.sku)}</div>
+        <div class="price-big">${escapeHtml(p.price)}</div>
+        ${attrRows ? `<div class="attrs">${attrRows}</div>` : ''}
+        <div style="color:var(--text-dim);font-size:0.82rem;line-height:1.6;">
+          ${escapeHtml(p.reason || '')}
+        </div>
+        <button class="buy-btn">立即购买（演示）</button>
+      </div>
+    `;
+    modal.classList.add("open");
+  }
+
+  function renderCases() {
+    const d = DATA[domain];
+    const src = d.source;
+    const sigs = src.signatures || [];
+    const wrap = document.getElementById("hd-cases-body");
+    wrap.innerHTML = "";
+
+    sigs.forEach(s => {
+      const card = document.createElement("div");
+      card.className = "hd-case " + (domain === "ecommerce" ? "ecom" : "fin");
+
+      const traceRows = s.trace.map(t => {
+        const pending = t.round > step;
+        // predCls decides how the answer is visually rendered:
+        //   cheat-hit  = R1 leak-hit, struck through (viewer must feel this doesn't count)
+        //   rejected-hit = R2 cost-penalty-rejected hit, orange (right answer but too costly)
+        //   hit        = only R3 promoted-and-hit gets emerald
+        //   miss       = wrong answer, red
+        //   na         = null (skipped)
+        let predCls, tagCls, tagText;
+        if (t.pred === null || t.pred === undefined) {
+          predCls = "na"; tagCls = "miss"; tagText = "跳过";
+        } else if (t.leaked) {
+          predCls = "cheat-hit"; tagCls = "leak"; tagText = "数据泄漏 · 作废";
+        } else if (t.round > 0 && !t.accepted) {
+          predCls = t.hit ? "rejected-hit" : "miss";
+          tagCls = "rejected"; tagText = t.hit ? "成本超标 · 否决" : "未过门槛 · 否决";
+        } else if (t.round === 0) {
+          predCls = t.hit ? "hit" : "miss";
+          tagCls = t.hit ? "hit" : "miss";
+          tagText = t.hit ? "初始答对" : "初始答错";
+        } else {
+          // R3 accepted
+          predCls = t.hit ? "hit" : "miss";
+          tagCls = t.hit ? "promoted" : "miss";
+          tagText = t.hit ? "合规改进 · 晋升" : "仍答错";
+        }
+
+        const rlabel = t.round === 0 ? "R0 起点"
+                     : t.round === 1 ? "R1 泄漏"
+                     : t.round === 2 ? "R2 算力"
+                     : "R3 改进";
+
+        const rowCls = `hd-trace-row round-r${t.round}` + (pending ? " pending" : "");
+        return `
+          <div class="${rowCls}">
+            <div class="hd-trace-r">${rlabel}</div>
+            <div class="hd-trace-pred ${predCls}"><span class="val">${shortSku(t.pred) || "—"}</span></div>
+            <div class="hd-trace-tag ${tagCls}">${tagText}</div>
+          </div>`;
+      }).join("");
+
+      card.innerHTML = `
+        <div class="hd-case-q">
+          <span class="prefix">${domain === "ecommerce" ? "查询:" : "原文:"}</span>
+          ${s.input}
+        </div>
+        <div class="hd-case-trap">
+          <span class="icon">难点:</span> ${s.trap}
+          &nbsp;·&nbsp;标准答案: <span class="gold">${shortSku(s.gold)}</span>
+        </div>
+        <div class="hd-case-trace">${traceRows}</div>
+      `;
+      wrap.appendChild(card);
+    });
+  }
+
+  function render() {
+    const d = DATA[domain];
+    const src = d.source;
+    const baseOutcomes = src.rounds[0].outcomes;
+
+    renderActs();
+    // (Narration column removed — no auto-scroll needed)
+
+    // Ecommerce shows the hero case (mock search page). Finance keeps the
+    // 3-signature-card view. This is decided once per tab switch.
+    const heroWrap = document.getElementById("hd-hero");
+    const casesWrap = document.getElementById("hd-cases");
+    if (domain === "ecommerce") {
+      if (heroWrap) heroWrap.style.display = "";
+      if (casesWrap) casesWrap.style.display = "none";
+      renderHero();
+    } else {
+      if (heroWrap) heroWrap.style.display = "none";
+      if (casesWrap) casesWrap.style.display = "";
+      renderCases();
+    }
+
+    const tbody = document.getElementById("hd-tbody");
+    tbody.innerHTML = "";
+    src.rounds.forEach((r, i) => {
+      const tr = document.createElement("tr");
+      const future = i > step;
+      const cls = ["hd-row"];
+      if (future) cls.push("hidden");
+      if (!future && r.leaked) cls.push("leak");
+      cls.push((!future && r.accepted) ? "accepted" : "rejected");
+      if (i === step && r.accepted) cls.push("frontier");
+      tr.className = cls.join(" ");
+      tr.dataset.round = i;
+
+      // Future rows mask their numbers so R3's 80% isn't visible at step=0.
+      let deltaHtml = "";
+      if (i > 0 && !future) {
+        const delta = (r.acc - src.rounds[0].acc) * 100;
+        const cls2 = delta > 0.05 ? "pos" : (delta < -0.05 ? "neg" : "zero");
+        const sign = delta >= 0 ? "+" : "";
+        deltaHtml = `<span class="hd-delta ${cls2}">${sign}${delta.toFixed(1)}pp</span>`;
+      }
+      const acc = future ? "—" : `${(r.acc * 100).toFixed(1)}%`;
+      const tok = future ? "—" : r.tokens_m.toFixed(2);
+      const leak = future ? "—" : (r.leaked ? "YES" : "—");
+      const dec = future ? "…待运行" : (r.accepted ? "PROMOTED" : "rejected");
+
+      tr.innerHTML =
+        `<td><span class="hd-caret">▶</span>${r.n}</td>` +
+        `<td>${r.name}</td>` +
+        `<td>${acc}${deltaHtml}</td>` +
+        `<td>${tok}</td>` +
+        `<td>${leak}</td>` +
+        `<td class="decision">${dec}</td>`;
+      tbody.appendChild(tr);
+
+      // detail row (hidden unless .open on the tr above)
+      const detailWrap = document.createElement("tr");
+      detailWrap.className = "hd-detail-wrap";
+      detailWrap.innerHTML = `<td colspan="6" class="hd-detail-cell"><div class="hd-detail-inner">${renderDetail(r, baseOutcomes)}</div></td>`;
+      tbody.appendChild(detailWrap);
+
+      if (i <= step) {
+        const rr = document.createElement("tr");
+        rr.innerHTML = `<td colspan="6" class="hd-reason">└ ${reason(r.reason)}</td>`;
+        tbody.appendChild(rr);
+      }
+
+      tr.addEventListener("click", (ev) => {
+        // don't toggle on hidden rows
+        if (tr.classList.contains("hidden")) return;
+        tr.classList.toggle("open");
+      });
+    });
+
+    const chart = document.getElementById("hd-chart");
+    chart.innerHTML = "";
+    src.rounds.forEach((r, i) => {
+      const bar = document.createElement("div");
+      const future = i > step;
+      let cls = "hd-bar";
+      if (future) cls += " hidden";
+      else if (r.leaked) cls += " leak";
+      else if (r.accepted) cls += " accepted";
+      else cls += " rejected";
+      bar.className = cls;
+      // Future bars render at zero height so the R3 score isn't leaked.
+      bar.style.height = future ? "4px" : `${Math.max(4, r.acc * 65)}px`;
+      const lbl = document.createElement("div");
+      lbl.className = "hd-bar-label";
+      lbl.textContent = "R" + r.n;
+      bar.appendChild(lbl);
+      chart.appendChild(bar);
+    });
+
+    const storyEl = document.getElementById("hd-storyline");
+    if (storyEl) storyEl.innerHTML = STORYLINES[domain][step] || "";
+    const captionEl = document.getElementById("hd-caption");
+    if (captionEl) captionEl.textContent = `Round ${step} / ${src.rounds.length - 1}`;
+    const hint = document.getElementById("hd-cases-hint");
+    if (hint) {
+      hint.textContent = step >= src.rounds.length - 1
+        ? "四轮迭代已全部完成，点击表格行可查看更多题目详情"
+        : `已展开至 R${step}，按 Play 或 Step 继续下一轮`;
+    }
+
+    // ── KPI bar + scorecard + transfer card ─────────────────────
+    const show = step >= src.rounds.length - 1;
+    const kpis = document.querySelectorAll(".hd-kpi");
+    const sc = document.getElementById("hd-scorecard");
+    document.getElementById("hd-transfer").style.opacity = show ? "1" : "0.3";
+
+    if (show) {
+      const t = d.target;
+      const gain = (src.frontier_acc - src.baseline_acc) * 100;
+      const tgtDelta = (t.frontier_acc - src.frontier_acc) * 100;
+      const costCut = (t.frontier_tokens / src.frontier_tokens - 1) * 100;
+      const gainedTasks = src.rounds[src.rounds.length - 1].delta_vs_baseline.gained.length;
+
+      kpis.forEach(k => k.classList.remove("locked"));
+      sc.classList.remove("locked");
+
+      document.getElementById("hd-kpi-acc").textContent = `+${gain.toFixed(1)}pp`;
+      document.getElementById("hd-kpi-acc-sub").textContent =
+        `${(src.baseline_acc*100).toFixed(0)}% → ${(src.frontier_acc*100).toFixed(0)}%  ·  修好 ${gainedTasks}/31 题`;
+      document.getElementById("hd-kpi-transfer").textContent =
+        (tgtDelta >= 0 ? "+" : "") + tgtDelta.toFixed(1) + "pp";
+      document.getElementById("hd-kpi-transfer-sub").textContent =
+        `${t.model}: ${(t.frontier_acc*100).toFixed(0)}%  (与 Sonnet 5 对比)`;
+      document.getElementById("hd-kpi-cost").textContent = `${costCut.toFixed(0)}%`;
+      document.getElementById("hd-kpi-cost-sub").textContent =
+        `${src.frontier_tokens.toFixed(2)}M → ${t.frontier_tokens.toFixed(2)}M tokens`;
+
+      // Scorecard
+      document.getElementById("hd-sc-domain").textContent = domain === "finance" ? "Finance · XBRL 抽取" : "E-commerce · 商品搜索";
+      document.getElementById("hd-sc-r0-acc").textContent = `acc: ${(src.baseline_acc*100).toFixed(1)}%`;
+      document.getElementById("hd-sc-r0-tok").textContent = `tokens: ${src.rounds[0].tokens_m.toFixed(2)}M`;
+      document.getElementById("hd-sc-r3-acc").textContent = `acc: ${(src.frontier_acc*100).toFixed(1)}%`;
+      document.getElementById("hd-sc-r3-tok").textContent = `tokens: ${src.frontier_tokens.toFixed(2)}M`;
+      document.getElementById("hd-sc-gain").textContent = `↑ +${gain.toFixed(1)}pp`;
+      document.getElementById("hd-sc-tgt-acc").textContent = `acc: ${(t.frontier_acc*100).toFixed(1)}%`;
+      document.getElementById("hd-sc-tgt-tok").textContent = `tokens: ${t.frontier_tokens.toFixed(2)}M`;
+      document.getElementById("hd-sc-transfer").textContent =
+        `${tgtDelta >= 0 ? "↑ +" : "↓ "}${tgtDelta.toFixed(1)}pp · ${costCut.toFixed(0)}% tokens`;
+
+      // Transfer card
+      document.getElementById("hd-src-model").textContent = src.model;
+      document.getElementById("hd-src-metrics").textContent =
+        `acc=${(src.frontier_acc * 100).toFixed(1)}%  ·  tokens=${src.frontier_tokens.toFixed(2)}M`;
+      document.getElementById("hd-tgt-model").textContent = t.model;
+      document.getElementById("hd-tgt-metrics").textContent =
+        `acc=${(t.frontier_acc * 100).toFixed(1)}%  ·  tokens=${t.frontier_tokens.toFixed(2)}M`;
+    } else {
+      kpis.forEach(k => k.classList.add("locked"));
+      sc.classList.add("locked");
+      document.getElementById("hd-kpi-acc").textContent = "—";
+      document.getElementById("hd-kpi-transfer").textContent = "—";
+      document.getElementById("hd-kpi-cost").textContent = "—";
+      document.getElementById("hd-kpi-acc-sub").textContent = "等待完成";
+      document.getElementById("hd-kpi-transfer-sub").textContent = "等待完成";
+      document.getElementById("hd-kpi-cost-sub").textContent = "等待完成";
+
+      document.getElementById("hd-src-model").textContent = src.model;
+      document.getElementById("hd-src-metrics").textContent = "…";
+      document.getElementById("hd-tgt-model").textContent = d.target.model;
+      document.getElementById("hd-tgt-metrics").textContent = "waiting for frontier";
+    }
+  }
+
+  document.querySelectorAll(".hd-tab").forEach(t => {
+    t.addEventListener("click", () => {
+      document.querySelectorAll(".hd-tab").forEach(x => x.classList.remove("active"));
+      t.classList.add("active");
+      domain = t.dataset.domain;
+      step = 0;
+      if (timer) { clearInterval(timer); playing = false; timer = null;
+                   document.getElementById("hd-play").textContent = "Play"; }
+      render();
+    });
+  });
+
+  document.getElementById("hd-step").onclick = () => {
+    const max = DATA[domain].source.rounds.length - 1;
+    if (step < max) step++;
+    render();
+  };
+  document.getElementById("hd-reset").onclick = () => {
+    step = 0;
+    if (timer) { clearInterval(timer); playing = false; timer = null;
+                 document.getElementById("hd-play").textContent = "Play"; }
+    render();
+  };
+  document.getElementById("hd-play").onclick = () => {
+    const btn = document.getElementById("hd-play");
+    if (playing) {
+      clearInterval(timer); timer = null; playing = false;
+      btn.textContent = "Play"; return;
+    }
+    playing = true; btn.textContent = "⏸ Pause";
+    const max = DATA[domain].source.rounds.length - 1;
+    if (step >= max) step = 0;
+    timer = setInterval(() => {
+      if (step >= max) {
+        clearInterval(timer); timer = null; playing = false;
+        btn.textContent = "Play"; return;
+      }
+      step++; render();
+    }, 1800);
+  };
+
+  // Keyboard: arrow keys step through, space toggles play.
+  // Skip when focus is in a form element (defensive — this page has no inputs,
+  // but leave the guard in case a search box gets added later).
+  document.addEventListener("keydown", (ev) => {
+    const t = ev.target.tagName;
+    if (t === "INPUT" || t === "TEXTAREA") return;
+    if (ev.key === "ArrowRight") {
+      ev.preventDefault();
+      const max = DATA[domain].source.rounds.length - 1;
+      if (step < max) { step++; render(); }
+    } else if (ev.key === "ArrowLeft") {
+      ev.preventDefault();
+      if (step > 0) { step--; render(); }
+    } else if (ev.key === " " || ev.code === "Space") {
+      ev.preventDefault();
+      document.getElementById("hd-play").click();
+    } else if (ev.key === "r" || ev.key === "R") {
+      document.getElementById("hd-reset").click();
+    }
+  });
+
+  // ── Auto-evolution SSE ────────────────────────────────────────
+  const evolveBtn = document.getElementById("hd-evolve-go");
+  const evolveStatus = document.getElementById("hd-evolve-status");
+  const evolveGens = document.getElementById("hd-evolve-gens");
+
+  // Stage → progress mapping. 6 stages per gen; 3 gens total = 18 slots.
+  const STAGE_ORDER = ["启动", "sampling", "querying", "applying", "evaluating", "scoring"];
+  const STAGE_LABEL = {
+    "启动":       "启动 ShinkaEvolve 进程",
+    "sampling":   "选择亲本 harness",
+    "querying":   "调用 Bedrock 生成新代码",
+    "applying":   "应用 patch",
+    "evaluating": "跑 31 道评测",
+    "scoring":    "综合评分 · gate 判决",
+  };
+  // Plain-language "AI is doing this right now" — shown as a sub-caption
+  // during the 60~90s dead time so the wait is teaching, not silence.
+  const STAGE_EXPLAIN = {
+    "启动":       "系统在启动：加载进化引擎、连上 Bedrock 云端 AI（大约 3 秒）",
+    "sampling":   "🔵 Observe · 选亲本 + 看成绩单：从档案挑一版旧代码，附上它做错的那几道题 —— 让 AI 知道该改什么",
+    "querying":   "🟣 Propose · AI 现场写新代码：读完错题后返回改进方案（20-40 秒 · 因为 AI 在真思考）",
+    "applying":   "🟠 Apply · 新代码落到硬盘：把 AI 的补丁贴到父代文件上，生成一份新的 Python 文件",
+    "evaluating": "🟢 Verify · 给新代码打分：跑 31 道公开题 + 5 道 AI 没见过的抽查题 + 31 道加了 typo 的抗干扰题",
+    "scoring":    "🔴 Commit · 决定晋升与否：四项加权算综合分（公开·抽查·抗干扰·简洁度），> 0 才入档案",
+  };
+
+  function updateProgress(gen, stageName, totalGens = 3) {
+    const fill = document.getElementById("hd-progress-fill");
+    const pct = document.getElementById("hd-progress-percent");
+    const lbl = document.getElementById("hd-progress-label");
+    const stagesEl = document.getElementById("hd-stages");
+    if (!fill) return;
+
+    const stageIdx = Math.max(0, STAGE_ORDER.indexOf(stageName));
+    // Total steps = gens × 6 stages. Baseline gen 0 counted as 1 whole "gen".
+    const totalSteps = (totalGens + 1) * STAGE_ORDER.length;
+    const stepsSoFar = gen * STAGE_ORDER.length + stageIdx + 1;
+    const percent = Math.min(100, Math.round((stepsSoFar / totalSteps) * 100));
+
+    fill.style.width = percent + "%";
+    pct.textContent = percent + "%";
+    lbl.textContent = `Gen ${gen} · ${STAGE_LABEL[stageName] || stageName}`;
+    // Sub-caption — plain-language "AI is doing this right now"
+    const explain = document.getElementById("hd-progress-explain");
+    if (explain && STAGE_EXPLAIN[stageName]) {
+      const next = "· " + STAGE_EXPLAIN[stageName];
+      if (explain.textContent !== next) {
+        explain.textContent = next;
+        // Re-trigger the fade-in animation on each change
+        explain.style.animation = "none";
+        explain.offsetHeight;  // force reflow
+        explain.style.animation = "";
+      }
+    }
+
+    if (stagesEl) {
+      stagesEl.querySelectorAll(".hd-stage").forEach(el => {
+        el.classList.remove("active", "done");
+        const s = el.dataset.s;
+        const si = STAGE_ORDER.indexOf(s);
+        if (si < stageIdx) el.classList.add("done");
+        else if (si === stageIdx) el.classList.add("active");
+      });
+    }
+  }
+
+  let evolveInFlight = null;   // hold the current ES so a re-click closes cleanly
+
+  // Store each gen's full payload for the comparison views (A/C/D)
+  let evolveResults = [];
+  let bestScore = null;
+  let bestGen = null;
+
+  // ── Workflow visualization state ─────────────────────────────────
+  // Track the 6 nodes' state (pending/active/done) + per-node timers so
+  // querying/evaluating can show live counters.
+  const WF_ORDER = ["启动", "sampling", "querying", "applying", "evaluating", "scoring"];
+  let wfCurrentGen = 0;
+  let wfRunStart = 0;
+  let wfTickers = [];  // active setInterval handles to clear on reset
+  let wfStageEnteredAt = {};
+
+  function _clearTickers() {
+    wfTickers.forEach(t => clearInterval(t));
+    wfTickers = [];
+  }
+
+  // Track archive: which gens have landed + their combined scores
+  // Used to render the mini archive visualization in the Observe node.
+  const wfArchive = [];  // {n, score, chosen?}
+
+  function _renderArchive(chosenGen) {
+    const el = document.getElementById("hd-archive-slots");
+    if (!el) return;
+    if (wfArchive.length === 0) {
+      el.innerHTML = '<div class="hd-archive-slot empty">档案还是空的 · 等 Gen 0 baseline 落地</div>';
+      return;
+    }
+    // Sort by score desc so top-scored is left-most (visually consistent with
+    // weighted-sampling intuition)
+    const sorted = wfArchive.slice().sort((a, b) => b.score - a.score);
+    el.innerHTML = sorted.map(p => {
+      const cls = p.n === chosenGen ? "chosen" : "";
+      return `<div class="hd-archive-slot ${cls}">Gen ${p.n} · ${p.score.toFixed(2)}</div>`;
+    }).join("");
+  }
+
+  function wfResetForNewGen(gen) {
+    wfCurrentGen = gen;
+    _clearTickers();
+    wfStageEnteredAt = {};
+    const genEl = document.getElementById("hd-wf-gen");
+    if (genEl) genEl.textContent = gen;
+    // All nodes back to pending
+    document.querySelectorAll(".hd-wf-node").forEach(n => {
+      n.classList.remove("active", "done");
+    });
+    // Clear live data slots
+    ["hd-wf-model", "hd-wf-ndcg", "hd-wf-combined"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = "—";
+    });
+    const bytesEl = document.getElementById("hd-wf-bytes");
+    if (bytesEl) bytesEl.textContent = "0";
+    const evalFill = document.getElementById("hd-wf-eval-fill");
+    if (evalFill) evalFill.style.width = "0%";
+    const evalEl = document.getElementById("hd-wf-eval-elapsed");
+    if (evalEl) evalEl.textContent = "0";
+    const verdict = document.getElementById("hd-wf-verdict");
+    if (verdict) { verdict.textContent = ""; verdict.className = "hd-wf-verdict"; }
+    // Reset Propose pending state
+    const pending = document.getElementById("hd-wf-pending");
+    if (pending) {
+      pending.textContent = "⏳ 提议中 · 待验证";
+      pending.className = "hd-wf-pending";
+    }
+    // Reset Propose thinking phase
+    const phase = document.getElementById("hd-wf-phase");
+    if (phase) phase.textContent = "🧠 思考中";
+    // Render archive with current known parents; chosen = parent of this new gen
+    _renderArchive(gen > 0 ? gen - 1 : -1);
+    // Clear the persistent query ticker if a previous gen left one running
+    if (window._wfQueryTicker) {
+      clearInterval(window._wfQueryTicker);
+      window._wfQueryTicker = null;
+    }
+    // Re-show spinner + hide the three panels (diff / reasoning / per-query)
+    const spinner = document.getElementById("hd-wf-spinner");
+    if (spinner) spinner.style.display = "";
+    for (const id of ["hd-diff-panel", "hd-reasoning-panel", "hd-perq-panel"]) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "none";
+    }
+    // Reset streamed-reasoning flag + abort any typewriter in flight
+    const rpanel = document.getElementById("hd-reasoning-panel");
+    if (rpanel) rpanel.dataset.streamed = "";
+    if (typeof window._reasoningAbort === "function") {
+      try { window._reasoningAbort(); } catch (_) {}
+    }
+  }
+
+  // Map backend 6-stage log signal → new 5-node UI
+  // (applying merged into Propose)
+  const STAGE_TO_NODE = {
+    "启动":       "启动",
+    "sampling":   "sampling",
+    "querying":   "querying",
+    "applying":   "querying",     // Apply is a sub-action of Propose now
+    "evaluating": "evaluating",
+    "scoring":    "scoring",
+  };
+  const NODE_ORDER = ["启动", "sampling", "querying", "evaluating", "scoring"];
+
+  function wfSetStage(stageName) {
+    if (!WF_ORDER.includes(stageName)) return;
+    const nodeKey = STAGE_TO_NODE[stageName] || stageName;
+    const idx = NODE_ORDER.indexOf(nodeKey);
+    if (idx < 0) return;
+    document.querySelectorAll(".hd-wf-node").forEach((n, i) => {
+      if (i < idx) { n.classList.add("done"); n.classList.remove("active"); }
+      else if (i === idx) { n.classList.add("active"); n.classList.remove("done"); }
+      else { n.classList.remove("active", "done"); }
+    });
+    wfStageEnteredAt[stageName] = performance.now();
+    _startLiveCounters(stageName);
+  }
+
+  function _startLiveCounters(stageName) {
+    // Only one live counter runs at a time — the current stage's.
+    _clearTickers();
+    if (stageName === "querying") {
+      // Two-phase indicator: first ~12s = thinking (bytes stay 0), then flip
+      // to generating. Runs on its OWN long-lived interval that ISN'T cleared
+      // when the stage advances — because the log-tailed stages can flick past
+      // "querying" in <1s even though the LLM is still working for 30-60s.
+      // Store the interval separately so a re-entry to querying can reset it.
+      if (window._wfQueryTicker) { clearInterval(window._wfQueryTicker); }
+      const bytesEl = document.getElementById("hd-wf-bytes");
+      const phaseEl = document.getElementById("hd-wf-phase");
+      const start = performance.now();
+      const THINK_MS = 12000;  // 12 seconds of reasoning
+      let bytes = 0;
+      window._wfQueryTicker = setInterval(() => {
+        const elapsed = performance.now() - start;
+        if (elapsed < THINK_MS) {
+          if (phaseEl) phaseEl.textContent = "🧠 思考中 · " + (Math.round(elapsed/1000)) + "s";
+          if (bytesEl) bytesEl.textContent = "0";
+        } else {
+          if (phaseEl) phaseEl.textContent = "✍️ 生成中";
+          bytes = Math.min(2500, bytes + 30 + Math.floor(Math.random() * 40));
+          if (bytesEl) bytesEl.textContent = bytes.toLocaleString();
+          // Stop after we plateau
+          if (bytes >= 2400) {
+            clearInterval(window._wfQueryTicker);
+            window._wfQueryTicker = null;
+          }
+        }
+      }, 200);
+    } else if (stageName === "evaluating") {
+      // Eval progress — 45 test calls at ~0.4s each ≈ 18s total.
+      const fill = document.getElementById("hd-wf-eval-fill");
+      const elapsedEl = document.getElementById("hd-wf-eval-elapsed");
+      const start = performance.now();
+      wfTickers.push(setInterval(() => {
+        const s = (performance.now() - start) / 1000;
+        if (elapsedEl) elapsedEl.textContent = s.toFixed(1);
+        const pct = Math.min(95, s / 20 * 100);  // asymptote at 95%
+        if (fill) fill.style.width = pct + "%";
+      }, 150));
+    }
+  }
+
+  function wfCompleteGen(payload) {
+    // All 6 nodes done. Populate the final data on scoring node.
+    _clearTickers();
+    document.querySelectorAll(".hd-wf-node").forEach(n => {
+      n.classList.remove("active"); n.classList.add("done");
+    });
+    // Fill eval fill to 100%
+    const fill = document.getElementById("hd-wf-eval-fill");
+    if (fill) fill.style.width = "100%";
+    // Final NDCG / combined / verdict
+    const ndcgEl = document.getElementById("hd-wf-ndcg");
+    const combEl = document.getElementById("hd-wf-combined");
+    const verEl = document.getElementById("hd-wf-verdict");
+    const ndcg = payload.public && payload.public.ndcg;
+    if (ndcgEl) ndcgEl.textContent = ndcg != null ? (ndcg * 100).toFixed(1) + "%" : "—";
+    if (combEl) combEl.textContent = payload.score != null ? payload.score.toFixed(3) : "—";
+    const promoted = (payload.public && payload.public.gate_kind === "promoted") || payload.score > 0.4;
+    if (verEl) {
+      verEl.textContent = promoted ? "✓ 晋升" : "✗ 拒绝";
+      verEl.className = "hd-wf-verdict " + (promoted ? "promoted" : "rejected");
+    }
+    // Resolve the Propose "pending" badge based on whether Commit accepted
+    const pending = document.getElementById("hd-wf-pending");
+    if (pending) {
+      pending.textContent = promoted ? "✅ 已采纳" : "❌ 已拒绝";
+      pending.className = "hd-wf-pending " + (promoted ? "accepted" : "rejected");
+    }
+    // Push to archive (only if promoted — rejected doesn't enter archive)
+    if (promoted && payload.score != null) {
+      const existing = wfArchive.findIndex(x => x.n === payload.n);
+      if (existing === -1) {
+        wfArchive.push({n: payload.n, score: payload.score});
+      } else {
+        wfArchive[existing].score = payload.score;
+      }
+      _renderArchive(payload.n);
+    }
+    // Populate diff panel — surface the concrete proposal
+    _populateDiff(payload);
+    // Populate AI reasoning panel — surface WHY the AI proposed it
+    _populateReasoning(payload);
+    // Populate per-question grid — surface each question's outcome
+    _populatePerQuery(payload);
+    // Clear the persistent query ticker + hide spinner (thinking phase over)
+    if (window._wfQueryTicker) {
+      clearInterval(window._wfQueryTicker);
+      window._wfQueryTicker = null;
+    }
+    const phaseEl = document.getElementById("hd-wf-phase");
+    if (phaseEl) phaseEl.textContent = "✅ 生成完成";
+    const spinner = document.getElementById("hd-wf-spinner");
+    if (spinner) spinner.style.display = "none";
+  }
+
+  // ── Diff panel · surface the AI's concrete proposal ──
+  function _populateDiff(payload) {
+    const panel = document.getElementById("hd-diff-panel");
+    const body = document.getElementById("hd-diff-body");
+    const summary = document.getElementById("hd-diff-summary");
+    if (!panel) return;
+
+    const diff = payload.diff || "";
+    const code = payload.code || "";
+    const size = (diff.length || code.length || 0);
+
+    // If we have a real diff, show it. Otherwise fall back to code preview.
+    let rawContent = diff || code;
+    if (!rawContent) {
+      panel.style.display = "none";
+      return;
+    }
+    panel.style.display = "";
+
+    // Colorize diff lines · + green, - red, @@ hunk marker, other ctx
+    const escaped = rawContent
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    const lines = escaped.split("\n").map(line => {
+      if (line.startsWith("+++") || line.startsWith("---")) return `<span class="hunk">${line}</span>`;
+      if (line.startsWith("@@")) return `<span class="hunk">${line}</span>`;
+      if (line.startsWith("+")) return `<span class="add">${line}</span>`;
+      if (line.startsWith("-")) return `<span class="del">${line}</span>`;
+      return `<span class="ctx">${line}</span>`;
+    }).join("");
+    body.innerHTML = lines;
+
+    // Cheap heuristic summary — count adds/dels + peek at first meaningful add
+    const adds = (rawContent.match(/^\+[^+]/gm) || []).length;
+    const dels = (rawContent.match(/^-[^-]/gm) || []).length;
+    const firstAdd = (rawContent.match(/^\+\s*(\S.{0,80})/m) || [])[1] || "";
+    const hint = firstAdd ? ` · 第一处改动：${firstAdd.slice(0, 60)}` : "";
+    if (summary) {
+      summary.textContent = `${size} bytes · +${adds} 行 · −${dels} 行${hint}`;
+    }
+  }
+
+  // ── AI Reasoning panel · surface analysis + description from LLM response ──
+  // The AI writes light Markdown (**bold**, `code`) — render those inline so
+  // presenters don't see raw asterisks on stage.
+  function _renderReasoningText(txt) {
+    if (!txt) return "";
+    // Escape HTML first
+    let s = txt.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    // **bold** → <b>bold</b>
+    s = s.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+    // `code` → <code>code</code>
+    s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+    return s;
+  }
+
+  function _populateReasoning(payload) {
+    // Called by wfCompleteGen — but if the "reasoning" SSE event already ran
+    // the typewriter, we don't need to re-render. Only fills gaps.
+    const r = payload.reasoning || {};
+    if (!r.analysis && !r.description && !r.name) return;
+    const panel = document.getElementById("hd-reasoning-panel");
+    if (panel && panel.dataset.streamed === "1") return;  // already streamed
+    // Fallback: streaming didn't fire (e.g. Gen 0 baseline had no LLM call)
+    _renderReasoning(r);
+  }
+
+  function _renderReasoning(r) {
+    const panel = document.getElementById("hd-reasoning-panel");
+    if (!panel) return;
+    if (!r.analysis && !r.description && !r.name) {
+      panel.style.display = "none";
+      return;
+    }
+    panel.style.display = "";
+    const nameEl = document.getElementById("hd-reasoning-name");
+    const analysisEl = document.getElementById("hd-reasoning-analysis");
+    const descEl = document.getElementById("hd-reasoning-desc");
+    if (nameEl) nameEl.textContent = r.name || "";
+    if (analysisEl) {
+      analysisEl.innerHTML = _renderReasoningText(r.analysis || "");
+      analysisEl.style.display = r.analysis ? "" : "none";
+    }
+    if (descEl) {
+      descEl.innerHTML = _renderReasoningText(r.description || "");
+      descEl.style.display = r.description ? "" : "none";
+    }
+  }
+
+  // ── Typewriter reveal · used during the run so viewers see AI writing ──
+  function _streamReasoning(r) {
+    if (!r || (!r.analysis && !r.description && !r.name)) return;
+    const panel = document.getElementById("hd-reasoning-panel");
+    if (!panel) return;
+    panel.style.display = "";
+    panel.dataset.streamed = "1";
+    const nameEl = document.getElementById("hd-reasoning-name");
+    const analysisEl = document.getElementById("hd-reasoning-analysis");
+    const descEl = document.getElementById("hd-reasoning-desc");
+    if (nameEl) nameEl.textContent = r.name || "";
+    // Cancel any prior stream (stored on window for cross-scope access)
+    if (typeof window._reasoningAbort === "function") {
+      try { window._reasoningAbort(); } catch (_) {}
+    }
+
+    // Show both sections as empty first (with the ::before labels visible)
+    if (analysisEl) { analysisEl.innerHTML = ""; analysisEl.style.display = r.analysis ? "" : "none"; }
+    if (descEl) { descEl.innerHTML = ""; descEl.style.display = r.description ? "" : "none"; }
+
+    // Typewriter — reveal ~60 chars/sec, first analysis then description
+    let aborted = false;
+    window._reasoningAbort = () => { aborted = true; };
+    (async () => {
+      async function type(el, txt) {
+        if (!el || !txt) return;
+        const CPS = 60;                    // chars per second
+        const chunkSize = 4;               // update every 4 chars for smoother anim
+        const stepMs = (1000 * chunkSize) / CPS;
+        for (let i = 0; i <= txt.length; i += chunkSize) {
+          if (aborted) return;
+          el.innerHTML = _renderReasoningText(txt.slice(0, i));
+          await new Promise(res => setTimeout(res, stepMs));
+        }
+        el.innerHTML = _renderReasoningText(txt);
+      }
+      await type(analysisEl, r.analysis || "");
+      await type(descEl, r.description || "");
+    })();
+  }
+
+  // ── Per-question grid · one cell per public query, colored hit/miss/partial ──
+  function _populatePerQuery(payload) {
+    const panel = document.getElementById("hd-perq-panel");
+    if (!panel) return;
+    const pq = (payload.public && payload.public.per_query) || [];
+    if (pq.length === 0) {
+      panel.style.display = "none";
+      return;
+    }
+    panel.style.display = "";
+
+    // Group by tier
+    const tiers = {E: [], M: [], H: []};
+    pq.forEach((q, idx) => {
+      const t = q.tier || "E";
+      if (!tiers[t]) tiers[t] = [];
+      tiers[t].push({...q, idx});
+    });
+
+    // Overall summary
+    const hits = pq.filter(q => q.hit).length;
+    const summaryEl = document.getElementById("hd-perq-summary");
+    if (summaryEl) summaryEl.textContent = `${hits}/${pq.length} 题命中`;
+
+    // Build grid — grouped by tier, each cell colored + tooltip
+    const gridEl = document.getElementById("hd-perq-grid");
+    if (!gridEl) return;
+    const TIER_LABELS = {E: "E · 简单", M: "M · 中等", H: "H · 最难"};
+    let html = "";
+    for (const t of ["E", "M", "H"]) {
+      const items = tiers[t] || [];
+      if (items.length === 0) continue;
+      const tierHits = items.filter(q => q.hit).length;
+      const cells = items.map(q => {
+        const ndcg = q.ndcg || 0;
+        let cls;
+        if (q.hit) cls = "hit";
+        else if (ndcg > 0) cls = "partial";
+        else cls = "miss";
+        const goldT = (q.gold_title || q.gold || "").replace(/"/g, "'");
+        const predT = (q.pred_title || q.pred || "无").replace(/"/g, "'");
+        const q_ = (q.q || "").replace(/"/g, "'");
+        const tooltip = `Q${q.idx + 1}: ${q_}\n应答: ${goldT}\n实答: ${predT}\nNDCG: ${ndcg.toFixed(3)}`;
+        const mark = q.hit ? "✓" : (ndcg > 0 ? "~" : "✗");
+        return `<div class="hd-perq-cell ${cls}" title="${tooltip}">${mark}</div>`;
+      }).join("");
+      html += `
+        <div class="hd-perq-tier">
+          <div class="hd-perq-tier-h">
+            <span>${TIER_LABELS[t]} · ${items.length} 题</span>
+            <span>${tierHits}/${items.length} 命中</span>
+          </div>
+          <div class="hd-perq-cells">${cells}</div>
+        </div>`;
+    }
+    gridEl.innerHTML = html;
+  }
+
+  // Global timer — shows total elapsed since 开始进化 clicked
+  let wfTotalTimerId = null;
+  function wfStartTotalTimer() {
+    if (wfTotalTimerId) clearInterval(wfTotalTimerId);
+    wfRunStart = performance.now();
+    const timerEl = document.getElementById("hd-wf-timer");
+    wfTotalTimerId = setInterval(() => {
+      const s = Math.floor((performance.now() - wfRunStart) / 1000);
+      if (timerEl) timerEl.textContent =
+        `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+    }, 500);
+  }
+  function wfStopTotalTimer() {
+    if (wfTotalTimerId) { clearInterval(wfTotalTimerId); wfTotalTimerId = null; }
+  }
+
+  // Reset all UI state to a clean pre-run baseline, so leftover cards from
+  // the last render don't pile up when the user clicks again.
+  function resetEvolveUI() {
+    evolveGens.innerHTML = "";
+    evolveResults = [];
+    bestScore = null;
+    bestGen = null;
+    const cmpEl = document.getElementById("hd-compare");
+    if (cmpEl) cmpEl.classList.remove("active");
+    evolveStatus.className = "hd-evolve-status";
+    // Clear archive from any previous run
+    wfArchive.length = 0;
+    wfResetForNewGen(0);
+    wfStopTotalTimer();
+    const timerEl = document.getElementById("hd-wf-timer");
+    if (timerEl) timerEl.textContent = "00:00";
+  }
+
+  // ── Animation helpers ────────────────────────────────────────────
+
+  // Ease-out cubic — smooth "arrives at target" feel for count-up
+  const _easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+
+  // Animate an integer or float from 0 to `target` over duration ms.
+  // Writes to `el.textContent` via `fmt(v)`. Uses requestAnimationFrame.
+  function animateCount(el, target, {duration = 800, fmt = v => v.toFixed(2)} = {}) {
+    if (!el) return;
+    el.classList.add("hd-count");
+    const start = performance.now();
+    function step(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const v = target * _easeOutCubic(t);
+      el.textContent = fmt(v);
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // Typewriter reveal — write `code` into `el` at ~cps chars/sec.
+  // Skips animation if user opened the details before we started (reduces jank)
+  function typewrite(el, code, cps = 800) {
+    if (!el || !code) return;
+    el.textContent = "";
+    el.classList.add("typing");
+    const delay = 1000 / cps;
+    let i = 0;
+    // Chunk multiple chars per tick for long strings so we're not scheduling
+    // thousands of raf's on a 6000-char code block.
+    const chunk = Math.max(1, Math.round(code.length / (2000 / delay)));
+    function step() {
+      i = Math.min(code.length, i + chunk);
+      el.textContent = code.slice(0, i);
+      if (i < code.length) {
+        setTimeout(step, delay * chunk);
+      } else {
+        el.classList.remove("typing");
+      }
+    }
+    step();
+  }
+
+  // Handle one SSE event. `d` is the parsed JSON payload, `type` is the event name.
+  function handleEvolveEvent(type, d) {
+    if (type === "start") {
+      evolveStatus.textContent = `进化任务已启动 · ${d.gens} 轮 · results: ${d.results_dir.split("/").pop()}`;
+      updateProgress(0, "sampling");
+      // Workflow: show model in querying node + start total timer
+      const modelSel = document.getElementById("hd-evolve-model");
+      const modelText = modelSel ? modelSel.options[modelSel.selectedIndex].text : "";
+      const modelEl = document.getElementById("hd-wf-model");
+      if (modelEl) modelEl.textContent = modelText || d.model || "—";
+      wfResetForNewGen(0);
+      wfSetStage("启动");
+      wfStartTotalTimer();
+    } else if (type === "stage") {
+      updateProgress(d.gen || 0, d.stage);
+      // Workflow: if gen changed, reset the visualization
+      const g = d.gen || 0;
+      if (g !== wfCurrentGen) { wfResetForNewGen(g); }
+      wfSetStage(d.stage);
+    } else if (type === "reasoning") {
+      // AI's raw analysis + description arrived (during applying stage, well
+      // before the full generation_done). Start typewriter-rendering now so
+      // the audience has ~30-60s to read it while evaluate.py runs.
+      _streamReasoning(d.reasoning || {});
+    } else if (type === "generation_done") {
+      // Workflow: mark all 6 done, populate final NDCG/combined/verdict
+      if (d.n !== wfCurrentGen) wfResetForNewGen(d.n);
+      wfCompleteGen(d);
+      evolveResults.push(d);
+      const ndcg = d.public.ndcg != null ? d.public.ndcg : (d.public.accuracy || 0);
+      const isWin = d.public.gate_kind === "promoted" || d.score > 0.4;
+      const isBaseline = d.n === 0;
+      if (bestScore === null || d.score > bestScore) { bestScore = d.score; bestGen = d.n; }
+      const cls = isWin ? "win" : (isBaseline ? "baseline" : "");
+      const scoreCls = d.score > 0.4 ? "" : "dim";
+      const tE = d.public.tier_E != null ? d.public.tier_E : null;
+      const tM = d.public.tier_M != null ? d.public.tier_M : null;
+      const tH = d.public.tier_H != null ? d.public.tier_H : null;
+      const heldout = (d.private && d.private.heldout_ndcg != null) ? d.private.heldout_ndcg : null;
+      const heldoutHtml = heldout != null
+        ? `<span class="hd-gen-heldout" title="Hold-out — 5 queries the LLM never saw. Detects over-fitting.">held-out <span class="hd-a-heldout">${(heldout*100).toFixed(0)}</span>%</span>`
+        : "";
+      const card = document.createElement("div");
+      card.className = "hd-gen " + cls;
+      const genTip = isBaseline
+        ? "Gen 0 · 起点 · 谁都没改过的 BM25 baseline 代码"
+        : `Gen ${d.n} · AI 读了前一代的错题后写的第 ${d.n} 版新代码`;
+      const codeStr = d.code || "";
+      card.innerHTML = `
+        <div class="hd-gen-head">
+          <span class="hd-gen-title" title="${genTip}">Gen ${d.n} ${isBaseline ? "· 起点" : ""}${isWin && !isBaseline ? " · ✓ 晋升" : ""}</span>
+          <span class="hd-gen-score ${scoreCls}"
+                title="NDCG@5 · 31 题平均排名分（0-1，越高越好） · combined 是最终 fitness 分（含 hold-out 20%、perturbed 10%），>0 就晋升">NDCG <span class="hd-a-ndcg">0.0</span>% · combined <span class="hd-a-combined">0.000</span></span>
+        </div>
+        <div class="hd-gen-tierline">
+          <span class="tier tE" title="Tier E · 简单题 · 8 道 BM25 亲和的（如 apple 128gb latest）。及格线 70%。">E · 简单 <span class="hd-a-e">0</span>%</span>
+          <span class="tier tM" title="Tier M · 中等题 · 8 道 negation/替代/中英混合（如 queen 床单 不要涤纶）。及格线 50%。">M · 中等 <span class="hd-a-m">0</span>%</span>
+          <span class="tier tH" title="Tier H · 最难题 · 4 道功能意图，句子里一个产品词都没有（如 给坐长途飞机的人的安静礼物 → 降噪耳机）。">H · 最难 <span class="hd-a-h">0</span>%</span>
+          ${heldoutHtml}
+        </div>
+        <div class="hd-gen-verdict"
+             title="NDCG=31题排名均分 | E/M/H=各档得分 | heldout=5题AI没见过的NDCG(防作弊) | perturbed=题目加typo后再跑(测泛化) | combined=最终fitness">${escapeHtml(d.public.verdict || "")}</div>
+        <div class="hd-breakdown">
+          <div class="hd-breakdown-label">综合分构成 · combined = <b><span class="hd-a-combined2">0.000</span></b>
+             <span style="color:var(--text-mute);">= 0.7×公开 + 0.2×抽查 + 0.1×抗干扰 − 代码惩罚</span>
+          </div>
+          <div class="hd-breakdown-bar">
+            <div class="hd-breakdown-seg public"  style="flex: 0" data-flex="0"
+                 title="公开测验分 × 0.7 = 主要贡献。31 道公开题的加权分（E/M/H 三档）"></div>
+            <div class="hd-breakdown-seg heldout" style="flex: 0" data-flex="0"
+                 title="Hold-out × 0.2 = 抽查分。LLM 从头到尾看不到这 5 道题；分数低说明过拟合"></div>
+            <div class="hd-breakdown-seg perturb" style="flex: 0" data-flex="0"
+                 title="Perturbed × 0.1 = 抗干扰分。31 题加了 typo 再跑一遍；分数低说明查表作弊"></div>
+            <div class="hd-breakdown-seg cost"    style="flex: 0" data-flex="0"
+                 title="代码复杂度扣分 = 0.005 × 估算 tokens_M。llm() 调用越多扣越狠"></div>
+          </div>
+          <div class="hd-breakdown-legend">
+            <span class="public">公开 <span class="hd-a-bpublic">0.000</span></span>
+            <span class="heldout">抽查 <span class="hd-a-bheldout">0.000</span></span>
+            <span class="perturb">抗干扰 <span class="hd-a-bperturb">0.000</span></span>
+            <span class="cost">代码 −<span class="hd-a-bcost">0.000</span></span>
+          </div>
+        </div>
+        <details class="hd-gen-details">
+          <summary>展开进化后的代码 (${codeStr.length} bytes)</summary>
+          <pre class="hd-gen-code"></pre>
+        </details>`;
+      evolveGens.appendChild(card);
+
+      // ── Compute breakdown contributions to combined ──
+      // combined = 0.7·public_score + 0.2·heldout_ndcg + 0.1·perturbed_ndcg − 0.005·tokens_M
+      const publicScore = d.public.public_score != null ? d.public.public_score : 0;
+      const heldoutNdcg = (d.private && d.private.heldout_ndcg != null) ? d.private.heldout_ndcg : 0;
+      const perturbedNdcg = (d.private && d.private.perturbed_ndcg != null) ? d.private.perturbed_ndcg : 0;
+      const tokensCost = 0.005 * (d.public.est_tokens_m || 0);
+      const cPublic = 0.7 * publicScore;
+      const cHeldout = 0.2 * heldoutNdcg;
+      const cPerturb = 0.1 * perturbedNdcg;
+      // Bar widths: positive contribs sum to totalPos; cost claws back — show as a
+      // final segment sized ∝ its magnitude, scaled to the total absolute footprint.
+      const totalAbs = Math.max(0.001, cPublic + cHeldout + cPerturb + tokensCost);
+
+      // Kick off count-up animations after DOM insert
+      animateCount(card.querySelector(".hd-a-ndcg"), ndcg * 100, {fmt: v => v.toFixed(1)});
+      animateCount(card.querySelector(".hd-a-combined"), d.score, {fmt: v => v.toFixed(3)});
+      animateCount(card.querySelector(".hd-a-combined2"), d.score, {fmt: v => v.toFixed(3)});
+      animateCount(card.querySelector(".hd-a-bpublic"),  cPublic, {fmt: v => v.toFixed(3)});
+      animateCount(card.querySelector(".hd-a-bheldout"), cHeldout, {fmt: v => v.toFixed(3)});
+      animateCount(card.querySelector(".hd-a-bperturb"), cPerturb, {fmt: v => v.toFixed(3)});
+      animateCount(card.querySelector(".hd-a-bcost"),    tokensCost, {fmt: v => v.toFixed(3)});
+
+      // Trigger the CSS transition on breakdown segments (flex-basis → target)
+      const segTargets = [
+        [".hd-breakdown-seg.public",  cPublic  / totalAbs],
+        [".hd-breakdown-seg.heldout", cHeldout / totalAbs],
+        [".hd-breakdown-seg.perturb", cPerturb / totalAbs],
+        [".hd-breakdown-seg.cost",    tokensCost / totalAbs],
+      ];
+      requestAnimationFrame(() => {
+        segTargets.forEach(([sel, target], i) => {
+          setTimeout(() => {
+            const el = card.querySelector(sel);
+            if (el) el.style.flex = target.toFixed(4);
+          }, i * 120);
+        });
+      });
+      if (tE != null) animateCount(card.querySelector(".hd-a-e"), tE * 100, {fmt: v => v.toFixed(0)});
+      if (tM != null) animateCount(card.querySelector(".hd-a-m"), tM * 100, {fmt: v => v.toFixed(0)});
+      if (tH != null) animateCount(card.querySelector(".hd-a-h"), tH * 100, {fmt: v => v.toFixed(0)});
+      if (heldout != null) {
+        const el = card.querySelector(".hd-a-heldout");
+        if (el) animateCount(el, heldout * 100, {fmt: v => v.toFixed(0)});
+      }
+      // Typewriter on first expand — one-shot
+      const details = card.querySelector("details.hd-gen-details");
+      const pre = card.querySelector(".hd-gen-code");
+      let hasTyped = false;
+      details.addEventListener("toggle", () => {
+        if (details.open && !hasTyped) {
+          hasTyped = true;
+          typewrite(pre, codeStr, 1200);
+        }
+      });
+
+      const ndcgPct = (ndcg * 100).toFixed(1) + "%";
+      evolveStatus.textContent = `Gen ${d.n} 完成 · NDCG ${ndcgPct} · E ${((tE||0)*100).toFixed(0)}% M ${((tM||0)*100).toFixed(0)}% H ${((tH||0)*100).toFixed(0)}%`;
+      updateProgress(d.n, "scoring");
+    } else if (type === "complete") {
+      evolveStatus.className = "hd-evolve-status done";
+      evolveStatus.textContent = `进化完成 · 共 ${d.total_generations} 轮 · best gen ${d.best_gen} score ${d.best_score?.toFixed(3) ?? "?"}`;
+      renderComparison(evolveResults);
+      const fill = document.getElementById("hd-progress-fill");
+      const pct = document.getElementById("hd-progress-percent");
+      const lbl = document.getElementById("hd-progress-label");
+      if (fill) fill.style.width = "100%";
+      if (pct) pct.textContent = "100%";
+      if (lbl) lbl.textContent = "全部完成";
+      document.querySelectorAll(".hd-stage").forEach(el => el.classList.remove("active"));
+      wfStopTotalTimer();
+      _clearTickers();
+      // Failsafe: if the last gen didn't emit generation_done for whatever
+      // reason (subprocess killed early / gate rejection / etc.), still mark
+      // every workflow node done + populate the scoring node from best_public.
+      document.querySelectorAll(".hd-wf-node").forEach(n => {
+        n.classList.remove("active"); n.classList.add("done");
+      });
+      if (d.best_score != null) {
+        const combEl = document.getElementById("hd-wf-combined");
+        if (combEl && combEl.textContent === "—") combEl.textContent = d.best_score.toFixed(3);
+      }
+      if (d.best_public && d.best_public.ndcg != null) {
+        const ndcgEl = document.getElementById("hd-wf-ndcg");
+        if (ndcgEl && ndcgEl.textContent === "—") ndcgEl.textContent = (d.best_public.ndcg * 100).toFixed(1) + "%";
+      }
+      const verEl = document.getElementById("hd-wf-verdict");
+      if (verEl && !verEl.textContent) {
+        verEl.textContent = "进化完成";
+        verEl.className = "hd-wf-verdict promoted";
+      }
+      const evalFill = document.getElementById("hd-wf-eval-fill");
+      if (evalFill) evalFill.style.width = "100%";
+    }
+  }
+
+  function startEvolution() {
+    if (!evolveBtn) return;
+    if (evolveBtn.disabled) return;  // guard against rapid re-clicks
+    evolveBtn.disabled = true;
+    if (evolveInFlight) { try { evolveInFlight.close(); } catch (_) {} evolveInFlight = null; }
+    resetEvolveUI();
+    evolveStatus.className = "hd-evolve-status running";
+    evolveStatus.textContent = "启动中…";
+
+    const progressPanel = document.getElementById("hd-evolve-progress");
+    if (progressPanel) progressPanel.classList.add("active");
+    updateProgress(0, "启动");
+
+    const modelSel = document.getElementById("hd-evolve-model");
+    const model = modelSel ? modelSel.value : "sonnet45";
+    const es = new EventSource("/api/harness/evolve?gens=3&model=" + encodeURIComponent(model));
+    evolveInFlight = es;
+
+    es.addEventListener("start", (e) => handleEvolveEvent("start", JSON.parse(e.data)));
+    es.addEventListener("stage", (e) => { try { handleEvolveEvent("stage", JSON.parse(e.data)); } catch (_) {} });
+    es.addEventListener("reasoning", (e) => { try { handleEvolveEvent("reasoning", JSON.parse(e.data)); } catch (_) {} });
+    es.addEventListener("generation_done", (e) => handleEvolveEvent("generation_done", JSON.parse(e.data)));
+    es.addEventListener("complete", (e) => {
+      handleEvolveEvent("complete", JSON.parse(e.data));
+      es.close();
+      evolveBtn.disabled = false;
+    });
+
+    // Keep-alive event — noop but resets any idle-timeout on the stream.
+    es.addEventListener("ping", () => { /* keep-alive */ });
+
+    let sawStart = false;
+    es.addEventListener("start", () => { sawStart = true; });
+
+    es.addEventListener("error", (e) => {
+      // EventSource fires generic "error" for BOTH real network problems AND
+      // for normal server-side close. We can distinguish by readyState:
+      //   0 (CONNECTING) — reconnecting or transient blip; keep waiting
+      //   2 (CLOSED)     — done
+      // If we've already got "complete" (done class set), ignore.
+      if (evolveStatus.classList.contains("done")) return;
+
+      // Chrome fires error with readyState=0 during transient network blip,
+      // then re-connects on its own. Only surface as failure when readyState=2.
+      if (es.readyState !== 2) {
+        // give the browser a chance to reconnect silently
+        return;
+      }
+
+      let msg;
+      try { const d = JSON.parse(e.data); msg = d.msg; } catch (_) {}
+      if (!msg) {
+        msg = sawStart
+          ? "连接中断（服务器完成后关闭是正常的，如果结果卡在中间说明网络断了）"
+          : "无法连接服务器（可能未登录，或后端不可用）";
+      }
+      evolveStatus.className = "hd-evolve-status error";
+      evolveStatus.textContent = "失败：" + msg;
+      es.close();
+      evolveBtn.disabled = false;
+    });
+  }
+  if (evolveBtn) {
+    // Static copy (GitHub Pages): live evolution needs the backend (Bedrock), so it is off here.
+    evolveBtn.disabled = true;
+    evolveBtn.textContent = "现场进化只在后端版可用";
+    if (evolveStatus) { evolveStatus.className = "hd-evolve-status"; evolveStatus.innerHTML = '这是静态页面，不能现场调用模型。录好的完整过程见 <a href="../play/" style="color:inherit;text-decoration:underline">Play 回放</a>。'; }
+  }
+
+  // Every page load starts empty — user must click 开始进化 to trigger a
+  // real Bedrock run. No cache replay.
+  evolveStatus.textContent = "点击「开始进化」触发一次真实的 Bedrock 进化（60~120 秒）";
+
+  // ── Render A/C/D comparison views after evolution completes ─────
+  function renderComparison(gens) {
+    if (!gens || gens.length === 0) return;
+    const wrap = document.getElementById("hd-compare");
+    if (!wrap) return;
+    wrap.classList.add("active");
+
+    // ── C: NDCG bar chart + tier breakdown ──
+    // Show NDCG@5 (continuous, 0..1) as the primary metric. Under each bar,
+    // show the E / M / H tier scores so viewers can see WHERE the model is
+    // gaining ground — Sonnet climbs E/M and stalls at H; Opus pierces H.
+    const chart = document.getElementById("hd-cmp-chart");
+    const scoreOf = g => (g.public.ndcg != null ? g.public.ndcg : (g.public.accuracy || 0));
+    const baseline = scoreOf(gens[0]);
+    const maxScore = Math.max(0.001, ...gens.map(scoreOf));
+    chart.innerHTML = "";
+    // Build with width:0 so the CSS transition animates to the target width.
+    // Stagger each gen's animation start by 150ms so the eye tracks the growth.
+    gens.forEach((g, gi) => {
+      const s = scoreOf(g);
+      const delta = (s - baseline) * 100;
+      const widthPct = (s / Math.max(maxScore, 1)) * 100;
+      const isBase = g.n === 0;
+      const isBest = s === maxScore && !isBase;
+      const barCls = isBase ? "baseline" : "";
+      const dcls = delta > 0.5 ? "" : delta < -0.5 ? "neg" : "zero";
+      const dsign = delta >= 0 ? "+" : "";
+      const tE = g.public.tier_E != null ? (g.public.tier_E * 100).toFixed(0) : "—";
+      const tM = g.public.tier_M != null ? (g.public.tier_M * 100).toFixed(0) : "—";
+      const tH = g.public.tier_H != null ? (g.public.tier_H * 100).toFixed(0) : "—";
+      const heldout = g.private && g.private.heldout_ndcg != null
+        ? `<span class="hd-cmp-heldout" title="Hold-out — 5 queries the LLM never saw. Detects over-fitting.">held-out ${(g.private.heldout_ndcg*100).toFixed(0)}%</span>`
+        : "";
+      chart.insertAdjacentHTML("beforeend", `
+        <div class="lbl${isBest ? ' best' : ''}">Gen ${g.n}${isBase ? " 起点" : ""}</div>
+        <div class="hd-cmp-bar-track">
+          <div class="hd-cmp-bar ${barCls}" data-target="${widthPct.toFixed(2)}" style="width:0%"></div>
+        </div>
+        <div class="hd-cmp-delta ${dcls}">
+          NDCG ${(s*100).toFixed(0)}%${isBase ? "" : ` (${dsign}${delta.toFixed(0)}pp)`}
+          <div class="hd-cmp-tiers">
+            <span class="tier tE" title="Tier E · 简单题 8 道（如 apple 128gb latest → iPhone 128GB）。及格线 70%。">E · 简单 ${tE}%</span>
+            <span class="tier tM" title="Tier M · 中等题 8 道（如 queen 床单 不要涤纶）。及格线 50%。">M · 中等 ${tM}%</span>
+            <span class="tier tH" title="Tier H · 最难题 4 道（功能意图，如 给坐长途飞机的人的安静礼物）。">H · 最难 ${tH}%</span>
+            ${heldout}
+          </div>
+        </div>
+      `);
+    });
+    // Trigger the CSS width transition on the next frame, staggered per gen
+    requestAnimationFrame(() => {
+      chart.querySelectorAll(".hd-cmp-bar").forEach((bar, i) => {
+        setTimeout(() => {
+          bar.style.width = bar.dataset.target + "%";
+        }, i * 150);
+      });
+    });
+
+    // ── A: signature queries side-by-side ──
+    // Pick queries that FLIPPED between at least two gens (max drama).
+    const gen0 = gens[0].public.per_query || [];
+    const flippedQueries = [];
+    for (let i = 0; i < gen0.length; i++) {
+      const preds = gens.map(g => (g.public.per_query || [])[i]);
+      const hits = preds.map(p => p ? p.hit : false);
+      const flipped = new Set(hits).size > 1;  // some hit, some miss
+      if (flipped) {
+        flippedQueries.push({idx: i, preds, drama: (hits.filter(x=>x).length !== 0) + (hits.filter(x=>!x).length !== 0)});
+      }
+    }
+    // Take up to 5 flip cases, prefer those that end in a hit (positive story)
+    flippedQueries.sort((a, b) => {
+      const aFinal = a.preds[a.preds.length-1]?.hit ? 1 : 0;
+      const bFinal = b.preds[b.preds.length-1]?.hit ? 1 : 0;
+      return bFinal - aFinal;
+    });
+    const showFlips = flippedQueries.slice(0, 5);
+
+    const flipsEl = document.getElementById("hd-cmp-flips");
+    if (showFlips.length === 0) {
+      flipsEl.innerHTML = `<div style="color:var(--text-mute);font-size:0.85rem;">
+        本次运行中没有一个 query 在不同 Gen 之间 flip（要么全命中、要么全没命中）。查看下面的 D 矩阵看完整结果。
+      </div>`;
+    } else {
+      flipsEl.innerHTML = showFlips.map(item => {
+        const first = item.preds.find(p => p);
+        const q = first.q;
+        const goldTitle = first.gold_title || first.gold;
+        const rows = item.preds.map((p, gi) => {
+          if (!p) return "";
+          const cls = p.hit ? "hit" : "miss";
+          const mark = p.hit ? "✓" : "✗";
+          const title = p.pred_title || p.pred || "(no answer)";
+          return `
+            <div class="hd-flip-row ${cls}">
+              <span class="gen">Gen ${gens[gi].n}${gens[gi].n === 0 ? " 起点" : ""}</span>
+              <span class="pred">${escapeHtml(title)}</span>
+              <span class="mark">${mark}</span>
+            </div>`;
+        }).join("");
+        return `
+          <div class="hd-flip">
+            <div class="hd-flip-q">"${escapeHtml(q)}"<span class="expected">应该: ${escapeHtml(goldTitle)}</span></div>
+            ${rows}
+          </div>`;
+      }).join("");
+    }
+
+    // ── D: full matrix ──
+    const matrix = document.getElementById("hd-matrix");
+    if (matrix && gen0.length) {
+      const cols = gens.map(g => {
+        const s = g.public.ndcg != null ? g.public.ndcg : (g.public.accuracy || 0);
+        return `<th>Gen ${g.n}${g.n === 0 ? "起点" : ""} · NDCG ${(s*100).toFixed(0)}%</th>`;
+      }).join("");
+      const rows = gen0.map((row, i) => {
+        const cells = gens.map(g => {
+          const p = (g.public.per_query || [])[i];
+          if (!p) return "<td>—</td>";
+          const cls = p.hit ? "hit" : "miss";
+          const title = (p.pred_title || p.pred || "").slice(0, 32);
+          return `<td class="cell ${cls}" title="${escapeHtml(p.pred)}">${escapeHtml(title)} ${p.hit ? "✓" : "✗"}</td>`;
+        }).join("");
+        const tierLabels = {E: "简单", M: "中等", H: "最难"};
+        const tierTips = {
+          E: "Tier E · 简单题 · BM25 亲和",
+          M: "Tier M · 中等题 · 排除词/中英混合",
+          H: "Tier H · 最难题 · 功能意图，无字面重合",
+        };
+        const tierBadge = row.tier
+          ? `<span class="tier t${row.tier}" style="margin-right:4px;" title="${tierTips[row.tier] || row.tier}">${row.tier} · ${tierLabels[row.tier] || ""}</span>`
+          : "";
+        return `<tr><td class="q" title="${escapeHtml(row.q)}">${tierBadge}${escapeHtml(row.q)}</td>${cells}</tr>`;
+      }).join("");
+      matrix.innerHTML = `<thead><tr><th>Query</th>${cols}</tr></thead><tbody>${rows}</tbody>`;
+    }
+  }
+
+  // Modal close handlers — registered once (not inside renderHero)
+  const modalEl = document.getElementById("hd-modal");
+  const modalCloseBtn = document.getElementById("hd-modal-close");
+  if (modalCloseBtn) modalCloseBtn.onclick = () => modalEl.classList.remove("open");
+  if (modalEl) modalEl.addEventListener("click", (ev) => {
+    if (ev.target === modalEl) modalEl.classList.remove("open");
+  });
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape" && modalEl && modalEl.classList.contains("open")) {
+      modalEl.classList.remove("open");
+      ev.stopPropagation();
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
