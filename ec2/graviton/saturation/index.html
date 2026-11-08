@@ -169,7 +169,7 @@
             </table>
 
             <h3 class="sub-h">复现步骤</h3>
-            <pre><span class="c"># 1. 起一台 m8g.*，AL2023 arm64 (<AMI> · kernel 6.12)</span>
+            <pre><span class="c"># 1. 起一台 m8g.*，AL2023 arm64 (kernel 6.12)</span>
 <span class="c"># 2. 装 perf</span>
 sudo dnf install -y perf
 
@@ -261,7 +261,7 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
             实测是 2026-09-22，AL2023 kernel 6.12。硬件计数器数量是 Neoverse V2 芯片固定属性，不会变；SPE / CMN 的开放策略是 AWS 决定的，理论上可能在未来 kernel/hypervisor 版本上放宽——所以本页会随时间失效，重要决定前请自己复现上面的复现步骤。</p>
 
             <p style="margin-top:0.8rem; font-size:0.83rem; color:var(--text-mute);">
-                测试环境：Tokyo（ap-northeast-1a）· AL2023 kernel 6.12（<code><AMI></code>）· 2026-09-22 ·
+                测试环境：Tokyo（ap-northeast-1a）· AL2023 kernel 6.12· 2026-09-22 ·
                 <a href="../../../ec2/graviton/saturation/data/pmu-result-m8g.medium.txt" style="color:var(--text-dim); border-bottom:1px dashed var(--border-hi);">m8g.medium 原始输出</a> ·
                 <a href="../../../ec2/graviton/saturation/data/pmu-result-m8g.24xlarge.txt" style="color:var(--text-dim); border-bottom:1px dashed var(--border-hi);">m8g.24xlarge 原始输出</a>
             </p>
