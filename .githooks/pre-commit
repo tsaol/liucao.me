@@ -13,6 +13,14 @@ if [ -z "$GL" ]; then
   exit 1
 fi
 fail=0
+# author / committer must not leak a machine name or work email
+for who in GIT_AUTHOR_IDENT GIT_COMMITTER_IDENT; do
+  id=$(git var $who 2>/dev/null | sed -E 's/ [0-9]+ [+-][0-9]{4}$//')
+  if echo "$id" | grep -qiE '\.compute\.internal|@amazon\.com|ec2-user@|ubuntu@ip-|root@ip-'; then
+    echo "pre-commit: $who is '$id' (machine name or work email). Set: git config user.name tsaol; git config user.email tsaol@users.noreply.github.com" >&2
+    fail=1
+  fi
+done
 "$GL" git "$root" --pre-commit --staged --redact --no-banner -v || fail=1
 "$GL" git "$root" --pre-commit --staged --config "$root/.gitleaks-rules.toml" --redact --no-banner -v || fail=1
 PRIV="$HOME/.config/gitleaks/private.toml"
