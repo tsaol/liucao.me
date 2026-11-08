@@ -54,10 +54,40 @@
         footer { background: #2d3748; color: #cbd5e0; text-align: center; padding: 20px; font-size: 0.85em; }
         footer a { color: #ff9900; text-decoration: none; }
         footer a:hover { text-decoration: underline; }
+        /* neon dark theme — same as index.html; follows localStorage.theme (dark unless 'light') */
+        body[data-theme="dark"] { background: #05070d; color: #e8f0ff; }
+        body[data-theme="dark"]::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background: radial-gradient(600px 400px at 10% 0%, rgba(118,185,0,0.14), transparent 60%), radial-gradient(700px 500px at 95% 30%, rgba(34,211,238,0.10), transparent 60%); }
+        body[data-theme="dark"] .container { background: rgba(10,14,24,0.85); border-left: 1px solid rgba(118,185,0,0.15); border-right: 1px solid rgba(118,185,0,0.15); }
+        body[data-theme="dark"] header { background: radial-gradient(120% 160% at 0% 0%, #0d1f12 0%, #070a12 50%, #0a0f1f 100%); border-bottom: 1px solid rgba(118,185,0,0.3); box-shadow: 0 0 40px rgba(118,185,0,0.10); }
+        body[data-theme="dark"] h1 { background: linear-gradient(90deg, #e8f0ff 0%, #a3e635 45%, #22d3ee 75%, #ff9900 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; }
+        body[data-theme="dark"] .breadcrumb { color: #8a97b1; }
+        body[data-theme="dark"] .breadcrumb a { color: #a3e635; }
+        body[data-theme="dark"] .info-bar, body[data-theme="dark"] .controls { background: transparent; border-bottom: 1px solid rgba(148,163,184,0.10); }
+        body[data-theme="dark"] .info-label { color: #8a97b1; font-family: 'SF Mono', Monaco, monospace; letter-spacing: 1.2px; }
+        body[data-theme="dark"] .info-value, body[data-theme="dark"] .spec-value, body[data-theme="dark"] .price-value, body[data-theme="dark"] .instance-name { color: #e8f0ff; }
+        body[data-theme="dark"] .filter-input, body[data-theme="dark"] .region-select { background: rgba(5,7,13,0.8); color: #e8f0ff; border-color: rgba(148,163,184,0.2); }
+        body[data-theme="dark"] .filter-input:focus, body[data-theme="dark"] .region-select:focus { border-color: #76b900; box-shadow: 0 0 0 3px rgba(118,185,0,0.18), 0 0 24px rgba(118,185,0,0.18); }
+        body[data-theme="dark"] .btn-primary { background: linear-gradient(90deg, #76b900, #22d3ee); color: #05070d; }
+        body[data-theme="dark"] .btn-secondary { background: rgba(148,163,184,0.12); color: #cbd5e1; }
+        body[data-theme="dark"] thead { background: rgba(8,12,20,0.98); }
+        body[data-theme="dark"] th { color: #b7c4dc; font-family: 'SF Mono', Monaco, monospace; font-size: 0.85em; }
+        body[data-theme="dark"] th:hover { background: rgba(118,185,0,0.08); }
+        body[data-theme="dark"] td { border-bottom: 1px solid rgba(148,163,184,0.08); }
+        body[data-theme="dark"] tbody tr:hover { background: rgba(118,185,0,0.06); box-shadow: inset 3px 0 0 #76b900; }
+        body[data-theme="dark"] tbody tr:hover .instance-name { color: #a3e635; text-shadow: 0 0 12px rgba(163,230,53,0.5); }
+        body[data-theme="dark"] .api-name, body[data-theme="dark"] .spec-unit, body[data-theme="dark"] .price-label { color: #8a97b1; }
+        body[data-theme="dark"] .badge-new { background: rgba(118,185,0,0.15); color: #a3e635; border: 1px solid rgba(118,185,0,0.5); }
+        body[data-theme="dark"] .badge-region { background: rgba(34,211,238,0.10); color: #67e8f9; border: 1px solid rgba(34,211,238,0.4); }
+        body[data-theme="dark"] .stats { background: rgba(118,185,0,0.05); color: #8a97b1; }
+        body[data-theme="dark"] footer { background: #05070d; color: #8a97b1; border-top: 1px solid rgba(118,185,0,0.2); }
+        body[data-theme="dark"] footer a { color: #a3e635; }
+        body[data-theme="dark"] tbody tr[style*="opacity"] { opacity: 0.82 !important; }
         @media (max-width: 768px) { .info-bar { padding: 16px 20px; } .controls { padding: 16px 20px; } .control-group { width: 100%; } .filter-input, .region-select { width: 100%; } th, td { padding: 10px 8px; font-size: 0.85em; } }
     </style>
 </head>
 <body>
+    <script>try { if (localStorage.getItem('theme') !== 'light') document.body.setAttribute('data-theme', 'dark'); } catch (e) {}</script>
     <div class="container">
         <header>
             <h1>Trn2 Instance Family</h1>

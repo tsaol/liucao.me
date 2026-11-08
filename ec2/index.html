@@ -4,13 +4,38 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EC2 · liucao.me</title>
+<link rel="stylesheet" href="../assets/site.css">
 </head>
 <body>
-<p><a href="../">liucao.me</a></p>
-<h3>EC2</h3>
-<ul>
-<li><a href="graviton/">Graviton</a></li>
-<li><a href="numa/">NUMA</a></li>
-</ul>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="../">liucao<b>.me</b></a>
+    <span class="status"><span class="dot"></span>ec2</span>
+  </div>
+
+  <section class="hero" style="padding:8vh 0 5vh">
+    <div class="kicker">liucao.me / ec2<span class="cursor"></span></div>
+    <h1><span class="grad">EC2</span></h1>
+    <p class="tag">Graviton4 和大机型的实战指南。</p>
+  </section>
+
+  <div class="label">guides</div>
+  <div class="grid">
+    <a class="card" href="graviton/">
+      <div class="k">GRAVITON · ARM64</div>
+      <h2>Graviton 深度指南</h2>
+      <p>M8g vs M7i、EC2 三层监控、ARM 上判断资源用满、On-Call playbook。</p>
+      <div class="go">阅读</div>
+    </a>
+    <a class="card cy" href="numa/">
+      <div class="k">NUMA · LINUX PERF</div>
+      <h2>NUMA 深度指南</h2>
+      <p>大机型的隐形税：拓扑、内存策略、numastat、MySQL swap insanity、M8/M9 拓扑和 K8s。</p>
+      <div class="go">阅读</div>
+    </a>
+  </div>
+
+  <footer><a href="../">← liucao.me</a></footer>
+</div>
 </body>
 </html>

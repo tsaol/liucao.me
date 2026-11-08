@@ -1,0 +1,57 @@
+name: Sync aws-gpu
+
+# tsaol/aws-gpu refreshes its data every Monday 02:00 UTC.
+# Two hours later, copy its site files (only the git-tracked ones in
+# index.html, data/, instances/) into aws-gpu/ here, and rebuild Pages.
+
+on:
+  schedule:
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: sync-aws-gpu
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy site files from tsaol/aws-gpu
+        run: |
+          git clone --depth 1 https://github.com/tsaol/aws-gpu.git /tmp/aws-gpu
+          SRC_SHA=$(git -C /tmp/aws-gpu rev-parse --short HEAD)
+          echo "SRC_SHA=$SRC_SHA" >> "$GITHUB_ENV"
+          rm -rf aws-gpu/index.html aws-gpu/data aws-gpu/instances
+          mkdir -p aws-gpu
+          (cd /tmp/aws-gpu && git ls-files -z -- index.html data instances | tar --null -T - -cf -) | (cd aws-gpu && tar -xf -)
+          # GitHub rejects files over 100 MB; stop instead of pushing a broken commit
+          if find aws-gpu -type f -size +90M | grep -q .; then
+            echo "file too large:"; find aws-gpu -type f -size +90M; exit 1
+          fi
+
+      - name: Commit and push
+        id: commit
+        run: |
+          git add -A aws-gpu
+          if git diff --cached --quiet; then
+            echo "no change"; echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "sync aws-gpu to $SRC_SHA"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Rebuild Pages
+        # pushes made with GITHUB_TOKEN may not start a Pages build by themselves
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
