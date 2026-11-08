@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Harness Self-Evolution — Intro — liucao.me</title>
+<link href="../../../rsi/assets/style.css" rel="stylesheet"/>
+<style>
+      .intro-lead { text-align: center; margin: 0 0 3rem; }
+      .intro-lead h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+      .intro-lead h1 span { color: var(--accent); }
+      .intro-lead .kicker { color: var(--text-mute); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.8rem; }
+      .intro-lead .subtitle { color: var(--text-dim); font-size: 1.05rem; max-width: 640px; margin: 0 auto; }
+
+      .intro-section { margin: 3rem 0; }
+      .intro-section h2 {
+        font-size: 1.3rem; font-weight: 600; margin-bottom: 1rem;
+        color: var(--text); padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+      }
+      .intro-section h2 .num {
+        display: inline-block; width: 28px; height: 28px; line-height: 28px;
+        text-align: center; background: var(--accent-glow); color: var(--accent);
+        border-radius: 50%; font-size: 0.8rem; margin-right: 0.6rem;
+        font-family: var(--mono); font-weight: 600; vertical-align: 2px;
+      }
+      .intro-section p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.8rem; }
+      .intro-section p strong { color: var(--text); }
+      .intro-section p .hi { color: var(--accent); font-weight: 500; }
+
+      /* Concept cards — "what's frozen vs what evolves" */
+      .concept-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0 0.4rem;
+      }
+      .concept {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: var(--radius-sm); padding: 1rem 1.2rem;
+      }
+      .concept .icon { font-size: 1.4rem; margin-bottom: 0.4rem; }
+      .concept.frozen .icon { color: #6bb8ff; }
+      .concept.evolving .icon { color: var(--accent); }
+      .concept h4 { font-size: 0.95rem; color: var(--text); margin-bottom: 0.3rem; }
+      .concept p { font-size: 0.85rem; color: var(--text-dim); margin: 0; line-height: 1.55; }
+      .concept .example { font-family: var(--mono); font-size: 0.75rem; color: var(--text-mute); margin-top: 0.5rem; }
+
+      /* Loop diagram — 4-step visual */
+      .loop {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem;
+        margin: 1.3rem 0 0.4rem;
+      }
+      .step {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: var(--radius-sm); padding: 1rem;
+        position: relative;
+      }
+      .step .num-badge {
+        position: absolute; top: -10px; left: 12px;
+        width: 22px; height: 22px; line-height: 22px; text-align: center;
+        background: var(--bg); border: 1px solid var(--accent); color: var(--accent);
+        border-radius: 50%; font-size: 0.7rem; font-weight: 700; font-family: var(--mono);
+      }
+      .step h4 { color: var(--accent); font-size: 0.9rem; margin-bottom: 0.4rem; }
+      .step p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; margin: 0; }
+
+      /* Sample task box */
+      .sample {
+        background: var(--bg-soft); border: 1px solid var(--border);
+        border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin: 0.8rem 0;
+        font-family: var(--mono); font-size: 0.82rem;
+      }
+      .sample .row { display: flex; padding: 0.25rem 0; }
+      .sample .lbl { color: var(--text-mute); width: 90px; flex-shrink: 0; }
+      .sample .val { color: var(--text-dim); flex: 1; }
+      .sample .ok { color: var(--accent); }
+      .sample .bad { color: var(--danger); }
+      .sample-caption { color: var(--text-mute); font-size: 0.8rem; margin-top: 0.4rem; font-style: italic; }
+
+      /* 4 outcomes preview */
+      .outcomes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; margin-top: 1rem; }
+      .outcome {
+        background: var(--surface); border: 1px solid var(--border);
+        border-left: 3px solid var(--text-mute); border-radius: 6px;
+        padding: 0.9rem 1rem;
+      }
+      .outcome.accepted { border-left-color: var(--accent); }
+      .outcome.leak { border-left-color: var(--danger); }
+      .outcome.cost { border-left-color: #d9822b; }
+      .outcome .n { font-family: var(--mono); font-size: 0.7rem; color: var(--text-mute); }
+      .outcome h5 { font-size: 0.85rem; color: var(--text); margin: 0.2rem 0 0.4rem; }
+      .outcome p { font-size: 0.75rem; color: var(--text-dim); line-height: 1.5; margin: 0; }
+
+      /* Glossary */
+      .glossary { display: grid; grid-template-columns: 200px 1fr; gap: 0.4rem 1.5rem; margin-top: 0.6rem; }
+      .glossary dt {
+        color: var(--accent); font-family: var(--mono); font-size: 0.82rem;
+        padding: 0.4rem 0; border-bottom: 1px dashed var(--border);
+      }
+      .glossary dd {
+        color: var(--text-dim); font-size: 0.85rem; margin: 0;
+        padding: 0.4rem 0; border-bottom: 1px dashed var(--border);
+        line-height: 1.55;
+      }
+
+      /* CTA */
+      /* ─────────────────────────────────────────────────────
+         Plain-language explainer at the top of intro.
+         Big diagrams, minimal words, high contrast.
+         ───────────────────────────────────────────────────── */
+      .explainer {
+        margin: 2rem 0 3rem;
+        padding: 1.8rem 1.6rem;
+        background: linear-gradient(180deg, rgba(0,229,160,0.06), transparent 60%);
+        border: 1px solid var(--accent-dim);
+        border-radius: var(--radius);
+      }
+      .explainer h2 {
+        font-size: 1.4rem; color: var(--text); margin-bottom: 0.5rem; font-weight: 600;
+      }
+      .explainer h2 span { color: var(--accent); }
+      .explainer .lede {
+        font-size: 1.02rem; color: var(--text-dim); line-height: 1.75;
+        margin-bottom: 1.6rem;
+      }
+      .explainer .lede b { color: var(--text); }
+
+      /* Sub-section headings */
+      .ex-h3 {
+        font-size: 1.05rem; color: var(--accent);
+        margin: 1.8rem 0 0.9rem; font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .ex-h3::before {
+        content: ""; display: inline-block; width: 4px; height: 16px;
+        background: var(--accent); margin-right: 0.6rem; vertical-align: -2px;
+        border-radius: 2px;
+      }
+
+      /* Harness diagram — 3 boxes with arrow */
+      .harness-diagram {
+        display: grid; grid-template-columns: 1fr 30px 1fr 30px 1fr;
+        gap: 0; align-items: center; margin: 1rem 0 0.8rem;
+      }
+      .diag-box {
+        background: var(--surface); border: 1.5px solid var(--border-hi);
+        border-radius: 10px; padding: 1rem 0.9rem; text-align: center;
+      }
+      .diag-box.frozen { border-color: #6bb8ff; }
+      .diag-box.evolves { border-color: var(--accent);
+        background: linear-gradient(135deg, rgba(0,229,160,0.08), var(--surface));
+        box-shadow: 0 0 20px rgba(0,229,160,0.1);
+      }
+      .diag-box .icon {
+        font-family: var(--mono); font-size: 0.75rem; font-weight: 700;
+        display: inline-block; padding: 3px 8px; border-radius: 4px;
+        margin-bottom: 0.6rem;
+      }
+      .diag-box.frozen .icon { color: #6bb8ff; background: rgba(107,184,255,0.12); }
+      .diag-box.evolves .icon { color: var(--accent); background: rgba(0,229,160,0.14); }
+      .diag-box.neutral .icon { color: var(--text-mute); background: rgba(154,167,180,0.12); }
+      .diag-box .title {
+        font-size: 0.95rem; color: var(--text); font-weight: 600; margin-bottom: 0.3rem;
+      }
+      .diag-box .desc {
+        font-size: 0.78rem; color: var(--text-dim); line-height: 1.5;
+      }
+      .diag-arrow {
+        text-align: center; font-family: var(--mono); font-size: 1.4rem;
+        color: var(--text-mute);
+      }
+      .harness-note {
+        text-align: center; font-size: 0.85rem; color: var(--text-dim);
+        margin-top: 0.5rem; padding: 0.7rem;
+        background: var(--bg-soft); border-radius: 6px;
+      }
+      .harness-note b { color: var(--accent); }
+
+      /* Four-round timeline */
+      .rounds-timeline {
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        gap: 10px; margin-top: 1rem; position: relative;
+      }
+      .rt-cell {
+        background: var(--surface); border: 1.5px solid var(--border);
+        border-top: 4px solid var(--border);
+        border-radius: 8px; padding: 1rem 0.9rem; position: relative;
+      }
+      .rt-cell.pass { border-top-color: var(--accent); }
+      .rt-cell.fail { border-top-color: var(--danger); }
+      .rt-cell.win { border-top-color: var(--accent);
+        background: linear-gradient(135deg, rgba(0,229,160,0.08), var(--surface));
+        box-shadow: 0 0 15px rgba(0,229,160,0.12);
+      }
+      .rt-cell .rt-round {
+        font-family: var(--mono); font-size: 0.75rem; font-weight: 700;
+        color: var(--accent); letter-spacing: 0.06em; margin-bottom: 0.3rem;
+      }
+      .rt-cell.fail .rt-round { color: var(--danger); }
+      .rt-cell .rt-what {
+        font-size: 0.9rem; color: var(--text); font-weight: 500; margin-bottom: 0.5rem;
+      }
+      .rt-cell .rt-verdict {
+        font-family: var(--mono); font-size: 0.72rem;
+        padding: 3px 8px; border-radius: 3px; display: inline-block;
+        margin-bottom: 0.5rem;
+      }
+      .rt-cell.pass .rt-verdict { background: var(--accent-glow); color: var(--accent); }
+      .rt-cell.fail .rt-verdict { background: rgba(239,68,68,0.15); color: var(--danger); }
+      .rt-cell.win .rt-verdict { background: var(--accent-glow); color: var(--accent); font-weight: 600; }
+      .rt-cell .rt-desc {
+        font-size: 0.75rem; color: var(--text-dim); line-height: 1.5;
+      }
+      /* connection dots between cells */
+      .rounds-timeline::after {
+        content: ""; position: absolute; top: 40px; left: 12%; right: 12%;
+        height: 2px; background: repeating-linear-gradient(
+          90deg, var(--border) 0 6px, transparent 6px 12px);
+        z-index: -1;
+      }
+
+      /* Glossary — 2x2 big cards */
+      .ex-glossary {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;
+        margin-top: 1rem;
+      }
+      .exg {
+        background: var(--surface); border: 1px solid var(--border);
+        border-left: 4px solid var(--accent); border-radius: 6px;
+        padding: 0.85rem 1rem;
+      }
+      .exg.leak   { border-left-color: var(--danger); }
+      .exg.cost   { border-left-color: #d9822b; }
+      .exg.win    { border-left-color: var(--accent); }
+      .exg.base   { border-left-color: var(--text-mute); }
+      .exg .tag {
+        font-family: var(--mono); font-size: 0.78rem; font-weight: 700;
+        margin-right: 0.4rem;
+      }
+      .exg.base .tag { color: var(--text-dim); }
+      .exg.leak .tag { color: var(--danger); }
+      .exg.cost .tag { color: #d9822b; }
+      .exg.win .tag  { color: var(--accent); }
+      .exg .en { font-family: var(--mono); font-size: 0.68rem; color: var(--text-mute); }
+      .exg .what {
+        display: block; font-size: 0.82rem; color: var(--text); margin-top: 0.35rem;
+        font-weight: 500; line-height: 1.5;
+      }
+      .exg .like {
+        display: block; font-size: 0.72rem; color: var(--text-dim); margin-top: 0.3rem;
+        font-style: italic;
+      }
+
+      @media (max-width: 720px) {
+        .harness-diagram { grid-template-columns: 1fr; gap: 8px; }
+        .diag-arrow { transform: rotate(90deg); font-size: 1.2rem; }
+        .rounds-timeline { grid-template-columns: 1fr 1fr; }
+        .ex-glossary { grid-template-columns: 1fr; }
+      }
+
+      .cta-block {
+        text-align: center; margin: 3rem 0 1rem; padding: 2rem 1rem;
+        background: linear-gradient(135deg, var(--accent-glow), transparent);
+        border: 1px solid var(--accent-dim); border-radius: var(--radius);
+      }
+      .cta-block h3 { font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem; }
+      .cta-block p { color: var(--text-dim); margin-bottom: 1.4rem; font-size: 0.9rem; }
+      .cta-btn {
+        display: inline-block; background: var(--accent); color: #04120c;
+        padding: 12px 28px; border-radius: 8px; text-decoration: none;
+        font-weight: 600; font-size: 0.95rem;
+        transition: transform 0.15s, filter 0.15s;
+      }
+      .cta-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+      @media (max-width: 720px) {
+        .concept-grid, .loop, .outcomes { grid-template-columns: 1fr; }
+        .glossary { grid-template-columns: 1fr; gap: 0.2rem; }
+        .glossary dt { padding-bottom: 0; border: none; }
+      }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="talk/">Talk</a>
+<a href="papers/">Papers</a>
+<a href="run/">Live Demo</a>
+<a href="play/">Play</a>
+<a href="./">Demos</a>
+</div>
+</nav>
+<main class="wrap section">
+<div class="intro-lead">
+<div class="kicker">Case Study · E-commerce Search Agent · 10-minute read</div>
+<h1><span>E-commerce Search Agent</span> 's Harness self-evolution</h1>
+<p class="subtitle">
+<b>What gets improved</b>: an e-commerce product search agent (Python <code>search(query)</code> function · BM25 baseline · 30% hit rate).<br/>
+<b>Method</b>: Leave the model weights completely untouched · let AI rewrite, generation by generation, <code>search()</code> Code · each generation runs a 31-question eval · promoted only if it passes the gate.<br/>
+<b>Engine</b>:<a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" style="color:var(--accent);" target="_blank">ShinkaEvolve</a> (Sakana AI) · The Proposer is Claude via AWS Bedrock.
+            </p>
+</div>
+<!-- Plain-language explainer, built around the "apple 128gb" case -->
+<div class="explainer">
+<h2>First, understand:<span>What this demo is actually showing</span></h2>
+<p class="lede">
+                An e-commerce site finds its search isn't accurate enough — users type
+                <b>"apple 128gb latest"</b> You want to buy an iPhone, but the first result is
+                <b>Red Fuji apples</b>. Instead of retraining the model, the dev team had the AI automatically
+                <b>Write 4 versions of glue code</b>to improve it. This demo shows the full story of how these 4 code
+                versions succeeded and failed.
+            </p>
+<h3 class="ex-h3">What is "glue code" (the harness)</h3>
+<div class="harness-diagram">
+<div class="diag-box neutral">
+<span class="icon">INPUT</span>
+<div class="title">User query</div>
+<div class="desc">"apple 128gb latest"</div>
+</div>
+<div class="diag-arrow">→</div>
+<div class="diag-box evolves">
+<span class="icon">EVOLVES</span>
+<div class="title">Glue code</div>
+<div class="desc">Decides how to query, rank, and categorize. Each round, the AI modifies this layer</div>
+</div>
+<div class="diag-arrow">→</div>
+<div class="diag-box frozen">
+<span class="icon">FROZEN</span>
+<div class="title">Base model</div>
+<div class="desc">Sonnet 5 · weights untouched, frozen throughout</div>
+</div>
+</div>
+<div class="harness-note">
+                All changes happen in<b>The middle layer</b>. The base model was never retrained, not even once.
+            </div>
+<h3 class="ex-h3">Why 4 rounds</h3>
+<p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:0.8rem;">
+                Because AI doesn't always come up with the right approach. It takes detours. This demo keeps its full
+                <b style="color:var(--accent)">2 failures + 1 success</b>:
+            </p>
+<div class="rounds-timeline">
+<div class="rt-cell pass">
+<div class="rt-round">R0 · Starting point</div>
+<div class="rt-what">No optimizations at all, just query directly</div>
+<div class="rt-verdict">Baseline 60%</div>
+<div class="rt-desc">BM25 saw the keyword apple and recommended Red Fuji apples. Serves as the baseline.</div>
+</div>
+<div class="rt-cell fail">
+<div class="rt-round">R1 · Leakage</div>
+<div class="rt-what">AI hardcodes answers into the code</div>
+<div class="rt-verdict">Blocked by audit · Discarded</div>
+<div class="rt-desc">Caught by the "data leakage audit": the code hard-coded the test set answers, so the whole version was discarded.</div>
+</div>
+<div class="rt-cell fail">
+<div class="rt-round">R2 · Compute</div>
+<div class="rt-what">AI shifts to throwing compute at the score</div>
+<div class="rt-verdict">Over budget · rejected</div>
+<div class="rt-desc">Run 20 candidates per problem and have the LLM rank them. Accuracy rises only 2%, but token usage goes up 8x. Not worth it.</div>
+</div>
+<div class="rt-cell win">
+<div class="rt-round">R3 · Improvement</div>
+<div class="rt-what">AI actually analyzes the root cause and writes a structured pipeline</div>
+<div class="rt-verdict">✓ Promoted 90%</div>
+<div class="rt-desc">Intent recognition → attribute extraction → structured retrieval. The iPhone query hits, and cost rises by only 15%.</div>
+</div>
+</div>
+<h3 class="ex-h3">Four keywords, each explained in one sentence</h3>
+<div class="ex-glossary">
+<div class="exg base">
+<span class="tag">Starting point</span><span class="en">Baseline</span>
+<span class="what">No optimizations at all: the model answers directly, serving as the baseline.</span>
+<span class="like">Analogy: the score you get with no studying at all before the exam.</span>
+</div>
+<div class="exg leak">
+<span class="tag">Leakage</span><span class="en">Data Leak</span>
+<span class="what">The Proposer sneaks test set answers into the code. The data leakage audit blocks it every time.</span>
+<span class="like">Analogy: hiding a cheat sheet in your book during the exam and getting caught by the proctor.</span>
+</div>
+<div class="exg cost">
+<span class="tag">Compute</span><span class="en">Compute Scaling</span>
+<span class="what">The Proposer trades compute for score with multi-candidate reranking, repeated voting, and similar tricks.</span>
+<span class="like">Analogy: rewriting every answer ten times, hoping to guess right.</span>
+</div>
+<div class="exg win">
+<span class="tag">Improvement</span><span class="en">Real Fix</span>
+<span class="what">The Proposer carefully analyzes failure cases and writes code that actually solves the problem.</span>
+<span class="like">Analogy: thoroughly reviewing the material before the exam.</span>
+</div>
+</div>
+<h3 class="ex-h3">Take the "apple 128gb" example</h3>
+<p style="color:var(--text-dim);font-size:0.92rem;">
+                User wants <b style="color:var(--accent)">iPhone 128GB</b>, but the harness performs differently in each round:
+            </p>
+<div style="font-family:var(--mono);font-size:0.82rem;background:var(--bg-soft);padding:1rem 1.2rem;border-radius:8px;border:1px solid var(--border);line-height:1.9;">
+<div><span style="color:var(--text-mute);width:80px;display:inline-block;">R0 starting point</span> → Back <span style="color:var(--danger);">Red Fuji apples ¥29.9</span> <span style="color:var(--text-mute);">(BM25 only sees "apple" and assumes fruit)</span></div>
+<div><span style="color:var(--danger);width:80px;display:inline-block;">R1 leakage</span> → Back <span style="color:var(--text-mute);text-decoration:line-through;">iPhone 128GB</span> <span style="color:var(--danger);">(cheating, invalidated)</span></div>
+<div><span style="color:#d9822b;width:80px;display:inline-block;">R2 compute</span> → Back <span style="color:var(--danger);">Red Fuji apples ¥29.9</span> <span style="color:var(--text-mute);">(all 20 candidates are fruit; reranking can't save it)</span></div>
+<div><span style="color:var(--accent);width:80px;display:inline-block;">R3 improvement</span> → Back <span style="color:var(--accent);font-weight:600;">Apple iPhone 15 · 128GB · ¥5799</span> <span style="color:var(--accent);">(intent recognized as the phone category, hit)</span></div>
+</div>
+<p style="color:var(--text-dim);font-size:0.85rem;margin-top:0.9rem;">
+                Open the demo and you'll see these 4 versions of the code, 4 sets of search results, and why each version was accepted or rejected.
+            </p>
+</div>
+<!-- Section 1: What are you about to see -->
+<div class="intro-section">
+<h2><span class="num">1</span>What you're about to see</h2>
+<p>
+<span class="hi">The base model (e.g., Sonnet 5) stays frozen throughout</span>, with not a single training run.
+                What's actually changing is its<span class="hi">The glue code around it</span> —— Each round, the AI reads the previous log,
+                modifies this layer of code itself, and pushes accuracy step by step from 60% to 80~90%.
+            </p>
+<p>
+                We take <span class="hi">4-round loop</span> laid out in one table so you can see clearly what it changed each time and how it turned out:
+                In round 1 it tried to cheat and got caught; in round 2 it tried to spend more money to boost the score and was rejected; in round 3 it figured out the real problem and was accepted.
+            </p>
+<div class="concept-grid">
+<div class="concept frozen">
+<div class="icon">❄️</div>
+<h4>Frozen · base model</h4>
+<p>Sonnet 5 / Fable 5 weights are completely unchanged, with no fine-tuning at all.</p>
+<div class="example">weights = frozen</div>
+</div>
+<div class="concept evolving">
+<div class="icon">🧬</div>
+<h4>Continuous evolution · outer harness</h4>
+<p>Prompts, retrieval strategy, tool calls, retry logic — all in a single .py file. That's what the AI edits each round.</p>
+<div class="example">harness.py = evolves</div>
+</div>
+</div>
+<p style="margin-top:1rem;">
+                In 2026 papers, this approach is called <b>harness self-evolution</b>(ACE, Meta-Harness and DGM all take this approach),
+                the core idea in one sentence:<span class="hi">The base model is already strong enough; the real leverage is in "how you use it."</span>
+</p>
+</div>
+<!-- Section 2: How it works, 4 steps -->
+<div class="intro-section">
+<h2><span class="num">2</span>What happens in one loop iteration</h2>
+<p>Press Play and these 4 steps run 4 times:</p>
+<div class="loop">
+<div class="step">
+<div class="num-badge">1</div>
+<h4>Read logs · write a new version</h4>
+<p>A coding agent (call it the proposer) looks at which problems failed in the last round and why, then starts editing the harness.</p>
+</div>
+<div class="step">
+<div class="num-badge">2</div>
+<h4>Full benchmark run</h4>
+<p>The new harness runs all 31 questions and records accuracy and token spend.</p>
+</div>
+<div class="step">
+<div class="num-badge">3</div>
+<h4>Judged by three gates</h4>
+<p>Did it cheat? (leakage audit) · Did it just spend its way to a higher score? (cost penalty) · Is the overall score actually higher? (blended score)</p>
+</div>
+<div class="step">
+<div class="num-badge">4</div>
+<h4>Accept or discard</h4>
+<p>Pass all three gates → the new version takes over; fail any one → the whole version is discarded, and the proposer tries again next round.</p>
+</div>
+</div>
+<p style="margin-top:1.2rem;">
+                Key points:<span class="hi">No human touched the code at any point.</span>
+                The Proposer reads and writes on its own, the gate judges on its own, and the loop keeps going on its own.
+                Humans do only one thing — <b>Define the eval set and thresholds up front</b>.
+            </p>
+</div>
+<!-- Section 3: Sample tasks — make it concrete -->
+<div class="intro-section">
+<h2><span class="num">3</span>What the task actually looks like</h2>
+<p><b>Scenario 1 · Financial report extraction (FiNER XBRL)</b> —— Precisely pick the matching accounting line-item tag from a single sentence of financial report text:</p>
+<div class="sample">
+<div class="row"><span class="lbl">Original</span><span class="val">"Total Revenues for the fiscal year ended December 31 was $12,458 million"</span></div>
+<div class="row"><span class="lbl">Correct label</span><span class="val ok">us-gaap:RevenueFromContractWithCustomer</span></div>
+<div class="row"><span class="lbl">Baseline answer</span><span class="val bad">us-gaap:Revenues ✗   (two similar concepts confused)</span></div>
+<div class="row"><span class="lbl">Answer after evolution</span><span class="val ok">us-gaap:RevenueFromContractWithCustomer ✓</span></div>
+</div>
+<div class="sample-caption">
+                XBRL is the financial reporting markup standard the US SEC requires public companies to use, with 139 fine-grained tags. Answering without any help, the model gets it wildly wrong.
+            </div>
+<p style="margin-top:1.5rem;"><b>Scenario 2 · E-commerce search (attribute-aware)</b> —— from a casual remark by the user, find the product they actually want:</p>
+<div class="sample">
+<div class="row"><span class="lbl">User input</span><span class="val">"water bottle no plastic" (plastic-free water bottle)</span></div>
+<div class="row"><span class="lbl">Correct SKU</span><span class="val ok">sku-glass-500ml (500ml glass cup)</span></div>
+<div class="row"><span class="lbl">Baseline answer</span><span class="val bad">sku-plastic-500ml ✗   (the negation "no" got swallowed)</span></div>
+<div class="row"><span class="lbl">Answer after evolution</span><span class="val ok">sku-glass-500ml ✓</span></div>
+</div>
+<div class="sample-caption">
+                Traditional BM25 retrieval most easily loses negations, modifiers, and category ambiguity (is "apple" the fruit or the phone?).
+                The evolved harness learns to clarify intent first, then retrieve.
+            </div>
+</div>
+<!-- Section 4: The 4 rounds preview -->
+<div class="intro-section">
+<h2><span class="num">4</span>Preview of the 4 rounds</h2>
+<p>Here's the spoiler up front, so the table won't leave you confused later:</p>
+<div class="outcomes">
+<div class="outcome">
+<div class="n">Round 0</div>
+<h5>Starting point</h5>
+<p>Zero-shot bare answers, a 60~65% floor. The common starting line for all methods.</p>
+</div>
+<div class="outcome leak">
+<div class="n">Round 1 🚨</div>
+<h5>Cheating — caught</h5>
+<p>The Proposer takes a shortcut and copies the test set answers straight into the prompt.<b>The leakage audit caught it on the spot</b>, and the whole version is discarded.</p>
+</div>
+<div class="outcome cost">
+<div class="n">Round 2 💰</div>
+<h5>Paying to boost the score — rejected</h5>
+<p>It starts piling on retries; accuracy goes up a little, but token usage grows 5~8x.<b>The cost penalty blocks this round of tokenmaxxing</b>.</p>
+</div>
+<div class="outcome accepted">
+<div class="n">Round 3 ✓</div>
+<h5>A real fix — accepted</h5>
+<p>It carefully examined the failure modes and wrote a structured playbook.<b>80~90% accuracy, promoted to the new frontier</b>.</p>
+</div>
+</div>
+<p style="margin-top:1.5rem;">
+                The Easter egg comes at the end: this evolved harness<span class="hi">Without changing a single line of code, switched directly to another base model (Fable 5)</span>,
+                still runs just as well, or even better.<b>This shows it learned general engineering patterns, not a trick specific to one model.</b>
+</p>
+</div>
+<!-- Section 5: Glossary -->
+<div class="intro-section">
+<h2><span class="num">5</span>Terms in one sentence</h2>
+<dl class="glossary">
+<dt>Harness</dt>
+<dd>The "glue" code around the model: prompt assembly, retrieval, tool calls, retries on failure.<b>This is what evolves in this demo.</b></dd>
+<dt>Proposer</dt>
+<dd>A coding agent (e.g. Claude Code). Its work loop: read logs → write the next version of the harness.</dd>
+<dt>Gate: promotion gate</dt>
+<dd>Three-in-one judge: leakage audit + cost penalty + blended score. Fail any one check and the new version is discarded.</dd>
+<dt>Blended score</dt>
+<dd>Blended score formula:<code>accuracy + 0.5 × all_pass − 0.005 × tokens(M)</code>.<b>Tokens have an explicit price, so you can't trade more compute for a higher score.</b></dd>
+<dt>Frontier</dt>
+<dd>The current best harness. Every new proposal has to go head-to-head with it and only takes its place if it wins.</dd>
+<dt>Leakage audit</dt>
+<dd>Checks whether the proposer peeked at the test-set answers (e.g., hard-coded them). If caught → the whole version is discarded.</dd>
+<dt>Cost penalty</dt>
+<dd>Token spend is deducted directly from the score. Hoping to boost your score by "just trying a few more times"? No way.</dd>
+<dt>Base model</dt>
+<dd>Sonnet 5 / Fable 5 and other LLMs.<b>Frozen throughout: not a single training run.</b></dd>
+</dl>
+</div>
+<!-- CTA -->
+<div class="cta-block">
+<h3>Ready. Let's watch it evolve itself</h3>
+<p>Tip: first press Play on the Finance page to watch a full loop, then switch to E-commerce to compare.</p>
+<a class="cta-btn" href="run/">Start Demo →</a>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../">Home</a> · Method references: ACE (arXiv:2510.04618) · Meta-Harness (arXiv:2603.28052) · DGM (arXiv:2505.22954)</p>
+</footer>
+<a data-cur="en" data-to="zh" href="../../../rsi/demo/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

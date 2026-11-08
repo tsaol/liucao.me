@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Speaker script v2 · Kimi K3 edition · Harness Self-Evolution</title>
+<link href="../../../../rsi/assets/style.css" rel="stylesheet"/>
+<style>
+      :root {
+        --sk-accent: rgb(0, 217, 130);
+        --sk-purple: rgb(139, 92, 246);
+        --sk-blue:   rgb(80, 200, 255);
+        --sk-warm:   rgb(250, 180, 90);
+        --sk-danger: rgb(239, 68, 68);
+      }
+      body {
+        background:
+          radial-gradient(ellipse 900px 500px at 50% -100px, rgba(139,92,246,0.08), transparent 60%),
+          radial-gradient(ellipse 700px 400px at 100% 400px, rgba(0,217,130,0.05), transparent 70%),
+          #050a0f;
+      }
+      main.sk-wrap {
+        max-width: 900px; margin: 0 auto;
+        padding: 2rem 1.5rem 6rem;
+        color: var(--text);
+      }
+
+      /* Hero */
+      .sk-hero { text-align: center; padding: 1.2rem 0 2rem; }
+      .sk-hero .sk-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 12px;
+        border: 1px solid rgba(80,200,255,0.4);
+        border-radius: 999px;
+        color: rgb(140, 210, 255); font-size: 0.72rem;
+        font-family: var(--mono);
+        margin-bottom: 0.8rem;
+      }
+      .sk-hero .sk-badge .dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: rgb(140, 210, 255);
+        box-shadow: 0 0 8px rgb(140, 210, 255);
+      }
+      .sk-hero h1 {
+        font-size: 2.1rem; font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+      }
+      .sk-hero h1 .grad {
+        background: linear-gradient(90deg, var(--sk-purple), var(--sk-blue), var(--sk-accent), var(--sk-purple));
+        background-size: 300% 100%;
+        background-clip: text; -webkit-background-clip: text;
+        color: transparent; -webkit-text-fill-color: transparent;
+        animation: skGrad 8s linear infinite;
+      }
+      @keyframes skGrad { to { background-position: 300% 0; } }
+      .sk-hero p.sub { color: var(--text-dim); font-size: 0.95rem; }
+      .sk-hero p.byline { color: var(--text-mute); font-size: 0.78rem; margin-top: 0.4rem; }
+      .sk-hero p.byline a { color: var(--text-dim); }
+
+      /* Sticky top strip */
+      .sk-strip {
+        position: sticky; top: 0;
+        z-index: 20;
+        margin: 0 -1.5rem 1.5rem;
+        padding: 0.55rem 1.5rem;
+        background: rgba(5, 10, 15, 0.94);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        display: flex; gap: 6px; overflow-x: auto;
+        font-family: var(--mono); font-size: 0.68rem;
+      }
+      .sk-strip a {
+        white-space: nowrap;
+        padding: 3px 9px; border-radius: 3px;
+        background: var(--surface-2); color: var(--text-mute);
+        border: 1px solid var(--border);
+        text-decoration: none;
+      }
+      .sk-strip a:hover, .sk-strip a.current {
+        background: var(--accent-glow); color: var(--accent);
+        border-color: var(--accent);
+      }
+      .sk-strip .totalt { margin-left: auto; color: var(--sk-warm); }
+
+      /* Section */
+      .sk-sec {
+        margin: 2rem 0;
+        padding: 1.5rem 1.6rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--sk-purple);
+        border-radius: 8px;
+      }
+      .sk-sec.climax { border-left-color: var(--sk-accent); }
+      .sk-sec.opener { border-left-color: var(--sk-warm); }
+
+      .sk-head {
+        display: flex; align-items: baseline; gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 0.8rem;
+      }
+      .sk-num {
+        font-family: var(--mono); font-size: 0.75rem;
+        color: var(--sk-purple); font-weight: 700;
+        padding: 3px 8px; border-radius: 3px;
+        background: rgba(139, 92, 246, 0.1);
+      }
+      .sk-time {
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--sk-warm);
+        padding: 2px 8px; border-radius: 3px;
+        background: rgba(250, 180, 90, 0.12);
+      }
+      .sk-title {
+        font-size: 1.15rem; font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .sk-title-cn {
+        color: var(--sk-accent);
+        font-weight: 700;
+      }
+
+      /* Main line — the big 口播 line */
+      .sk-mainline {
+        font-size: 1.08rem;
+        line-height: 1.75;
+        color: var(--text);
+        font-weight: 400;
+        padding: 0.9rem 1.1rem;
+        margin: 0.9rem 0;
+        background: rgba(0, 217, 130, 0.05);
+        border-left: 3px solid var(--sk-accent);
+        border-radius: 0 6px 6px 0;
+      }
+      .sk-mainline em {
+        color: var(--sk-accent); font-style: normal; font-weight: 700;
+      }
+
+      /* Punchline pull-quote */
+      .sk-punch {
+        margin: 1rem 0;
+        padding: 0.85rem 1.2rem;
+        background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(80,200,255,0.05));
+        border-left: 3px solid var(--sk-purple);
+        border-radius: 0 6px 6px 0;
+        font-size: 1.02rem; line-height: 1.55;
+        color: var(--text); font-weight: 600;
+        font-style: italic;
+      }
+      .sk-punch::before {
+        content: "❝ ";
+        color: var(--sk-purple);
+        font-size: 1.3rem;
+        vertical-align: -3px;
+      }
+
+      /* Cue notes */
+      .sk-cue-block {
+        margin-top: 0.9rem;
+        padding: 0.6rem 0.9rem;
+        background: rgba(139, 92, 246, 0.05);
+        border-radius: 6px;
+        border: 1px dashed rgba(139, 92, 246, 0.3);
+        font-size: 0.82rem; color: var(--text-dim); line-height: 1.6;
+      }
+      .sk-cue-block::before {
+        content: "🎬 现场配合 · ";
+        font-family: var(--mono); font-size: 0.68rem;
+        color: var(--sk-purple); font-weight: 700;
+      }
+
+      /* Production notes */
+      .sk-notes {
+        margin: 2.5rem 0 1rem;
+        padding: 1.2rem 1.4rem;
+        background: linear-gradient(135deg, rgba(250, 180, 90, 0.06), rgba(239, 68, 68, 0.03));
+        border: 1px solid rgba(250, 180, 90, 0.35);
+        border-radius: 8px;
+      }
+      .sk-notes h3 { font-size: 1rem; color: var(--sk-warm); margin-bottom: 0.7rem; }
+      .sk-notes ol {
+        padding-left: 1.4rem; margin: 0;
+        color: var(--text-dim); font-size: 0.85rem; line-height: 1.75;
+      }
+      .sk-notes ol li { margin-bottom: 0.5rem; }
+      .sk-notes ol li b { color: var(--text); }
+
+      /* Footer nav */
+      .sk-nav-back {
+        margin-top: 3rem;
+        text-align: center;
+        padding: 1.5rem;
+        border-radius: 10px;
+        background: rgba(80, 200, 255, 0.06);
+        border: 1px solid rgba(80, 200, 255, 0.25);
+      }
+      .sk-nav-back p { color: var(--text-dim); margin-bottom: 0.8rem; font-size: 0.85rem; }
+      .sk-nav-back a {
+        display: inline-block; margin: 4px;
+        padding: 7px 16px; border-radius: 6px;
+        text-decoration: none; font-weight: 600; font-size: 0.85rem;
+      }
+      .sk-nav-back a.primary { background: var(--sk-accent); color: #04120c; }
+      .sk-nav-back a.secondary { border: 1px solid var(--sk-purple); color: rgb(180,160,240); }
+
+      @media (max-width: 720px) {
+        .sk-hero h1 { font-size: 1.6rem; }
+        .sk-mainline { font-size: 0.98rem; }
+        .sk-punch { font-size: 0.95rem; }
+      }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← Intro</a>
+<a href="../talk/">Talk</a>
+<a href="../papers/">Papers</a>
+<a href="../run/">Live Demo</a>
+<a href="../play/">Play</a>
+<a href="../script/">Script v1</a>
+<a href="../script-play/">Script (Play)</a>
+</div>
+</nav>
+<div class="sk-strip">
+<a href="#s0">S0 · Opening</a>
+<a href="#s1">S1 · Press the button</a>
+<a href="#s2">S2 · Read the test</a>
+<a href="#s3">S3 · Write the code</a>
+<a href="#s4">S4 · Three gates</a>
+<a href="#s5">S5 · The verdict</a>
+<a href="#s6">S6 · 30 → 91</a>
+<a href="#s7">S7 · Two flat lines</a>
+<a href="#s8">S8 · Scarce assets</a>
+<span class="totalt">Total duration ≈ 10 minutes</span>
+</div>
+<main class="sk-wrap">
+<div class="sk-hero">
+<span class="sk-badge"><span class="dot"></span>Kimi K3 · Bedrock · 2026-09-21</span>
+<h1>Speaker script <span class="grad">v2</span> · Harness Self-Evolution</h1>
+<p class="sub">CMHK TECH SUMMIT 2026 · Internal talk version · 8 sections · ~10 minutes</p>
+<p class="byline">Same demo · told another way · with <a href="../script/">Script v1</a> Use for comparison</p>
+</div>
+<!-- ═══════════════════════════════════════════════════════════
+       S0 · 开场 · 十个顾客，七个空手
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec opener" id="s0">
+<div class="sk-head">
+<span class="sk-num">S0</span>
+<span class="sk-time">45 seconds</span>
+<span class="sk-title">Opening · <span class="sk-title-cn">Ten customers, seven leave empty-handed</span></span>
+</div>
+<div class="sk-mainline">
+      Picture this: a customer searches our app for "mooncakes to give my mother-in-law", and the top result is<em>Men's razor</em>.
+      This isn't a joke · it's where our search agent actually is today — BM25 baseline · hit rate <em>30%</em> ·
+      Out of ten customers, seven leave empty-handed. Next, I won't talk about swapping models · I'll talk about how to make it<em>Not a single weight is touched</em>, it rewrites its own search code by itself.
+    </div>
+<div class="sk-punch">Weights untouched · what changes is the harness layer around them.</div>
+<div class="sk-cue-block">Full-screen search screenshot in the PPT · query "mooncakes to give my mother-in-law" · top result "men's razor" · big red 30% in the bottom-right corner.</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       S1 · 点击开始进化
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec" id="s1">
+<div class="sk-head">
+<span class="sk-num">S1</span>
+<span class="sk-time">5 seconds</span>
+<span class="sk-title">Click "Start evolution" · <span class="sk-title-cn">Press the button</span></span>
+</div>
+<div class="sk-mainline">
+      The fix is right on this page · one button. I'll click it now · <em>90 seconds</em>then we look at the numbers.
+    </div>
+<div class="sk-punch">In these 90 seconds · no human writes the code.</div>
+<div class="sk-cue-block">Switch to liucao.me/demo/harness/run/ · click "Start Evolution" · the timer starts. (If the network fails, switch to the liucao.me/demo/harness/play/ replay · same narrative.)</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       S2 · 评估先行 · 15 秒
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec climax" id="s2">
+<div class="sk-head">
+<span class="sk-num">S2</span>
+<span class="sk-time">15 seconds</span>
+<span class="sk-title">"Evaluation first" · <span class="sk-title-cn">Read the exam first · then start writing</span></span>
+</div>
+<div class="sk-mainline">
+      While it runs · let's see what it does first — <em>Not writing code · grading the exam papers</em>.
+      The Observe node picks a parent from the program library · and takes the questions it got wrong<em>Laid out one by one</em>.
+      The whole method is five verbs: Run · Observe · Propose · Verify · Commit · the engine is ShinkaEvolve, open-sourced by Sakana AI.
+    </div>
+<div class="sk-punch">First see clearly where you went wrong · then start writing. This order can't be reversed.</div>
+<div class="sk-cue-block">Left side of the screen: pipeline diagram · five nodes Run → Observe → Propose → Verify → Commit · Observe highlighted; right side: scrolling list of wrong answers. Corner label: ShinkaEvolve · arXiv:2509.19349.</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       S3 · AI 读错题 · 写新代码
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec" id="s3">
+<div class="sk-head">
+<span class="sk-num">S3</span>
+<span class="sk-time">30 seconds</span>
+<span class="sk-title">AI reads missed questions · writes new code · <span class="sk-title-cn">It writes code for itself</span></span>
+</div>
+<div class="sk-mainline">
+      Next is Propose: Claude Opus 4.8 gets this error report · and starts writing<em>New search code</em>.
+      Notice what it writes — not gradients · not LoRA parameters · but<em>Real Python</em> ·
+      Tokenization logic, synonym table, ranking rules · it's all in this diff.
+      "丈母娘" and "岳母" (both mean "mother-in-law") · to BM25 they're two literally unrelated words · now it adds that rule for itself.
+    </div>
+<div class="sk-punch">Can't change its own brain · so it changes how it works.</div>
+<div class="sk-cue-block">Code diff view · red for deletions, green for additions · the synonym-rule section highlighted; author noted in the corner: Claude Opus 4.8.</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       S4 · 三套评测跑起来
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec" id="s4">
+<div class="sk-head">
+<span class="sk-num">S4</span>
+<span class="sk-time">20 seconds</span>
+<span class="sk-title">Three eval suites running · <span class="sk-title-cn">Three checkpoints</span></span>
+</div>
+<div class="sk-mainline">
+      The new code is written · but it can't just declare itself good · this is where Verify comes in. Three evaluation suites<em>Run concurrently</em>:
+      <em>31 questions</em>E-commerce search tasks: 8 easy · 8 medium · 15 hardest;
+      plus <em>5 hold-out problems</em>(which it has never seen);
+      plus <em>31 typo-variant questions</em>(deliberately misspelled).
+      hold-out prevents memorization · typo prevents brittleness · without both, it doesn't count.
+    </div>
+<div class="sk-punch">Evolution without evaluation · is just random mutation.</div>
+<div class="sk-cue-block">Three progress bars run in parallel · Main 31 problems / Hold-out 5 / Typo 31 · pass rates update live.</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       S5 · Gate 判决
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec" id="s5">
+<div class="sk-head">
+<span class="sk-num">S5</span>
+<span class="sk-time">5 seconds</span>
+<span class="sk-title">Gate verdict · <span class="sk-title-cn">Verdict</span></span>
+</div>
+<div class="sk-mainline">
+      All three suites done · Commit does only one thing:<em>Verdict</em>.
+      Pass the bar · the new code is promoted into the program library; fail · the code and its error logs are sent back · the next generation keeps fixing it.
+    </div>
+<div class="sk-punch">The score is the only judge.</div>
+<div class="sk-cue-block">A Gate result card pops up on screen · large PASS / FAIL text · with old vs. new score comparison.</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       S6 · Gen 1 出结果
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec climax" id="s6">
+<div class="sk-head">
+<span class="sk-num">S6</span>
+<span class="sk-time">20 seconds</span>
+<span class="sk-title">Gen 1 results · <span class="sk-title-cn">90 seconds · 30 to 91</span></span>
+</div>
+<div class="sk-mainline">
+      Then · the first generation's results come in.<em>30%</em> is the starting point left by BM25 · <em>91%</em> is the first version of the code written by Opus 4.8 —
+      from pressing the button until now · <em>90 seconds</em> · The timer can vouch for it.
+    </div>
+<div class="sk-punch">From 30 to 91 · without a human touching a single line of code.</div>
+<div class="sk-cue-block">The big number jumps from 30% to 91% · the timer freezes around 90 seconds; replay mode freezes on the same frame.<b>Pause here for two seconds · let the numbers sink in.</b></div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       S7 · 3 代跑完对比图
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec climax" id="s7">
+<div class="sk-head">
+<span class="sk-num">S7</span>
+<span class="sk-time">40 seconds</span>
+<span class="sk-title">Comparison after 3 generations · <span class="sk-title-cn">The gap between the two flat lines</span></span>
+</div>
+<div class="sk-mainline">
+      Then all three generations finish · the curve appears · but what I want you to look at<em>Not the Opus line · the flat one next to it</em>.
+      Same eval, same pipeline · swap in Sonnet 4.5 as the author · after three generations it's stuck at <em>9%</em> ——
+      It's not that the pipeline broke · it can't understand the error report · and can't write code that passes the Gate.
+      Opus 4.8 plateaus at 90% · Sonnet 4.5 plateaus at 9% · <em>The gap between the two plateau lines · is the ceiling of model capability</em> ·
+      And our evaluation system can measure where it falls short.
+    </div>
+<div class="sk-punch">The ceiling is real · the good news is · now we have a ruler.</div>
+<div class="sk-cue-block">Comparison chart · x-axis Generation 0–3 · y-axis hit rate; the Opus 4.8 curve goes 30% → 91% → flattens around 90%; the Sonnet 4.5 curve stays flat around 9% · labeled Tier H (hardest 15-question tier).</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       S8 · 收束
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec climax" id="s8">
+<div class="sk-head">
+<span class="sk-num">S8</span>
+<span class="sk-time">60 seconds</span>
+<span class="sk-title">Wrap-up · <span class="sk-title-cn">What the real asset is</span></span>
+</div>
+<div class="sk-mainline">
+      Finally, let's do the math: one evolution run like this · API bill <em>$0.10</em>;
+      solving the same problem with fine-tuning · data, compute and staff add up to about <em>$500K</em> —— poor <em>5 orders of magnitude</em>.
+      And after fine-tuning you still don't know whether the new model breaks on typos · because you don't have those 31 questions.
+      Models change every quarter · Opus will be outdated next year too · what truly accumulates, and what no one can take from you, · <em>is your 31 + 5 + 31 evaluation system</em>.
+      If you want to run it yourself · this page is live right now.
+    </div>
+<div class="sk-punch">Models go stale · harnesses evolve · but your eval system is your only scarce asset.</div>
+<div class="sk-cue-block">Closing slide · left: $0.10 / evolution · right: $500K / fine-tune · middle: 10⁵×; bottom line: "Eval is the asset."
+    Then switch back to the demo page and stay there · show the final 91% and the liucao.me/demo/harness/run/ link.</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       制作备注（不口播）
+       ═══════════════════════════════════════════════════════════ -->
+<div class="sk-notes">
+<h3>📋 Production notes · not read aloud</h3>
+<ol>
+<li>
+<b>How questions are counted</b>: The script follows <b>31 questions</b>(8+8+15) · consistent with mock-run.json and other pages on the site.
+      </li>
+<li>
+<b>Total duration</b>: Total narration about <b>4 minutes</b> · The remaining 6 minutes are buffer for demo waits, pauses, and live reactions. The 75–90 second narration gaps between S1→S6 match the live pace of "results in 90 seconds".
+      </li>
+<li>
+<b>Backup link</b>: If switching to playback (/play/) · the S1 and S6 narration needs no changes · just change the "I'm clicking it now" gesture to pointing at the screen.
+      </li>
+<li>
+<b>"丈母娘 vs 岳母" example (two Chinese words for "mother-in-law")</b>: a scenario made up by Kimi · mock-run.json currently has no real failed query like this. During rehearsal, align with the Live Demo's real failed-query list · or swap in a real example already in the mock data (e.g. "bluetooth speaker" → "Shanxi Red Fuji apples").
+      </li>
+<li>
+<b>How it's generated</b>: Bedrock <code>us.moonshotai.kimi-k3</code> · Generated on 2026-09-21 · the original Markdown draft is stored only locally.
+      </li>
+</ol>
+</div>
+<div class="sk-nav-back">
+<p>Ready to start the talk?</p>
+<a class="primary" href="../run/">→ Open Live Demo</a>
+<a class="secondary" href="../script/">Compare against Script v1</a>
+<a class="secondary" href="../talk/">Talk overview</a>
+</div>
+</main>
+<script>
+(function() {
+  // Sticky strip current highlight (matches Script v1's UX)
+  const links = document.querySelectorAll(".sk-strip a[href^='#']");
+  const sections = document.querySelectorAll(".sk-sec");
+  window.addEventListener("scroll", () => {
+    let current = null;
+    sections.forEach(s => {
+      const r = s.getBoundingClientRect();
+      if (r.top < 200) current = s.id;
+    });
+    links.forEach(a => a.classList.toggle("current", a.getAttribute("href") === "#" + current));
+  }, { passive: true });
+})();
+</script>
+<a data-cur="en" data-to="zh" href="../../../../rsi/demo/script-v2/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

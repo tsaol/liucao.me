@@ -1,0 +1,2182 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Play · Harness Self-Evolution</title>
+<style>
+/* inlined from static/style.css */
+/* ─────────────────────────────────────────────────────────────
+   liucao.me — shared design system
+   Dark theme, emerald accent, modern type scale
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+    --bg:        #0b0f14;
+    --bg-soft:   #11171f;
+    --surface:   #151c26;
+    --surface-2: #1b2430;
+    --border:    #26313f;
+    --border-hi: #34455a;
+    --text:      #e8edf2;
+    --text-dim:  #9aa7b4;
+    --text-mute: #64717f;
+    --accent:    #00e5a0;
+    --accent-dim:#0bbd87;
+    --accent-glow: rgba(0, 229, 160, 0.15);
+    --danger:    #ef4444;
+    --radius:    14px;
+    --radius-sm: 8px;
+    --maxw:      1040px;
+    --shadow:    0 10px 40px rgba(0,0,0,0.35);
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+        radial-gradient(900px 500px at 15% -10%, rgba(0,229,160,0.08), transparent 60%),
+        radial-gradient(700px 500px at 100% 0%, rgba(56,132,255,0.06), transparent 55%);
+    background-attachment: fixed;
+}
+
+a { color: var(--accent); text-decoration: none; }
+
+/* ── Top nav ── */
+.nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    backdrop-filter: blur(8px);
+}
+.nav .brand {
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    color: var(--text);
+}
+.nav .brand span { color: var(--accent); }
+.nav .links { display: flex; gap: 0.4rem; align-items: center; }
+.nav .links a {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius-sm);
+    transition: color 0.18s, background 0.18s;
+}
+.nav .links a:hover { color: var(--text); background: var(--surface); }
+.nav .links a.cta {
+    color: var(--accent);
+    border: 1px solid var(--border);
+}
+.nav .links a.cta:hover { border-color: var(--accent); background: var(--accent-glow); }
+
+/* ── Layout helpers ── */
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 1.5rem; }
+.section { padding: 3rem 0; }
+
+.back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-mute);
+    font-size: 0.9rem;
+    transition: color 0.18s;
+}
+.back:hover { color: var(--accent); }
+
+/* ── Hero ── */
+.hero { text-align: center; padding: 5rem 1.5rem 3.5rem; }
+.hero .eyebrow {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--accent);
+    background: var(--accent-glow);
+    border: 1px solid var(--border);
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    margin-bottom: 1.4rem;
+    letter-spacing: 0.02em;
+}
+.hero h1 {
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 1rem;
+}
+.hero h1 .grad {
+    background: linear-gradient(120deg, var(--accent), #5eead4 55%, #38bdf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.hero p.sub {
+    color: var(--text-dim);
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    max-width: 560px;
+    margin: 0 auto 2.2rem;
+}
+.hero .actions { display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; }
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.6rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.18s, border-color 0.18s, opacity 0.18s;
+    border: 1px solid transparent;
+}
+.btn-primary { background: var(--accent); color: #04120d; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); }
+.btn-ghost { border-color: var(--border); color: var(--text); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Card grid ── */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+.card {
+    position: relative;
+    background: linear-gradient(180deg, var(--surface), var(--bg-soft));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    color: inherit;
+    display: block;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+.card:hover { border-color: var(--accent-dim); transform: translateY(-3px); box-shadow: var(--shadow); }
+.card:hover::before { opacity: 1; }
+.card h3 { font-size: 1.1rem; color: var(--accent); margin-bottom: 0.5rem; letter-spacing: -0.01em; }
+.card .meta { color: var(--text-mute); font-size: 0.8rem; margin-bottom: 0.5rem; font-family: var(--mono); }
+.card p { color: var(--text-dim); font-size: 0.88rem; line-height: 1.55; }
+.card .tag {
+    display: inline-block;
+    margin-top: 0.9rem;
+    padding: 0.22rem 0.65rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    color: var(--text-mute);
+    font-family: var(--mono);
+}
+
+/* ── Section heading ── */
+.section-head { text-align: center; margin-bottom: 2.5rem; }
+.section-head h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
+.section-head h1 span { color: var(--accent); }
+.section-head p { color: var(--text-dim); }
+
+/* ── Login ── */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+}
+.login-box {
+    background: linear-gradient(180deg, var(--surface), var(--bg-soft));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.6rem;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: var(--shadow);
+}
+.login-box .logo { text-align: center; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.3rem; letter-spacing: -0.02em; }
+.login-box .logo span { color: var(--accent); }
+.login-box .subtitle { text-align: center; color: var(--text-mute); font-size: 0.85rem; margin-bottom: 1.9rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0.35rem; }
+.form-group input {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+}
+.form-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.password-wrapper { position: relative; }
+.password-wrapper input { padding-right: 3.6rem; }
+.toggle-pw {
+    position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--text-mute);
+    font-size: 0.75rem; cursor: pointer; padding: 0.3rem 0.5rem;
+}
+.toggle-pw:hover { color: var(--accent); }
+.login-btn {
+    width: 100%; padding: 0.8rem; background: var(--accent); color: #04120d;
+    border: none; border-radius: var(--radius-sm); font-size: 0.92rem;
+    font-weight: 600; cursor: pointer; margin-top: 0.6rem; transition: opacity 0.18s, transform 0.15s;
+}
+.login-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+.error-msg { color: var(--danger); font-size: 0.82rem; text-align: center; margin-top: 0.9rem; }
+
+/* ── Footer ── */
+.footer {
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: var(--text-mute);
+    font-size: 0.85rem;
+}
+.footer a { color: var(--text-dim); }
+.footer a:hover { color: var(--accent); }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .nav { padding: 0.85rem 1rem; }
+    .nav .links a { padding: 0.4rem 0.6rem; font-size: 0.85rem; }
+    .hero { padding-top: 3.5rem; }
+}
+
+/* ── Minimal homepage ── */
+.home {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+}
+.home h1 {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+.home h1 span { color: var(--accent); }
+.home .tagline {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    margin: 0.6rem 0 2rem;
+}
+.home-links { display: flex; gap: 1.5rem; }
+.home-links a {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    transition: color 0.18s;
+}
+.home-links a:hover { color: var(--accent); }
+
+</style>
+<style>
+      :root {
+        --mk-accent: rgb(0, 217, 130);
+        --mk-purple: rgb(139, 92, 246);
+        --mk-blue:   rgb(80, 200, 255);
+        --mk-warm:   rgb(250, 180, 90);
+        --mk-danger: rgb(239, 68, 68);
+      }
+      body {
+        background:
+          radial-gradient(ellipse 900px 500px at 50% -100px, rgba(139,92,246,0.08), transparent 60%),
+          radial-gradient(ellipse 700px 400px at 100% 300px, rgba(0,217,130,0.05), transparent 70%),
+          radial-gradient(ellipse 700px 400px at 0% 700px, rgba(80,200,255,0.05), transparent 70%),
+          #050a0f;
+      }
+      main.mk-wrap { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem 6rem; color: var(--text); }
+
+      .mk-hero { text-align: center; padding: 1rem 0 1.6rem; }
+      .mk-hero .kicker {
+        display: inline-block; padding: 4px 12px;
+        border: 1px solid rgba(250,180,90,0.4);
+        border-radius: 999px;
+        color: rgb(250,200,130); font-size: 0.72rem;
+        margin-bottom: 0.8rem;
+      }
+      .mk-hero h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+      .mk-hero h1 .grad {
+        background: linear-gradient(90deg, var(--mk-purple), var(--mk-accent), var(--mk-blue), var(--mk-purple));
+        background-size: 300% 100%;
+        background-clip: text; -webkit-background-clip: text;
+        color: transparent; -webkit-text-fill-color: transparent;
+        animation: mkGrad 8s linear infinite;
+      }
+      @keyframes mkGrad { to { background-position: 300% 0; } }
+      .mk-hero p.mk-hero-sub {
+        max-width: 720px; margin: 0 auto;
+        color: var(--text-dim); font-size: 0.95rem; line-height: 1.6;
+      }
+      .mk-hero p.mk-hero-sub b { color: var(--text); }
+      .mk-hero p.sub { color: var(--text-dim); font-size: 0.95rem; }
+
+      /* Briefing · 3 cards + arrows · "what am I looking at" in ≤10 seconds */
+      .mk-brief {
+        max-width: 960px; margin: 0 auto 1.6rem;
+      }
+      .mk-brief-flow {
+        display: grid;
+        grid-template-columns: 1fr 40px 1fr 40px 1fr;
+        gap: 8px;
+        align-items: stretch;
+      }
+      .mk-brief-card {
+        position: relative;
+        padding: 14px 16px 16px;
+        border-radius: 10px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        border: 1px solid var(--border);
+        display: flex; flex-direction: column;
+        transition: border-color 0.2s, transform 0.2s;
+      }
+      .mk-brief-card:hover { transform: translateY(-1px); }
+      .mk-brief-card.what {
+        border-color: rgba(80,200,255,0.32);
+        background: linear-gradient(180deg, rgba(80,200,255,0.06), transparent 70%);
+      }
+      .mk-brief-card.how {
+        border-color: rgba(139,92,246,0.36);
+        background: linear-gradient(180deg, rgba(139,92,246,0.06), transparent 70%);
+      }
+      .mk-brief-card.engine {
+        border-color: rgba(0,217,130,0.32);
+        background: linear-gradient(180deg, rgba(0,217,130,0.06), transparent 70%);
+      }
+      .mk-brief-tag {
+        font-family: var(--mono); font-size: 0.62rem; font-weight: 700;
+        letter-spacing: 0.14em; text-transform: uppercase;
+        color: var(--text-mute);
+        margin-bottom: 8px;
+      }
+      .mk-brief-card.what .mk-brief-tag { color: rgb(120,210,255); }
+      .mk-brief-card.how .mk-brief-tag { color: rgb(180,160,240); }
+      .mk-brief-card.engine .mk-brief-tag { color: rgb(120,220,170); }
+      .mk-brief-headline {
+        font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em;
+        color: var(--text);
+        line-height: 1.25;
+        margin-bottom: 4px;
+      }
+      .mk-brief-headline a {
+        color: inherit; text-decoration: none;
+        background: linear-gradient(90deg, var(--mk-accent), var(--mk-blue));
+        background-clip: text; -webkit-background-clip: text;
+        color: transparent; -webkit-text-fill-color: transparent;
+      }
+      .mk-brief-headline a:hover {
+        text-decoration: underline;
+        text-underline-offset: 4px;
+        text-decoration-color: rgba(0,217,130,0.5);
+      }
+      .mk-brief-em {
+        background: linear-gradient(90deg, var(--mk-purple), var(--mk-accent));
+        background-clip: text; -webkit-background-clip: text;
+        color: transparent; -webkit-text-fill-color: transparent;
+      }
+      .mk-brief-meta {
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--text-mute);
+        margin-bottom: auto;
+        padding-bottom: 12px;
+        line-height: 1.5;
+      }
+      .mk-brief-meta code {
+        font-family: var(--mono); font-size: inherit;
+        color: rgb(180,210,250);
+        background: rgba(80,200,255,0.08);
+        padding: 1px 6px; border-radius: 3px;
+      }
+      .mk-brief-metric {
+        padding-top: 10px;
+        border-top: 1px dashed rgba(255,255,255,0.08);
+        display: flex; align-items: baseline; gap: 8px;
+        flex-wrap: wrap;
+      }
+      .mk-brief-metric.single { flex-direction: column; align-items: flex-start; gap: 2px; }
+      .mk-brief-num {
+        font-family: var(--mono); font-size: 1.9rem; font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+      .mk-brief-card.what .mk-brief-num {
+        background: linear-gradient(135deg, rgb(80,200,255), rgb(180,210,250));
+        background-clip: text; -webkit-background-clip: text;
+        color: transparent; -webkit-text-fill-color: transparent;
+      }
+      .mk-brief-card.how .mk-brief-num {
+        background: linear-gradient(135deg, rgb(139,92,246), rgb(200,180,250));
+        background-clip: text; -webkit-background-clip: text;
+        color: transparent; -webkit-text-fill-color: transparent;
+      }
+      .mk-brief-num .pct {
+        font-size: 0.95rem; font-weight: 600;
+        margin-left: 2px;
+        opacity: 0.85;
+        -webkit-text-fill-color: currentColor;
+      }
+      .mk-brief-num-lbl {
+        font-family: var(--mono); font-size: 0.7rem;
+        color: var(--text-mute);
+        line-height: 1.3;
+      }
+      .mk-brief-num-lbl.top {
+        text-transform: uppercase; letter-spacing: 0.08em;
+        font-size: 0.62rem;
+      }
+      .mk-brief-eng {
+        font-family: var(--font); font-size: 0.95rem; font-weight: 700;
+        color: var(--text);
+      }
+      .mk-brief-arrow {
+        display: flex; align-items: center; justify-content: center;
+      }
+      .mk-brief-arrow svg { width: 100%; height: 32px; opacity: 0.85; }
+      @media (max-width: 780px) {
+        .mk-brief-flow {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+        .mk-brief-arrow { transform: rotate(90deg); height: 24px; margin: -6px auto; }
+        .mk-brief-arrow svg { height: 24px; width: 80px; }
+      }
+
+      /* Sticky control bar */
+      .mk-controls {
+        position: sticky; top: 0;
+        z-index: 30;
+        margin: 0 -1.5rem 1.5rem;
+        padding: 0.8rem 1.5rem;
+        background: rgba(5,10,15,0.94);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      }
+      .mk-btn {
+        padding: 6px 14px; border-radius: 5px;
+        background: var(--surface); color: var(--text);
+        border: 1px solid var(--border);
+        cursor: pointer; font-size: 0.85rem;
+        font-family: var(--mono);
+        text-decoration: none;
+        display: inline-block;
+      }
+      .mk-btn:hover { border-color: var(--mk-accent); color: var(--mk-accent); }
+      .mk-btn.primary { background: var(--mk-accent); color: #04120c; border-color: var(--mk-accent); }
+      .mk-btn:disabled { opacity: 0.4; cursor: default; }
+      a.mk-btn { line-height: 1.5; }
+      .mk-progress {
+        flex: 1; min-width: 200px;
+        display: flex; align-items: center; gap: 8px;
+        font-family: var(--mono); font-size: 0.75rem;
+        color: var(--text-mute);
+      }
+      .mk-timeline {
+        flex: 1; height: 4px;
+        background: var(--surface-2);
+        border-radius: 2px;
+        overflow: hidden;
+        position: relative;
+      }
+      .mk-timeline-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--mk-purple), var(--mk-accent));
+        transition: width 0.4s ease-out;
+      }
+      .mk-step-label {
+        min-width: 160px; text-align: right;
+        color: var(--text-dim);
+        font-family: var(--mono); font-size: 0.75rem;
+      }
+      .mk-hint { color: var(--text-mute); font-size: 0.72rem; font-family: var(--mono); }
+
+      /* Workflow container — reuse Live Demo's visual */
+      .mk-panel {
+        background: var(--surface); border: 1px solid var(--border-hi);
+        border-radius: 12px; padding: 1.6rem;
+      }
+
+      /* 5-verb legend */
+      .mk-verbs {
+        margin-bottom: 1.4rem;
+        padding: 0.7rem 0.9rem;
+        background: linear-gradient(135deg, rgba(80,200,255,0.06), rgba(0,217,130,0.04));
+        border: 1px solid rgba(80,200,255,0.25);
+        border-radius: 6px;
+      }
+      .mk-verbs-h { font-size: 0.8rem; color: var(--text); font-weight: 600; margin-bottom: 0.5rem; }
+      .mk-verbs-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-family: var(--mono); }
+      .mk-verb { padding: 3px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; border: 1px solid transparent; }
+      .mk-verb-arrow { color: var(--text-mute); font-size: 0.72rem; }
+      .v-run     { background: rgba(250,180,90,0.14); color: rgb(250,200,130); border-color: rgba(250,180,90,0.4); }
+      .v-observe { background: rgba(80,200,255,0.14); color: rgb(120,210,255); border-color: rgba(80,200,255,0.4); }
+      .v-propose { background: rgba(139,92,246,0.14); color: rgb(180,160,240); border-color: rgba(139,92,246,0.4); }
+      .v-verify  { background: rgba(0,217,130,0.14); color: var(--mk-accent); border-color: rgba(0,217,130,0.4); }
+      .v-commit  { background: rgba(239,68,68,0.14); color: rgb(240,130,130); border-color: rgba(239,68,68,0.4); }
+
+      /* Workflow · 5 nodes */
+      .mk-wf-header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 1rem;
+        font-family: var(--mono); font-size: 0.85rem;
+      }
+      .mk-wf-header .mk-gen-title {
+        display: inline-flex; align-items: center; gap: 6px;
+        line-height: 1;
+        font-family: var(--font);
+        color: var(--text-mute); letter-spacing: 0.02em;
+      }
+      .mk-wf-header .mk-gen-title .mk-gen-label {
+        color: var(--text-mute); font-size: 0.95rem; line-height: 1;
+      }
+      #mk-gen-num {
+        display: inline-flex;
+        align-items: center; justify-content: center;
+        line-height: 1;
+        font-family: var(--mono);
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, var(--mk-purple), var(--mk-accent));
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        transform-origin: center;
+      }
+      #mk-gen-num.pulse {
+        animation: mkGenPulse 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      @keyframes mkGenPulse {
+        0%   { transform: scale(0.6); filter: brightness(1.4); }
+        60%  { transform: scale(1.25); filter: brightness(1.4); }
+        100% { transform: scale(1); filter: brightness(1); }
+      }
+      .mk-wf-list { list-style: none; padding: 0; margin: 0; position: relative; }
+      .mk-wf-node { position: relative; display: flex; gap: 14px; padding: 10px 0; min-height: 50px; }
+      .mk-wf-node:not(:last-child)::before {
+        content: ""; position: absolute; left: 14px; top: 40px; bottom: -10px;
+        width: 2px; background: var(--border); transition: background 0.4s ease;
+      }
+      .mk-wf-node.done:not(:last-child)::before { background: var(--mk-accent); }
+      .mk-wf-node.active:not(:last-child)::before {
+        background: linear-gradient(180deg, var(--mk-accent) 0%, var(--mk-accent) 50%, var(--border) 50%);
+      }
+      .mk-wf-dot {
+        flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+        background: var(--surface-2); border: 2px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        font-family: var(--mono); font-size: 0.78rem; font-weight: 700;
+        color: var(--text-mute);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 1;
+      }
+      .mk-wf-node.done .mk-wf-dot { background: var(--mk-accent); border-color: var(--mk-accent); color: #04120c; }
+      .mk-wf-node.active .mk-wf-dot {
+        background: rgba(139,92,246,0.15); border-color: rgb(139,92,246); color: rgb(180,160,240);
+        animation: mkPulse 1.4s ease-in-out infinite;
+      }
+      @keyframes mkPulse {
+        0%,100% { box-shadow: 0 0 0 0 rgba(139,92,246,0.5); }
+        50%     { box-shadow: 0 0 0 10px rgba(139,92,246,0); }
+      }
+      .mk-wf-node.done .mk-wf-num::before { content: "✓"; }
+      .mk-wf-node.done .mk-wf-num { font-size: 0; }
+      .mk-wf-node.done .mk-wf-num::before { font-size: 0.9rem; }
+      .mk-wf-body { flex: 1; min-width: 0; padding-top: 5px; }
+      .mk-wf-name { font-size: 0.95rem; color: var(--text-dim); font-weight: 500; }
+      .mk-wf-node.active .mk-wf-name { color: rgb(200,185,250); font-weight: 600; }
+      .mk-wf-node.done .mk-wf-name { color: var(--text); }
+      .mk-wf-name .mk-verb { margin-left: 8px; font-size: 0.7rem; padding: 2px 8px; }
+      .mk-wf-data {
+        margin-top: 4px; font-size: 0.82rem; color: var(--text-mute); line-height: 1.6;
+        max-height: 0; overflow: hidden; opacity: 0;
+        transition: max-height 0.4s ease, opacity 0.3s ease;
+      }
+      .mk-wf-node.active .mk-wf-data, .mk-wf-node.done .mk-wf-data {
+        max-height: 800px; opacity: 1; padding-top: 4px;
+      }
+      .mk-wf-node.done .mk-wf-data { opacity: 0.7; }
+
+      /* Archive slots */
+      .mk-archive { margin: 8px 0; padding: 10px; border-radius: 6px; background: rgba(80,200,255,0.05); border: 1px solid rgba(80,200,255,0.28); }
+      .mk-archive-h { font-size: 0.75rem; color: rgb(120,210,255); font-family: var(--mono); margin-bottom: 5px; }
+      .mk-archive-slots { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+      .mk-archive-slot {
+        padding: 4px 12px; border-radius: 4px;
+        font-family: var(--mono); font-size: 0.78rem;
+        background: var(--bg-soft); border: 1px solid var(--border); color: var(--text-dim);
+        transition: all 0.3s ease;
+      }
+      .mk-archive-slot.chosen {
+        background: rgba(0,217,130,0.15); border-color: var(--mk-accent); color: var(--mk-accent);
+        transform: scale(1.05);
+      }
+      .mk-archive-slot.chosen::before { content: "→ "; }
+      .mk-archive-slot.empty { color: var(--text-mute); font-style: italic; border-style: dashed; }
+      .mk-archive-legend { font-size: 0.72rem; color: var(--text-mute); margin-top: 4px; }
+
+      /* Reasoning panel */
+      .mk-reasoning {
+        margin-top: 12px; padding: 14px 16px; border-radius: 8px;
+        background: rgba(80,200,255,0.06); border: 1px solid rgba(80,200,255,0.32);
+      }
+      .mk-reasoning-h { font-size: 0.95rem; color: var(--text); font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .mk-reasoning-name { padding: 3px 10px; border-radius: 4px; font-family: var(--mono); font-size: 0.75rem; background: rgba(80,200,255,0.18); color: rgb(140,220,255); border: 1px solid rgba(80,200,255,0.45); }
+      .mk-reasoning-analysis, .mk-reasoning-desc {
+        font-size: 0.88rem; line-height: 1.75; color: var(--text);
+        margin-top: 10px; padding: 10px 12px;
+        background: rgba(0,0,0,0.15); border-radius: 5px;
+        border-left: 3px solid rgba(80,200,255,0.5);
+        white-space: pre-wrap; word-break: break-word;
+      }
+      .mk-reasoning-analysis::before { content: "🔍 分析"; display: block; color: rgb(140,220,255); font-family: var(--mono); font-size: 0.72rem; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.05em; }
+      .mk-reasoning-desc::before { content: "🛠 改动方案"; display: block; color: rgb(140,220,255); font-family: var(--mono); font-size: 0.72rem; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.05em; }
+      .mk-reasoning-analysis b, .mk-reasoning-desc b { color: rgb(255,220,130); }
+      .mk-reasoning-analysis code, .mk-reasoning-desc code { font-family: var(--mono); font-size: 0.82rem; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px; color: rgb(200,220,255); }
+
+      /* Diff panel */
+      .mk-diff { margin-top: 10px; padding: 8px 10px; border-radius: 6px; background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.28); }
+      .mk-diff-h { font-size: 0.82rem; color: var(--text); margin-bottom: 4px; }
+      .mk-diff-summary { display: block; margin-top: 3px; font-size: 0.74rem; color: var(--text-dim); font-style: italic; }
+      .mk-diff-body { margin: 8px 0 0; padding: 10px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 4px; font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); max-height: 260px; overflow: auto; white-space: pre-wrap; line-height: 1.5; }
+      .mk-diff-body .add { color: rgb(140,220,160); background: rgba(0,217,130,0.08); display: block; }
+      .mk-diff-body .del { color: rgb(230,140,140); background: rgba(239,68,68,0.08); display: block; }
+      .mk-diff-body .ctx { color: var(--text-mute); display: block; }
+      .mk-diff-body .hunk { color: rgb(120,210,255); display: block; margin-top: 4px; }
+
+      /* Per-question grid */
+      .mk-perq { margin-top: 10px; padding: 10px 12px; border-radius: 6px; background: rgba(0,217,130,0.05); border: 1px solid rgba(0,217,130,0.25); }
+      .mk-perq-h { font-size: 0.85rem; color: var(--text); }
+      .mk-perq-summary { margin-left: 8px; font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); }
+      .mk-perq-tier-groups { margin-top: 8px; display: flex; flex-direction: column; gap: 10px; }
+      .mk-perq-tier { padding: 8px 10px; background: var(--bg-soft); border-radius: 4px; border: 1px solid var(--border); }
+      .mk-perq-tier-h { font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); margin-bottom: 6px; display: flex; justify-content: space-between; }
+      .mk-perq-cells { display: flex; flex-wrap: wrap; gap: 4px; }
+      .mk-perq-cell { width: 22px; height: 22px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.65rem; cursor: help; transition: transform 0.15s; }
+      .mk-perq-cell.hit { background: rgba(0,217,130,0.35); color: white; border: 1px solid var(--mk-accent); }
+      .mk-perq-cell.partial { background: rgba(250,180,90,0.35); color: white; border: 1px solid rgb(250,180,90); }
+      .mk-perq-cell.miss { background: rgba(239,68,68,0.25); color: rgba(255,200,200,0.7); border: 1px solid rgba(239,68,68,0.5); }
+      .mk-perq-cell.pending {
+        background: var(--surface-2); border: 1px dashed rgba(255,255,255,0.15);
+        color: var(--text-mute);
+        animation: mkPulseCell 1.2s ease-in-out infinite;
+      }
+      @keyframes mkPulseCell {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 1; }
+      }
+      .mk-perq-cell.revealed {
+        animation: mkPop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      @keyframes mkPop {
+        0% { transform: scale(0.5); opacity: 0; }
+        70% { transform: scale(1.15); opacity: 1; }
+        100% { transform: scale(1); }
+      }
+      .mk-perq-tier-count { color: var(--text-mute); }
+
+      /* A · Currently-being-scored card — big + readable during reveal */
+      .mk-perq-current {
+        margin: 12px 0;
+        padding: 14px 18px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(139,92,246,0.10), rgba(80,200,255,0.05));
+        border: 1px solid rgba(139,92,246,0.4);
+        box-shadow: 0 0 20px rgba(139,92,246,0.12);
+        transition: border-color 0.35s, background 0.35s, box-shadow 0.35s;
+      }
+      .mk-perq-current.hit {
+        background: linear-gradient(135deg, rgba(0,217,130,0.10), rgba(0,217,130,0.02));
+        border-color: rgba(0,217,130,0.5);
+        box-shadow: 0 0 20px rgba(0,217,130,0.15);
+      }
+      .mk-perq-current.miss {
+        background: linear-gradient(135deg, rgba(239,68,68,0.10), rgba(250,180,90,0.03));
+        border-color: rgba(239,68,68,0.5);
+        box-shadow: 0 0 20px rgba(239,68,68,0.15);
+      }
+      .mk-perq-current.partial {
+        background: linear-gradient(135deg, rgba(250,180,90,0.10), rgba(250,180,90,0.03));
+        border-color: rgba(250,180,90,0.5);
+        box-shadow: 0 0 20px rgba(250,180,90,0.15);
+      }
+      .mk-perq-current-head {
+        display: flex; align-items: center; gap: 10px;
+        margin-bottom: 8px;
+        font-family: var(--mono);
+      }
+      .mk-perq-current-tier {
+        padding: 3px 10px; border-radius: 4px;
+        font-size: 0.7rem; font-weight: 700;
+      }
+      .mk-perq-current-tier.E { background: rgba(0,217,130,0.15); color: rgb(120,220,170); }
+      .mk-perq-current-tier.M { background: rgba(250,180,90,0.15); color: rgb(240,190,110); }
+      .mk-perq-current-tier.H { background: rgba(239,68,68,0.15); color: rgb(240,150,150); }
+      .mk-perq-current-mark {
+        font-size: 1.4rem; font-weight: 800;
+        min-width: 30px;
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .mk-perq-current.hit .mk-perq-current-mark { color: var(--mk-accent); }
+      .mk-perq-current.miss .mk-perq-current-mark { color: var(--mk-danger); }
+      .mk-perq-current.partial .mk-perq-current-mark { color: var(--mk-warm); }
+      .mk-perq-current-mark.pop { animation: mkMarkPop 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+      @keyframes mkMarkPop {
+        0%   { transform: scale(0.4); }
+        60%  { transform: scale(1.25); }
+        100% { transform: scale(1); }
+      }
+      .mk-perq-current-ndcg {
+        margin-left: auto;
+        font-size: 0.85rem;
+        color: var(--text-mute);
+      }
+      .mk-perq-current-ndcg b { color: var(--text); font-weight: 700; }
+      .mk-perq-current-q {
+        font-size: 1.05rem; color: var(--text); font-weight: 600;
+        margin: 4px 0 10px;
+        line-height: 1.4;
+      }
+      .mk-perq-current-row {
+        display: flex; gap: 10px; align-items: baseline;
+        padding: 4px 0;
+        font-size: 0.85rem; line-height: 1.5;
+      }
+      .mk-perq-current-lbl {
+        min-width: 40px;
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--text-mute);
+      }
+      .mk-perq-current-lbl.bad { color: rgb(240,150,150); }
+      .mk-perq-current-gold { color: var(--text); }
+      .mk-perq-current-pred { color: rgb(240,180,180); }
+
+      /* Top-5 rank view */
+      .mk-perq-current-ranks {
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px dashed rgba(255,255,255,0.08);
+      }
+      .mk-perq-current-ranks-h {
+        display: flex; align-items: center; gap: 6px;
+        font-family: var(--mono); font-size: 0.68rem;
+        color: var(--text-mute);
+        letter-spacing: 0.06em; text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .mk-perq-current-ranks-list {
+        list-style: none; padding: 0; margin: 0;
+        display: flex; flex-direction: column; gap: 3px;
+      }
+      .mk-perq-current-ranks-list li {
+        display: grid;
+        grid-template-columns: 24px 1fr auto;
+        gap: 8px; align-items: baseline;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.82rem; line-height: 1.4;
+        background: rgba(255,255,255,0.015);
+        border: 1px solid transparent;
+      }
+      .mk-perq-current-ranks-list li .rk-pos {
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--text-mute);
+        text-align: center;
+      }
+      .mk-perq-current-ranks-list li .rk-title {
+        color: var(--text-dim);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      }
+      .mk-perq-current-ranks-list li .rk-tag {
+        font-family: var(--mono); font-size: 0.65rem;
+        padding: 1px 6px; border-radius: 3px;
+        color: var(--text-mute);
+      }
+      /* gold = the correct answer · green highlight */
+      .mk-perq-current-ranks-list li.rk-gold {
+        background: rgba(0, 217, 130, 0.10);
+        border-color: rgba(0, 217, 130, 0.35);
+      }
+      .mk-perq-current-ranks-list li.rk-gold .rk-pos { color: var(--mk-accent); font-weight: 700; }
+      .mk-perq-current-ranks-list li.rk-gold .rk-title { color: var(--text); font-weight: 600; }
+      .mk-perq-current-ranks-list li.rk-gold .rk-tag {
+        color: var(--mk-accent); background: rgba(0, 217, 130, 0.15);
+        border: 1px solid rgba(0, 217, 130, 0.4);
+      }
+      /* partial = near-miss but still relevant · yellow */
+      .mk-perq-current-ranks-list li.rk-partial {
+        background: rgba(250, 180, 90, 0.06);
+        border-color: rgba(250, 180, 90, 0.28);
+      }
+      .mk-perq-current-ranks-list li.rk-partial .rk-title { color: rgb(240, 200, 140); }
+      .mk-perq-current-ranks-list li.rk-partial .rk-tag {
+        color: rgb(240, 190, 110); background: rgba(250, 180, 90, 0.14);
+        border: 1px solid rgba(250, 180, 90, 0.35);
+      }
+      /* miss = unrelated · dim */
+      .mk-perq-current-ranks-list li.rk-miss .rk-title { color: var(--text-mute); }
+
+      /* B · Wrong-only recap table */
+      .mk-perq-recap {
+        margin: 14px 0 4px;
+        padding: 12px 14px;
+        border-radius: 8px;
+        background: rgba(239,68,68,0.04);
+        border: 1px solid rgba(239,68,68,0.25);
+      }
+      .mk-perq-recap-h {
+        font-size: 0.9rem; color: var(--text);
+        margin-bottom: 10px;
+      }
+      .mk-perq-recap-summary {
+        margin-left: 8px;
+        font-family: var(--mono); font-size: 0.72rem; color: rgb(240,150,150);
+      }
+      .mk-perq-recap-body { display: flex; flex-direction: column; gap: 6px; }
+      .mk-perq-recap-empty {
+        padding: 10px; text-align: center; color: var(--text-mute); font-style: italic;
+      }
+      .mk-perq-recap-row {
+        display: grid;
+        grid-template-columns: 40px minmax(140px, 1.2fr) minmax(140px, 1.4fr) minmax(120px, 1.2fr) 55px;
+        gap: 10px; align-items: baseline;
+        padding: 6px 8px;
+        border-radius: 4px;
+        background: rgba(255,255,255,0.02);
+        font-size: 0.78rem; line-height: 1.45;
+      }
+      .mk-perq-recap-row .rec-tier { text-align: center; }
+      .mk-perq-recap-row .rec-tier {
+        font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+        padding: 2px 4px; border-radius: 3px;
+      }
+      .mk-perq-recap-row .rec-tier.E { background: rgba(0,217,130,0.15); color: rgb(120,220,170); }
+      .mk-perq-recap-row .rec-tier.M { background: rgba(250,180,90,0.15); color: rgb(240,190,110); }
+      .mk-perq-recap-row .rec-tier.H { background: rgba(239,68,68,0.15); color: rgb(240,150,150); }
+      .mk-perq-recap-row .rec-q { color: var(--text); font-weight: 500; }
+      .mk-perq-recap-row .rec-gold { color: rgb(140,220,170); }
+      .mk-perq-recap-row .rec-pred { color: rgb(240,150,150); }
+      .mk-perq-recap-row .rec-ndcg {
+        text-align: right;
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--text-mute);
+      }
+      .mk-perq-recap-head-row {
+        display: grid;
+        grid-template-columns: 40px minmax(140px, 1.2fr) minmax(140px, 1.4fr) minmax(120px, 1.2fr) 55px;
+        gap: 10px;
+        padding: 4px 8px;
+        font-family: var(--mono); font-size: 0.66rem;
+        color: var(--text-mute);
+        text-transform: uppercase; letter-spacing: 0.06em;
+      }
+      .mk-perq-recap-head-row .rec-ndcg { text-align: right; }
+
+      /* Info tooltip · used for NDCG · 综合分 · Tier explanations */
+      .mk-info {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 14px; height: 14px;
+        margin-left: 4px;
+        border-radius: 50%;
+        background: var(--surface-2); color: var(--text-mute);
+        border: 1px solid var(--border);
+        font-family: var(--mono); font-size: 0.62rem; font-weight: 700;
+        cursor: help;
+        position: relative;
+        vertical-align: middle;
+        transition: color 0.15s, border-color 0.15s;
+      }
+      .mk-info:hover, .mk-info:focus {
+        color: var(--mk-accent); border-color: var(--mk-accent);
+        outline: none;
+      }
+      .mk-info::before { content: "i"; font-style: italic; }
+      /* The tooltip · shown on hover or when .show is added (click on mobile) */
+      .mk-info .mk-info-body {
+        position: absolute;
+        bottom: calc(100% + 8px); left: 50%;
+        transform: translateX(-50%);
+        min-width: 240px; max-width: 340px;
+        padding: 10px 12px;
+        background: rgba(10, 16, 24, 0.98);
+        border: 1px solid rgba(139, 92, 246, 0.45);
+        border-radius: 8px;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+        color: var(--text); font-family: var(--font); font-size: 0.78rem;
+        font-weight: 400; font-style: normal;
+        line-height: 1.55;
+        text-align: left;
+        pointer-events: none;
+        opacity: 0; transition: opacity 0.15s;
+        z-index: 40;
+        white-space: normal;
+        text-transform: none; letter-spacing: normal;
+      }
+      .mk-info:hover .mk-info-body, .mk-info.show .mk-info-body {
+        opacity: 1; pointer-events: auto;
+      }
+      .mk-info .mk-info-body::after {
+        content: "";
+        position: absolute; top: 100%; left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: rgba(139, 92, 246, 0.45);
+      }
+      .mk-info .mk-info-body b { color: var(--text); }
+      .mk-info .mk-info-body code {
+        font-family: var(--mono); font-size: 0.72rem;
+        color: rgb(180, 210, 250);
+        background: rgba(80, 200, 255, 0.06);
+        padding: 1px 5px; border-radius: 3px;
+      }
+      .mk-info .mk-info-body .num { color: var(--mk-accent); font-weight: 700; }
+
+      /* Methodology footer */
+      .mk-footer {
+        margin: 2.6rem 0 0;
+        padding: 1.4rem 1.6rem;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(80,200,255,0.05), rgba(139,92,246,0.04));
+        border: 1px solid rgba(80,200,255,0.2);
+      }
+      .mk-footer-h {
+        font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+        letter-spacing: 0.08em; text-transform: uppercase;
+        color: rgb(120,210,255);
+        margin-bottom: 0.7rem;
+      }
+      .mk-footer-refs {
+        display: flex; flex-wrap: wrap; gap: 8px;
+        margin-bottom: 0.9rem;
+      }
+      .mk-footer-refs a {
+        display: inline-flex; align-items: baseline; gap: 6px;
+        padding: 6px 12px;
+        background: rgba(139,92,246,0.08);
+        border: 1px solid rgba(139,92,246,0.28);
+        border-radius: 999px;
+        color: rgb(200,185,250); font-weight: 600; font-size: 0.82rem;
+        text-decoration: none;
+        transition: all 0.15s;
+      }
+      .mk-footer-refs a:hover {
+        background: rgba(139,92,246,0.15);
+        border-color: rgba(139,92,246,0.6);
+        color: var(--text);
+      }
+      .mk-footer-refs a span {
+        font-family: var(--mono); font-size: 0.68rem;
+        color: var(--text-mute); font-weight: 400;
+      }
+      .mk-footer-body {
+        color: var(--text-dim); font-size: 0.88rem; line-height: 1.7;
+        margin: 0;
+      }
+      .mk-footer-body b { color: var(--text); }
+
+      /* Parent-selection weight breakdown */
+      .mk-select { margin: 10px 0; padding: 10px 12px; border-radius: 6px; background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.25); }
+      .mk-select-h { font-size: 0.8rem; color: var(--text); margin-bottom: 6px; }
+      .mk-select-summary { margin-left: 6px; font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); }
+      .mk-select-formula { font-family: var(--mono); font-size: 0.72rem; color: rgb(180,160,240); margin-bottom: 8px; }
+      .mk-select-bars { display: flex; flex-direction: column; gap: 5px; margin-bottom: 6px; }
+      .mk-select-bar {
+        display: grid; grid-template-columns: 90px 1fr 60px; gap: 8px; align-items: center;
+        font-family: var(--mono); font-size: 0.7rem;
+      }
+      .mk-select-bar .lbl { color: var(--text-dim); }
+      .mk-select-bar .lbl.chosen { color: var(--mk-accent); font-weight: 700; }
+      .mk-select-bar-track {
+        height: 12px; background: var(--surface-2); border-radius: 3px;
+        border: 1px solid var(--border); overflow: hidden; position: relative;
+      }
+      .mk-select-bar-fill {
+        height: 100%; width: 0;
+        background: linear-gradient(90deg, rgba(139,92,246,0.6), var(--mk-purple));
+        transition: width 0.6s cubic-bezier(0.16,1,0.3,1);
+      }
+      .mk-select-bar.chosen .mk-select-bar-fill {
+        background: linear-gradient(90deg, rgba(0,217,130,0.7), var(--mk-accent));
+      }
+      .mk-select-bar .prob { color: var(--text-mute); text-align: right; }
+      .mk-select-bar.chosen .prob { color: var(--mk-accent); font-weight: 700; }
+      .mk-select-hint { font-size: 0.72rem; color: var(--text-mute); font-family: var(--mono); }
+
+      /* Errors list */
+      .mk-errors { margin: 10px 0 4px; padding: 10px 12px; border-radius: 6px; background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.25); }
+      .mk-errors-h { font-size: 0.8rem; color: var(--text); margin-bottom: 6px; }
+      .mk-errors-summary { margin-left: 6px; font-family: var(--mono); font-size: 0.72rem; color: rgb(240,150,150); }
+      .mk-errors-list { list-style: none; padding: 0; margin: 0; max-height: 220px; overflow: auto; font-family: var(--mono); font-size: 0.72rem; }
+      .mk-errors-list li {
+        padding: 4px 6px; border-bottom: 1px dashed rgba(255,255,255,0.05);
+        color: var(--text-dim); display: grid; grid-template-columns: 24px 1fr auto; gap: 6px; align-items: center;
+      }
+      .mk-errors-list li .tier { padding: 1px 5px; border-radius: 3px; font-size: 0.62rem; text-align: center; font-weight: 700; }
+      .mk-errors-list li .tier.E { background: rgba(0,217,130,0.15); color: rgb(120,220,170); }
+      .mk-errors-list li .tier.M { background: rgba(250,180,90,0.15); color: rgb(240,190,110); }
+      .mk-errors-list li .tier.H { background: rgba(239,68,68,0.15); color: rgb(240,150,150); }
+      .mk-errors-list li .q { color: var(--text); }
+      .mk-errors-list li .gap { color: var(--text-mute); font-size: 0.68rem; }
+
+      /* Inline "next generation" prompt · non-blocking · lives at the bottom
+         of the workflow area so presenter can keep scrolling/talking. */
+      .mk-nextgen {
+        margin: 1.5rem 0 0;
+        padding: 1.1rem 1.4rem 1.2rem;
+        background: linear-gradient(135deg, rgba(139,92,246,0.10), rgba(80,200,255,0.05));
+        border: 1px solid rgba(139,92,246,0.45);
+        border-radius: 10px;
+        box-shadow: 0 4px 24px rgba(139,92,246,0.12);
+        animation: mkNextgenIn 0.4s cubic-bezier(0.16,1,0.3,1);
+      }
+      @keyframes mkNextgenIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .mk-nextgen-head {
+        display: flex; align-items: center; gap: 10px;
+        margin-bottom: 0.5rem;
+      }
+      .mk-nextgen-tag {
+        display: inline-block; padding: 3px 10px;
+        font-family: var(--mono); font-size: 0.68rem;
+        color: rgb(180, 160, 240);
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid rgba(139, 92, 246, 0.4);
+        border-radius: 999px;
+      }
+      .mk-nextgen-title {
+        font-size: 1.05rem; font-weight: 700; color: var(--text);
+        letter-spacing: -0.01em;
+      }
+      .mk-nextgen-body {
+        font-size: 0.88rem; color: var(--text-dim); line-height: 1.65;
+        margin: 0 0 0.7rem;
+      }
+      .mk-nextgen-summary {
+        display: grid; grid-template-columns: repeat(6, 1fr);
+        gap: 8px 14px;
+        margin: 0.4rem 0 1rem;
+        padding: 0.7rem 0.9rem;
+        background: rgba(0, 217, 130, 0.05);
+        border-left: 3px solid var(--mk-accent);
+        border-radius: 4px;
+        font-family: var(--mono); font-size: 0.74rem;
+      }
+      .mk-nextgen-summary .k { color: var(--text-mute); font-size: 0.68rem; display: block; margin-bottom: 2px; }
+      .mk-nextgen-summary .v { color: var(--text); font-weight: 700; font-size: 0.95rem; }
+      .mk-nextgen-summary .v.warm { color: var(--mk-warm); }
+      @media (max-width: 720px) {
+        .mk-nextgen-summary { grid-template-columns: repeat(3, 1fr); }
+      }
+      .mk-nextgen-actions {
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+      }
+      .mk-nextgen-actions .mk-btn.primary {
+        min-width: 150px; padding: 9px 22px; font-size: 0.9rem;
+      }
+      .mk-nextgen-hint {
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--text-mute);
+      }
+      .mk-nextgen-hint kbd {
+        display: inline-block; padding: 1px 6px; margin: 0 2px;
+        border-radius: 3px; background: var(--surface-2);
+        border: 1px solid var(--border);
+        font-size: 0.7rem;
+      }
+
+      /* Score display · big & readable at commit stage */
+      .mk-score-final {
+        display: flex; align-items: baseline; gap: 12px;
+        margin-top: 8px; padding: 10px 14px;
+        background: rgba(239,68,68,0.05);
+        border-radius: 6px; border: 1px solid rgba(239,68,68,0.25);
+        font-family: var(--mono);
+      }
+      .mk-score-final .k { color: var(--text-mute); font-size: 0.74rem; }
+      .mk-score-final .v {
+        color: var(--mk-accent); font-size: 1.2rem; font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+      .mk-score-final .verdict {
+        margin-left: auto; padding: 3px 12px; border-radius: 4px;
+        font-size: 0.85rem; font-weight: 700;
+      }
+      .mk-score-final .verdict.promoted { background: rgba(0,217,130,0.2); color: var(--mk-accent); }
+      .mk-score-final .verdict.rejected { background: rgba(239,68,68,0.2); color: var(--mk-danger); }
+
+      /* Gen history cards below workflow */
+      .mk-gens { margin-top: 2rem; display: flex; flex-direction: column; gap: 10px; }
+      .mk-gen-card {
+        padding: 12px 14px; border-radius: 8px;
+        background: var(--surface); border: 1px solid var(--border);
+        border-left: 3px solid var(--text-mute);
+        opacity: 0; transform: translateY(8px);
+        transition: opacity 0.4s ease, transform 0.4s ease, border-left-color 0.3s ease;
+      }
+      .mk-gen-card.visible { opacity: 1; transform: none; }
+      .mk-gen-card.win { border-left-color: var(--mk-accent); }
+      .mk-gen-card-head { display: flex; justify-content: space-between; align-items: baseline; }
+      .mk-gen-title { font-weight: 600; }
+      .mk-gen-title.win::after { content: " · ✓ 晋升"; color: var(--mk-accent); font-size: 0.85rem; }
+      .mk-gen-score { font-family: var(--mono); color: var(--mk-accent); font-weight: 700; }
+      .mk-gen-tiers { display: flex; gap: 6px; margin-top: 6px; font-family: var(--mono); font-size: 0.72rem; }
+      .mk-gen-tiers .t { padding: 2px 7px; border-radius: 3px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text-dim); }
+
+      /* Presenter fullscreen mode */
+      body.mk-fs { background: #000; }
+      body.mk-fs nav.nav, body.mk-fs .mk-hero, body.mk-fs .mk-brief, body.mk-fs .mk-gens, body.mk-fs .mk-footer { display: none; }
+      body.mk-fs .mk-controls { border-radius: 8px; margin: 0 0 1rem; }
+      body.mk-fs main.mk-wrap { max-width: 100%; padding: 1rem 2rem; }
+      body.mk-fs .mk-panel { border: none; background: transparent; padding: 0; }
+
+      @media (max-width: 720px) {
+        .mk-progress { display: none; }
+        .mk-hero h1 { font-size: 1.5rem; }
+      }
+    </style>
+</head>
+<body>
+<main class="mk-wrap">
+<div class="mk-hero">
+<h1>Harness <span class="grad">Self-Evolution</span> · Play</h1>
+<p class="mk-hero-sub">Harness self-evolution for an e-commerce search Agent · 3-generation loop · every generation passes<b>Eval gating</b></p>
+</div>
+<!-- About-this-demo briefing (before controls) -->
+<section aria-labelledby="mk-brief-title" class="mk-brief">
+<div class="mk-brief-flow">
+<div class="mk-brief-card what">
+<div class="mk-brief-tag">What gets improved</div>
+<div class="mk-brief-headline">E-commerce search <span class="mk-brief-em">Agent</span></div>
+<div class="mk-brief-meta"><code>search(query)</code> · BM25 baseline</div>
+<div class="mk-brief-metric">
+<span class="mk-brief-num">30<span class="pct">%</span></span>
+<span class="mk-brief-num-lbl">Baseline hit rate</span>
+</div>
+</div>
+<div aria-hidden="true" class="mk-brief-arrow">
+<svg viewbox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="brArr1" x1="0" x2="1" y1="0" y2="0">
+<stop offset="0" stop-color="rgb(80,200,255)"></stop>
+<stop offset="1" stop-color="rgb(139,92,246)"></stop>
+</lineargradient>
+</defs>
+<line stroke="url(#brArr1)" stroke-width="2" x1="4" x2="66" y1="20" y2="20"></line>
+<polyline fill="none" points="60,12 72,20 60,28" stroke="rgb(139,92,246)" stroke-linejoin="round" stroke-width="2"></polyline>
+</svg>
+</div>
+<div class="mk-brief-card how">
+<div class="mk-brief-tag">Method</div>
+<div class="mk-brief-headline">Let AI <span class="mk-brief-em">Rewrite code</span></div>
+<div class="mk-brief-meta">Weights untouched · only the harness changes</div>
+<div class="mk-brief-metric">
+<span class="mk-brief-num">3<span class="pct">Generation</span></span>
+<span class="mk-brief-num-lbl">Loop · 31-task gate per generation</span>
+</div>
+</div>
+<div aria-hidden="true" class="mk-brief-arrow">
+<svg viewbox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="brArr2" x1="0" x2="1" y1="0" y2="0">
+<stop offset="0" stop-color="rgb(139,92,246)"></stop>
+<stop offset="1" stop-color="rgb(0,217,130)"></stop>
+</lineargradient>
+</defs>
+<line stroke="url(#brArr2)" stroke-width="2" x1="4" x2="66" y1="20" y2="20"></line>
+<polyline fill="none" points="60,12 72,20 60,28" stroke="rgb(0,217,130)" stroke-linejoin="round" stroke-width="2"></polyline>
+</svg>
+</div>
+<div class="mk-brief-card engine">
+<div class="mk-brief-tag">Engine</div>
+<div class="mk-brief-headline">
+<a href="https://arxiv.org/abs/2509.19349" rel="noopener" target="_blank">ShinkaEvolve</a>
+</div>
+<div class="mk-brief-meta">Sakana AI · arXiv:2509.19349</div>
+<div class="mk-brief-metric single">
+<span class="mk-brief-num-lbl top">Proposer</span>
+<span class="mk-brief-eng">Claude via Bedrock</span>
+<span class="mk-brief-num-lbl">Sonnet 4.5 · Opus 4.7 / 4.8</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Sticky control bar -->
+<div class="mk-controls">
+<button class="mk-btn primary" id="mk-play">▶ Start</button>
+<button class="mk-btn" id="mk-step">⏭ Next step</button>
+<button class="mk-btn" id="mk-reset">🔄 Restart</button>
+<button class="mk-btn" id="mk-fs">⛶ Fullscreen</button>
+<div class="mk-progress">
+<div aria-hidden="true" class="mk-timeline" id="mk-timeline">
+<div class="mk-timeline-fill" id="mk-timeline-fill" style="width:0%"></div>
+</div>
+<span class="mk-step-label" id="mk-step-label"></span>
+</div>
+</div>
+<div class="mk-panel">
+<!-- 5-verb legend -->
+<div class="mk-verbs">
+<div class="mk-verbs-h">Methodology · 5 verbs · <span style="color:var(--text-mute);font-weight:400;">The whole field boiled down to these 5 steps · looped every generation</span></div>
+<div class="mk-verbs-row">
+<span class="mk-verb v-run">Run</span><span class="mk-verb-arrow">→</span>
+<span class="mk-verb v-observe">Observe</span><span class="mk-verb-arrow">→</span>
+<span class="mk-verb v-propose">Propose</span><span class="mk-verb-arrow">→</span>
+<span class="mk-verb v-verify">Verify</span><span class="mk-verb-arrow">→</span>
+<span class="mk-verb v-commit">Commit</span>
+</div>
+</div>
+<div class="mk-wf-header">
+<span class="mk-gen-title"><span class="mk-gen-label">Workflow · Step</span><span id="mk-gen-num">0</span><span class="mk-gen-label">Generation</span></span>
+<span id="mk-elapsed" title="Total duration of this run">00:00</span>
+</div>
+<ol class="mk-wf-list">
+<li class="mk-wf-node" data-node="run">
+<div class="mk-wf-dot"><span class="mk-wf-num">1</span></div>
+<div class="mk-wf-body">
+<div class="mk-wf-name">Run parent code · collect trajectories <span class="mk-verb v-run">Run</span></div>
+<div class="mk-wf-data">
+<b>What the system is doing</b>: Run the parent code on all 31 problems · collect execution traces (which pass, which fail).<br/>
+<b>Gen 0 is special</b>: The archive is empty · run the BM25 baseline directly · get the starting score.
+          </div>
+</div>
+</li>
+<li class="mk-wf-node" data-node="observe">
+<div class="mk-wf-dot"><span class="mk-wf-num">2</span></div>
+<div class="mk-wf-body">
+<div class="mk-wf-name">Select parent + view its report card <span class="mk-verb v-observe">Observe</span></div>
+<div class="mk-wf-data">
+<b>Action A · Pick parents</b>(pick a version by weighted sampling from the archive):
+            <div class="mk-archive">
+<div class="mk-archive-h">Archive (up to 8 versions · 2 islands) · weighted sampling</div>
+<div class="mk-archive-slots" id="mk-archive-slots">
+<div class="mk-archive-slot empty">Waiting for Gen 0 to be generated</div>
+</div>
+<div class="mk-archive-legend">Higher scores are more likely to be selected · but don't monopolize (leaves room for exploration) · Strategy:<code>weighted</code></div>
+</div>
+<!-- Selection logic — visible only when archive has &gt;=1 candidate -->
+<div class="mk-select" id="mk-select-panel" style="display:none;">
+<div class="mk-select-h">🎯 <b>How it was selected</b> <span class="mk-select-summary" id="mk-select-summary"></span></div>
+<div class="mk-select-formula">
+                Weights <code>w = exp(score / T)</code>(<code>T=0.15</code>) · normalized into sampling probabilities · high scores are favored but don't monopolize
+              </div>
+<div class="mk-select-bars" id="mk-select-bars"></div>
+<div class="mk-select-hint">Longer bar · higher chance of being selected · <span id="mk-select-chosen" style="color:var(--mk-accent);"></span></div>
+</div>
+<b>Action B · Pull the scorecard</b>: Attach this version of the code's results on <b>The questions it got wrong out of the 31</b> · The AI makes targeted fixes.
+            <!-- Error list — populated after per-Q is scored -->
+<div class="mk-errors" id="mk-errors-panel" style="display:none;">
+<div class="mk-errors-h">📝 <b>Problems the parent got wrong</b> <span class="mk-errors-summary" id="mk-errors-summary"></span></div>
+<ul class="mk-errors-list" id="mk-errors-list"></ul>
+</div>
+</div>
+</div>
+</li>
+<li class="mk-wf-node" data-node="propose">
+<div class="mk-wf-dot"><span class="mk-wf-num">3</span></div>
+<div class="mk-wf-body">
+<div class="mk-wf-name">AI proposes candidates <span class="mk-verb v-propose">Propose</span></div>
+<div class="mk-wf-data">
+<b>What the system is doing</b>: Give the parent + failed problems to Opus 4.8 · it first<b>Inference</b>Then<b>Generate diff</b> · The system pastes the code back.
+            <div class="mk-reasoning" id="mk-reasoning-panel" style="display:none;">
+<div class="mk-reasoning-h">🧠 <b>AI's reasoning</b> <span class="mk-reasoning-name" id="mk-reasoning-name"></span></div>
+<div class="mk-reasoning-analysis" id="mk-reasoning-analysis"></div>
+<div class="mk-reasoning-desc" id="mk-reasoning-desc"></div>
+</div>
+<div class="mk-diff" id="mk-diff-panel" style="display:none;">
+<div class="mk-diff-h">💡 <b>AI-proposed changes</b> <span class="mk-diff-summary" id="mk-diff-summary"></span></div>
+<pre class="mk-diff-body" id="mk-diff-body"></pre>
+</div>
+</div>
+</div>
+</li>
+<li class="mk-wf-node" data-node="verify">
+<div class="mk-wf-dot"><span class="mk-wf-num">4</span></div>
+<div class="mk-wf-body">
+<div class="mk-wf-name">Score the new code <span class="mk-verb v-verify">Verify</span></div>
+<div class="mk-wf-data">
+<b>What the system is doing</b>: Run the new code<b>Three test suites</b> —— 31 public + 5 hold-out + 31 typo.<br/>
+<b>Why</b>: Anti-cheating · memorized answers will, on the last two sets,<b>Collapse</b>.
+            <div class="mk-perq" id="mk-perq-panel" style="display:none;">
+<div class="mk-perq-h">📊 <b>Per-question scores for all 31</b> <span class="mk-perq-summary" id="mk-perq-summary"></span></div>
+<!-- A · Currently-being-scored card (shows during reveal) -->
+<div class="mk-perq-current" id="mk-perq-current" style="display:none;">
+<div class="mk-perq-current-head">
+<span class="mk-perq-current-tier" id="mk-perq-current-tier">—</span>
+<span class="mk-perq-current-mark" id="mk-perq-current-mark">…</span>
+<span class="mk-perq-current-ndcg" id="mk-perq-current-ndcg"></span>
+<button aria-label="What is NDCG" class="mk-info" type="button"><span class="mk-info-body">
+<b>NDCG</b> · Ranking score for this question · <span class="num">0</span>-<span class="num">1</span>.<br/>
+<b>Gold label ranked #1</b> · add <b>Similar items ranked 2-5 in order</b> → <span class="num">1.0</span>.<br/>
+                    Gold label still #1 · but irrelevant products crowd the slots below → slightly below <span class="num">1.0</span>(e.g. <span class="num">0.986</span>).<br/>
+                    Gold label ranked #3 → about <span class="num">0.5</span>; no gold label in the top 5 → <span class="num">0.0</span>.
+                  </span></button>
+</div>
+<div class="mk-perq-current-q" id="mk-perq-current-q"></div>
+<div class="mk-perq-current-row">
+<span class="mk-perq-current-lbl">Expected</span>
+<span class="mk-perq-current-gold" id="mk-perq-current-gold"></span>
+</div>
+<div class="mk-perq-current-row" id="mk-perq-current-pred-row" style="display:none;">
+<span class="mk-perq-current-lbl bad">Straight answer</span>
+<span class="mk-perq-current-pred" id="mk-perq-current-pred"></span>
+</div>
+<!-- Top-5 rank view · shows where the gold actually sits and what else occupies the slots -->
+<div class="mk-perq-current-ranks" id="mk-perq-current-ranks">
+<div class="mk-perq-current-ranks-h">
+<span>Top 5 ranking</span>
+<button aria-label="Why a hit still isn't a perfect score" class="mk-info" type="button"><span class="mk-info-body">
+                      NDCG = <span class="num">1.0</span> Only at <b>Gold label ranked #1 · irrelevant products don't take the slots below</b> before you get it.<br/>
+                      If the gold-standard item is #1 · but closely related items don't fill positions 2-5 · the score will be slightly lower.
+                    </span></button>
+</div>
+<ol class="mk-perq-current-ranks-list" id="mk-perq-current-ranks-list"></ol>
+</div>
+</div>
+<div class="mk-perq-tier-groups" id="mk-perq-grid"></div>
+<!-- B · Wrong-only recap table (shows after reveal) -->
+<div class="mk-perq-recap" id="mk-perq-recap" style="display:none;">
+<div class="mk-perq-recap-h">
+                  🔍 <b>Missed-question review</b>
+<span class="mk-perq-recap-summary" id="mk-perq-recap-summary"></span>
+</div>
+<div class="mk-perq-recap-body" id="mk-perq-recap-body"></div>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li class="mk-wf-node" data-node="commit">
+<div class="mk-wf-dot"><span class="mk-wf-num">5</span></div>
+<div class="mk-wf-body">
+<div class="mk-wf-name">Decide whether to "promote" · loop to the next generation <span class="mk-verb v-commit">Commit</span></div>
+<div class="mk-wf-data">
+<b>What the system is doing</b>: Weight the four scores into a composite score · <b>&gt; 0 required for promotion</b>Archived · rejected ones are discarded outright.
+            <div class="mk-score-final" id="mk-score-final" style="display:none;">
+<span class="k">NDCG@5<button aria-label="What is NDCG" class="mk-info" data-info="ndcg" type="button"><span class="mk-info-body">
+<b>NDCG@5</b> · Normalized Discounted Cumulative Gain at 5<br/>
+                A common retrieval metric for whether the top 5 are ranked correctly · from <span class="num">0</span>(completely wrong) to <span class="num">1</span>(perfect).<br/>
+                Simply put:<b>Higher-ranked hits · higher score</b>; missing the correct answer · score is 0.
+              </span></button></span><span class="v" id="mk-ndcg">—</span>
+<span class="k" style="margin-left:12px;">Blended score<button aria-label="How the blended score is calculated" class="mk-info" data-info="combined" type="button"><span class="mk-info-body">
+<b>Blended score</b> · Weighted across four components · greater than <span class="num">0</span> before it counts as a promotion.<br/>
+<code>0.7·public + 0.2·hold-out + 0.1·typo − 0.005·code penalty</code><br/>
+                Hold-out prevents memorization · typos prevent brittleness · penalty terms prevent "code getting sloppier and sloppier".
+              </span></button></span><span class="v" id="mk-combined">—</span>
+<span class="verdict" id="mk-verdict">—</span>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="mk-gens" id="mk-gens"></div>
+<!-- Methodology footer -->
+<footer class="mk-footer">
+<div class="mk-footer-h">Method references</div>
+<div class="mk-footer-refs">
+<a href="https://arxiv.org/abs/2510.04618" rel="noopener" target="_blank">ACE <span>arXiv:2510.04618</span></a>
+<a href="https://arxiv.org/abs/2603.28052" rel="noopener" target="_blank">Meta-Harness <span>arXiv:2603.28052</span></a>
+<a href="https://arxiv.org/abs/2505.22954" rel="noopener" target="_blank">DGM <span>arXiv:2505.22954</span></a>
+<a href="https://arxiv.org/abs/2509.19349" rel="noopener" target="_blank">ShinkaEvolve <span>arXiv:2509.19349</span></a>
+</div>
+<p class="mk-footer-body">
+      Every time you click "Start Evolution" it's<b>Actually calls Bedrock</b>(proposer: Sonnet 4.5 / Opus 4.7 / 4.8).
+      Eval set <b>31 e-commerce search questions</b>(8 easy + 8 medium + 15 hardest) · plus <b>5 hold-out problems</b> Anti-memorization · add <b>31 typo questions</b> Prevents brittleness.
+      Proposer generates on the fly <b>3 versions of the harness code</b>, and the results differ every run. When it finishes, it automatically shows<b>Score bar chart</b>, <b>Typical query before/after comparison</b>, <b>Full 31-question matrix</b>.
+    </p>
+</footer>
+<!-- Inline "next generation" prompt · replaces the modal so the presenter
+       can keep talking and scrolling while it waits. Rendered inside the
+       gens area so it lives right below the gen cards. -->
+<section aria-live="polite" class="mk-nextgen" id="mk-nextgen" style="display:none;">
+<div class="mk-nextgen-head">
+<span class="mk-nextgen-tag">Gate</span>
+<span class="mk-nextgen-title" id="mk-nextgen-title">This generation is done</span>
+</div>
+<p class="mk-nextgen-body" id="mk-nextgen-body"></p>
+<div class="mk-nextgen-summary" id="mk-nextgen-summary"></div>
+<div class="mk-nextgen-actions">
+<button class="mk-btn primary" id="mk-nextgen-btn">▶ Next generation</button>
+<span class="mk-nextgen-hint">Press <kbd>Enter</kbd> · anytime</span>
+</div>
+</section>
+</main>
+<script>
+(async function() {
+  // ── Load run data ──
+  /* inlined play-run.json */
+  window.__PLAY_RUN_DATA__ = {"gens": [{"n": 0, "score": 0.4200793205839774, "public": {"ndcg": 0.302, "mrr": 0.296, "hit5": 0.419, "tier_E": 0.695, "tier_M": 0.429, "tier_H": 0.023, "e_ready": 0.993, "m_ready": 0.859, "public_score": 0.386, "hits": 13, "total": 31, "wall_seconds": 0.15, "llm_calls_static": 2, "est_tokens_m": 0.0124, "accuracy": 0.419, "gate_kind": "promoted", "verdict": "NDCG 0.302 · E 0.70 M 0.43 H 0.02 · heldout 0.60 · perturbed 0.30 · combined 0.420", "per_query": [{"q": "apple 128gb latest", "gold": "sku-iphone-128", "pred": "sku-airpods-pro", "hit": true, "ndcg": 0.431, "mrr": 0.25, "ranked": ["sku-airpods-pro", "sku-airpods-3", "sku-iphone-14", "sku-iphone-128", "sku-iphone-mini"], "tier": "E", "gold_title": "iPhone 15 · 128GB · Starlight · Official standard", "pred_title": "Apple AirPods Pro 2 · Active Noise Cancellation", "gold_price": 5799, "pred_price": 1899}, {"q": "apple 256gb", "gold": "sku-iphone-256", "pred": "sku-airpods-pro", "hit": true, "ndcg": 0.5, "mrr": 0.333, "ranked": ["sku-airpods-pro", "sku-airpods-3", "sku-iphone-256", "sku-samsung-s24", "sku-oppo-find"], "tier": "E", "gold_title": "iPhone 15 · 256GB · Starlight · Official standard", "pred_title": "Apple AirPods Pro 2 · Active Noise Cancellation", "gold_price": 6899, "pred_price": 1899}, {"q": "usbc charger 65w", "gold": "sku-charger-usbc", "pred": "sku-charger-usbc", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-charger-usbc", "sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic"], "tier": "E", "gold_title": "USB-C fast charger · 65W · GaN", "pred_title": "USB-C fast charger · 65W · GaN", "gold_price": 129, "pred_price": 129}, {"q": "power bank 20000mah", "gold": "sku-powerbank-20k", "pred": "sku-powerbank-20k", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-powerbank-20k", "sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic"], "tier": "E", "gold_title": "Power bank · 20000mAh · high capacity", "pred_title": "Power bank · 20000mAh · high capacity", "gold_price": 159, "pred_price": 159}, {"q": "iphone case magsafe", "gold": "sku-phonecase-iphone", "pred": "sku-phonecase-iphone", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-phonecase-iphone", "sku-iphone-14", "sku-iphone-128", "sku-iphone-256", "sku-iphone-512"], "tier": "E", "gold_title": "iPhone 15 Case · MagSafe", "pred_title": "iPhone 15 Case · MagSafe", "gold_price": 89, "pred_price": 89}, {"q": "bluetooth speaker", "gold": "sku-speaker-bt", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "E", "gold_title": "Portable Bluetooth speaker · 20W stereo", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 259, "pred_price": 29.9}, {"q": "kids running shoes size 30", "gold": "sku-shoe-kid-30", "pred": "sku-shoe-kid-30", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-shoe-kid-30", "sku-sheet-king-poly", "sku-sheet-queen-poly", "sku-sheet-single-cotton", "sku-sheet-queen-cotton"], "tier": "E", "gold_title": "Kids' running shoes · size 30 · lightweight and breathable", "pred_title": "Kids' running shoes · size 30 · lightweight and breathable", "gold_price": 199, "pred_price": 199}, {"q": "cotton bedsheet queen size", "gold": "sku-sheet-queen-cotton", "pred": "sku-sheet-queen-poly", "hit": true, "ndcg": 0.631, "mrr": 0.5, "ranked": ["sku-sheet-queen-poly", "sku-sheet-queen-cotton", "sku-sheet-linen", "sku-sheet-king-poly", "sku-sheet-single-cotton"], "tier": "E", "gold_title": "Cotton bed sheet · Queen size · 60s sateen", "pred_title": "Polyester bed sheet · Queen size · Wrinkle-resistant", "gold_price": 269, "pred_price": 99}, {"q": "queen sheets no polyester", "gold": "sku-sheet-queen-cotton", "pred": "sku-sheet-linen", "hit": true, "ndcg": 0.553, "mrr": 1.0, "ranked": ["sku-sheet-linen", "sku-sheet-queen-poly", "sku-sheet-queen-cotton", "sku-apple-fruit", "sku-apple-cider"], "tier": "M", "gold_title": "Cotton bed sheet · Queen size · 60s sateen", "pred_title": "Linen sheets · Queen · Naturally breathable", "gold_price": 269, "pred_price": 449}, {"q": "iphone 15 but not pro", "gold": "sku-iphone-128", "pred": "sku-iphone-512", "hit": true, "ndcg": 0.644, "mrr": 0.5, "ranked": ["sku-iphone-512", "sku-iphone-128", "sku-iphone-256", "sku-phonecase-iphone", "sku-iphone-14"], "tier": "M", "gold_title": "iPhone 15 · 128GB · Starlight · Official standard", "pred_title": "iPhone 15 Pro · 512GB · Titanium frame", "gold_price": 5799, "pred_price": 8999}, {"q": "apple earbuds noise cancel", "gold": "sku-airpods-pro", "pred": "sku-airpods-pro", "hit": true, "ndcg": 0.917, "mrr": 1.0, "ranked": ["sku-airpods-pro", "sku-airpods-3", "sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce"], "tier": "M", "gold_title": "Apple AirPods Pro 2 · Active Noise Cancellation", "pred_title": "Apple AirPods Pro 2 · Active Noise Cancellation", "gold_price": 1899, "pred_price": 1899}, {"q": "desk lamp but not for kids", "gold": "sku-lamp-mini", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "M", "gold_title": "Minimalist desk lamp · 3-level touch dimming · LED", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 189, "pred_price": 29.9}, {"q": "king cotton bedsheet not silk", "gold": "sku-sheet-king-cotton", "pred": "sku-sheet-king-poly", "hit": true, "ndcg": 0.459, "mrr": 0.333, "ranked": ["sku-sheet-king-poly", "sku-sheet-silk", "sku-sheet-king-cotton", "sku-apple-fruit", "sku-apple-cider"], "tier": "M", "gold_title": "Cotton bed sheet · King size · 40s soft weave", "pred_title": "Polyester bed sheet · King size · Skin-friendly", "gold_price": 329, "pred_price": 129}, {"q": "noise cancel earbuds under 500", "gold": "sku-earbud-anc", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "M", "gold_title": "Wireless noise-canceling headphones · Active ANC · 40-hour battery life", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 399, "pred_price": 29.9}, {"q": "sports water bottle not plastic", "gold": "sku-glass-500ml", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "M", "gold_title": "Glass water bottle · Heat-resistant 500ml · Bamboo lid", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 49, "pred_price": 29.9}, {"q": "iphone accessory magsafe compatible", "gold": "sku-phonecase-iphone", "pred": "sku-phonecase-iphone", "hit": true, "ndcg": 0.861, "mrr": 1.0, "ranked": ["sku-phonecase-iphone", "sku-iphone-14", "sku-iphone-128", "sku-iphone-256", "sku-iphone-512"], "tier": "M", "gold_title": "iPhone 15 Case · MagSafe", "pred_title": "iPhone 15 Case · MagSafe", "gold_price": 89, "pred_price": 89}, {"q": "A quiet gift for long-haul flyers", "gold": "sku-airpods-pro", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Apple AirPods Pro 2 · Active Noise Cancellation", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 1899, "pred_price": 29.9}, {"q": "Charging a 14-inch macbook on a plane", "gold": "sku-charger-usbc", "pred": "sku-iphone-14", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-iphone-14", "sku-xiaomi-14", "sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce"], "tier": "H", "gold_title": "USB-C fast charger · 65W · GaN", "pred_title": "iPhone 14 · 128GB · Purple", "gold_price": 129, "pred_price": 4599}, {"q": "Just bought an iphone 15, what else do I need to buy", "gold": "sku-phonecase-iphone", "pred": "sku-iphone-128", "hit": true, "ndcg": 0.352, "mrr": 0.25, "ranked": ["sku-iphone-128", "sku-iphone-256", "sku-iphone-512", "sku-phonecase-iphone", "sku-iphone-14"], "tier": "H", "gold_title": "iPhone 15 Case · MagSafe", "pred_title": "iPhone 15 · 128GB · Starlight · Official standard", "gold_price": 89, "pred_price": 5799}, {"q": "Read in bed without disturbing the person next to you", "gold": "sku-lamp-mini", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Minimalist desk lamp · 3-level touch dimming · LED", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 189, "pred_price": 29.9}, {"q": "warm clothes for winter hiking", "gold": "sku-jacket-down", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Down jacket · 90% white duck down · long", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 899, "pred_price": 29.9}, {"q": "Thirsty outdoors but don't want to carry anything heavy", "gold": "sku-glass-500ml", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Glass water bottle · Heat-resistant 500ml · Bamboo lid", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 49, "pred_price": 29.9}, {"q": "For girls who love running", "gold": "sku-shoe-women-36", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Women's running shoes · size 36 · pink", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 429, "pred_price": 29.9}, {"q": "What to do if your phone gets scratched", "gold": "sku-tempered-glass", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Tempered glass screen protector · HD · universal", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 29, "pred_price": 29.9}, {"q": "Hotel room too noisy to work", "gold": "sku-earbud-anc", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Wireless noise-canceling headphones · Active ANC · 40-hour battery life", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 399, "pred_price": 29.9}, {"q": "Listening to music with friends at the beach", "gold": "sku-speaker-bt", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Portable Bluetooth speaker · 20W stereo", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 259, "pred_price": 29.9}, {"q": "For college students living in dorms", "gold": "sku-sheet-single-cotton", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Cotton bed sheet · Single size · For dorms", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 89, "pred_price": 29.9}, {"q": "Something that keeps drinks warm through a three-hour meeting", "gold": "sku-stainless-500", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Stainless steel insulated cup · 316L · 500ml", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 89, "pred_price": 29.9}, {"q": "Phone dead on a long trip and no outlet in sight", "gold": "sku-powerbank-20k", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Power bank · 20000mAh · high capacity", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 159, "pred_price": 29.9}, {"q": "Reading on a kindle late at night and wanting some ambiance", "gold": "sku-lamp-vintage", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Retro industrial desk lamp · wrought iron · Edison bulb", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 349, "pred_price": 29.9}, {"q": "Office gift exchange: looks upscale but isn't expensive", "gold": "sku-scarf-wool", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": "H", "gold_title": "Wool scarf · solid color · oversized", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 189, "pred_price": 29.9}]}, "private": {"heldout_ndcg": 0.6, "heldout_per_query": [{"q": "iphone 512 pro", "gold": "sku-iphone-512", "pred": "sku-iphone-512", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-iphone-512", "sku-iphone-14", "sku-huawei-p60", "sku-vivo-x100", "sku-airpods-pro"], "tier": null, "gold_title": "iPhone 15 Pro · 512GB · Titanium frame", "pred_title": "iPhone 15 Pro · 512GB · Titanium frame", "gold_price": 8999, "pred_price": 8999}, {"q": "Huawei phone 512", "gold": "sku-huawei-p60", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": null, "gold_title": "Huawei P60 Pro · 512GB · Rococo White", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 6488, "pred_price": 29.9}, {"q": "Insulated cup, 316, half liter", "gold": "sku-stainless-500", "pred": "sku-apple-fruit", "hit": false, "ndcg": 0.0, "mrr": 0.0, "ranked": ["sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic", "sku-apple-dried"], "tier": null, "gold_title": "Stainless steel insulated cup · 316L · 500ml", "pred_title": "Shanxi Red Fuji apples · net weight 5 jin", "gold_price": 89, "pred_price": 29.9}, {"q": "Men's running shoes, size 40", "gold": "sku-shoe-adult-40", "pred": "sku-shoe-adult-40", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-shoe-adult-40", "sku-earbud-anc", "sku-sheet-king-cotton", "sku-shoe-kid-30", "sku-shoe-kid-32"], "tier": null, "gold_title": "Men's running shoes · size 40 · cushioned", "pred_title": "Men's running shoes · size 40 · cushioned", "gold_price": 399, "pred_price": 399}, {"q": "Long down jacket", "gold": "sku-jacket-down", "pred": "sku-jacket-down", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-jacket-down", "sku-apple-fruit", "sku-apple-cider", "sku-apple-sauce", "sku-apple-organic"], "tier": null, "gold_title": "Down jacket · 90% white duck down · long", "pred_title": "Down jacket · 90% white duck down · long", "gold_price": 899, "pred_price": 899}], "perturbed_ndcg": 0.297, "combined_score": 0.4201}, "reasoning": {"analysis": "", "name": "baseline", "description": "BM25 baseline · starting point · no AI calls", "analysis_cn": "", "description_cn": "BM25 starting point · no AI · title-only lexical matching · used as the control group."}, "diff": ""}, {"n": 1, "score": 0.9357332883796459, "public": {"ndcg": 0.912, "mrr": 0.957, "hit5": 1.0, "tier_E": 1.0, "tier_M": 0.937, "tier_H": 0.852, "e_ready": 1.0, "m_ready": 1.0, "public_score": 0.931, "hits": 31, "total": 31, "wall_seconds": 56.69, "llm_calls_static": 3, "est_tokens_m": 0.0186, "accuracy": 1.0, "gate_kind": "promoted", "verdict": "NDCG 0.912 · E 1.00 M 0.94 H 0.85 · heldout 1.00 · perturbed 0.84 · combined 0.936", "per_query": [{"q": "apple 128gb latest", "gold": "sku-iphone-128", "pred": "sku-iphone-128", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-iphone-128", "sku-apple-organic", "sku-apple-fruit", "sku-apple-juice", "sku-apple-dried"], "tier": "E", "gold_title": "iPhone 15 · 128GB · Starlight · Official standard", "pred_title": "iPhone 15 · 128GB · Starlight · Official standard", "gold_price": 5799, "pred_price": 5799}, {"q": "apple 256gb", "gold": "sku-iphone-256", "pred": "sku-iphone-256", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-iphone-256", "sku-huawei-p60", "sku-iphone-512", "sku-samsung-s24", "sku-vivo-x100"], "tier": "E", "gold_title": "iPhone 15 · 256GB · Starlight · Official standard", "pred_title": "iPhone 15 · 256GB · Starlight · Official standard", "gold_price": 6899, "pred_price": 6899}, {"q": "usbc charger 65w", "gold": "sku-charger-usbc", "pred": "sku-charger-usbc", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-charger-usbc", "sku-powerbank-20k", "sku-cable-lightning", "sku-phonecase-iphone", "sku-tempered-glass"], "tier": "E", "gold_title": "USB-C fast charger · 65W · GaN", "pred_title": "USB-C fast charger · 65W · GaN", "gold_price": 129, "pred_price": 129}, {"q": "power bank 20000mah", "gold": "sku-powerbank-20k", "pred": "sku-powerbank-20k", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-powerbank-20k", "sku-charger-usbc", "sku-cable-lightning", "sku-phonecase-iphone", "sku-tempered-glass"], "tier": "E", "gold_title": "Power bank · 20000mAh · high capacity", "pred_title": "Power bank · 20000mAh · high capacity", "gold_price": 159, "pred_price": 159}, {"q": "iphone case magsafe", "gold": "sku-phonecase-iphone", "pred": "sku-phonecase-iphone", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-phonecase-iphone", "sku-charger-usbc", "sku-cable-lightning", "sku-powerbank-20k", "sku-tempered-glass"], "tier": "E", "gold_title": "iPhone 15 Case · MagSafe", "pred_title": "iPhone 15 Case · MagSafe", "gold_price": 89, "pred_price": 89}, {"q": "bluetooth speaker", "gold": "sku-speaker-bt", "pred": "sku-speaker-bt", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-speaker-bt", "sku-earbud-basic", "sku-earbud-anc", "sku-airpods-3", "sku-airpods-pro"], "tier": "E", "gold_title": "Portable Bluetooth speaker · 20W stereo", "pred_title": "Portable Bluetooth speaker · 20W stereo", "gold_price": 259, "pred_price": 259}, {"q": "kids running shoes size 30", "gold": "sku-shoe-kid-30", "pred": "sku-shoe-kid-30", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-shoe-kid-30", "sku-shoe-kid-32", "sku-shoe-kid-34", "sku-shoe-adult-40", "sku-shoe-women-36"], "tier": "E", "gold_title": "Kids' running shoes · size 30 · lightweight and breathable", "pred_title": "Kids' running shoes · size 30 · lightweight and breathable", "gold_price": 199, "pred_price": 199}, {"q": "cotton bedsheet queen size", "gold": "sku-sheet-queen-cotton", "pred": "sku-sheet-queen-cotton", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-sheet-queen-cotton", "sku-sheet-king-cotton", "sku-sheet-linen", "sku-sheet-single-cotton", "sku-sheet-silk"], "tier": "E", "gold_title": "Cotton bed sheet · Queen size · 60s sateen", "pred_title": "Cotton bed sheet · Queen size · 60s sateen", "gold_price": 269, "pred_price": 269}, {"q": "queen sheets no polyester", "gold": "sku-sheet-queen-cotton", "pred": "sku-sheet-queen-cotton", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-sheet-queen-cotton", "sku-sheet-linen", "sku-sheet-silk", "sku-sheet-king-cotton", "sku-sheet-single-cotton"], "tier": "M", "gold_title": "Cotton bed sheet · Queen size · 60s sateen", "pred_title": "Cotton bed sheet · Queen size · 60s sateen", "gold_price": 269, "pred_price": 269}, {"q": "iphone 15 but not pro", "gold": "sku-iphone-128", "pred": "sku-iphone-128", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-iphone-128", "sku-iphone-256", "sku-phonecase-iphone", "sku-charger-usbc", "sku-cable-lightning"], "tier": "M", "gold_title": "iPhone 15 · 128GB · Starlight · Official standard", "pred_title": "iPhone 15 · 128GB · Starlight · Official standard", "gold_price": 5799, "pred_price": 5799}, {"q": "apple earbuds noise cancel", "gold": "sku-airpods-pro", "pred": "sku-airpods-pro", "hit": true, "ndcg": 0.974, "mrr": 1.0, "ranked": ["sku-airpods-pro", "sku-sony-wf", "sku-huawei-buds", "sku-earbud-anc", "sku-airpods-3"], "tier": "M", "gold_title": "Apple AirPods Pro 2 · Active Noise Cancellation", "pred_title": "Apple AirPods Pro 2 · Active Noise Cancellation", "gold_price": 1899, "pred_price": 1899}, {"q": "desk lamp but not for kids", "gold": "sku-lamp-mini", "pred": "sku-lamp-mini", "hit": true, "ndcg": 0.95, "mrr": 1.0, "ranked": ["sku-lamp-mini", "sku-lamp-nordic", "sku-lamp-modern", "sku-lamp-vintage", "sku-lamp-floor"], "tier": "M", "gold_title": "Minimalist desk lamp · 3-level touch dimming · LED", "pred_title": "Minimalist desk lamp · 3-level touch dimming · LED", "gold_price": 189, "pred_price": 189}, {"q": "king cotton bedsheet not silk", "gold": "sku-sheet-king-cotton", "pred": "sku-sheet-king-cotton", "hit": true, "ndcg": 0.983, "mrr": 1.0, "ranked": ["sku-sheet-king-cotton", "sku-sheet-queen-cotton", "sku-sheet-single-cotton", "sku-sheet-linen", "sku-sheet-queen-poly"], "tier": "M", "gold_title": "Cotton bed sheet · King size · 40s soft weave", "pred_title": "Cotton bed sheet · King size · 40s soft weave", "gold_price": 329, "pred_price": 329}, {"q": "noise cancel earbuds under 500", "gold": "sku-earbud-anc", "pred": "sku-earbud-anc", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-earbud-anc", "sku-airpods-3", "sku-huawei-buds", "sku-airpods-pro", "sku-sony-wf"], "tier": "M", "gold_title": "Wireless noise-canceling headphones · Active ANC · 40-hour battery life", "pred_title": "Wireless noise-canceling headphones · Active ANC · 40-hour battery life", "gold_price": 399, "pred_price": 399}, {"q": "sports water bottle not plastic", "gold": "sku-glass-500ml", "pred": "sku-stainless-500", "hit": true, "ndcg": 0.631, "mrr": 1.0, "ranked": ["sku-stainless-500", "sku-glass-750ml", "sku-glass-500ml", "sku-tritan-600", "sku-sheet-queen-cotton"], "tier": "M", "gold_title": "Glass water bottle · Heat-resistant 500ml · Bamboo lid", "pred_title": "Stainless steel insulated cup · 316L · 500ml", "gold_price": 49, "pred_price": 89}, {"q": "iphone accessory magsafe compatible", "gold": "sku-phonecase-iphone", "pred": "sku-phonecase-iphone", "hit": true, "ndcg": 0.961, "mrr": 1.0, "ranked": ["sku-phonecase-iphone", "sku-charger-usbc", "sku-powerbank-20k", "sku-cable-lightning", "sku-tempered-glass"], "tier": "M", "gold_title": "iPhone 15 Case · MagSafe", "pred_title": "iPhone 15 Case · MagSafe", "gold_price": 89, "pred_price": 89}, {"q": "A quiet gift for long-haul flyers", "gold": "sku-airpods-pro", "pred": "sku-earbud-anc", "hit": true, "ndcg": 0.65, "mrr": 1.0, "ranked": ["sku-earbud-anc", "sku-sony-wf", "sku-airpods-pro", "sku-huawei-buds", "sku-airpods-3"], "tier": "H", "gold_title": "Apple AirPods Pro 2 · Active Noise Cancellation", "pred_title": "Wireless noise-canceling headphones · Active ANC · 40-hour battery life", "gold_price": 1899, "pred_price": 399}, {"q": "Charging a 14-inch macbook on a plane", "gold": "sku-charger-usbc", "pred": "sku-charger-usbc", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-charger-usbc", "sku-powerbank-20k", "sku-cable-lightning", "sku-tempered-glass", "sku-iphone-14"], "tier": "H", "gold_title": "USB-C fast charger · 65W · GaN", "pred_title": "USB-C fast charger · 65W · GaN", "gold_price": 129, "pred_price": 129}, {"q": "Just bought an iphone 15, what else do I need to buy", "gold": "sku-phonecase-iphone", "pred": "sku-phonecase-iphone", "hit": true, "ndcg": 0.95, "mrr": 1.0, "ranked": ["sku-phonecase-iphone", "sku-charger-usbc", "sku-cable-lightning", "sku-airpods-pro", "sku-powerbank-20k"], "tier": "H", "gold_title": "iPhone 15 Case · MagSafe", "pred_title": "iPhone 15 Case · MagSafe", "gold_price": 89, "pred_price": 89}, {"q": "Read in bed without disturbing the person next to you", "gold": "sku-lamp-mini", "pred": "sku-lamp-mini", "hit": true, "ndcg": 0.861, "mrr": 1.0, "ranked": ["sku-lamp-mini", "sku-earbud-anc", "sku-airpods-pro", "sku-sony-wf", "sku-sheet-queen-cotton"], "tier": "H", "gold_title": "Minimalist desk lamp · 3-level touch dimming · LED", "pred_title": "Minimalist desk lamp · 3-level touch dimming · LED", "gold_price": 189, "pred_price": 189}, {"q": "warm clothes for winter hiking", "gold": "sku-jacket-down", "pred": "sku-jacket-down", "hit": true, "ndcg": 0.983, "mrr": 1.0, "ranked": ["sku-jacket-down", "sku-shoe-boot-42", "sku-scarf-wool", "sku-socks-cotton", "sku-stainless-500"], "tier": "H", "gold_title": "Down jacket · 90% white duck down · long", "pred_title": "Down jacket · 90% white duck down · long", "gold_price": 899, "pred_price": 899}, {"q": "Thirsty outdoors but don't want to carry anything heavy", "gold": "sku-glass-500ml", "pred": "sku-plastic-1l", "hit": true, "ndcg": 0.432, "mrr": 0.333, "ranked": ["sku-plastic-1l", "sku-plastic-500ml", "sku-tritan-600", "sku-glass-500ml", "sku-apple-fruit"], "tier": "H", "gold_title": "Glass water bottle · Heat-resistant 500ml · Bamboo lid", "pred_title": "Large-capacity plastic water bottle · 1L sports style", "gold_price": 49, "pred_price": 29}, {"q": "For girls who love running", "gold": "sku-shoe-women-36", "pred": "sku-shoe-women-36", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-shoe-women-36", "sku-shoe-women-38", "sku-socks-cotton", "sku-jacket-down", "sku-scarf-wool"], "tier": "H", "gold_title": "Women's running shoes · size 36 · pink", "pred_title": "Women's running shoes · size 36 · pink", "gold_price": 429, "pred_price": 429}, {"q": "What to do if your phone gets scratched", "gold": "sku-tempered-glass", "pred": "sku-tempered-glass", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-tempered-glass", "sku-phonecase-iphone", "sku-charger-usbc", "sku-cable-lightning", "sku-powerbank-20k"], "tier": "H", "gold_title": "Tempered glass screen protector · HD · universal", "pred_title": "Tempered glass screen protector · HD · universal", "gold_price": 29, "pred_price": 29}, {"q": "Hotel room too noisy to work", "gold": "sku-earbud-anc", "pred": "sku-earbud-anc", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-earbud-anc", "sku-sony-wf", "sku-airpods-pro", "sku-huawei-buds", "sku-airpods-3"], "tier": "H", "gold_title": "Wireless noise-canceling headphones · Active ANC · 40-hour battery life", "pred_title": "Wireless noise-canceling headphones · Active ANC · 40-hour battery life", "gold_price": 399, "pred_price": 399}, {"q": "Listening to music with friends at the beach", "gold": "sku-speaker-bt", "pred": "sku-speaker-bt", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-speaker-bt", "sku-earbud-basic", "sku-earbud-anc", "sku-airpods-3", "sku-sony-wf"], "tier": "H", "gold_title": "Portable Bluetooth speaker · 20W stereo", "pred_title": "Portable Bluetooth speaker · 20W stereo", "gold_price": 259, "pred_price": 259}, {"q": "For college students living in dorms", "gold": "sku-sheet-single-cotton", "pred": "sku-sheet-single-cotton", "hit": true, "ndcg": 0.914, "mrr": 1.0, "ranked": ["sku-sheet-single-cotton", "sku-lamp-mini", "sku-powerbank-20k", "sku-socks-cotton", "sku-charger-usbc"], "tier": "H", "gold_title": "Cotton bed sheet · Single size · For dorms", "pred_title": "Cotton bed sheet · Single size · For dorms", "gold_price": 89, "pred_price": 89}, {"q": "Something that keeps drinks warm through a three-hour meeting", "gold": "sku-stainless-500", "pred": "sku-stainless-500", "hit": true, "ndcg": 0.917, "mrr": 1.0, "ranked": ["sku-stainless-500", "sku-glass-750ml", "sku-glass-500ml", "sku-plastic-1l", "sku-tritan-600"], "tier": "H", "gold_title": "Stainless steel insulated cup · 316L · 500ml", "pred_title": "Stainless steel insulated cup · 316L · 500ml", "gold_price": 89, "pred_price": 89}, {"q": "Phone dead on a long trip and no outlet in sight", "gold": "sku-powerbank-20k", "pred": "sku-powerbank-20k", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-powerbank-20k", "sku-charger-usbc", "sku-phonecase-iphone", "sku-cable-lightning", "sku-speaker-bt"], "tier": "H", "gold_title": "Power bank · 20000mAh · high capacity", "pred_title": "Power bank · 20000mAh · high capacity", "gold_price": 159, "pred_price": 159}, {"q": "Reading on a kindle late at night and wanting some ambiance", "gold": "sku-lamp-vintage", "pred": "sku-lamp-mini", "hit": true, "ndcg": 0.601, "mrr": 1.0, "ranked": ["sku-lamp-mini", "sku-lamp-nordic", "sku-lamp-modern", "sku-lamp-vintage", "sku-lamp-floor"], "tier": "H", "gold_title": "Retro industrial desk lamp · wrought iron · Edison bulb", "pred_title": "Minimalist desk lamp · 3-level touch dimming · LED", "gold_price": 349, "pred_price": 189}, {"q": "Office gift exchange: looks upscale but isn't expensive", "gold": "sku-scarf-wool", "pred": "sku-lamp-nordic", "hit": true, "ndcg": 0.48, "mrr": 0.333, "ranked": ["sku-lamp-nordic", "sku-glass-500ml", "sku-ceramic-mug", "sku-scarf-wool", "sku-socks-cotton"], "tier": "H", "gold_title": "Wool scarf · solid color · oversized", "pred_title": "Nordic-style wooden desk lamp · Solid wood base", "gold_price": 189, "pred_price": 239}]}, "private": {"heldout_ndcg": 1.0, "heldout_per_query": [{"q": "iphone 512 pro", "gold": "sku-iphone-512", "pred": "sku-iphone-512", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-iphone-512", "sku-iphone-256", "sku-iphone-128", "sku-phonecase-iphone", "sku-tempered-glass"], "tier": null, "gold_title": "iPhone 15 Pro · 512GB · Titanium frame", "pred_title": "iPhone 15 Pro · 512GB · Titanium frame", "gold_price": 8999, "pred_price": 8999}, {"q": "Huawei phone 512", "gold": "sku-huawei-p60", "pred": "sku-huawei-p60", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-huawei-p60", "sku-xiaomi-14", "sku-iphone-512", "sku-vivo-x100", "sku-oppo-find"], "tier": null, "gold_title": "Huawei P60 Pro · 512GB · Rococo White", "pred_title": "Huawei P60 Pro · 512GB · Rococo White", "gold_price": 6488, "pred_price": 6488}, {"q": "Insulated cup, 316, half liter", "gold": "sku-stainless-500", "pred": "sku-stainless-500", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-stainless-500", "sku-glass-750ml", "sku-glass-500ml", "sku-plastic-500ml", "sku-apple-fruit"], "tier": null, "gold_title": "Stainless steel insulated cup · 316L · 500ml", "pred_title": "Stainless steel insulated cup · 316L · 500ml", "gold_price": 89, "pred_price": 89}, {"q": "Men's running shoes, size 40", "gold": "sku-shoe-adult-40", "pred": "sku-shoe-adult-40", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-shoe-adult-40", "sku-shoe-women-38", "sku-shoe-women-36", "sku-shoe-sandal-39", "sku-shoe-boot-42"], "tier": null, "gold_title": "Men's running shoes · size 40 · cushioned", "pred_title": "Men's running shoes · size 40 · cushioned", "gold_price": 399, "pred_price": 399}, {"q": "Long down jacket", "gold": "sku-jacket-down", "pred": "sku-jacket-down", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-jacket-down", "sku-shoe-boot-42", "sku-scarf-wool", "sku-tshirt-cotton-m", "sku-socks-cotton"], "tier": null, "gold_title": "Down jacket · 90% white duck down · long", "pred_title": "Down jacket · 90% white duck down · long", "gold_price": 899, "pred_price": 899}], "perturbed_ndcg": 0.843, "combined_score": 0.9357}, "reasoning": {"analysis": "The baseline BM25-on-titles approach fails badly because:\n\n1. **Language mismatch**: Titles are in Chinese but many queries are English (e.g., \"bluetooth speaker\" doesn't match \"便携蓝牙音箱\"). BM25 finds no overlap and falls back to garbage (\"山西红富士苹果\").\n2. **Intent/semantic queries** (tier H, all scoring 0): queries like \"海边跟朋友一起听歌\" (listening to music at the beach → speaker) require semantic reasoning, impossible with lexical BM25.\n3. **Negation & attributes** (\"不要涤纶\", \"not silk\") aren't handled.\n\nThe catalog is small (~30-40 SKUs), so we can feed the **entire catalog to the LLM** and ask it to rank the top-5 relevant SKUs. This handles cross-lingual matching, intent reasoning, and negation in one call. BM25 remains a fallback for robustness.", "name": "llm_reranker_full_catalog", "description": "Replace pure BM25 with an LLM-based ranker that sees the full (small) catalog and returns the 5 most relevant sku_ids for a query, handling cross-lingual matching, semantic intent, and negation. BM25 is used both to provide a compact fallback ordering and to backfill any missing slots if the LLM output is incomplete or malformed.", "analysis_cn": "BM25 on titles only · fails badly · for three reasons:\n\n1. **Language mismatch**: titles are in Chinese but many queries are in English (e.g. \"bluetooth speaker\" doesn't match \"便携蓝牙音箱\" (portable Bluetooth speaker)) · BM25 finds no lexical overlap · so the fallback returns a pile of junk (it returns \"Shanxi Red Fuji apples\").\n\n2. **Intent/semantic queries** (Tier H scores 0 across the board): e.g. \"listening to music with friends at the beach\" → speaker · these require semantic reasoning · pure lexical matching like BM25 simply can't do it.\n\n3. **Negation and attributes** (\"no polyester\" · \"not silk\"): BM25 doesn't handle these at all.\n\nThe catalog has only 30-40 SKUs · so just **feed the entire catalog to the LLM** · and let it rank everything for each query.", "description_cn": "Replace pure BM25 with an LLM-based ranker · hand it the (very small) full catalog · have it output the 5 sku_ids most relevant to the query · handling cross-language matching, semantic intent, and negation at the same time. BM25 stays for two purposes · first, providing a fallback ranking · second, filling empty slots when the LLM output is missing or malformed."}, "diff": "--- a/original.py\n+++ b/original.py\n@@ -1,81 +1,141 @@\n \"\"\"Evolvable ecommerce search harness.\n \n ShinkaEvolve edits only the code between EVOLVE-BLOCK-START and EVOLVE-BLOCK-END.\n Everything else — catalog loading, evaluation harness, JSON output — stays frozen.\n \n The proposer's job: rewrite `search()` so it returns a ranked list of up to 5\n sku_ids for a natural-language query. Scoring uses NDCG@5 + MRR@5 (see\n evaluate.py) so partial credit is given for the right item at rank 2 or 3.\n The proposer may call Bedrock via the provided `llm(prompt)` helper.\n \"\"\"\n from __future__ import annotations\n \n import json\n import os\n import re\n import sys\n from typing import Any, Callable, Dict, List, Optional\n \n # ── FROZEN: catalog + LLM helper ──────────────────────────────────\n # The proposer sees these names but must not modify anything outside the\n # EVOLVE-BLOCK region. Modifying frozen sections is a hard failure.\n \n CATALOG_PATH = os.environ.get(\"HARNESS_CATALOG\", \"harness/catalog_data.json\")\n \n with open(CATALOG_PATH) as _f:\n     CATALOG: List[Dict[str, Any]] = json.load(_f)\n \n \n def _tokenize(text: str) -> List[str]:\n     return re.findall(r\"[A-Za-z0-9一-鿿]+\", text.lower())\n \n \n def llm(prompt: str, max_tokens: int = 200) -> str:\n     \"\"\"Ask Sonnet 4.5 (via ShinkaEvolve's already-configured Bedrock).\n \n     Returns the raw response text. Empty string on failure — never raises.\n     \"\"\"\n     try:\n         from anthropic import AnthropicBedrock\n         c = AnthropicBedrock(aws_region=\"ap-northeast-1\")\n         m = c.messages.create(\n             model=\"jp.anthropic.claude-haiku-4-5-20251001-v1:0\",\n             max_tokens=max_tokens,\n             messages=[{\"role\": \"user\", \"content\": prompt}],\n         )\n         return m.content[0].text if m.content else \"\"\n     except Exception:\n         return \"\"\n \n \n # ─────────────────────────────────────────────────────────────────\n # EVOLVE-BLOCK-START\n # The proposer rewrites this block. Keep the signature —\n #   search(query) -> List[str]   (up to 5 sku_ids, best first)\n # Returning a single string still works (back-compat) but forfeits NDCG@5 partial\n # credit. Every extra function/import you introduce must live inside this block.\n # ─────────────────────────────────────────────────────────────────\n from rank_bm25 import BM25Okapi\n \n _TOKENS = [_tokenize(s[\"title\"]) for s in CATALOG]\n _BM25 = BM25Okapi(_TOKENS)\n \n+_ALL_SKUS = [s[\"sku_id\"] for s in CATALOG]\n+_SKU_SET = set(_ALL_SKUS)\n+\n+# Precompute a compact catalog listing to feed the LLM once per query.\n+def _fmt_item(s: Dict[str, Any]) -> str:\n+    price = s.get(\"price\", \"\")\n+    return f'{s[\"sku_id\"]}\\t{s[\"title\"]}\\t¥{price}'\n+\n+\n+_CATALOG_TEXT = \"\\n\".join(_fmt_item(s) for s in CATALOG)\n+\n+\n+def _bm25_order(query: str) -> List[str]:\n+    q = _tokenize(query)\n+    scores = _BM25.get_scores(q)\n+    order = sorted(range(len(CATALOG)), key=lambda i: -scores[i])\n+    return [CATALOG[i][\"sku_id\"] for i in order]\n+\n+\n+def _parse_skus(text: str) -> List[str]:\n+    \"\"\"Pull sku_ids out of an LLM response in first-seen order.\"\"\"\n+    found = re.findall(r\"sku-[A-Za-z0-9\\-]+\", text)\n+    seen: List[str] = []\n+    for tok in found:\n+        if tok in _SKU_SET and tok not in seen:\n+            seen.append(tok)\n+    return seen\n+\n \n def search(query: str) -> List[str]:\n     \"\"\"Return the top-5 sku_ids for a query, best first.\n \n-    The initial (deliberately weak) baseline is pure BM25 on titles.\n+    Strategy: give the LLM the full catalog and ask it to rank the most\n+    relevant products. This handles cross-lingual (English<->Chinese) matching,\n+    intent/semantic queries, and negation (\"not silk\", \"不要涤纶\"). BM25 provides\n+    a robust fallback and backfills any missing slots.\n     \"\"\"\n-    q = _tokenize(query)\n-    scores = _BM25.get_scores(q)\n-    order = sorted(range(len(CATALOG)), key=lambda i: -scores[i])\n-    return [CATALOG[i][\"sku_id\"] for i in order[:5]]\n+    bm25 = _bm25_order(query)\n+\n+    prompt = (\n+        \"You are a precise e-commerce search ranker. Given a shopper query and a \"\n+        \"product catalog (TSV: sku_id, title, price), return the 5 MOST relevant \"\n+        \"products, best first.\\n\"\n+        \"Rules:\\n\"\n+        \"- Match meaning across languages (English and Chinese are equivalent).\\n\"\n+        \"- Understand intent: e.g. 'quiet gift for long flights' -> noise-cancelling earphones; \"\n+        \"'listen to music at the beach' -> bluetooth speaker; 'keep warm hiking in winter' -> down jacket.\\n\"\n+        \"- Respect negation and attributes (e.g. 'not polyester'/'不要涤纶', 'cotton', a specific size).\\n\"\n+        \"- For accessory intents (e.g. 'just bought an iPhone 15, what next') prefer accessories over the phone itself.\\n\"\n+        \"- Output ONLY the 5 sku_ids, one per line, no other text.\\n\\n\"\n+        f\"CATALOG:\\n{_CATALOG_TEXT}\\n\\n\"\n+        f\"QUERY: {query}\\n\\n\"\n+        \"ANSWER (5 sku_ids, best first):\"\n+    )\n+\n+    ranked: List[str] = []\n+    try:\n+        resp = llm(prompt, max_tokens=120)\n+        ranked = _parse_skus(resp)\n+    except Exception:\n+        ranked = []\n+\n+    # Backfill from BM25 for robustness (missing/malformed LLM output).\n+    for sku in bm25:\n+        if len(ranked) >= 5:\n+            break\n+        if sku not in ranked:\n+            ranked.append(sku)\n+\n+    return ranked[:5]\n # EVOLVE-BLOCK-END\n # ─────────────────────────────────────────────────────────────────\n \n \n # ── FROZEN: entry point for the evaluator ─────────────────────────\n if __name__ == \"__main__\":\n     # When invoked directly, echo the SKU chosen for the query in sys.argv[1].\n     q = sys.argv[1] if len(sys.argv) > 1 else \"apple 128gb latest\"\n     print(search(q))"}, {"n": 2, "score": 0.9294762142299345, "public": {"ndcg": 0.912, "mrr": 0.962, "hit5": 1.0, "tier_E": 1.0, "tier_M": 0.873, "tier_H": 0.886, "e_ready": 1.0, "m_ready": 1.0, "public_score": 0.915, "hits": 31, "total": 31, "wall_seconds": 105.56, "llm_calls_static": 3, "est_tokens_m": 0.0186, "accuracy": 1.0, "gate_kind": "promoted", "verdict": "NDCG 0.912 · E 1.00 M 0.87 H 0.89 · heldout 1.00 · perturbed 0.89 · combined 0.929", "per_query": [{"q": "apple 128gb latest", "gold": "sku-iphone-128", "pred": "sku-iphone-128", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-iphone-128", "sku-iphone-256", "sku-iphone-512", "sku-phonecase-iphone", "sku-charger-usbc"], "tier": "E", "gold_title": "iPhone 15 · 128GB · Starlight · Official standard", "pred_title": "iPhone 15 · 128GB · Starlight · Official standard", "gold_price": 5799, "pred_price": 5799}, {"q": "apple 256gb", "gold": "sku-iphone-256", "pred": "sku-iphone-256", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-iphone-256", "sku-iphone-512", "sku-iphone-128", "sku-iphone-14", "sku-samsung-s24"], "tier": "E", "gold_title": "iPhone 15 · 256GB · Starlight · Official standard", "pred_title": "iPhone 15 · 256GB · Starlight · Official standard", "gold_price": 6899, "pred_price": 6899}, {"q": "usbc charger 65w", "gold": "sku-charger-usbc", "pred": "sku-charger-usbc", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-charger-usbc", "sku-powerbank-20k", "sku-cable-lightning", "sku-phonecase-iphone", "sku-tempered-glass"], "tier": "E", "gold_title": "USB-C fast charger · 65W · GaN", "pred_title": "USB-C fast charger · 65W · GaN", "gold_price": 129, "pred_price": 129}, {"q": "power bank 20000mah", "gold": "sku-powerbank-20k", "pred": "sku-powerbank-20k", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-powerbank-20k", "sku-charger-usbc", "sku-cable-lightning", "sku-phonecase-iphone", "sku-tempered-glass"], "tier": "E", "gold_title": "Power bank · 20000mAh · high capacity", "pred_title": "Power bank · 20000mAh · high capacity", "gold_price": 159, "pred_price": 159}, {"q": "iphone case magsafe", "gold": "sku-phonecase-iphone", "pred": "sku-phonecase-iphone", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-phonecase-iphone", "sku-charger-usbc", "sku-powerbank-20k", "sku-cable-lightning", "sku-tempered-glass"], "tier": "E", "gold_title": "iPhone 15 Case · MagSafe", "pred_title": "iPhone 15 Case · MagSafe", "gold_price": 89, "pred_price": 89}, {"q": "bluetooth speaker", "gold": "sku-speaker-bt", "pred": "sku-speaker-bt", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-speaker-bt", "sku-earbud-basic", "sku-earbud-anc", "sku-airpods-3", "sku-sony-wf"], "tier": "E", "gold_title": "Portable Bluetooth speaker · 20W stereo", "pred_title": "Portable Bluetooth speaker · 20W stereo", "gold_price": 259, "pred_price": 259}, {"q": "kids running shoes size 30", "gold": "sku-shoe-kid-30", "pred": "sku-shoe-kid-30", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-shoe-kid-30", "sku-shoe-kid-32", "sku-shoe-kid-34", "sku-shoe-adult-40", "sku-shoe-women-36"], "tier": "E", "gold_title": "Kids' running shoes · size 30 · lightweight and breathable", "pred_title": "Kids' running shoes · size 30 · lightweight and breathable", "gold_price": 199, "pred_price": 199}, {"q": "cotton bedsheet queen size", "gold": "sku-sheet-queen-cotton", "pred": "sku-sheet-queen-cotton", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-sheet-queen-cotton", "sku-sheet-king-cotton", "sku-sheet-linen", "sku-sheet-single-cotton", "sku-sheet-silk"], "tier": "E", "gold_title": "Cotton bed sheet · Queen size · 60s sateen", "pred_title": "Cotton bed sheet · Queen size · 60s sateen", "gold_price": 269, "pred_price": 269}, {"q": "queen sheets no polyester", "gold": "sku-sheet-queen-cotton", "pred": "sku-sheet-queen-cotton", "hit": true, "ndcg": 0.986, "mrr": 1.0, "ranked": ["sku-sheet-queen-cotton", "sku-sheet-linen", "sku-sheet-king-cotton", "sku-sheet-single-cotton", "sku-sheet-silk"], "tier": "M", "gold_title": "Cotton bed sheet · Queen size · 60s sateen", "pred_title": "Cotton bed sheet · Queen size · 60s sateen", "gold_price": 269, "pred_price": 269}, {"q": "iphone 15 but not pro", "gold": "sku-iphone-128", "pred": "sku-iphone-128", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-iphone-128", "sku-iphone-256", "sku-phonecase-iphone", "sku-charger-usbc", "sku-tempered-glass"], "tier": "M", "gold_title": "iPhone 15 · 128GB · Starlight · Official standard", "pred_title": "iPhone 15 · 128GB · Starlight · Official standard", "gold_price": 5799, "pred_price": 5799}, {"q": "apple earbuds noise cancel", "gold": "sku-airpods-pro", "pred": "sku-airpods-pro", "hit": true, "ndcg": 0.974, "mrr": 1.0, "ranked": ["sku-airpods-pro", "sku-sony-wf", "sku-airpods-3", "sku-earbud-anc", "sku-huawei-buds"], "tier": "M", "gold_title": "Apple AirPods Pro 2 · Active Noise Cancellation", "pred_title": "Apple AirPods Pro 2 · Active Noise Cancellation", "gold_price": 1899, "pred_price": 1899}, {"q": "desk lamp but not for kids", "gold": "sku-lamp-mini", "pred": "sku-lamp-nordic", "hit": true, "ndcg": 0.588, "mrr": 1.0, "ranked": ["sku-lamp-nordic", "sku-lamp-modern", "sku-lamp-vintage", "sku-lamp-mini", "sku-lamp-victorian"], "tier": "M", "gold_title": "Minimalist desk lamp · 3-level touch dimming · LED", "pred_title": "Nordic-style wooden desk lamp · Solid wood base", "gold_price": 189, "pred_price": 239}, {"q": "king cotton bedsheet not silk", "gold": "sku-sheet-king-cotton", "pred": "sku-sheet-king-cotton", "hit": true, "ndcg": 0.917, "mrr": 1.0, "ranked": ["sku-sheet-king-cotton", "sku-sheet-queen-cotton", "sku-sheet-king-poly", "sku-sheet-queen-poly", "sku-sheet-linen"], "tier": "M", "gold_title": "Cotton bed sheet · King size · 40s soft weave", "pred_title": "Cotton bed sheet · King size · 40s soft weave", "gold_price": 329, "pred_price": 329}, {"q": "noise cancel earbuds under 500", "gold": "sku-earbud-anc", "pred": "sku-earbud-anc", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-earbud-anc", "sku-earbud-basic", "sku-headphone-cheap", "sku-speaker-bt", "sku-plastic-500ml"], "tier": "M", "gold_title": "Wireless noise-canceling headphones · Active ANC · 40-hour battery life", "pred_title": "Wireless noise-canceling headphones · Active ANC · 40-hour battery life", "gold_price": 399, "pred_price": 399}, {"q": "sports water bottle not plastic", "gold": "sku-glass-500ml", "pred": "sku-stainless-500", "hit": true, "ndcg": 0.555, "mrr": 1.0, "ranked": ["sku-stainless-500", "sku-tritan-600", "sku-glass-750ml", "sku-glass-500ml", "sku-plastic-1l"], "tier": "M", "gold_title": "Glass water bottle · Heat-resistant 500ml · Bamboo lid", "pred_title": "Stainless steel insulated cup · 316L · 500ml", "gold_price": 49, "pred_price": 89}, {"q": "iphone accessory magsafe compatible", "gold": "sku-phonecase-iphone", "pred": "sku-phonecase-iphone", "hit": true, "ndcg": 0.961, "mrr": 1.0, "ranked": ["sku-phonecase-iphone", "sku-charger-usbc", "sku-powerbank-20k", "sku-cable-lightning", "sku-tempered-glass"], "tier": "M", "gold_title": "iPhone 15 Case · MagSafe", "pred_title": "iPhone 15 Case · MagSafe", "gold_price": 89, "pred_price": 89}, {"q": "A quiet gift for long-haul flyers", "gold": "sku-airpods-pro", "pred": "sku-sony-wf", "hit": true, "ndcg": 0.741, "mrr": 1.0, "ranked": ["sku-sony-wf", "sku-airpods-pro", "sku-earbud-anc", "sku-huawei-buds", "sku-airpods-3"], "tier": "H", "gold_title": "Apple AirPods Pro 2 · Active Noise Cancellation", "pred_title": "Sony WF-1000XM5 · top-tier noise cancellation", "gold_price": 1899, "pred_price": 1999}, {"q": "Charging a 14-inch macbook on a plane", "gold": "sku-charger-usbc", "pred": "sku-charger-usbc", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-charger-usbc", "sku-powerbank-20k", "sku-cable-lightning", "sku-phonecase-iphone", "sku-tempered-glass"], "tier": "H", "gold_title": "USB-C fast charger · 65W · GaN", "pred_title": "USB-C fast charger · 65W · GaN", "gold_price": 129, "pred_price": 129}, {"q": "Just bought an iphone 15, what else do I need to buy", "gold": "sku-phonecase-iphone", "pred": "sku-phonecase-iphone", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-phonecase-iphone", "sku-charger-usbc", "sku-tempered-glass", "sku-cable-lightning", "sku-powerbank-20k"], "tier": "H", "gold_title": "iPhone 15 Case · MagSafe", "pred_title": "iPhone 15 Case · MagSafe", "gold_price": 89, "pred_price": 89}, {"q": "Read in bed without disturbing the person next to you", "gold": "sku-lamp-mini", "pred": "sku-lamp-nordic", "hit": true, "ndcg": 0.601, "mrr": 1.0, "ranked": ["sku-lamp-nordic", "sku-lamp-vintage", "sku-lamp-mini", "sku-lamp-victorian", "sku-lamp-modern"], "tier": "H", "gold_title": "Minimalist desk lamp · 3-level touch dimming · LED", "pred_title": "Nordic-style wooden desk lamp · Solid wood base", "gold_price": 189, "pred_price": 239}, {"q": "warm clothes for winter hiking", "gold": "sku-jacket-down", "pred": "sku-jacket-down", "hit": true, "ndcg": 0.983, "mrr": 1.0, "ranked": ["sku-jacket-down", "sku-shoe-boot-42", "sku-scarf-wool", "sku-socks-cotton", "sku-tshirt-cotton-m"], "tier": "H", "gold_title": "Down jacket · 90% white duck down · long", "pred_title": "Down jacket · 90% white duck down · long", "gold_price": 899, "pred_price": 899}, {"q": "Thirsty outdoors but don't want to carry anything heavy", "gold": "sku-glass-500ml", "pred": "sku-plastic-500ml", "hit": true, "ndcg": 0.48, "mrr": 0.333, "ranked": ["sku-plastic-500ml", "sku-plastic-1l", "sku-tritan-600", "sku-glass-500ml", "sku-stainless-500"], "tier": "H", "gold_title": "Glass water bottle · Heat-resistant 500ml · Bamboo lid", "pred_title": "Sports water bottle · plastic 500ml · blue", "gold_price": 49, "pred_price": 19}, {"q": "For girls who love running", "gold": "sku-shoe-women-36", "pred": "sku-shoe-women-36", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-shoe-women-36", "sku-shoe-women-38", "sku-socks-cotton", "sku-tshirt-cotton-m", "sku-powerbank-20k"], "tier": "H", "gold_title": "Women's running shoes · size 36 · pink", "pred_title": "Women's running shoes · size 36 · pink", "gold_price": 429, "pred_price": 429}, {"q": "What to do if your phone gets scratched", "gold": "sku-tempered-glass", "pred": "sku-tempered-glass", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-tempered-glass", "sku-phonecase-iphone", "sku-charger-usbc", "sku-cable-lightning", "sku-powerbank-20k"], "tier": "H", "gold_title": "Tempered glass screen protector · HD · universal", "pred_title": "Tempered glass screen protector · HD · universal", "gold_price": 29, "pred_price": 29}, {"q": "Hotel room too noisy to work", "gold": "sku-earbud-anc", "pred": "sku-earbud-anc", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-earbud-anc", "sku-sony-wf", "sku-airpods-pro", "sku-huawei-buds", "sku-lamp-nordic"], "tier": "H", "gold_title": "Wireless noise-canceling headphones · Active ANC · 40-hour battery life", "pred_title": "Wireless noise-canceling headphones · Active ANC · 40-hour battery life", "gold_price": 399, "pred_price": 399}, {"q": "Listening to music with friends at the beach", "gold": "sku-speaker-bt", "pred": "sku-speaker-bt", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-speaker-bt", "sku-earbud-basic", "sku-airpods-3", "sku-earbud-anc", "sku-sony-wf"], "tier": "H", "gold_title": "Portable Bluetooth speaker · 20W stereo", "pred_title": "Portable Bluetooth speaker · 20W stereo", "gold_price": 259, "pred_price": 259}, {"q": "For college students living in dorms", "gold": "sku-sheet-single-cotton", "pred": "sku-sheet-single-cotton", "hit": true, "ndcg": 0.908, "mrr": 1.0, "ranked": ["sku-sheet-single-cotton", "sku-plastic-1l", "sku-earbud-basic", "sku-charger-usbc", "sku-socks-cotton"], "tier": "H", "gold_title": "Cotton bed sheet · Single size · For dorms", "pred_title": "Cotton bed sheet · Single size · For dorms", "gold_price": 89, "pred_price": 89}, {"q": "Something that keeps drinks warm through a three-hour meeting", "gold": "sku-stainless-500", "pred": "sku-stainless-500", "hit": true, "ndcg": 0.917, "mrr": 1.0, "ranked": ["sku-stainless-500", "sku-glass-750ml", "sku-glass-500ml", "sku-tritan-600", "sku-plastic-1l"], "tier": "H", "gold_title": "Stainless steel insulated cup · 316L · 500ml", "pred_title": "Stainless steel insulated cup · 316L · 500ml", "gold_price": 89, "pred_price": 89}, {"q": "Phone dead on a long trip and no outlet in sight", "gold": "sku-powerbank-20k", "pred": "sku-powerbank-20k", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-powerbank-20k", "sku-charger-usbc", "sku-cable-lightning", "sku-phonecase-iphone", "sku-tempered-glass"], "tier": "H", "gold_title": "Power bank · 20000mAh · high capacity", "pred_title": "Power bank · 20000mAh · high capacity", "gold_price": 159, "pred_price": 159}, {"q": "Reading on a kindle late at night and wanting some ambiance", "gold": "sku-lamp-vintage", "pred": "sku-lamp-victorian", "hit": true, "ndcg": 0.67, "mrr": 0.5, "ranked": ["sku-lamp-victorian", "sku-lamp-vintage", "sku-lamp-nordic", "sku-lamp-modern", "sku-lamp-mini"], "tier": "H", "gold_title": "Retro industrial desk lamp · wrought iron · Edison bulb", "pred_title": "Victorian classic table lamp · carved brass", "gold_price": 349, "pred_price": 799}, {"q": "Office gift exchange: looks upscale but isn't expensive", "gold": "sku-scarf-wool", "pred": "sku-scarf-wool", "hit": true, "ndcg": 0.986, "mrr": 1.0, "ranked": ["sku-scarf-wool", "sku-ceramic-mug", "sku-charger-usbc", "sku-cable-lightning", "sku-socks-cotton"], "tier": "H", "gold_title": "Wool scarf · solid color · oversized", "pred_title": "Wool scarf · solid color · oversized", "gold_price": 189, "pred_price": 189}]}, "private": {"heldout_ndcg": 1.0, "heldout_per_query": [{"q": "iphone 512 pro", "gold": "sku-iphone-512", "pred": "sku-iphone-512", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-iphone-512", "sku-iphone-256", "sku-iphone-128", "sku-huawei-p60", "sku-samsung-s24"], "tier": null, "gold_title": "iPhone 15 Pro · 512GB · Titanium frame", "pred_title": "iPhone 15 Pro · 512GB · Titanium frame", "gold_price": 8999, "pred_price": 8999}, {"q": "Huawei phone 512", "gold": "sku-huawei-p60", "pred": "sku-huawei-p60", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-huawei-p60", "sku-charger-usbc", "sku-phonecase-iphone", "sku-tempered-glass", "sku-powerbank-20k"], "tier": null, "gold_title": "Huawei P60 Pro · 512GB · Rococo White", "pred_title": "Huawei P60 Pro · 512GB · Rococo White", "gold_price": 6488, "pred_price": 6488}, {"q": "Insulated cup, 316, half liter", "gold": "sku-stainless-500", "pred": "sku-stainless-500", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-stainless-500", "sku-glass-500ml", "sku-glass-750ml", "sku-tritan-600", "sku-plastic-500ml"], "tier": null, "gold_title": "Stainless steel insulated cup · 316L · 500ml", "pred_title": "Stainless steel insulated cup · 316L · 500ml", "gold_price": 89, "pred_price": 89}, {"q": "Men's running shoes, size 40", "gold": "sku-shoe-adult-40", "pred": "sku-shoe-adult-40", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-shoe-adult-40", "sku-shoe-women-38", "sku-shoe-women-36", "sku-shoe-kid-34", "sku-shoe-kid-32"], "tier": null, "gold_title": "Men's running shoes · size 40 · cushioned", "pred_title": "Men's running shoes · size 40 · cushioned", "gold_price": 399, "pred_price": 399}, {"q": "Long down jacket", "gold": "sku-jacket-down", "pred": "sku-jacket-down", "hit": true, "ndcg": 1.0, "mrr": 1.0, "ranked": ["sku-jacket-down", "sku-scarf-wool", "sku-socks-cotton", "sku-apple-fruit", "sku-apple-cider"], "tier": null, "gold_title": "Down jacket · 90% white duck down · long", "pred_title": "Down jacket · 90% white duck down · long", "gold_price": 899, "pred_price": 899}], "perturbed_ndcg": 0.892, "combined_score": 0.9295}, "reasoning": {"analysis": "The current LLM-ranking approach scores 0.94 combined, with remaining weakness concentrated on the hardest intent/ambiguity queries (e.g. \"reading on a kindle late at night, want to set the mood\" → vintage lamp, \"office gift exchange, looks premium but not expensive\" → wool scarf, \"quench thirst outdoors without carrying anything heavy\" → glass bottle). These require deeper reasoning about implicit intent that a single-shot \"output only sku_ids\" prompt suppresses.\n\n**Idea:** Enable brief chain-of-thought reasoning before the final answer. LLMs rank noticeably better on ambiguous/intent queries when allowed to reason first. To keep parsing robust, I instruct the model to emit a clear `FINAL:` marker and parse SKUs only from the text *after the last marker* (falling back to first-seen if no marker), so reasoning-mentioned SKUs don't pollute the ranking.", "name": "enable_cot_reasoning", "description": "Allow the LLM to reason briefly before emitting the final ranked list, with a FINAL: marker to delimit the answer. Parsing prefers SKUs after the last marker, avoiding contamination from reasoning text. This should lift the hardest intent-based queries (ambiance lamp, gift scarf, lightweight water bottle) where implicit reasoning helps.", "analysis_cn": "The current LLM-ranking overall score is 0.94. The remaining weak spots are concentrated in the hardest intent/ambiguity queries, e.g. \"reading a Kindle late at night and wanting some ambiance\" → vintage lamp; \"office gift exchange, looks premium but not expensive\" → wool scarf; \"staying hydrated outdoors without carrying anything heavy\" → glass water bottle. These queries require deeper reasoning about **implicit intent**, but the current one-shot prompt that \"only outputs sku_ids\" suppresses that reasoning.\n\n**Idea**: Let the LLM do a short chain-of-thought before its final answer. On ambiguity/intent queries, LLMs that reason first and then answer rank noticeably better. To keep the parser robust, have the model output an explicit `FINAL:` delimiter and take SKUs only from after the last marker, so the reasoning text doesn't interfere.", "description_cn": "Let the LLM reason briefly before giving the final answer · use the `FINAL:` marker to separate the final SKU ranking. When parsing, take the SKUs after the last `FINAL:` · so the reasoning text doesn't contaminate the result. This should lift the hardest intent questions (implicit-reasoning ones such as ambient lights, gift scarves, and lightweight water bottles)."}, "diff": "--- a/original.py\n+++ b/original.py\n@@ -1,141 +1,159 @@\n \"\"\"Evolvable ecommerce search harness.\n \n ShinkaEvolve edits only the code between EVOLVE-BLOCK-START and EVOLVE-BLOCK-END.\n Everything else — catalog loading, evaluation harness, JSON output — stays frozen.\n \n The proposer's job: rewrite `search()` so it returns a ranked list of up to 5\n sku_ids for a natural-language query. Scoring uses NDCG@5 + MRR@5 (see\n evaluate.py) so partial credit is given for the right item at rank 2 or 3.\n The proposer may call Bedrock via the provided `llm(prompt)` helper.\n \"\"\"\n from __future__ import annotations\n \n import json\n import os\n import re\n import sys\n from typing import Any, Callable, Dict, List, Optional\n \n # ── FROZEN: catalog + LLM helper ──────────────────────────────────\n # The proposer sees these names but must not modify anything outside the\n # EVOLVE-BLOCK region. Modifying frozen sections is a hard failure.\n \n CATALOG_PATH = os.environ.get(\"HARNESS_CATALOG\", \"harness/catalog_data.json\")\n \n with open(CATALOG_PATH) as _f:\n     CATALOG: List[Dict[str, Any]] = json.load(_f)\n \n \n def _tokenize(text: str) -> List[str]:\n     return re.findall(r\"[A-Za-z0-9一-鿿]+\", text.lower())\n \n \n def llm(prompt: str, max_tokens: int = 200) -> str:\n     \"\"\"Ask Sonnet 4.5 (via ShinkaEvolve's already-configured Bedrock).\n \n     Returns the raw response text. Empty string on failure — never raises.\n     \"\"\"\n     try:\n         from anthropic import AnthropicBedrock\n         c = AnthropicBedrock(aws_region=\"ap-northeast-1\")\n         m = c.messages.create(\n             model=\"jp.anthropic.claude-haiku-4-5-20251001-v1:0\",\n             max_tokens=max_tokens,\n             messages=[{\"role\": \"user\", \"content\": prompt}],\n         )\n         return m.content[0].text if m.content else \"\"\n     except Exception:\n         return \"\"\n \n \n # ─────────────────────────────────────────────────────────────────\n # EVOLVE-BLOCK-START\n # The proposer rewrites this block. Keep the signature —\n #   search(query) -> List[str]   (up to 5 sku_ids, best first)\n # Returning a single string still works (back-compat) but forfeits NDCG@5 partial\n # credit. Every extra function/import you introduce must live inside this block.\n # ─────────────────────────────────────────────────────────────────\n from rank_bm25 import BM25Okapi\n \n _TOKENS = [_tokenize(s[\"title\"]) for s in CATALOG]\n _BM25 = BM25Okapi(_TOKENS)\n \n _ALL_SKUS = [s[\"sku_id\"] for s in CATALOG]\n _SKU_SET = set(_ALL_SKUS)\n \n # Precompute a compact catalog listing to feed the LLM once per query.\n def _fmt_item(s: Dict[str, Any]) -> str:\n     price = s.get(\"price\", \"\")\n     return f'{s[\"sku_id\"]}\\t{s[\"title\"]}\\t¥{price}'\n \n \n _CATALOG_TEXT = \"\\n\".join(_fmt_item(s) for s in CATALOG)\n \n \n def _bm25_order(query: str) -> List[str]:\n     q = _tokenize(query)\n     scores = _BM25.get_scores(q)\n     order = sorted(range(len(CATALOG)), key=lambda i: -scores[i])\n     return [CATALOG[i][\"sku_id\"] for i in order]\n \n \n def _parse_skus(text: str) -> List[str]:\n-    \"\"\"Pull sku_ids out of an LLM response in first-seen order.\"\"\"\n+    \"\"\"Pull sku_ids from an LLM response.\n+\n+    If a FINAL: marker is present, only parse the section after the LAST\n+    marker (so chain-of-thought reasoning above it never leaks in). Order is\n+    first-seen within that section.\n+    \"\"\"\n+    idx = text.rfind(\"FINAL\")\n+    section = text[idx:] if idx != -1 else text\n+    found = re.findall(r\"sku-[A-Za-z0-9\\-]+\", section)\n+    seen: List[str] = []\n+    for tok in found:\n+        if tok in _SKU_SET and tok not in seen:\n+            seen.append(tok)\n+    if seen:\n+        return seen\n+    # Fallback: parse the whole response if the FINAL section had nothing.\n     found = re.findall(r\"sku-[A-Za-z0-9\\-]+\", text)\n-    seen: List[str] = []\n     for tok in found:\n         if tok in _SKU_SET and tok not in seen:\n             seen.append(tok)\n     return seen\n \n \n def search(query: str) -> List[str]:\n     \"\"\"Return the top-5 sku_ids for a query, best first.\n \n     Strategy: give the LLM the full catalog and ask it to rank the most\n     relevant products. This handles cross-lingual (English<->Chinese) matching,\n     intent/semantic queries, and negation (\"not silk\", \"不要涤纶\"). BM25 provides\n     a robust fallback and backfills any missing slots.\n     \"\"\"\n     bm25 = _bm25_order(query)\n \n     prompt = (\n         \"You are a precise e-commerce search ranker. Given a shopper query and a \"\n         \"product catalog (TSV: sku_id, title, price), return the 5 MOST relevant \"\n         \"products, best first.\\n\"\n         \"Rules:\\n\"\n         \"- Match meaning across languages (English and Chinese are equivalent).\\n\"\n         \"- Understand intent: e.g. 'quiet gift for long flights' -> noise-cancelling earphones; \"\n         \"'listen to music at the beach' -> bluetooth speaker; 'keep warm hiking in winter' -> down jacket.\\n\"\n         \"- Respect negation and attributes (e.g. 'not polyester'/'不要涤纶', 'cotton', a specific size).\\n\"\n         \"- For accessory intents (e.g. 'just bought an iPhone 15, what next') prefer accessories over the phone itself.\\n\"\n-        \"- Output ONLY the 5 sku_ids, one per line, no other text.\\n\\n\"\n+        \"- Decode implicit intent for ambiguous/lifestyle queries: 'ambiance for late-night reading' -> a warm/decorative lamp (not a plain bright one); \"\n+        \"'classy but inexpensive office gift' -> an elegant affordable accessory (e.g. wool scarf); \"\n+        \"'stay hydrated outdoors without carrying something heavy' -> a lightweight portable bottle.\\n\"\n+        \"First think briefly in one short line, then on a new line write 'FINAL:' followed by exactly 5 sku_ids \"\n+        \"(one per line, best first, nothing else).\\n\\n\"\n         f\"CATALOG:\\n{_CATALOG_TEXT}\\n\\n\"\n         f\"QUERY: {query}\\n\\n\"\n-        \"ANSWER (5 sku_ids, best first):\"\n+        \"Reasoning then FINAL:\"\n     )\n \n     ranked: List[str] = []\n     try:\n-        resp = llm(prompt, max_tokens=120)\n+        resp = llm(prompt, max_tokens=220)\n         ranked = _p"}], "sku_titles": {"sku-apple-dried": "Dried apple chips · 250g individually wrapped", "sku-apple-cider": "Handmade apple cider vinegar · 500ml bottle", "sku-cable-lightning": "Lightning cable · braided · 1.5m", "sku-iphone-mini": "iPhone 13 mini · 128GB · Blue", "sku-jacket-down": "Down jacket · 90% white duck down · long", "sku-oppo-find": "OPPO Find X7 · 256GB · Ocean Blue", "sku-shoe-adult-40": "Men's running shoes · size 40 · cushioned", "sku-glass-500ml": "Glass water bottle · Heat-resistant 500ml · Bamboo lid", "sku-lamp-vintage": "Retro industrial desk lamp · wrought iron · Edison bulb", "sku-apple-fruit": "Shanxi Red Fuji apples · net weight 5 jin", "sku-glass-750ml": "Glass water bottle · Large 750ml · Wooden lid", "sku-vivo-x100": "vivo X100 Pro · 256GB · Startrail Blue", "sku-powerbank-20k": "Power bank · 20000mAh · high capacity", "sku-xiaomi-14": "Xiaomi 14 · 512GB · White", "sku-lamp-floor": "Living room floor lamp · Minimalist Nordic · Remote control", "sku-lamp-modern": "Modern minimalist desk lamp · Stepless dimming · Black", "sku-stainless-500": "Stainless steel insulated cup · 316L · 500ml", "sku-scarf-wool": "Wool scarf · solid color · oversized", "sku-ceramic-mug": "Ceramic mug · hand-painted · 350ml", "sku-airpods-3": "Apple AirPods (3rd generation) · Spatial Audio", "sku-sheet-queen-cotton": "Cotton bed sheet · Queen size · 60s sateen", "sku-shoe-kid-32": "Kids' running shoes · size 32 · reflective strips", "sku-tritan-600": "Tritan plastic water bottle · BPA-free · 600ml", "sku-shoe-kid-30": "Kids' running shoes · size 30 · lightweight and breathable", "sku-shoe-women-36": "Women's running shoes · size 36 · pink", "sku-iphone-128": "iPhone 15 · 128GB · Starlight · Official standard", "sku-shoe-boot-42": "Men's hiking boots · size 42 · waterproof", "sku-airpods-pro": "Apple AirPods Pro 2 · Active Noise Cancellation", "sku-speaker-bt": "Portable Bluetooth speaker · 20W stereo", "sku-apple-juice": "Apple juice · cold-pressed 1L", "sku-charger-usbc": "USB-C fast charger · 65W · GaN", "sku-lamp-victorian": "Victorian classic table lamp · carved brass", "sku-phonecase-iphone": "iPhone 15 Case · MagSafe", "sku-tshirt-cotton-m": "Cotton T-shirt · Size M · White", "sku-plastic-500ml": "Sports water bottle · plastic 500ml · blue", "sku-socks-cotton": "Cotton socks · 5 pairs · Mid-calf", "sku-samsung-s24": "Samsung Galaxy S24 · 256GB · Black", "sku-huawei-buds": "Huawei FreeBuds Pro 3 · Noise cancelling", "sku-huawei-p60": "Huawei P60 Pro · 512GB · Rococo White", "sku-iphone-14": "iPhone 14 · 128GB · Purple", "sku-sheet-silk": "Silk sheets · King · 22 momme", "sku-shoe-women-38": "Women's running shoes · size 38 · lightweight racing", "sku-sheet-king-cotton": "Cotton bed sheet · King size · 40s soft weave", "sku-sheet-king-poly": "Polyester bed sheet · King size · Skin-friendly", "sku-sheet-queen-poly": "Polyester bed sheet · Queen size · Wrinkle-resistant", "sku-tempered-glass": "Tempered glass screen protector · HD · universal", "sku-earbud-basic": "Wireless Bluetooth earbuds · Standard", "sku-iphone-512": "iPhone 15 Pro · 512GB · Titanium frame", "sku-lamp-mini": "Minimalist desk lamp · 3-level touch dimming · LED", "sku-plastic-1l": "Large-capacity plastic water bottle · 1L sports style", "sku-headphone-cheap": "Wired in-ear headphones · 3.5mm", "sku-apple-organic": "Organic crisp apples · 12-pack", "sku-sony-wf": "Sony WF-1000XM5 · top-tier noise cancellation", "sku-shoe-kid-34": "Kids' running shoes · size 34 · Velcro straps", "sku-apple-sauce": "U.S. imported applesauce · 3-jar pack", "sku-iphone-256": "iPhone 15 · 256GB · Starlight · Official standard", "sku-earbud-anc": "Wireless noise-canceling headphones · Active ANC · 40-hour battery life", "sku-lamp-nordic": "Nordic-style wooden desk lamp · Solid wood base", "sku-sheet-linen": "Linen sheets · Queen · Naturally breathable", "sku-sheet-single-cotton": "Cotton bed sheet · Single size · For dorms"}};
+  const data = window.__PLAY_RUN_DATA__;
+  const gens = data.gens;
+  // sku_id -> title map baked into play-run.json (see tools/enrich_play_run.py)
+  const SKU_TITLES = data.sku_titles || {};
+
+  // ── Build the step timeline ──
+  // Each step = one atomic UI action with a duration (ms at 1× speed).
+  const TIER_NAMES = { E: "E · Easy", M: "M · Medium", H: "H · Hardest" };
+  const steps = [];
+
+  gens.forEach((g, gi) => {
+    const label = `Gen ${g.n}`;
+    // Reset UI for the gen
+    steps.push({label: `${label} · Start`, dur: 400, fn: () => {
+      const numEl = $("#mk-gen-num");
+      numEl.textContent = g.n;
+      numEl.classList.remove("pulse");
+      // Force reflow so the animation restarts
+      void numEl.offsetWidth;
+      numEl.classList.add("pulse");
+      setActiveNode("run");
+      hidePanel("mk-reasoning-panel");
+      hidePanel("mk-diff-panel");
+      hidePanel("mk-perq-panel");
+      hidePanel("mk-perq-current");
+      hidePanel("mk-perq-recap");
+      hidePanel("mk-score-final");
+      hidePanel("mk-select-panel");
+      hidePanel("mk-errors-panel");
+      // Also un-mark all workflow nodes for the new gen
+      $$(".mk-wf-node").forEach(n => n.classList.remove("active", "done"));
+      setActiveNode("run");
+    }});
+    // Run · 400ms per gen
+    steps.push({label: `${label} · Run · running parent`, dur: 800, fn: () => setActiveNode("run")});
+    // Observe · pick parent
+    steps.push({label: `${label} · Observe · selecting parent`, dur: 800, fn: () => {
+      markDone("run");
+      setActiveNode("observe");
+      renderArchive(gi);
+      renderSelectPanel(gi);
+      renderErrorsPanel(gi);
+    }});
+    if (gi > 0) {
+      // Reasoning stream · use CN fields when available for duration calc
+      const r = g.reasoning || {};
+      const aLen = (r.analysis_cn || r.analysis || "").length;
+      const dLen = (r.description_cn || r.description || "").length;
+      const totalChars = aLen + dLen;
+      const streamDur = Math.max(1200, Math.min(6000, totalChars * 15));
+      steps.push({label: `${label} · Propose · AI thinking`, dur: 900, fn: () => {
+        markDone("observe");
+        setActiveNode("propose");
+        showPanel("mk-reasoning-panel");
+        // Open the diff panel from the start · streams filled in later
+        openDiffPanel();
+      }});
+      steps.push({label: `${label} · Propose · AI typewriter`, dur: streamDur, fn: async (opts) => {
+        await streamReasoning(r, opts);
+      }, streaming: true});
+      steps.push({label: `${label} · Propose · writing diff`, dur: 1400, fn: async (opts) => {
+        await streamDiff(g.diff || "", opts);
+      }, streaming: true});
+      // Verify · build empty grid then reveal cells one-by-one
+      steps.push({label: `${label} · Verify · building eval table`, dur: 800, fn: () => {
+        markDone("propose");
+        setActiveNode("verify");
+        renderPerQ(g.public.per_query || []);
+      }});
+      steps.push({label: `${label} · Verify · scoring each task`, dur: 1800, fn: async (opts) => {
+        await streamPerQ(g.public.per_query || [], opts);
+      }, streaming: true});
+      // Commit · verdict + score reveal
+      steps.push({label: `${label} · Commit · Gate verdict`, dur: 800, fn: () => {
+        markDone("verify");
+        setActiveNode("commit");
+      }});
+      steps.push({label: `${label} · Commit · revealing score`, dur: 900, fn: () => {
+        renderFinalScore(g);
+      }});
+    } else {
+      // Gen 0 baseline · simpler path · still reveal cells one-by-one
+      steps.push({label: `${label} · Observe · no candidates`, dur: 400, fn: () => {
+        markDone("observe");
+        setActiveNode("verify");
+      }});
+      steps.push({label: `${label} · Verify · building baseline table`, dur: 500, fn: () => {
+        renderPerQ(g.public.per_query || []);
+      }});
+      steps.push({label: `${label} · Verify · scoring each task`, dur: 1500, fn: async (opts) => {
+        await streamPerQ(g.public.per_query || [], opts);
+      }, streaming: true});
+      steps.push({label: `${label} · Commit · baseline archived`, dur: 700, fn: () => {
+        markDone("verify");
+        setActiveNode("commit");
+        renderFinalScore(g);
+      }});
+    }
+    steps.push({label: `${label} · Done`, dur: 700, fn: () => {
+      markDone("commit");
+      addGenCard(g);
+    }});
+    // Between-gen gate · pause and ask before running the next generation
+    if (gi < gens.length - 1) {
+      const nextN = gens[gi + 1].n;
+      steps.push({label: `Awaiting confirmation · Proceed to Gen ${nextN}?`, dur: 0, gate: true, fn: async (opts) => {
+        if (opts && opts.scrub) return;  // don't block during timeline scrub
+        await waitForNextGenConfirm(g, gens[gi + 1]);
+      }, streaming: true});
+    }
+  });
+
+  // ── State ──
+  let stepIdx = 0;
+  let playing = false;
+  let speed = 0.25;  // slower presentation pace (audience needs time to read)
+  let stopSignal = false;
+  let resetToken = 0;  // bumps on every reset so in-flight runStep can bail
+  let elapsedStart = null;
+  let elapsedAccum = 0;
+  let elapsedTimer = null;
+  function _fmtElapsed(ms) {
+    const s = Math.floor(ms / 1000);
+    return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  }
+  function startElapsed() {
+    if (elapsedTimer) return;
+    elapsedStart = performance.now();
+    elapsedTimer = setInterval(() => {
+      const el = document.getElementById("mk-elapsed");
+      if (el) el.textContent = _fmtElapsed(elapsedAccum + (performance.now() - elapsedStart));
+    }, 250);
+  }
+  function stopElapsed() {
+    if (!elapsedTimer) return;
+    elapsedAccum += performance.now() - elapsedStart;
+    clearInterval(elapsedTimer);
+    elapsedTimer = null;
+  }
+  function resetElapsed() {
+    stopElapsed();
+    elapsedAccum = 0;
+    elapsedStart = null;
+    const el = document.getElementById("mk-elapsed");
+    if (el) el.textContent = "00:00";
+  }
+
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+
+  function setActiveNode(name) {
+    $$(".mk-wf-node").forEach(n => n.classList.remove("active"));
+    const el = document.querySelector(`.mk-wf-node[data-node="${name}"]`);
+    if (el) el.classList.add("active");
+  }
+  function markDone(name) {
+    const el = document.querySelector(`.mk-wf-node[data-node="${name}"]`);
+    if (el) { el.classList.remove("active"); el.classList.add("done"); }
+  }
+  function showPanel(id) { const el = document.getElementById(id); if (el) el.style.display = ""; }
+  function hidePanel(id) { const el = document.getElementById(id); if (el) el.style.display = "none"; }
+
+  // Archive rendering — accumulates as gens finish
+  const shownArchive = [];
+  function renderArchive(gi) {
+    const g = gens[gi];
+    if (gi === 0) {
+      $("#mk-archive-slots").innerHTML = '<div class="mk-archive-slot empty">Archive is still empty · Gen 0 baseline will be archived shortly</div>';
+      return;
+    }
+    // Slots = gens up to previous
+    const html = shownArchive.map(entry => {
+      const cls = entry.n === gi - 1 ? " chosen" : "";
+      return `<div class="mk-archive-slot${cls}">Gen ${entry.n} · ${entry.score.toFixed(2)}</div>`;
+    }).join("");
+    $("#mk-archive-slots").innerHTML = html || '<div class="mk-archive-slot empty">Archive empty</div>';
+  }
+
+  // Parent-selection breakdown: show weight → probability for each candidate
+  function renderSelectPanel(gi) {
+    if (gi === 0 || shownArchive.length === 0) return;
+    showPanel("mk-select-panel");
+    // Use softmax over archived scores with temperature T = 0.15
+    const T = 0.15;
+    const entries = shownArchive.map(e => ({ ...e, w: Math.exp(e.score / T) }));
+    const sum = entries.reduce((a, e) => a + e.w, 0) || 1;
+    entries.forEach(e => { e.prob = e.w / sum; });
+    // Chosen = highest-score (deterministic in this replay; real run samples)
+    const chosen = entries.reduce((best, e) => e.score > best.score ? e : best, entries[0]);
+    const maxW = Math.max(...entries.map(e => e.w));
+    const bars = entries.map(e => {
+      const cls = e.n === chosen.n ? " chosen" : "";
+      const pct = maxW > 0 ? (e.w / maxW * 100) : 0;
+      return `<div class="mk-select-bar${cls}">
+        <span class="lbl${cls ? ' chosen' : ''}">Gen ${e.n} · ${e.score.toFixed(2)}</span>
+        <div class="mk-select-bar-track"><div class="mk-select-bar-fill" style="width:${pct.toFixed(1)}%"></div></div>
+        <span class="prob">${(e.prob * 100).toFixed(1)}%</span>
+      </div>`;
+    }).join("");
+    $("#mk-select-bars").innerHTML = bars;
+    $("#mk-select-summary").textContent = `${entries.length} candidate versions · softmax(score / ${T})`;
+    $("#mk-select-chosen").textContent = `This round selected Gen ${chosen.n} (probability ${(chosen.prob * 100).toFixed(1)}%) as the parent`;
+  }
+
+  // Errors panel: list of queries the parent got wrong (miss or partial)
+  function renderErrorsPanel(gi) {
+    if (gi === 0) return;
+    // Use previous gen's per_query (that's the parent whose errors AI will fix)
+    const parent = gens[gi - 1];
+    const pq = (parent.public && parent.public.per_query) || [];
+    if (pq.length === 0) return;
+    const wrong = pq.map((q, idx) => ({ ...q, idx })).filter(q => !q.hit);
+    if (wrong.length === 0) return;
+    showPanel("mk-errors-panel");
+    const byTier = { E: 0, M: 0, H: 0 };
+    wrong.forEach(q => { byTier[q.tier] = (byTier[q.tier] || 0) + 1; });
+    $("#mk-errors-summary").textContent = `Gen ${parent.n} got ${wrong.length}/${pq.length} questions wrong · E ${byTier.E||0} · M ${byTier.M||0} · H ${byTier.H||0}`;
+    // Sort worst first (miss first, then partial by ndcg asc)
+    wrong.sort((a, b) => {
+      const aScore = a.hit ? 2 : (a.ndcg > 0 ? 1 : 0);
+      const bScore = b.hit ? 2 : (b.ndcg > 0 ? 1 : 0);
+      if (aScore !== bScore) return aScore - bScore;
+      return (a.ndcg || 0) - (b.ndcg || 0);
+    });
+    const rows = wrong.slice(0, 12).map(q => {
+      const qText = (q.q || "").replace(/</g, "&lt;");
+      const gold = (q.gold_title || q.gold || "").replace(/</g, "&lt;");
+      const pred = (q.pred_title || q.pred || "None").replace(/</g, "&lt;");
+      const mark = q.ndcg > 0 ? "~" : "✗";
+      return `<li>
+        <span class="tier ${q.tier}">${q.tier}</span>
+        <span class="q">${qText}</span>
+        <span class="gap">${mark} Expected: ${gold.slice(0, 24)}</span>
+      </li>`;
+    }).join("");
+    const extra = wrong.length > 12 ? `<li style="color:var(--text-mute);text-align:center;">…${wrong.length - 12} more</li>` : "";
+    $("#mk-errors-list").innerHTML = rows + extra;
+  }
+
+  // Show the diff panel · begin in "writing" state (no body yet, just header)
+  function openDiffPanel() {
+    showPanel("mk-diff-panel");
+    $("#mk-diff-body").innerHTML = "";
+    $("#mk-diff-summary").textContent = "AI is generating the diff…";
+  }
+
+  // Escape one line
+  function _escLine(l) {
+    return l.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function _wrapLine(l) {
+    const esc = _escLine(l);
+    if (l.startsWith("+++") || l.startsWith("---") || l.startsWith("@@")) return `<span class="hunk">${esc}</span>`;
+    if (l.startsWith("+")) return `<span class="add">${esc}</span>`;
+    if (l.startsWith("-")) return `<span class="del">${esc}</span>`;
+    return `<span class="ctx">${esc}</span>`;
+  }
+
+  // Stream the diff line-by-line · speed-aware
+  async function streamDiff(diff, opts) {
+    if (!diff) return;
+    showPanel("mk-diff-panel");
+    const bodyEl = $("#mk-diff-body");
+    const sumEl = $("#mk-diff-summary");
+    bodyEl.innerHTML = "";
+    const lines = diff.split("\n");
+    const total = lines.length;
+    const adds = (diff.match(/^\+[^+]/gm) || []).length;
+    const dels = (diff.match(/^-[^-]/gm) || []).length;
+    const spd = (opts && opts.speed) || speed || 1;
+    // Batch several lines per tick so long diffs don't drag forever
+    const chunk = Math.max(1, Math.round(3 * Math.min(4, spd)));
+    const stepMs = Math.max(6, 25 / spd);
+    let acc = "";
+    for (let i = 0; i < total; i += chunk) {
+      if (stopSignal) break;
+      const slice = lines.slice(i, i + chunk).map(_wrapLine).join("");
+      acc += slice;
+      bodyEl.innerHTML = acc;
+      // Auto-scroll to bottom while streaming so the newest line is visible
+      bodyEl.scrollTop = bodyEl.scrollHeight;
+      sumEl.textContent = `Writing · ${Math.min(i + chunk, total)}/${total} rows`;
+      await new Promise(res => setTimeout(res, stepMs));
+    }
+    sumEl.textContent = `${diff.length} bytes · +${adds} lines · −${dels} lines`;
+  }
+
+  // Build the empty perq grid — cells will be revealed one-by-one by streamPerQ()
+  // Cache the currently-being-scored question set on the panel so streamPerQ
+  // can look up each cell's full record when it lights up.
+  let _currentPQ = [];
+  function renderPerQ(pq) {
+    if (!pq || pq.length === 0) return;
+    showPanel("mk-perq-panel");
+    const tiers = {E: [], M: [], H: []};
+    // Preserve original index so cell → question lookup is O(1)
+    _currentPQ = pq.map((q, i) => ({...q, idx: i}));
+    _currentPQ.forEach(q => { (tiers[q.tier] || (tiers[q.tier]=[])).push(q); });
+    $("#mk-perq-summary").textContent = `0/${pq.length} · scoring…`;
+    // Hide the "current" card until first cell reveal · hide recap for a new gen
+    hidePanel("mk-perq-current");
+    hidePanel("mk-perq-recap");
+    let html = "";
+    for (const t of ["E", "M", "H"]) {
+      const items = tiers[t] || [];
+      if (!items.length) continue;
+      const cells = items.map(q => {
+        const gt = (q.gold_title || q.gold || "").replace(/"/g, "'");
+        const pt = (q.pred_title || q.pred || "None").replace(/"/g, "'");
+        const q_ = (q.q || "").replace(/"/g, "'");
+        const ndcg = q.ndcg || 0;
+        return `<div class="mk-perq-cell pending" data-idx="${q.idx}" data-hit="${q.hit ? 1 : 0}" data-ndcg="${ndcg.toFixed(3)}" title="${q_}\nExpected: ${gt}\nGot: ${pt}\nNDCG: ${ndcg.toFixed(3)}">…</div>`;
+      }).join("");
+      html += `
+        <div class="mk-perq-tier" data-tier="${t}">
+          <div class="mk-perq-tier-h"><span>${TIER_NAMES[t]} · ${items.length} queries</span><span class="mk-perq-tier-count">0/${items.length}</span></div>
+          <div class="mk-perq-cells">${cells}</div>
+        </div>`;
+    }
+    $("#mk-perq-grid").innerHTML = html;
+  }
+
+  // A · Update the "currently being scored" card as the reveal advances
+  function _updateCurrentCard(q) {
+    const card = $("#mk-perq-current");
+    if (!card) return;
+    card.style.display = "";
+    const hit = !!q.hit;
+    const ndcg = q.ndcg || 0;
+    const cls = hit ? "hit" : (ndcg > 0 ? "partial" : "miss");
+    const mark = hit ? "✓ Passed" : (ndcg > 0 ? "~ Partial hit" : "✗ Miss");
+    card.classList.remove("hit", "miss", "partial");
+    card.classList.add(cls);
+    const tierEl = $("#mk-perq-current-tier");
+    tierEl.className = "mk-perq-current-tier " + q.tier;
+    tierEl.textContent = q.tier === "E" ? "E · Easy" : q.tier === "M" ? "M · Medium" : "H · Hardest";
+    const markEl = $("#mk-perq-current-mark");
+    markEl.textContent = mark;
+    // Restart pop animation
+    markEl.classList.remove("pop");
+    void markEl.offsetWidth;
+    markEl.classList.add("pop");
+    $("#mk-perq-current-ndcg").innerHTML = `NDCG · <b>${ndcg.toFixed(3)}</b>`;
+    $("#mk-perq-current-q").textContent = q.q || "";
+    $("#mk-perq-current-gold").textContent = q.gold_title || q.gold || "—";
+    // Show 实答 only when wrong; helps audience focus on the miss
+    const predRow = $("#mk-perq-current-pred-row");
+    if (hit) {
+      predRow.style.display = "none";
+    } else {
+      predRow.style.display = "";
+      $("#mk-perq-current-pred").textContent = q.pred_title || q.pred || "No response";
+    }
+    // Top-5 rank view · shows where the gold actually sits + what fills the slots
+    _renderRankList(q);
+  }
+
+  // Render the "前 5 名排位" list · position + title + tag(gold/partial/miss)
+  function _renderRankList(q) {
+    const list = $("#mk-perq-current-ranks-list");
+    if (!list) return;
+    const ranked = q.ranked || [];
+    if (ranked.length === 0) { list.innerHTML = ""; return; }
+    const gold = q.gold;
+    const partials = new Set(q.partial || []);
+    const pos = ["①", "②", "③", "④", "⑤"];
+    const rows = ranked.slice(0, 5).map((sku, i) => {
+      const title = SKU_TITLES[sku] || sku;
+      let cls = "rk-miss";
+      let tag = "";
+      if (sku === gold) { cls = "rk-gold"; tag = "Gold ✓"; }
+      else if (partials.has(sku)) { cls = "rk-partial"; tag = "Near match"; }
+      const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      return `<li class="${cls}"><span class="rk-pos">${pos[i] || (i + 1)}</span><span class="rk-title" title="${esc(title)}">${esc(title)}</span><span class="rk-tag">${tag}</span></li>`;
+    }).join("");
+    list.innerHTML = rows;
+  }
+
+  // B · After the full reveal · render the "wrong-only" recap table
+  function _renderRecap(pq) {
+    const container = $("#mk-perq-recap-body");
+    const summaryEl = $("#mk-perq-recap-summary");
+    if (!container || !summaryEl) return;
+    const wrong = pq.filter(q => !q.hit);
+    showPanel("mk-perq-recap");
+    if (wrong.length === 0) {
+      summaryEl.textContent = "All hit · no wrong answers";
+      container.innerHTML = '<div class="mk-perq-recap-empty">🎉 Every question hit this generation · no misses</div>';
+      return;
+    }
+    // Sort worst first · misses before partials · lower NDCG first inside each
+    wrong.sort((a, b) => {
+      const aRank = a.ndcg > 0 ? 1 : 0;
+      const bRank = b.ndcg > 0 ? 1 : 0;
+      if (aRank !== bRank) return aRank - bRank;
+      return (a.ndcg || 0) - (b.ndcg || 0);
+    });
+    const byTier = { E: 0, M: 0, H: 0 };
+    wrong.forEach(q => { byTier[q.tier] = (byTier[q.tier] || 0) + 1; });
+    summaryEl.textContent = `${wrong.length}/${pq.length} missed · E ${byTier.E||0} · M ${byTier.M||0} · H ${byTier.H||0}`;
+    const esc = s => (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const head = `
+      <div class="mk-perq-recap-head-row">
+        <span>Tier</span><span>Query</span><span>Expected</span><span>Actual</span><span class="rec-ndcg">NDCG</span>
+      </div>`;
+    const rows = wrong.map(q => `
+      <div class="mk-perq-recap-row">
+        <span class="rec-tier ${q.tier}">${q.tier}</span>
+        <span class="rec-q">${esc(q.q)}</span>
+        <span class="rec-gold">${esc(q.gold_title || q.gold)}</span>
+        <span class="rec-pred">${esc(q.pred_title || q.pred || "无")}</span>
+        <span class="rec-ndcg">${(q.ndcg || 0).toFixed(2)}</span>
+      </div>`).join("");
+    container.innerHTML = head + rows;
+  }
+
+  // Reveal each cell in order · updates running tallies + current-question card · speed-aware
+  async function streamPerQ(pq, opts) {
+    if (!pq || pq.length === 0) return;
+    const cells = $$("#mk-perq-grid .mk-perq-cell");
+    if (!cells.length) return;
+    const total = cells.length;
+    const spd = (opts && opts.speed) || speed || 1;
+    // Base pace 100 ms/cell at 1× · at 0.25× becomes 400 ms · at 4× becomes 25 ms.
+    // 31 cells × 400 ms ≈ 12 s at default speed 0.25× — enough to read each card.
+    const stepMs = Math.max(25, 100 / spd);
+    let hits = 0;
+    const tierCount = {};
+    const tierHit = {};
+    for (let i = 0; i < cells.length; i++) {
+      if (stopSignal) return;
+      const c = cells[i];
+      const hit = c.dataset.hit === "1";
+      const ndcg = parseFloat(c.dataset.ndcg || "0");
+      const cls = hit ? "hit" : (ndcg > 0 ? "partial" : "miss");
+      const mark = hit ? "✓" : (ndcg > 0 ? "~" : "✗");
+      c.classList.remove("pending");
+      c.classList.add(cls, "revealed");
+      c.textContent = mark;
+      if (hit) hits += 1;
+      // A · update the current-question card for this cell
+      const idx = parseInt(c.dataset.idx, 10);
+      const qRec = _currentPQ[idx];
+      if (qRec) _updateCurrentCard(qRec);
+      const tierRow = c.closest(".mk-perq-tier");
+      const tier = tierRow.dataset.tier;
+      tierCount[tier] = (tierCount[tier] || 0) + 1;
+      if (hit) tierHit[tier] = (tierHit[tier] || 0) + 1;
+      const tierEl = tierRow.querySelector(".mk-perq-tier-count");
+      if (tierEl) {
+        const tierTotal = tierRow.querySelectorAll(".mk-perq-cell").length;
+        tierEl.textContent = `${tierHit[tier] || 0}/${tierTotal} · ${tierCount[tier]} judged`;
+      }
+      $("#mk-perq-summary").textContent = `${hits}/${total} hits · graded ${i + 1}/${total}`;
+      await new Promise(res => setTimeout(res, stepMs));
+    }
+    $("#mk-perq-summary").textContent = `${hits}/${total} tasks hit · all done`;
+    // Finalize per-tier labels
+    $$(".mk-perq-tier").forEach(tierRow => {
+      const t = tierRow.dataset.tier;
+      const tierTotal = tierRow.querySelectorAll(".mk-perq-cell").length;
+      const tierEl = tierRow.querySelector(".mk-perq-tier-count");
+      if (tierEl) tierEl.textContent = `${tierHit[t] || 0}/${tierTotal} hits`;
+    });
+    // B · render the wrong-only recap table now that reveal is complete
+    _renderRecap(_currentPQ);
+  }
+
+  function renderFinalScore(g) {
+    showPanel("mk-score-final");
+    const ndcg = g.public.ndcg || 0;
+    const combined = g.score || 0;
+    $("#mk-ndcg").textContent = (ndcg * 100).toFixed(1) + "%";
+    $("#mk-combined").textContent = combined.toFixed(3);
+    const promoted = g.public.gate_kind === "promoted" || combined > 0.4;
+    const vEl = $("#mk-verdict");
+    vEl.textContent = promoted ? "✓ Promoted" : "✗ Rejected";
+    vEl.className = "verdict " + (promoted ? "promoted" : "rejected");
+    // Push to archive for next gen's display
+    shownArchive.push({n: g.n, score: combined});
+  }
+
+  // Between-gen gate — pause playback and ask the presenter whether to advance
+  // Between-gen gate · inline card version. Non-blocking: presenter can scroll,
+  // hover tooltips, and keep talking while the card waits. Press Enter or
+  // click the button when ready to move to the next generation.
+  function waitForNextGenConfirm(currentGen, nextGen) {
+    return new Promise((resolve) => {
+      const box = document.getElementById("mk-nextgen");
+      const titleEl = document.getElementById("mk-nextgen-title");
+      const bodyEl = document.getElementById("mk-nextgen-body");
+      const summaryEl = document.getElementById("mk-nextgen-summary");
+      const nextBtn = document.getElementById("mk-nextgen-btn");
+      const cScore = (currentGen.score || 0).toFixed(3);
+      const cNdcg = ((currentGen.public.ndcg || 0) * 100).toFixed(1);
+      const cE = ((currentGen.public.tier_E || 0) * 100).toFixed(0);
+      const cM = ((currentGen.public.tier_M || 0) * 100).toFixed(0);
+      const cH = ((currentGen.public.tier_H || 0) * 100).toFixed(0);
+      const cHo = (((currentGen.private || {}).heldout_ndcg || 0) * 100).toFixed(0);
+      titleEl.textContent = `Gen ${currentGen.n} finished`;
+      bodyEl.innerHTML = `Overall score <b>${cScore}</b> · When you're ready to continue, click the button on the right to enter <b>Gen ${nextGen.n}</b>.`;
+      const _ndcgInfo = '<button type="button" class="mk-info" tabindex="-1"><span class="mk-info-body"><b>NDCG@5</b> · ranking quality score for the top 5 · <span class="num">0</span> to <span class="num">1</span> · the higher the hit ranks, the higher the score.</span></button>';
+      const _combInfo = '<button type="button" class="mk-info" tabindex="-1"><span class="mk-info-body"><b>Composite score</b> · weighted sum of four terms · <code>0.7·public + 0.2·hold-out + 0.1·typo − 0.005·code penalty</code> · promoted only if > 0.</span></button>';
+      const _tierInfo = '<button type="button" class="mk-info" tabindex="-1"><span class="mk-info-body"><b>Three difficulty tiers</b> · <b>E</b> easy (lexical match) · <b>M</b> medium (synonyms / attributes) · <b>H</b> hardest (intent / contextual reasoning) · reflects capability ceilings at different levels.</span></button>';
+      const _hoInfo = '<button type="button" class="mk-info" tabindex="-1"><span class="mk-info-body"><b>Hold-out</b> · <b>5 questions the AI never sees</b> · guards against "memorizing the answers" · gains only count as real generalization if this tier improves too.</span></button>';
+      summaryEl.innerHTML = `
+        <div><span class="k">NDCG@5 ${_ndcgInfo}</span><span class="v">${cNdcg}%</span></div>
+        <div><span class="k">Combined score ${_combInfo}</span><span class="v warm">${cScore}</span></div>
+        <div><span class="k">Tier E ${_tierInfo}</span><span class="v">${cE}%</span></div>
+        <div><span class="k">Tier M</span><span class="v">${cM}%</span></div>
+        <div><span class="k">Tier H</span><span class="v">${cH}%</span></div>
+        <div><span class="k">Hold-out ${_hoInfo}</span><span class="v">${cHo}%</span></div>
+      `;
+      box.style.display = "";
+      // Playback logically pauses but the play button doesn't grab attention —
+      // just says "等下一代" so the presenter knows they own the pace.
+      const wasPlaying = playing;
+      playing = false;
+      stopElapsed();
+      $("#mk-play").textContent = "⏸ Waiting for next generation";
+
+      function cleanup() {
+        box.style.display = "none";
+        nextBtn.removeEventListener("click", onNext);
+        document.removeEventListener("keydown", onKey);
+      }
+      function onNext() {
+        cleanup();
+        if (wasPlaying) {
+          playing = true;
+          $("#mk-play").textContent = "⏸ Paused";
+          startElapsed();
+        } else {
+          $("#mk-play").textContent = "▶ Start";
+        }
+        resolve(true);
+      }
+      function onKey(e) {
+        // Only intercept Enter · Space still toggles play/pause globally so
+        // the presenter can pause/resume other bits of the flow while the gate is open.
+        if (e.key === "Enter") {
+          // Don't hijack Enter when the user is typing into an input field.
+          if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+          e.preventDefault();
+          onNext();
+        }
+      }
+      nextBtn.addEventListener("click", onNext);
+      document.addEventListener("keydown", onKey);
+    });
+  }
+
+  function addGenCard(g) {
+    const promoted = g.public.gate_kind === "promoted" || g.score > 0.4;
+    const p = g.public;
+    const card = document.createElement("div");
+    card.className = "mk-gen-card " + (promoted ? "win" : "");
+    card.innerHTML = `
+      <div class="mk-gen-card-head">
+        <span class="mk-gen-title ${promoted && g.n > 0 ? 'win' : ''}">Gen ${g.n}${g.n === 0 ? ' · 起点' : ''}</span>
+        <span class="mk-gen-score">NDCG ${(p.ndcg*100).toFixed(1)}% · 综合 ${g.score.toFixed(3)}</span>
+      </div>
+      <div class="mk-gen-tiers">
+        <span class="t">E · ${(p.tier_E*100).toFixed(0)}%</span>
+        <span class="t">M · ${(p.tier_M*100).toFixed(0)}%</span>
+        <span class="t">H · ${(p.tier_H*100).toFixed(0)}%</span>
+        <span class="t">hold-out ${((g.private?.heldout_ndcg||0)*100).toFixed(0)}%</span>
+      </div>`;
+    $("#mk-gens").appendChild(card);
+    setTimeout(() => card.classList.add("visible"), 20);
+  }
+
+  async function streamReasoning(r, opts) {
+    const nameEl = $("#mk-reasoning-name");
+    const aEl = $("#mk-reasoning-analysis");
+    const dEl = $("#mk-reasoning-desc");
+    // Prefer Chinese if available
+    const analysis = r.analysis_cn || r.analysis || "";
+    const description = r.description_cn || r.description || "";
+    if (nameEl) nameEl.textContent = r.name || "";
+    if (aEl) { aEl.innerHTML = ""; aEl.style.display = analysis ? "" : "none"; }
+    if (dEl) { dEl.innerHTML = ""; dEl.style.display = description ? "" : "none"; }
+    function md(txt) {
+      let s = txt.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      s = s.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+      s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+      return s;
+    }
+    async function type(el, txt) {
+      if (!el || !txt) return;
+      const chunk = 6;
+      const stepMs = Math.max(8, 20 / (opts?.speed || 1));
+      for (let i = 0; i <= txt.length; i += chunk) {
+        if (stopSignal) return;
+        el.innerHTML = md(txt.slice(0, i));
+        await new Promise(res => setTimeout(res, stepMs));
+      }
+      el.innerHTML = md(txt);
+    }
+    await type(aEl, analysis);
+    await type(dEl, description);
+  }
+
+  // Playback engine
+  function updateProgress() {
+    const pct = steps.length ? (stepIdx / steps.length) * 100 : 0;
+    $("#mk-timeline-fill").style.width = pct + "%";
+    const s = steps[stepIdx];
+    // Show a friendly stage label · never the step count (would betray playback mode)
+    $("#mk-step-label").textContent = s ? _friendlyLabel(s.label) : "Completed";
+  }
+  // Strip prefixes like "Gen 1 · " and step counters from raw step labels
+  function _friendlyLabel(lbl) {
+    if (!lbl) return "";
+    // Drop "Gen N · " prefix
+    return lbl.replace(/^Gen\s+\d+\s+·\s*/, "").replace(/^等待确认\s*·\s*/, "Awaiting confirmation · ");
+  }
+
+  async function runStep() {
+    const s = steps[stepIdx];
+    if (!s) { pause(); return; }
+    updateProgress();
+    const dur = Math.max(120, s.dur / speed);
+    const myToken = resetToken;
+    if (s.streaming) {
+      await s.fn({speed});
+    } else {
+      await s.fn();
+      await new Promise(res => setTimeout(res, dur));
+    }
+    // If a reset fired while this step was awaiting, don't bump stepIdx
+    if (myToken !== resetToken) return;
+    stepIdx++;
+    updateProgress();
+  }
+
+  async function playLoop() {
+    while (playing && stepIdx < steps.length) {
+      await runStep();
+    }
+    playing = false;
+    $("#mk-play").textContent = stepIdx >= steps.length ? "🔁 Restart" : "▶ Start";
+  }
+
+  function play() {
+    if (stepIdx >= steps.length) reset();
+    playing = true;
+    stopSignal = false;
+    $("#mk-play").textContent = "⏸ Paused";
+    startElapsed();
+    playLoop();
+  }
+  function pause() {
+    playing = false; stopSignal = true;
+    $("#mk-play").textContent = "▶ Start";
+    stopElapsed();
+  }
+  function reset() {
+    pause();
+    resetElapsed();
+    resetToken++;
+    stepIdx = 0;
+    shownArchive.length = 0;
+    document.querySelectorAll(".mk-wf-node").forEach(n => n.classList.remove("active", "done"));
+    hidePanel("mk-reasoning-panel");
+    hidePanel("mk-diff-panel");
+    hidePanel("mk-perq-panel");
+    hidePanel("mk-perq-current");
+    hidePanel("mk-perq-recap");
+    hidePanel("mk-score-final");
+    hidePanel("mk-select-panel");
+    hidePanel("mk-errors-panel");
+    $("#mk-gens").innerHTML = "";
+    const numEl = $("#mk-gen-num");
+    numEl.textContent = "0";
+    numEl.classList.remove("pulse");
+    $("#mk-archive-slots").innerHTML = '<div class="mk-archive-slot empty">Waiting for Gen 0</div>';
+    const nextgen = document.getElementById("mk-nextgen");
+    if (nextgen) nextgen.style.display = "none";
+    updateProgress();
+  }
+
+  // Bind controls
+  $("#mk-play").onclick = () => playing ? pause() : play();
+  $("#mk-step").onclick = async () => {
+    if (playing) pause();
+    if (stepIdx >= steps.length) reset();
+    await runStep();
+  };
+  $("#mk-reset").onclick = reset;
+  $("#mk-fs").onclick = () => document.body.classList.toggle("mk-fs");
+
+  // Delegate: click on any .mk-info button toggles its own .show class and
+  // closes any other open one. Lets mobile users tap to see the tooltip.
+  document.addEventListener("click", (e) => {
+    const info = e.target.closest(".mk-info");
+    document.querySelectorAll(".mk-info.show").forEach(el => {
+      if (el !== info) el.classList.remove("show");
+    });
+    if (info) {
+      e.preventDefault();
+      e.stopPropagation();
+      info.classList.toggle("show");
+    }
+  });
+
+  // Keyboard: space=play/pause, right=step, R=reset · Enter is handled by
+  // the inline gate card when it's open (see waitForNextGenConfirm)
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+    if (e.code === "Space") { e.preventDefault(); playing ? pause() : play(); }
+    else if (e.code === "ArrowRight") { e.preventDefault(); $("#mk-step").click(); }
+    else if (e.key === "r" || e.key === "R") reset();
+    else if (e.key === "f" || e.key === "F") $("#mk-fs").click();
+  });
+
+  // URL params · autoplay only
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("autoplay") === "1") setTimeout(play, 500);
+  if (params.get("gen")) {
+    // Jump to start of specified gen (internal aid; not documented)
+    const g = parseInt(params.get("gen"), 10);
+    let target = 0;
+    steps.forEach((s, i) => { if (s.label.startsWith(`Gen ${g} · Start`)) target = i; });
+    for (let i = 0; i < target; i++) {
+      const s = steps[i];
+      await s.fn(s.streaming ? {speed: 100, scrub: true} : undefined);
+      stepIdx = i + 1;
+    }
+    speed = parseFloat(params.get("speed") || "1");
+    updateProgress();
+  }
+
+  updateProgress();
+})();
+</script>
+<a data-cur="en" data-to="zh" href="../../../../rsi/demo/static/play-standalone.html" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

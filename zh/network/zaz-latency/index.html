@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ZAZ 跨区域延迟 — liucao.me/network</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --green: #059669;
+    --green-light: #d1fae5;
+    --green-dark: #065f46;
+    --gray-50: #fafafa;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --band-lan: #d1fae5;
+    --band-lan-fg: #065f46;
+    --band-cont: #fef3c7;
+    --band-cont-fg: #92400e;
+    --band-far: #fee2e2;
+    --band-far-fg: #991b1b;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    padding: 2rem 1.25rem 4rem;
+    line-height: 1.55;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  .breadcrumb { font-size: 0.85rem; color: var(--gray-500); margin-bottom: 1.25rem; }
+  .breadcrumb a { color: var(--gray-500); text-decoration: none; border-bottom: 1px dotted var(--gray-500); }
+  .breadcrumb a:hover { color: var(--green); border-bottom-color: var(--green); }
+  h1 { font-size: 1.9rem; font-weight: 600; margin-bottom: 0.35rem; }
+  .subtitle { color: var(--gray-500); font-size: 0.95rem; margin-bottom: 1.75rem; }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1rem;
+    font-size: 0.8rem; color: var(--gray-500);
+    padding: 0.75rem 1rem; background: #fff; border: 1px solid var(--gray-200); border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+  .meta strong { color: var(--gray-900); font-weight: 600; }
+  h2 { font-size: 1.15rem; font-weight: 600; margin: 2rem 0 0.75rem; }
+  p.lead { color: var(--gray-700); margin-bottom: 1rem; }
+
+  /* controls */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;
+    padding: 0.9rem 1rem; background: #fff; border: 1px solid var(--gray-200); border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  .segmented { display: inline-flex; background: var(--gray-100); border-radius: 6px; padding: 3px; }
+  .segmented button {
+    padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 500;
+    background: transparent; border: 0; border-radius: 4px; cursor: pointer;
+    color: var(--gray-500); transition: 0.15s;
+  }
+  .segmented button.on { background: #fff; color: var(--gray-900); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+  .ctrl-label { font-size: 0.78rem; color: var(--gray-500); margin-right: 0.35rem; }
+  .filter {
+    flex: 1; min-width: 180px;
+    padding: 0.4rem 0.65rem; font-size: 0.85rem;
+    border: 1px solid var(--gray-200); border-radius: 6px; background: #fff;
+    outline: none;
+  }
+  .filter:focus { border-color: var(--green); }
+
+  /* table */
+  .table-wrap { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+  thead { background: var(--gray-100); }
+  th {
+    text-align: left; padding: 0.65rem 0.85rem; font-weight: 600; font-size: 0.75rem;
+    color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.03em;
+    cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  th.num { text-align: right; }
+  th .arrow { color: var(--gray-500); font-size: 0.7rem; margin-left: 0.15rem; }
+  th.sorted { color: var(--green); }
+  td { padding: 0.6rem 0.85rem; border-top: 1px solid var(--gray-200); vertical-align: middle; }
+  td.code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.82rem; color: var(--gray-700); }
+  td.city { font-weight: 500; }
+  td.city .flag { margin-right: 0.4rem; }
+  td.iata { font-family: ui-monospace, monospace; font-size: 0.75rem; color: var(--gray-500); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.bar-cell { width: 45%; padding-right: 0.85rem; }
+  .bar-track { height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.25s ease; }
+  .bar-fill.lan { background: var(--green); }
+  .bar-fill.cont { background: #f59e0b; }
+  .bar-fill.far { background: #ef4444; }
+  tr:hover { background: #f9fafb; }
+  .band {
+    display: inline-block; padding: 0.1rem 0.45rem; border-radius: 3px;
+    font-size: 0.68rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .band.lan { background: var(--band-lan); color: var(--band-lan-fg); }
+  .band.cont { background: var(--band-cont); color: var(--band-cont-fg); }
+  .band.far { background: var(--band-far); color: var(--band-far-fg); }
+
+  /* summary cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.9rem; margin: 1rem 0 1.75rem; }
+  .card {
+    padding: 0.9rem 1rem; background: #fff; border: 1px solid var(--gray-200); border-radius: 8px;
+  }
+  .card-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gray-500); margin-bottom: 0.25rem; }
+  .card-value { font-size: 1.1rem; font-weight: 600; color: var(--gray-900); }
+  .card-value .unit { font-weight: 400; color: var(--gray-500); font-size: 0.85rem; margin-left: 0.15rem; }
+  .card-sub { font-size: 0.78rem; color: var(--gray-500); margin-top: 0.15rem; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem;
+    font-size: 0.78rem; color: var(--gray-500); margin: 0.75rem 0 1.5rem;
+  }
+  .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 0.35rem; vertical-align: middle; }
+
+  .notes {
+    padding: 1rem 1.15rem; background: #fff; border: 1px solid var(--gray-200); border-radius: 8px;
+    font-size: 0.85rem; color: var(--gray-700);
+  }
+  .notes ul { margin: 0.4rem 0 0 1.15rem; }
+  .notes li { margin: 0.3rem 0; }
+  .notes code { background: var(--gray-100); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.82rem; }
+  .notes a { color: var(--green); text-decoration: none; border-bottom: 1px solid transparent; }
+  .notes a:hover { border-bottom-color: var(--green); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.25rem 0.75rem 3rem; }
+    h1 { font-size: 1.5rem; }
+    td.bar-cell { display: none; }
+    th.bar-cell { display: none; }
+    .card-value { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="breadcrumb"><a href="../">liucao.me/network</a> / ZAZ 跨区域延迟</div>
+<h1>ZAZ 跨区域延迟</h1>
+<p class="subtitle">往返时间，起点为 AWS <code style="font-family: ui-monospace, monospace;">eu-south-2</code> （西班牙 / 阿拉贡）到其他所有 AWS 商业区域。</p>
+<div class="meta">
+<div><strong>源：</strong> eu-south-2（西班牙阿拉贡）</div>
+<div><strong>目标：</strong> 34 regions</div>
+<div><strong>时间窗口：</strong> 滚动 1 周</div>
+<div><strong>来源：</strong> <a href="https://www.cloudping.co/" rel="noopener" style="color:inherit; text-decoration: underline;" target="_blank">cloudping.co</a> · <a href="https://www.cloudping.co/api/latencies?percentile=p_50&amp;timeframe=1W" rel="noopener" style="color:inherit; text-decoration: underline;" target="_blank">API</a></div>
+<div id="fetchedAt"></div>
+</div>
+<div class="cards" id="summary"></div>
+<div class="controls">
+<span class="ctrl-label">百分位</span>
+<div class="segmented" id="pctl">
+<button data-p="p10">p10</button>
+<button class="on" data-p="p50">p50</button>
+<button data-p="p99">p99</button>
+</div>
+<span class="ctrl-label" style="margin-left: 0.75rem;">区域分组</span>
+<div class="segmented" id="grp">
+<button class="on" data-g="all">All</button>
+<button data-g="Europe">欧洲</button>
+<button data-g="North America">N.America</button>
+<button data-g="Asia Pacific">APAC</button>
+<button data-g="other">其他</button>
+</div>
+<input class="filter" id="filter" placeholder="按代码、城市或 IATA 筛选…" type="text"/>
+</div>
+<div class="legend">
+<span><span class="legend-dot" style="background: var(--green);"></span>≤ 60 ms · 同一大洲，可进行同步复制</span>
+<span><span class="legend-dot" style="background: #f59e0b;"></span>60–180 ms · 跨大西洋 / 区域间跳转</span>
+<span><span class="legend-dot" style="background: #ef4444;"></span>&gt; 180 ms · 跨大洋，仅适合异步</span>
+</div>
+<div class="table-wrap">
+<table id="tbl">
+<thead>
+<tr>
+<th class="sorted num" data-sort="p50" style="width: 3rem;">#</th>
+<th data-sort="city">城市</th>
+<th data-sort="code">区域</th>
+<th data-sort="iata">IATA</th>
+<th class="num" data-sort="p50">延迟 <span class="arrow">▼</span></th>
+<th class="bar-cell"> </th>
+<th>区间</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+<p style="margin: 0.75rem 0 1.5rem; font-size: 0.9rem;">
+    想看全貌？ <a href="../matrix/" style="color: var(--green); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--green);">查看完整的 35 × 35 区域间矩阵 →</a>
+</p>
+<h2>数据来源与方法</h2>
+<div class="notes">
+<ul>
+<li><strong>来源：</strong> <a href="https://www.cloudping.co/" rel="noopener" target="_blank">CloudPing.co</a> — AWS 区域延迟矩阵，社区维护者： <a href="https://matt.aimonetti.net/" rel="noopener" target="_blank">Matt Aimonetti</a>。公开 JSON 端点： <code>https://www.cloudping.co/api/latencies?percentile={p_10|p_50|p_99}&amp;timeframe=1W</code></li>
+<li><strong>测量方式：</strong> 每个 AWS 商业区域中的一台 t3.nano EC2 实例会定期向其他所有区域建立 TCP 连接并记录往返时间。数值反映的是 <strong>公网 EC2 ↔ EC2 TCP 握手</strong>，而不是 ICMP ping，也不是 AWS 骨干网。</li>
+<li><strong>聚合窗口：</strong> 滚动 1 周窗口，数据源每天刷新数次。本页快照采集于 <strong>2026-09-12</strong>.</li>
+<li><strong>百分位：</strong> <code>p10</code> 为快速路径（10% 的样本更快）。 <code>p50</code> 为中位数。 <code>p99</code> 为尾部延迟：每 100 个样本中至少有 1 个达到这个延迟。SLA 应按 p99 而非 p50 设计。</li>
+<li><strong>覆盖范围：</strong> 34 个目标区域。GovCloud（<code>us-gov-*</code>）和中国（<code>cn-*</code>）区域是隔离环境，无法从商业账户进行探测，因此特意未包含。</li>
+<li><strong>注意事项：</strong>
+<ul style="margin-top: 0.3rem;">
+<li>经由 Transit Gateway、VPC 对等连接、PrivateLink 或 AWS 骨干网的流量，延迟通常比这些数字更低，抖动也更小。</li>
+<li>巴林（<code>me-south-1</code>）的 p10/p50/p99 完全相同，这是源数据采样稀疏造成的假象，并非链路异常稳定。</li>
+<li>此处的亚毫秒精度没有实际意义；数值请按 ±3 ms 误差看待。</li>
+</ul>
+</li>
+<li><strong>复现：</strong> <code>curl 'https://www.cloudping.co/api/latencies?percentile=p_50&amp;timeframe=1W' | jq '.data["eu-south-2"]'</code></li>
+</ul>
+</div>
+<h2>评估过的数据源</h2>
+<div class="notes">
+<p style="margin-bottom: 0.5rem;">共评估了六个公开数据源，这里只采用其中一个。其余的要么测量的不是同一指标，要么没有 API，要么已停止维护。</p>
+<table style="width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 0.5rem;">
+<thead>
+<tr style="border-bottom: 1px solid var(--gray-200);">
+<th style="text-align: left; padding: 0.4rem 0.5rem 0.4rem 0;">来源</th>
+<th style="text-align: left; padding: 0.4rem 0.5rem;">方法</th>
+<th style="text-align: left; padding: 0.4rem 0.5rem;">API</th>
+<th style="text-align: left; padding: 0.4rem 0.5rem;">结论</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-bottom: 1px solid var(--gray-100);">
+<td style="padding: 0.4rem 0.5rem 0.4rem 0;"><a href="https://www.cloudping.co/" rel="noopener" target="_blank">CloudPing.co</a></td>
+<td style="padding: 0.4rem 0.5rem;">EC2 → EC2 TCP，全部 35 个区域</td>
+<td style="padding: 0.4rem 0.5rem;"><strong style="color: var(--green);">有，JSON</strong></td>
+<td style="padding: 0.4rem 0.5rem;"><strong>本文采用。</strong> 唯一提供 p10/p50/p99、1D/1W/1M/1Y 时间窗口以及完整 N×N 覆盖的公开来源。</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--gray-100);">
+<td style="padding: 0.4rem 0.5rem 0.4rem 0;"><a href="https://awsspeedtest.com/" rel="noopener" target="_blank">awsspeedtest.com</a></td>
+<td style="padding: 0.4rem 0.5rem;">浏览器 → S3 HTTPS</td>
+<td style="padding: 0.4rem 0.5rem;">No</td>
+<td style="padding: 0.4rem 0.5rem;">仅测量客户端到区域的延迟。与 EC2 探测相比，会额外增加 ~20–40 ms 的浏览器/TLS 开销。适合在笔记本端做快速核验。</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--gray-100);">
+<td style="padding: 0.4rem 0.5rem 0.4rem 0;"><a href="https://www.cloudping.info/" rel="noopener" target="_blank">cloudping.info</a></td>
+<td style="padding: 0.4rem 0.5rem;">浏览器 HTTP ping</td>
+<td style="padding: 0.4rem 0.5rem;">No</td>
+<td style="padding: 0.4rem 0.5rem;">仅单次测量。不是 Adorjan 的工具，那个是 <code>.co</code>。适合一次性检查，没有历史数据。</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--gray-100);">
+<td style="padding: 0.4rem 0.5rem 0.4rem 0;"><a href="https://cloudpingtest.com/" rel="noopener" target="_blank">cloudpingtest.com</a></td>
+<td style="padding: 0.4rem 0.5rem;">浏览器 HTTPS，多云</td>
+<td style="padding: 0.4rem 0.5rem;">No</td>
+<td style="padding: 0.4rem 0.5rem;">适合从你所在的位置对比 AWS 与 GCP/Azure，不适用于区域间测量。</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--gray-100);">
+<td style="padding: 0.4rem 0.5rem 0.4rem 0;">ThousandEyes (Cisco)</td>
+<td style="padding: 0.4rem 0.5rem;">企业级探针，TCP + BGP</td>
+<td style="padding: 0.4rem 0.5rem;">需付费</td>
+<td style="padding: 0.4rem 0.5rem;">季度 PDF 云性能报告 — 适合引用数量级，非实时数据。</td>
+</tr>
+<tr>
+<td style="padding: 0.4rem 0.5rem 0.4rem 0;">AWS Reachability Analyzer / Internet Monitor</td>
+<td style="padding: 0.4rem 0.5rem;">你自己账户的流量</td>
+<td style="padding: 0.4rem 0.5rem;">仅限账户内</td>
+<td style="padding: 0.4rem 0.5rem;">不公开 — AWS <strong>并未公布</strong> 区域间延迟矩阵。</td>
+</tr>
+</tbody>
+</table>
+<p style="margin-top: 0.75rem; color: var(--gray-500); font-size: 0.8rem;">已失效/弃用：cloudharmony.com（已被 Gartner 关闭）、perfops.net/latency（404）、aws-latency-test.com（空壳）。</p>
+<p style="margin-top: 0.5rem;"><strong>想要一份独立的参考数据？</strong> 运行 30 个 Lambda 到 Lambda 的 TCP 探测，持续一天，大约只需 50 行 Python 代码。这样你就有了一份私有数据集，可以与 CloudPing 的公开数据对比。</p>
+</div>
+<h2>设计建议</h2>
+<div class="notes">
+<ul>
+<li>The <strong>Aurora Global Database</strong> RPO &lt; 1 s 需要稳定的个位数至较低两位数毫秒级延迟 — 只有 <code>eu-west-3</code> （巴黎，~18 ms）完全可以作为备用区域。 <code>eu-central-2</code>, <code>eu-south-1</code>, <code>eu-west-2</code> 都可以使用，只是回放延迟会稍大一些。</li>
+<li>For <strong>异步灾备</strong> 欧洲或美国东部的任何区域 p50 都低于 100 ms，应根据服务目录和价格来选择，而不是延迟。</li>
+</ul>
+</div>
+<h2>区域快捷选择</h2>
+<div class="notes">
+<ul>
+<li><strong>最近的邻近区域：</strong> <code>eu-west-3</code> 巴黎 — 18 ms，经法国边境的陆地光纤。同步复制的最佳选择。</li>
+<li><strong>Bedrock / SageMaker 备选：</strong> <code>eu-central-1</code> 法兰克福 — 31 ms，欧盟内服务种类最丰富。</li>
+<li><strong>欧盟主权：</strong> <code>eusc-de-east-1</code> European Sovereign Cloud（勃兰登堡）— 105 ms，延迟较高，因为目前仅通过少量 PoP 路由。</li>
+<li><strong>美洲入口：</strong> <code>us-east-1</code> 弗吉尼亚北部 — 97 ms，标准的跨大西洋枢纽。</li>
+<li><strong>亚洲入口：</strong> <code>ap-south-1</code> 孟买 — 119 ms，经 SEA-ME-WE 海缆通往亚洲的最短路径。</li>
+</ul>
+</div>
+</div>
+<script>
+const DATA = [{"code": "eu-west-3", "city": "Paris", "flag": "\ud83c\uddeb\ud83c\uddf7", "group": "Europe", "iata": "CDG", "p10": 16.4162, "p50": 18.028999999999996, "p99": 28.040000000000003}, {"code": "eu-west-2", "city": "London", "flag": "\ud83c\uddec\ud83c\udde7", "group": "Europe", "iata": "LHR", "p10": 20.743, "p50": 22.753999999999998, "p99": 44.27848}, {"code": "eu-central-2", "city": "Zurich", "flag": "\ud83c\udde8\ud83c\udded", "group": "Europe", "iata": "ZRH", "p10": 25.3414, "p50": 27.104999999999997, "p99": 42.298399999999994}, {"code": "eu-south-1", "city": "Milan", "flag": "\ud83c\uddee\ud83c\uddf9", "group": "Europe", "iata": "MXP", "p10": 21.5242, "p50": 27.188000000000002, "p99": 56.31}, {"code": "eu-central-1", "city": "Frankfurt", "flag": "\ud83c\udde9\ud83c\uddea", "group": "Europe", "iata": "FRA", "p10": 24.159, "p50": 31.45, "p99": 42.00422}, {"code": "eu-west-1", "city": "Dublin", "flag": "\ud83c\uddee\ud83c\uddea", "group": "Europe", "iata": "DUB", "p10": 31.3742, "p50": 32.043, "p99": 38.45646000000001}, {"code": "eu-north-1", "city": "Stockholm", "flag": "\ud83c\uddf8\ud83c\uddea", "group": "Europe", "iata": "ARN", "p10": 55.39359999999999, "p50": 57.453, "p99": 66.91669999999999}, {"code": "il-central-1", "city": "Tel Aviv", "flag": "\ud83c\uddee\ud83c\uddf1", "group": "Middle East", "iata": "TLV", "p10": 59.909, "p50": 63.73, "p99": 67.8853}, {"code": "me-south-1", "city": "Bahrain", "flag": "\ud83c\udde7\ud83c\udded", "group": "Middle East", "iata": "BAH", "p10": 96.67, "p50": 96.67, "p99": 96.67}, {"code": "us-east-1", "city": "N. Virginia", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "North America", "iata": "IAD", "p10": 96.3956, "p50": 97.33600000000001, "p99": 104.71834000000001}, {"code": "eusc-de-east-1", "city": "Brandenburg (Sovereign)", "flag": "\ud83c\uddea\ud83c\uddfa", "group": "Europe", "iata": "BER", "p10": 91.2514, "p50": 104.93, "p99": 128.42484}, {"code": "ca-central-1", "city": "Montreal", "flag": "\ud83c\udde8\ud83c\udde6", "group": "North America", "iata": "YUL", "p10": 107.2266, "p50": 110.152, "p99": 120.81267999999999}, {"code": "us-east-2", "city": "Ohio", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "North America", "iata": "CMH", "p10": 108.4694, "p50": 110.921, "p99": 122.15466000000002}, {"code": "ap-south-1", "city": "Mumbai", "flag": "\ud83c\uddee\ud83c\uddf3", "group": "Asia Pacific", "iata": "BOM", "p10": 117.10579999999999, "p50": 119.42699999999999, "p99": 123.60090000000001}, {"code": "me-central-1", "city": "UAE", "flag": "\ud83c\udde6\ud83c\uddea", "group": "Middle East", "iata": "DXB", "p10": 122.089, "p50": 125.07199999999999, "p99": 132.89884}, {"code": "af-south-1", "city": "Cape Town", "flag": "\ud83c\uddff\ud83c\udde6", "group": "Africa", "iata": "CPT", "p10": 133.2682, "p50": 135.728, "p99": 140.51142000000002}, {"code": "ap-south-2", "city": "Hyderabad", "flag": "\ud83c\uddee\ud83c\uddf3", "group": "Asia Pacific", "iata": "HYD", "p10": 132.6072, "p50": 135.784, "p99": 140.7686}, {"code": "us-west-2", "city": "Oregon", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "North America", "iata": "PDX", "p10": 153.2036, "p50": 160.48900000000003, "p99": 168.08408000000003}, {"code": "mx-central-1", "city": "Mexico City", "flag": "\ud83c\uddf2\ud83c\uddfd", "group": "North America", "iata": "MEX", "p10": 160.961, "p50": 167.107, "p99": 178.2309}, {"code": "ap-southeast-1", "city": "Singapore", "flag": "\ud83c\uddf8\ud83c\uddec", "group": "Asia Pacific", "iata": "SIN", "p10": 167.219, "p50": 172.08499999999998, "p99": 175.6038}, {"code": "ca-west-1", "city": "Calgary", "flag": "\ud83c\udde8\ud83c\udde6", "group": "North America", "iata": "YYC", "p10": 168.7774, "p50": 172.713, "p99": 186.76092}, {"code": "us-west-1", "city": "N. California", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "North America", "iata": "SFO", "p10": 167.75639999999999, "p50": 172.76099999999997, "p99": 180.86896000000002}, {"code": "ap-southeast-5", "city": "Malaysia", "flag": "\ud83c\uddf2\ud83c\uddfe", "group": "Asia Pacific", "iata": "KUL", "p10": 172.2606, "p50": 176.14, "p99": 188.48006}, {"code": "ap-southeast-3", "city": "Jakarta", "flag": "\ud83c\uddee\ud83c\udde9", "group": "Asia Pacific", "iata": "CGK", "p10": 183.32899999999998, "p50": 187.986, "p99": 197.47505999999998}, {"code": "ap-southeast-7", "city": "Thailand", "flag": "\ud83c\uddf9\ud83c\udded", "group": "Asia Pacific", "iata": "BKK", "p10": 195.24120000000002, "p50": 199.332, "p99": 208.14058}, {"code": "ap-east-1", "city": "Hong Kong", "flag": "\ud83c\udded\ud83c\uddf0", "group": "Asia Pacific", "iata": "HKG", "p10": 200.11839999999998, "p50": 203.88, "p99": 218.69136}, {"code": "ap-east-2", "city": "Taipei", "flag": "\ud83c\uddf9\ud83c\uddfc", "group": "Asia Pacific", "iata": "TPE", "p10": 203.786, "p50": 204.43200000000002, "p99": 208.98919999999998}, {"code": "sa-east-1", "city": "S\u00e3o Paulo", "flag": "\ud83c\udde7\ud83c\uddf7", "group": "South America", "iata": "GRU", "p10": 220.5858, "p50": 224.644, "p99": 233.61068}, {"code": "ap-northeast-1", "city": "Tokyo", "flag": "\ud83c\uddef\ud83c\uddf5", "group": "Asia Pacific", "iata": "NRT", "p10": 232.63920000000002, "p50": 235.56699999999998, "p99": 244.44790000000003}, {"code": "ap-northeast-3", "city": "Osaka", "flag": "\ud83c\uddef\ud83c\uddf5", "group": "Asia Pacific", "iata": "KIX", "p10": 243.9042, "p50": 246.476, "p99": 256.85751999999997}, {"code": "ap-northeast-2", "city": "Seoul", "flag": "\ud83c\uddf0\ud83c\uddf7", "group": "Asia Pacific", "iata": "ICN", "p10": 246.6538, "p50": 251.81800000000004, "p99": 265.88148}, {"code": "ap-southeast-2", "city": "Sydney", "flag": "\ud83c\udde6\ud83c\uddfa", "group": "Asia Pacific", "iata": "SYD", "p10": 306.2356, "p50": 310.116, "p99": 319.71332}, {"code": "ap-southeast-4", "city": "Melbourne", "flag": "\ud83c\udde6\ud83c\uddfa", "group": "Asia Pacific", "iata": "MEL", "p10": 312.3782, "p50": 315.568, "p99": 323.61938}, {"code": "ap-southeast-6", "city": "Auckland", "flag": "\ud83c\uddf3\ud83c\uddff", "group": "Asia Pacific", "iata": "AKL", "p10": 327.41880000000003, "p50": 330.915, "p99": 340.72488}];
+const state = { p: 'p50', g: 'all', filter: '', sortKey: 'p50', sortDir: 'asc' };
+
+function band(v){
+  if (v == null) return 'far';
+  if (v <= 60) return 'lan';
+  if (v <= 180) return 'cont';
+  return 'far';
+}
+function fmt(v){ return v == null ? '—' : v.toFixed(v < 100 ? 1 : 0); }
+
+function render(){
+  const q = state.filter.toLowerCase();
+  let rows = DATA.filter(r => {
+    if (state.g !== 'all') {
+      if (state.g === 'other') {
+        if (['Europe','North America','Asia Pacific'].includes(r.group)) return false;
+      } else if (r.group !== state.g) return false;
+    }
+    if (q && ![r.code, r.city, r.iata, r.group].some(x => x.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  const key = state.sortKey;
+  const dir = state.sortDir === 'asc' ? 1 : -1;
+  rows.sort((a,b) => {
+    let av, bv;
+    if (['p10','p50','p99'].includes(key)) { av = a[state.p]; bv = b[state.p]; }
+    else { av = a[key]; bv = b[key]; }
+    if (av == null) av = Infinity;
+    if (bv == null) bv = Infinity;
+    if (typeof av === 'string') return av.localeCompare(bv) * dir;
+    return (av - bv) * dir;
+  });
+
+  const maxV = Math.max(...DATA.map(r => r[state.p] ?? 0));
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = rows.map((r, i) => {
+    const v = r[state.p];
+    const b = band(v);
+    const pct = v ? Math.min(100, (v / maxV) * 100) : 0;
+    return `<tr>
+      <td class="num" style="color: var(--gray-500);">${i+1}</td>
+      <td class="city"><span class="flag">${r.flag}</span>${r.city}</td>
+      <td class="code">${r.code}</td>
+      <td class="iata">${r.iata}</td>
+      <td class="num"><strong>${fmt(v)}</strong> <span style="color: var(--gray-500); font-size: 0.75rem;">ms</span></td>
+      <td class="bar-cell"><div class="bar-track"><div class="bar-fill ${b}" style="width: ${pct}%"></div></div></td>
+      <td><span class="band ${b}">${b === 'lan' ? '≤ 60' : b === 'cont' ? '60–180' : '> 180'}</span></td>
+    </tr>`;
+  }).join('');
+
+  // update sort indicator
+  document.querySelectorAll('th').forEach(th => {
+    th.classList.remove('sorted');
+    const arrow = th.querySelector('.arrow');
+    if (arrow) arrow.textContent = '';
+  });
+  const sortedTh = document.querySelector(`th[data-sort="${state.sortKey === state.p ? state.p : state.sortKey}"]`)
+                || document.querySelector(`th[data-sort="p50"]`);
+  if (sortedTh) {
+    sortedTh.classList.add('sorted');
+    let arrow = sortedTh.querySelector('.arrow');
+    if (!arrow) {
+      arrow = document.createElement('span');
+      arrow.className = 'arrow';
+      sortedTh.appendChild(arrow);
+    }
+    arrow.textContent = state.sortDir === 'asc' ? ' ▼' : ' ▲';
+  }
+}
+
+function renderSummary(){
+  const vals = DATA.map(r => r[state.p]).filter(v => v != null);
+  const minR = DATA.reduce((a,b) => (b[state.p] < a[state.p] ? b : a));
+  const maxR = DATA.reduce((a,b) => (b[state.p] > a[state.p] ? b : a));
+  const sorted = [...vals].sort((a,b) => a - b);
+  const median = sorted[Math.floor(sorted.length/2)];
+  const under60 = vals.filter(v => v <= 60).length;
+  document.getElementById('summary').innerHTML = `
+    <div class="card">
+      <div class="card-label">Fastest</div>
+      <div class="card-value">${minR.city} <span class="unit">${minR[state.p].toFixed(1)} ms</span></div>
+      <div class="card-sub">${minR.code}</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Slowest</div>
+      <div class="card-value">${maxR.city} <span class="unit">${maxR[state.p].toFixed(0)} ms</span></div>
+      <div class="card-sub">${maxR.code}</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Median across regions</div>
+      <div class="card-value">${median.toFixed(0)}<span class="unit"> ms</span></div>
+      <div class="card-sub">across 34 destinations</div>
+    </div>
+    <div class="card">
+      <div class="card-label">≤ 60 ms partners</div>
+      <div class="card-value">${under60}<span class="unit"> regions</span></div>
+      <div class="card-sub">sync-replication candidates</div>
+    </div>
+  `;
+}
+
+document.getElementById('pctl').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.p = b.dataset.p;
+  document.querySelectorAll('#pctl button').forEach(x => x.classList.toggle('on', x === b));
+  if (['p10','p50','p99'].includes(state.sortKey)) state.sortKey = state.p;
+  renderSummary(); render();
+});
+document.getElementById('grp').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.g = b.dataset.g;
+  document.querySelectorAll('#grp button').forEach(x => x.classList.toggle('on', x === b));
+  render();
+});
+document.getElementById('filter').addEventListener('input', e => {
+  state.filter = e.target.value; render();
+});
+document.querySelectorAll('th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const k = th.dataset.sort;
+    if (state.sortKey === k || (['p10','p50','p99'].includes(k) && k === state.p)) {
+      state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      state.sortKey = k;
+      state.sortDir = ['p10','p50','p99'].includes(k) ? 'asc' : 'asc';
+    }
+    render();
+  });
+});
+
+document.getElementById('fetchedAt').innerHTML = '<strong>Fetched:</strong> 2026-09-12';
+renderSummary();
+render();
+</script>
+<a data-cur="zh" data-to="en" href="../../../network/zaz-latency/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

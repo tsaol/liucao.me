@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>On-Call Playbook — Graviton 指南 04</title>
-    <meta name="description" content="凌晨两点被叫起来：EC2 慢了怎么办。Netflix 60 秒 checklist、USE 表、10 个真实故障签名、coredump、事故快照">
-    <link rel="stylesheet" href="../../../ec2/assets/style.css">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>On-Call Playbook — Graviton 指南 04</title>
+<meta content="凌晨两点被叫起来：EC2 慢了怎么办。Netflix 60 秒 checklist、USE 表、10 个真实故障签名、coredump、事故快照" name="description"/>
+<link href="../../../ec2/assets/style.css" rel="stylesheet"/>
+<style>
         .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
         .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
         .gv-hero .crumb a { color: var(--accent); }
@@ -70,182 +71,166 @@
     </style>
 </head>
 <body>
-    <nav class="nav">
-        <div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
-        <div class="links">
-            <a href="../../../ec2/">EC2</a>
-        </div>
-    </nav>
-
-    <main class="wrap">
-        <div class="gv-hero">
-            <div class="crumb"><a href="../../../ec2/graviton/">Graviton 指南</a> · 04 / 04 · On-Call</div>
-            <h1>On-Call <span class="g">Playbook</span></h1>
-            <p class="sub">凌晨两点，服务慢了。这一页假设你已经读过前四篇，直接跳到"手指该敲什么"。参考：Netflix 60s 分析、Brendan Gregg USE 方法、Google SRE effective troubleshooting。</p>
-            <nav class="toc">
-                <a href="#60s">1 · Netflix 60 秒</a>
-                <a href="#use">2 · USE 落到 EC2</a>
-                <a href="#sre">3 · Google SRE 心法</a>
-                <a href="#scenarios">4 · 10 个故障签名</a>
-                <a href="#coredump">5 · Coredump</a>
-                <a href="#snapshot">6 · 重启前抢救</a>
-                <a href="#warstories">7 · SRE 战争故事</a>
-                <a href="#runbook">8 · 20 命令 runbook</a>
-                <a href="#escalate">9 · 什么时候升级</a>
-            </nav>
-        </div>
-
-        <!-- 1 -->
-        <section id="60s" class="content-section">
-            <h2 class="section-title">1 · Netflix <span>60 秒</span> checklist</h2>
-            <p>SSH 进去，按顺序敲这 10 条命令，每条 ~1 秒。60 秒后你已经知道是 CPU / 内存 / 磁盘 / 网络 / 都不是。<sup>[6]</sup></p>
-            <table class="cmp">
-                <thead><tr><th>#</th><th>命令</th><th>告诉你什么</th></tr></thead>
-                <tbody>
-                    <tr><td>1</td><td><code>uptime</code></td><td>Load average 1/5/15——上升 / 平稳 / 尖峰</td></tr>
-                    <tr><td>2</td><td><code>dmesg -T | tail -20</code></td><td>Kernel 消息：OOM、TCP drop、NIC reset、EBS nvme 错误</td></tr>
-                    <tr><td>3</td><td><code>vmstat 1 5</code></td><td><code>r</code>=run queue、<code>si/so</code>=swap、<code>us/sy/wa/st</code></td></tr>
-                    <tr><td>4</td><td><code>mpstat -P ALL 1 5</code></td><td>Per-vCPU 不均衡——单核 hot = 单线程瓶颈</td></tr>
-                    <tr><td>5</td><td><code>pidstat 1 5</code></td><td>Per-process CPU 滚动 delta，比 top 更适合抓突刺</td></tr>
-                    <tr><td>6</td><td><code>iostat -xz 1 5</code></td><td>Per-device %util / await / queue——EBS 延迟住在这里</td></tr>
-                    <tr><td>7</td><td><code>free -m</code></td><td>free / buff / cache——看 <b>available</b> 别看 free</td></tr>
-                    <tr><td>8</td><td><code>sar -n DEV 1 5</code></td><td>每 NIC 包 / 字节，对比实例上限</td></tr>
-                    <tr><td>9</td><td><code>sar -n TCP,ETCP 1 5</code></td><td><code>active/s</code>、<code>retrans/s</code>——重传 &gt; 0.1% 就有网络痛</td></tr>
-                    <tr><td>10</td><td><code>top</code></td><td>Sanity check——按 RES 排序找泄漏</td></tr>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- 2 -->
-        <section id="use" class="content-section">
-            <h2 class="section-title">2 · <span>USE 方法</span>——落到 EC2 每种资源</h2>
-            <p>Brendan Gregg 的 USE = Utilization / Saturation / Errors，逐资源套 checklist。<sup>[1][2]</sup></p>
-            <table class="cmp">
-                <thead><tr><th>资源</th><th>Utilization</th><th>Saturation</th><th>Errors</th></tr></thead>
-                <tbody>
-                    <tr>
-                        <td>CPU</td>
-                        <td><code>mpstat -P ALL 1</code>（%usr+%sys+%st）</td>
-                        <td><code>vmstat</code> <code>r</code> &gt; vCPU；<code>perf sched latency</code></td>
-                        <td><code>dmesg</code> MCE；<code>perf</code> PMU error</td>
-                    </tr>
-                    <tr>
-                        <td>Memory</td>
-                        <td><code>free -m</code>；<code>sar -r</code></td>
-                        <td><code>vmstat</code> si/so；<code>sar -B</code> pgscan；<code>dmesg | grep oom</code></td>
-                        <td>ECC；malloc 失败（<code>bpftrace</code>）</td>
-                    </tr>
-                    <tr>
-                        <td>Disk (EBS gp3/io2)</td>
-                        <td><code>iostat -xz 1</code> <code>%util</code></td>
-                        <td><code>avgqu-sz</code> &gt; 1；高 <code>await</code></td>
-                        <td><code>/sys/block/nvme*/device/ioerr_cnt</code>；<code>smartctl</code></td>
-                    </tr>
-                    <tr>
-                        <td>Network (ENA)</td>
-                        <td><code>sar -n DEV 1</code></td>
-                        <td><code>ethtool -S</code> 的 <code>*_allowance_exceeded</code></td>
-                        <td><code>netstat -s</code> 重传；ifconfig drop</td>
-                    </tr>
-                    <tr>
-                        <td>EBS 天花板</td>
-                        <td>CloudWatch <code>VolumeReadOps + WriteOps</code></td>
-                        <td><code>VolumeQueueLength</code> &gt; 1；gp2 <code>BurstBalance</code> == 0</td>
-                        <td><code>VolumeThroughputPercentage</code></td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- 3 -->
-        <section id="sre" class="content-section">
-            <h2 class="section-title">3 · Google SRE 的 <span>心法</span></h2>
-            <p>SRE Book "Effective Troubleshooting" 章节里最贵的 5 条建议：<sup>[3]</sup></p>
-            <ul>
-                <li><b>Fly the airplane first</b>——先止血（drain、回滚、切流量），再排根因。用户在流血的时候不要 debug。</li>
-                <li><b>Horses, not zebras</b>——最近的 deploy / config push 永远是嫌疑人 #1。dashboard 上标记 deploy 时间戳。</li>
-                <li><b>Simplify, reduce, bisect</b>——在层之间注入已知输入，二分排查。</li>
-                <li>假设按<b>可能性 × 成本</b>排序验证；每一步写进共享文档带时间戳。</li>
-                <li><b>突然的延迟跳变通常是"工作类型变了"，不是"流量变了"</b>——见战争故事 #1。</li>
-            </ul>
-        </section>
-
-        <!-- 4 -->
-        <section id="scenarios" class="content-section">
-            <h2 class="section-title">4 · 10 个 <span>故障签名</span></h2>
-
-            <div class="scenario">
-                <h4><span class="n">01</span>ALB 返回 502 但 target 显示 "healthy"</h4>
-                <p><b>诊断</b>：app 卡在 IO wait，健康检查却因为轻量还能过。</p>
-                <span class="diag">iostat -xz 1 · CloudWatch VolumeQueueLength · jstack/py-spy 找阻塞线程</span>
-                <p><b>修</b>：把慢 endpoint 从流量池摘掉，dump 线程栈，先重启。</p>
-            </div>
-
-            <div class="scenario">
-                <h4><span class="n">02</span>Container 被 OOMKilled，但 liveness probe 通过</h4>
-                <p><b>诊断</b>：<code>dmesg | grep "killed process"</code> + <code>kubectl describe pod</code> Reason=OOMKilled。Liveness 只看 HTTP，不看 RSS。</p>
-                <span class="diag">kubectl top pod --containers · 加 resource limits + memory alert</span>
-            </div>
-
-            <div class="scenario">
-                <h4><span class="n">03</span><code>linklocal_allowance_exceeded</code> &gt; 0</h4>
-                <p><b>诊断</b>：SDK 在打 IMDS（169.254.169.254）疯狂重试——通常是 IAM role 挂错或 IMDSv1 hammer。</p>
-                <span class="diag">ethtool -S eth0 | grep linklocal · aws sts get-caller-identity 验证角色</span>
-                <p><b>修</b>：AWS SDK v2 缓存 IMDSv2 token；转 IMDSv2；hop limit 设 2 让 Pod 也能拿到。</p>
-            </div>
-
-            <div class="scenario">
-                <h4><span class="n">04</span><code>conntrack_allowance_exceeded</code> 攀升</h4>
-                <p><b>诊断</b>：短连接洪水 或 client 不用 keep-alive。这是<b>ENA 实例级</b>限制，不是 kernel <code>nf_conntrack</code>。</p>
-                <span class="diag">ethtool -S eth0 | grep conntrack</span>
-                <p><b>修</b>：客户端开 HTTP keep-alive；升配（更大实例 = 更大 conntrack allowance）；出口大流量走 NAT Gateway 而非 NAT 实例。</p>
-            </div>
-
-            <div class="scenario">
-                <h4><span class="n">05</span>EBS io2 延迟尖峰（跨 AZ 复制中）</h4>
-                <p><b>诊断</b>：AZ 事件后卷在重建；<code>VolumeTotalWriteTime / VolumeWriteOps</code> &gt; 10 ms。</p>
-                <span class="diag">CloudWatch EBS metrics 三张图对齐 AZ event 时间线</span>
-                <p><b>修</b>：等重建（时间不确定），或用 Multi-AZ 复制到另一 volume 顶上去。</p>
-            </div>
-
-            <div class="scenario">
-                <h4><span class="n">06</span>SSM Session Manager 连不上</h4>
-                <p><b>诊断</b>：user-data 脚本还在跑，cloud-init 阻塞 ssm-agent 启动。</p>
-                <span class="diag">从 EC2 console 拿 console-output · /var/log/cloud-init-output.log</span>
-                <p><b>修</b>：user-data 长任务后台化或换 startup service。</p>
-            </div>
-
-            <div class="scenario">
-                <h4><span class="n">07</span>Instance 反复重启（boot loop）</h4>
-                <p><b>诊断</b>：cloud-init 失败——挂 rescue volume 看 <code>/var/log/cloud-init.log</code>。</p>
-                <span class="diag">aws ec2 get-console-output --instance-id i-...</span>
-            </div>
-
-            <div class="scenario">
-                <h4><span class="n">08</span>M8g 上 CPU steal <code>%st</code> &gt; 5</h4>
-                <p><b>诊断</b>：M8g 不是 burstable，%st 高一般是 bare-metal 邻居争抢——罕见，AWS 支持工单。t3/t4g 上 %st 是<b>正常</b>——用完了 credit balance。</p>
-                <span class="diag">mpstat 1 · aws cloudwatch get-metric CPUCreditBalance（仅 t 系列）</span>
-            </div>
-
-            <div class="scenario">
-                <h4><span class="n">09</span><code>sar -n TCP</code> <code>retrans/s</code> &gt; 1% 但主机无丢包</h4>
-                <p><b>诊断</b>：Security Group / NACL 的 conntrack 满，或路径 MTU 不匹配。</p>
-                <span class="diag">tracepath &lt;dest&gt; · 检查 SG entries + jumbo frame 兼容性</span>
-            </div>
-
-            <div class="scenario">
-                <h4><span class="n">10</span>小实例 <code>pps_allowance_exceeded</code> 冒头</h4>
-                <p><b>诊断</b>：小包洪水（DNS query、cache miss、心跳）先撞 PPS 上限，比带宽先满。</p>
-                <span class="diag">ethtool -S eth0 | grep pps</span>
-                <p><b>修</b>：升配；合批 UDP；如 DNS 洪水加 client-side 缓存。</p>
-            </div>
-        </section>
-
-        <!-- 5 -->
-        <section id="coredump" class="content-section">
-            <h2 class="section-title">5 · Coredump on <span>Amazon Linux 2023</span></h2>
-            <p>AL2023 用 <code>systemd-coredump</code>，不是传统 core 文件：</p>
-            <pre>sudo dnf install -y systemd-coredump
+<nav class="nav">
+<div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../../../ec2/">EC2</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hero">
+<div class="crumb"><a href="../../../ec2/graviton/">Graviton 指南</a> · 04 / 04 · On-Call</div>
+<h1>On-Call <span class="g">Playbook</span></h1>
+<p class="sub">凌晨两点，服务慢了。这一页假设你已经读过前四篇，直接跳到"手指该敲什么"。参考：Netflix 60s 分析、Brendan Gregg USE 方法、Google SRE effective troubleshooting。</p>
+<nav class="toc">
+<a href="#60s">1 · Netflix 60 秒</a>
+<a href="#use">2 · USE 落到 EC2</a>
+<a href="#sre">3 · Google SRE 心法</a>
+<a href="#scenarios">4 · 10 个故障签名</a>
+<a href="#coredump">5 · Coredump</a>
+<a href="#snapshot">6 · 重启前抢救</a>
+<a href="#warstories">7 · SRE 战争故事</a>
+<a href="#runbook">8 · 20 命令 runbook</a>
+<a href="#escalate">9 · 什么时候升级</a>
+</nav>
+</div>
+<!-- 1 -->
+<section class="content-section" id="60s">
+<h2 class="section-title">1 · Netflix <span>60 秒</span> checklist</h2>
+<p>SSH 进去，按顺序敲这 10 条命令，每条 ~1 秒。60 秒后你已经知道是 CPU / 内存 / 磁盘 / 网络 / 都不是。<sup>[6]</sup></p>
+<table class="cmp">
+<thead><tr><th>#</th><th>命令</th><th>告诉你什么</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><code>uptime</code></td><td>Load average 1/5/15——上升 / 平稳 / 尖峰</td></tr>
+<tr><td>2</td><td><code>dmesg -T | tail -20</code></td><td>Kernel 消息：OOM、TCP drop、NIC reset、EBS nvme 错误</td></tr>
+<tr><td>3</td><td><code>vmstat 1 5</code></td><td><code>r</code>=run queue、<code>si/so</code>=swap、<code>us/sy/wa/st</code></td></tr>
+<tr><td>4</td><td><code>mpstat -P ALL 1 5</code></td><td>Per-vCPU 不均衡——单核 hot = 单线程瓶颈</td></tr>
+<tr><td>5</td><td><code>pidstat 1 5</code></td><td>Per-process CPU 滚动 delta，比 top 更适合抓突刺</td></tr>
+<tr><td>6</td><td><code>iostat -xz 1 5</code></td><td>Per-device %util / await / queue——EBS 延迟住在这里</td></tr>
+<tr><td>7</td><td><code>free -m</code></td><td>free / buff / cache——看 <b>available</b> 别看 free</td></tr>
+<tr><td>8</td><td><code>sar -n DEV 1 5</code></td><td>每 NIC 包 / 字节，对比实例上限</td></tr>
+<tr><td>9</td><td><code>sar -n TCP,ETCP 1 5</code></td><td><code>active/s</code>、<code>retrans/s</code>——重传 &gt; 0.1% 就有网络痛</td></tr>
+<tr><td>10</td><td><code>top</code></td><td>Sanity check——按 RES 排序找泄漏</td></tr>
+</tbody>
+</table>
+</section>
+<!-- 2 -->
+<section class="content-section" id="use">
+<h2 class="section-title">2 · <span>USE 方法</span>——落到 EC2 每种资源</h2>
+<p>Brendan Gregg 的 USE = Utilization / Saturation / Errors，逐资源套 checklist。<sup>[1][2]</sup></p>
+<table class="cmp">
+<thead><tr><th>资源</th><th>Utilization</th><th>Saturation</th><th>Errors</th></tr></thead>
+<tbody>
+<tr>
+<td>CPU</td>
+<td><code>mpstat -P ALL 1</code>（%usr+%sys+%st）</td>
+<td><code>vmstat</code> <code>r</code> &gt; vCPU；<code>perf sched latency</code></td>
+<td><code>dmesg</code> MCE；<code>perf</code> PMU error</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td><code>free -m</code>；<code>sar -r</code></td>
+<td><code>vmstat</code> si/so；<code>sar -B</code> pgscan；<code>dmesg | grep oom</code></td>
+<td>ECC；malloc 失败（<code>bpftrace</code>）</td>
+</tr>
+<tr>
+<td>Disk (EBS gp3/io2)</td>
+<td><code>iostat -xz 1</code> <code>%util</code></td>
+<td><code>avgqu-sz</code> &gt; 1；高 <code>await</code></td>
+<td><code>/sys/block/nvme*/device/ioerr_cnt</code>；<code>smartctl</code></td>
+</tr>
+<tr>
+<td>Network (ENA)</td>
+<td><code>sar -n DEV 1</code></td>
+<td><code>ethtool -S</code> 的 <code>*_allowance_exceeded</code></td>
+<td><code>netstat -s</code> 重传；ifconfig drop</td>
+</tr>
+<tr>
+<td>EBS 天花板</td>
+<td>CloudWatch <code>VolumeReadOps + WriteOps</code></td>
+<td><code>VolumeQueueLength</code> &gt; 1；gp2 <code>BurstBalance</code> == 0</td>
+<td><code>VolumeThroughputPercentage</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<!-- 3 -->
+<section class="content-section" id="sre">
+<h2 class="section-title">3 · Google SRE 的 <span>心法</span></h2>
+<p>SRE Book "Effective Troubleshooting" 章节里最贵的 5 条建议：<sup>[3]</sup></p>
+<ul>
+<li><b>Fly the airplane first</b>——先止血（drain、回滚、切流量），再排根因。用户在流血的时候不要 debug。</li>
+<li><b>Horses, not zebras</b>——最近的 deploy / config push 永远是嫌疑人 #1。dashboard 上标记 deploy 时间戳。</li>
+<li><b>Simplify, reduce, bisect</b>——在层之间注入已知输入，二分排查。</li>
+<li>假设按<b>可能性 × 成本</b>排序验证；每一步写进共享文档带时间戳。</li>
+<li><b>突然的延迟跳变通常是"工作类型变了"，不是"流量变了"</b>——见战争故事 #1。</li>
+</ul>
+</section>
+<!-- 4 -->
+<section class="content-section" id="scenarios">
+<h2 class="section-title">4 · 10 个 <span>故障签名</span></h2>
+<div class="scenario">
+<h4><span class="n">01</span>ALB 返回 502 但 target 显示 "healthy"</h4>
+<p><b>诊断</b>：app 卡在 IO wait，健康检查却因为轻量还能过。</p>
+<span class="diag">iostat -xz 1 · CloudWatch VolumeQueueLength · jstack/py-spy 找阻塞线程</span>
+<p><b>修</b>：把慢 endpoint 从流量池摘掉，dump 线程栈，先重启。</p>
+</div>
+<div class="scenario">
+<h4><span class="n">02</span>Container 被 OOMKilled，但 liveness probe 通过</h4>
+<p><b>诊断</b>：<code>dmesg | grep "killed process"</code> + <code>kubectl describe pod</code> Reason=OOMKilled。Liveness 只看 HTTP，不看 RSS。</p>
+<span class="diag">kubectl top pod --containers · 加 resource limits + memory alert</span>
+</div>
+<div class="scenario">
+<h4><span class="n">03</span><code>linklocal_allowance_exceeded</code> &gt; 0</h4>
+<p><b>诊断</b>：SDK 在打 IMDS（169.254.169.254）疯狂重试——通常是 IAM role 挂错或 IMDSv1 hammer。</p>
+<span class="diag">ethtool -S eth0 | grep linklocal · aws sts get-caller-identity 验证角色</span>
+<p><b>修</b>：AWS SDK v2 缓存 IMDSv2 token；转 IMDSv2；hop limit 设 2 让 Pod 也能拿到。</p>
+</div>
+<div class="scenario">
+<h4><span class="n">04</span><code>conntrack_allowance_exceeded</code> 攀升</h4>
+<p><b>诊断</b>：短连接洪水 或 client 不用 keep-alive。这是<b>ENA 实例级</b>限制，不是 kernel <code>nf_conntrack</code>。</p>
+<span class="diag">ethtool -S eth0 | grep conntrack</span>
+<p><b>修</b>：客户端开 HTTP keep-alive；升配（更大实例 = 更大 conntrack allowance）；出口大流量走 NAT Gateway 而非 NAT 实例。</p>
+</div>
+<div class="scenario">
+<h4><span class="n">05</span>EBS io2 延迟尖峰（跨 AZ 复制中）</h4>
+<p><b>诊断</b>：AZ 事件后卷在重建；<code>VolumeTotalWriteTime / VolumeWriteOps</code> &gt; 10 ms。</p>
+<span class="diag">CloudWatch EBS metrics 三张图对齐 AZ event 时间线</span>
+<p><b>修</b>：等重建（时间不确定），或用 Multi-AZ 复制到另一 volume 顶上去。</p>
+</div>
+<div class="scenario">
+<h4><span class="n">06</span>SSM Session Manager 连不上</h4>
+<p><b>诊断</b>：user-data 脚本还在跑，cloud-init 阻塞 ssm-agent 启动。</p>
+<span class="diag">从 EC2 console 拿 console-output · /var/log/cloud-init-output.log</span>
+<p><b>修</b>：user-data 长任务后台化或换 startup service。</p>
+</div>
+<div class="scenario">
+<h4><span class="n">07</span>Instance 反复重启（boot loop）</h4>
+<p><b>诊断</b>：cloud-init 失败——挂 rescue volume 看 <code>/var/log/cloud-init.log</code>。</p>
+<span class="diag">aws ec2 get-console-output --instance-id i-...</span>
+</div>
+<div class="scenario">
+<h4><span class="n">08</span>M8g 上 CPU steal <code>%st</code> &gt; 5</h4>
+<p><b>诊断</b>：M8g 不是 burstable，%st 高一般是 bare-metal 邻居争抢——罕见，AWS 支持工单。t3/t4g 上 %st 是<b>正常</b>——用完了 credit balance。</p>
+<span class="diag">mpstat 1 · aws cloudwatch get-metric CPUCreditBalance（仅 t 系列）</span>
+</div>
+<div class="scenario">
+<h4><span class="n">09</span><code>sar -n TCP</code> <code>retrans/s</code> &gt; 1% 但主机无丢包</h4>
+<p><b>诊断</b>：Security Group / NACL 的 conntrack 满，或路径 MTU 不匹配。</p>
+<span class="diag">tracepath &lt;dest&gt; · 检查 SG entries + jumbo frame 兼容性</span>
+</div>
+<div class="scenario">
+<h4><span class="n">10</span>小实例 <code>pps_allowance_exceeded</code> 冒头</h4>
+<p><b>诊断</b>：小包洪水（DNS query、cache miss、心跳）先撞 PPS 上限，比带宽先满。</p>
+<span class="diag">ethtool -S eth0 | grep pps</span>
+<p><b>修</b>：升配；合批 UDP；如 DNS 洪水加 client-side 缓存。</p>
+</div>
+</section>
+<!-- 5 -->
+<section class="content-section" id="coredump">
+<h2 class="section-title">5 · Coredump on <span>Amazon Linux 2023</span></h2>
+<p>AL2023 用 <code>systemd-coredump</code>，不是传统 core 文件：</p>
+<pre>sudo dnf install -y systemd-coredump
 sudo sysctl -w kernel.core_pattern='|/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h'
 sudo systemctl edit user.slice   <span class="c"># DefaultLimitCORE=infinity</span>
 ulimit -c unlimited              <span class="c"># 每个 shell 生效</span>
@@ -254,13 +239,12 @@ coredumpctl list                 <span class="c"># 库存</span>
 coredumpctl info &lt;PID&gt;            <span class="c"># 元信息 + backtrace</span>
 coredumpctl gdb  &lt;PID&gt;            <span class="c"># 直接 attach gdb</span>
 coredumpctl dump &lt;PID&gt; -o /tmp/core.$PID</pre>
-            <p>转储位置：<code>/var/lib/systemd/coredump/</code>。要用传统 core 文件：<code>kernel.core_pattern=/var/coredumps/core.%e.%p.%t</code> + <code>fs.suid_dumpable=2</code>。</p>
-        </section>
-
-        <!-- 6 -->
-        <section id="snapshot" class="content-section">
-            <h2 class="section-title">6 · <span>重启前抢救</span>——保留现场</h2>
-            <pre>D=/tmp/oncall-$(hostname)-$(date +%s); mkdir -p $D
+<p>转储位置：<code>/var/lib/systemd/coredump/</code>。要用传统 core 文件：<code>kernel.core_pattern=/var/coredumps/core.%e.%p.%t</code> + <code>fs.suid_dumpable=2</code>。</p>
+</section>
+<!-- 6 -->
+<section class="content-section" id="snapshot">
+<h2 class="section-title">6 · <span>重启前抢救</span>——保留现场</h2>
+<pre>D=/tmp/oncall-$(hostname)-$(date +%s); mkdir -p $D
 dmesg -T                       &gt; $D/dmesg.txt
 journalctl -b --no-pager       &gt; $D/journal.txt
 ps auxfww                      &gt; $D/ps.txt
@@ -276,20 +260,18 @@ cp -a /proc/loadavg /proc/meminfo /proc/net /proc/pressure $D/ 2&gt;/dev/null
 cp -a /var/log/messages /var/log/cloud-init*.log /var/log/dmesg $D/ 2&gt;/dev/null
 tar czf /root/oncall-snapshot.tgz $D
 aws s3 cp /root/oncall-snapshot.tgz s3://$FORENSICS_BUCKET/</pre>
-        </section>
-
-        <!-- 7 -->
-        <section id="warstories" class="content-section">
-            <h2 class="section-title">7 · <span>SRE 战争故事</span>——都能学到东西</h2>
-            <p><b>#1 · App Engine "突然慢 10 倍，没任何变更"</b><sup>[3]</sup>——一个安全扫描器往白名单表里写了几千行；每个请求随后线性扫描内存缓存。<b>没新 RPC、没流量尖峰</b>，只是"工作的形状变了"。教训：只看 RPC 分布不够，得看进程内 profile。</p>
-            <p><b>#2 · GKE CreateCluster 6h40m 大故障</b><sup>[4]</sup>——DockerHub 上一份镜像损坏，阻塞了所有新 cluster 创建。IRC 上 41 人上线，但 IC（Incident Commander）拖了 ~2 小时才指定。教训：<b>早声明 IC</b>；预置"从 mirror 里驱逐坏镜像"这种通用止血手段。</p>
-            <p><b>#3 · 比利时数据中心遭雷击（2015）</b><sup>[4]</sup>——两分钟内四次雷击，UPS 电池损坏，GCE 磁盘错误。<b>运行中 VM 数据丢失比例：0.000001%</b>——因为 IC 第一时间指定、角色都演练过。</p>
-        </section>
-
-        <!-- 8 -->
-        <section id="runbook" class="content-section">
-            <h2 class="section-title">8 · 20 命令 <span>runbook</span>（可复制粘贴）</h2>
-            <pre>D=/var/tmp/incident-$(date +%Y%m%d-%H%M%S); mkdir -p $D; cd $D
+</section>
+<!-- 7 -->
+<section class="content-section" id="warstories">
+<h2 class="section-title">7 · <span>SRE 战争故事</span>——都能学到东西</h2>
+<p><b>#1 · App Engine "突然慢 10 倍，没任何变更"</b><sup>[3]</sup>——一个安全扫描器往白名单表里写了几千行；每个请求随后线性扫描内存缓存。<b>没新 RPC、没流量尖峰</b>，只是"工作的形状变了"。教训：只看 RPC 分布不够，得看进程内 profile。</p>
+<p><b>#2 · GKE CreateCluster 6h40m 大故障</b><sup>[4]</sup>——DockerHub 上一份镜像损坏，阻塞了所有新 cluster 创建。IRC 上 41 人上线，但 IC（Incident Commander）拖了 ~2 小时才指定。教训：<b>早声明 IC</b>；预置"从 mirror 里驱逐坏镜像"这种通用止血手段。</p>
+<p><b>#3 · 比利时数据中心遭雷击（2015）</b><sup>[4]</sup>——两分钟内四次雷击，UPS 电池损坏，GCE 磁盘错误。<b>运行中 VM 数据丢失比例：0.000001%</b>——因为 IC 第一时间指定、角色都演练过。</p>
+</section>
+<!-- 8 -->
+<section class="content-section" id="runbook">
+<h2 class="section-title">8 · 20 命令 <span>runbook</span>（可复制粘贴）</h2>
+<pre>D=/var/tmp/incident-$(date +%Y%m%d-%H%M%S); mkdir -p $D; cd $D
 uptime                                              &gt; 01_uptime
 w                                                   &gt; 02_who
 top -bn1                                            &gt; 03_top
@@ -310,43 +292,39 @@ dmesg -T | tail -100                                &gt; 17_dmesg
 journalctl -u &lt;app&gt; --since '-10min'                 &gt; 18_svc_log
 curl -s http://localhost:&lt;port&gt;/metrics             &gt; 19_app_metrics
 aws cloudwatch get-metric-statistics ...            &gt; 20_cw
-tar czf ../$(basename $D).tgz . && echo done</pre>
-        </section>
-
-        <!-- 9 -->
-        <section id="escalate" class="content-section">
-            <h2 class="section-title">9 · <span>升级</span>触发条件</h2>
-            <ul>
-                <li><b>Page DBA</b>——复制延迟 &gt; 30s、死锁增多、<code>pg_stat_activity</code> 全是 <code>idle in transaction</code>。</li>
-                <li><b>Failover</b>——节点不可达 &gt; 2 min、dmesg 里出磁盘读错、<code>EBSByteBalance%</code> 调参后仍为 0。</li>
-                <li><b>Scale out</b>——所有核 &gt; 80% 持续 10 min <b>且</b> ALB 队列还在涨。<b>怀疑内存泄漏时不要 scale up</b>——那是喂养泄漏。</li>
-                <li><b>Roll back</b>——p99 退化的时间线与某次 deploy 对齐。先回滚再排根因。</li>
-            </ul>
-        </section>
-
-        <div class="refs">
-            <h4>Sources</h4>
-            <ol>
-                <li>[1] <a href="https://www.brendangregg.com/usemethod.html">Brendan Gregg — The USE Method</a></li>
-                <li>[2] <a href="https://www.brendangregg.com/USEmethod/use-linux.html">Brendan Gregg — USE Method: Linux Performance Checklist</a></li>
-                <li>[3] <a href="https://sre.google/sre-book/effective-troubleshooting/">Google SRE Book — Effective Troubleshooting</a></li>
-                <li>[4] <a href="https://sre.google/workbook/incident-response/">Google SRE Workbook — Incident Response</a></li>
-                <li>[5] <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-network-performance-ena.html">AWS UserGuide — ENA network performance</a></li>
-                <li>[6] <a href="https://netflixtechblog.com/linux-performance-analysis-in-60-000-milliseconds-accc10403c55">Netflix — Linux Performance Analysis in 60,000 Milliseconds</a></li>
-            </ol>
-        </div>
-
-        <div class="next">
-            <div class="left">读完了</div>
-            <div class="right">
-                <a href="../../../ec2/graviton/">/</a>
-                <a class="big" href="../../../ec2/graviton/">← 回到 Graviton 指南首页</a>
-            </div>
-        </div>
-    </main>
-
-    <footer class="footer">
-        <p>&copy; 2026 liucao.me &middot; <a href="../../../">Home</a> &middot; <a href="../../../ec2/graviton/">Graviton 指南</a></p>
-    </footer>
-</body>
+tar czf ../$(basename $D).tgz . &amp;&amp; echo done</pre>
+</section>
+<!-- 9 -->
+<section class="content-section" id="escalate">
+<h2 class="section-title">9 · <span>升级</span>触发条件</h2>
+<ul>
+<li><b>Page DBA</b>——复制延迟 &gt; 30s、死锁增多、<code>pg_stat_activity</code> 全是 <code>idle in transaction</code>。</li>
+<li><b>Failover</b>——节点不可达 &gt; 2 min、dmesg 里出磁盘读错、<code>EBSByteBalance%</code> 调参后仍为 0。</li>
+<li><b>Scale out</b>——所有核 &gt; 80% 持续 10 min <b>且</b> ALB 队列还在涨。<b>怀疑内存泄漏时不要 scale up</b>——那是喂养泄漏。</li>
+<li><b>Roll back</b>——p99 退化的时间线与某次 deploy 对齐。先回滚再排根因。</li>
+</ul>
+</section>
+<div class="refs">
+<h4>Sources</h4>
+<ol>
+<li>[1] <a href="https://www.brendangregg.com/usemethod.html">Brendan Gregg — The USE Method</a></li>
+<li>[2] <a href="https://www.brendangregg.com/USEmethod/use-linux.html">Brendan Gregg — USE Method: Linux Performance Checklist</a></li>
+<li>[3] <a href="https://sre.google/sre-book/effective-troubleshooting/">Google SRE Book — Effective Troubleshooting</a></li>
+<li>[4] <a href="https://sre.google/workbook/incident-response/">Google SRE Workbook — Incident Response</a></li>
+<li>[5] <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-network-performance-ena.html">AWS UserGuide — ENA network performance</a></li>
+<li>[6] <a href="https://netflixtechblog.com/linux-performance-analysis-in-60-000-milliseconds-accc10403c55">Netflix — Linux Performance Analysis in 60,000 Milliseconds</a></li>
+</ol>
+</div>
+<div class="next">
+<div class="left">读完了</div>
+<div class="right">
+<a href="../../../ec2/graviton/">/</a>
+<a class="big" href="../../../ec2/graviton/">← 回到 Graviton 指南首页</a>
+</div>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../../">Home</a> · <a href="../../../ec2/graviton/">Graviton 指南</a></p>
+</footer>
+<a data-cur="zh" data-to="en" href="../../../en/ec2/graviton/playbook/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>

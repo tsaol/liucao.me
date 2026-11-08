@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Graviton gen 7 / 8 / 9 comparison — Graviton Deep Dive Guide</title>
+<meta content="What each generation of Amazon EC2 7th-, 8th-, and 9th-gen Graviton instances (Graviton3 / Graviton4 / Graviton5) improved: cores, caches, memory, specs, networking and storage, security, and performance." name="description"/>
+<link href="../../../../ec2/assets/style.css" rel="stylesheet"/>
+<style>
+        /* ── shared graviton subpage styles ── */
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.87rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+        .cmp .pill { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; font-family: var(--mono); font-size: 0.7rem; border: 1px solid var(--border); margin-right: 0.3rem; }
+        .pill.g { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-glow); }
+        .pill.i { color: #60a5fa; border-color: rgba(96,165,250,0.35); background: rgba(96,165,250,0.10); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+    </style>
+<style>
+        .gen3 { color: #a78bfa; } .gen4 { color: #60a5fa; } .gen5 { color: var(--accent); }
+        .cmp td.up { color: var(--accent); }
+        .note { font-size: 0.8rem; color: var(--text-mute); }
+        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.9rem; margin: 1rem 0; }
+        .step { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.1rem; }
+        .step h4 { font-size: 0.95rem; margin-bottom: 0.4rem; }
+        .step ul { padding-left: 1.1rem; color: var(--text-dim); font-size: 0.88rem; }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../../">EC2</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hero">
+<div class="crumb"><a href="../">Graviton Guide</a> · Research · Gen 7 / 8 / 9</div>
+<h1>Graviton <span class="g">7th / 8th / 9th gen</span>, and what each generation improved</h1>
+<p class="sub">Gen 7 = Graviton3 (M7g, C7g, R7g), Gen 8 = Graviton4 (M8g, C8g, R8g, X8g, I8g), Gen 9 = Graviton5 (M9g, C9g, R9g). Based only on public AWS sources, compiled 2026-11.</p>
+<nav class="toc">
+<a href="#tldr">In one sentence</a>
+<a href="#table">1 · Summary table</a>
+<a href="#g3g4">2 · Gen 7 → 8</a>
+<a href="#g4g5">3 · Gen 8 → 9</a>
+<a href="#perf">4 · Official performance numbers</a>
+<a href="#io">5 · Networking and storage</a>
+<a href="#sec">6 · Security</a>
+<a href="#timeline">7 · Launch dates</a>
+<a href="#migrate">8 · What to watch for when upgrading</a>
+</nav>
+</div>
+<section class="content-section" id="tldr">
+<div class="callout">
+<div class="lead">Bottom line</div>
+<b class="gen3">7th gen</b>brought Graviton into the DDR5 and SVE era;<b class="gen4">8th gen</b>scaled things up: 96 cores per chip, double the L2, and 3x the vCPUs and memory of the 7th generation at the largest size;<b class="gen5">Gen 9</b>Puts 192 cores into<b>A single</b>chip, L3 grows 5×, memory moves to DDR5-8800, the clock reaches 3.3 GHz, and it is the first to use the formally verified Nitro Isolation Engine. By AWS's numbers, each generation is about 25–30% faster than the last.
+            </div>
+</section>
+<section class="content-section" id="table">
+<h2 class="section-title">1 · <span>Summary table</span></h2>
+<table class="cmp">
+<thead><tr><th></th><th class="gen3">Gen 7 · Graviton3</th><th class="gen4">Gen 8 · Graviton4</th><th class="gen5">Gen 9 · Graviton5</th></tr></thead>
+<tbody>
+<tr><td><b>Representative instances</b></td><td>C7g / M7g / R7g (+gd); C7gn and Hpc7g use Graviton3E</td><td>C8g / M8g / R8g / X8g / I8g (+gd / gn / gb)</td><td>M9g / M9gd, C9g / C9gd, R9g / R9gd</td></tr>
+<tr><td><b>CPU core design</b></td><td>Arm Neoverse V1</td><td>Neoverse V2</td><td>Neoverse V3</td></tr>
+<tr><td><b>Instruction set</b></td><td>Armv8.4-A</td><td>Armv9.0-A</td><td>Armv9.2-A</td></tr>
+<tr><td><b>Clock speed</b>(no Turbo)</td><td>2.6 GHz</td><td>2.8 GHz (2.7 GHz for 48xlarge)</td><td class="up">3.3 GHz</td></tr>
+<tr><td><b>Cores per chip</b></td><td>64</td><td>96 (48xlarge uses 2 chips, 192 total)</td><td class="up">192 (single chip)</td></tr>
+<tr><td><b>L1 / core</b></td><td>64 KB instruction + 64 KB data</td><td>Same as left</td><td>Same as left</td></tr>
+<tr><td><b>L2 / core</b></td><td>1 MB</td><td class="up">2 MB</td><td>2 MB</td></tr>
+<tr><td><b>Shared last-level cache</b></td><td>32 MB</td><td>36 MB</td><td class="up">48 MB per NUMA node (≤16xlarge) or 96 MB (24/48xlarge); AWS says it's 5x the previous generation</td></tr>
+<tr><td><b>On-chip interconnect</b></td><td>CMN-650</td><td>CMN-700</td><td>CMN-S3; up to 33% lower core-to-core latency</td></tr>
+<tr><td><b>Memory</b></td><td>8-channel DDR5 (50% more bandwidth than the Graviton2-based M6g)</td><td>12-channel DDR5-5600 (DDR5-6400 on M8gn / M8gb)</td><td class="up">12-channel DDR5-8800, which AWS calls the fastest in the cloud</td></tr>
+<tr><td><b>PCIe</b></td><td>—</td><td>—</td><td class="up">PCIe Gen6 (first in the AWS fleet)</td></tr>
+<tr><td><b>Vector units</b></td><td>4×128 bit Neon / <b>2×256 bit SVE</b></td><td>4×128 bit Neon / SVE2</td><td>4×128 bit Neon / SVE2</td></tr>
+<tr><td><b>New features</b></td><td>SVE, RNG, bf16, int8</td><td>SVE2, sve-int8, sve-bf16, sve-bitperm, sve-crypto</td><td>afp, wfxt</td></tr>
+<tr><td><b>Pointer Authentication (PAC) / Branch Target Identification (BTI)</b></td><td>PAC ✅ / BTI ❌</td><td>PAC ✅ / BTI ✅</td><td>PAC ✅ / BTI ✅</td></tr>
+<tr><td><b>32-bit user-space compatibility</b></td><td>Supported</td><td>No longer supported</td><td>Not supported</td></tr>
+<tr><td><b>NUMA nodes</b></td><td>1</td><td>1 (2 for 48xlarge)</td><td>1 (2 for 16xlarge and 48xlarge)</td></tr>
+<tr><td><b>Largest size (M series)</b></td><td>m7g.16xlarge: 64 vCPU / 256 GiB</td><td class="up">m8g.48xlarge: 192 vCPU / 768 GiB</td><td>m9g.48xlarge: 192 vCPU (M9g has 4 GiB per vCPU)</td></tr>
+<tr><td><b>Faster than the previous generation</b>(AWS official, up to)</td><td>25% (vs. Graviton2)</td><td>30% (vs. Graviton3)</td><td>25% (vs. Graviton4)</td></tr>
+</tbody>
+</table>
+<p class="note">Source: most of the main table comes from the processor comparison table in the README of AWS's official Graviton Technical Guide <sup>[1]</sup>; performance, memory speed and PCIe figures come from each generation's instance pages and launch blogs <sup>[2–8]</sup>. M9g memory, estimated at "4 GiB per vCPU", puts the 48xlarge at 768 GiB.</p>
+</section>
+<section class="content-section" id="g3g4">
+<h2 class="section-title">2 · <span class="gen3">7th gen</span> → <span class="gen4">8th gen</span>: Go large-scale</h2>
+<ul>
+<li><b>1.5x cores, 3x size</b>: From 64 to 96 cores per chip; the largest size uses two chips for 192 vCPUs. The largest R8g size has 3x the vCPUs and memory of R7g, and X8g goes up to 3 TiB of memory <sup>[4][9]</sup>.</li>
+<li><b>L2 doubled</b>: From 1 MB to 2 MB per core, with each vCPU getting its own dedicated cache <sup>[1][4]</sup>.</li>
+<li><b>Memory goes from 8 channels to 12 channels</b>, at up to DDR5-5600; the network- and storage-enhanced variants (M8gn / M8gb) go up to DDR5-6400 <sup>[4]</sup>.</li>
+<li><b>Armv9 + SVE2</b>: Adds SVE2 and a set of integer, bf16 and crypto vector instructions. Note that vector width changes from Graviton3's 2×256 bit to 4×128 bit <sup>[1]</sup>.</li>
+<li><b>Clock speed 2.6 → 2.8 GHz</b>, still no Turbo, so performance is stable and predictable <sup>[1]</sup>.</li>
+<li><b>Performance</b>: Up to 30% faster than Graviton3; X8g is up to 60% faster than X2gd <sup>[4][9]</sup>.</li>
+<li><b>New top-end model</b>: M8gn uses 6th-generation Nitro cards with up to 600 Gbps of networking; M8gb offers up to 300 Gbps of EBS bandwidth and 1,440K IOPS <sup>[4]</sup>.</li>
+</ul>
+</section>
+<section class="content-section" id="g4g5">
+<h2 class="section-title">3 · <span class="gen4">8th gen</span> → <span class="gen5">Gen 9</span>: 192 cores on a single chip</h2>
+<ul>
+<li><b>192 cores on a single chip</b>: Gen 8 needs two chips combined to reach 192 vCPUs; Gen 9 does it with one <sup>[1][2]</sup>.</li>
+<li><b>L3 is 5× the previous generation</b>, with up to 33% lower core-to-core latency <sup>[2]</sup>.</li>
+<li><b>Memory DDR5-8800</b>(Gen 8 is 5600), which AWS calls the fastest memory in the cloud; it is also the first in the AWS fleet to support <b>PCIe Gen6</b> 's CPU <sup>[2][3]</sup>.</li>
+<li><b>Clock speed 2.8 → 3.3 GHz</b>, with the core design upgraded from Neoverse V2 to V3 and the ISA to Armv9.2-A <sup>[1]</sup>.</li>
+<li><b>Network and EBS bandwidth</b>: 15% / 20% higher on average across sizes, doubled at the largest size (48xlarge): 100 Gbps networking, 72 Gbps EBS; up to 3x packet processing performance <sup>[2][3][5]</sup>.</li>
+<li><b>Instance Bandwidth Configuration (IBC)</b>: Shift up to 25% of bandwidth allocation between EBS and networking <sup>[2]</sup>.</li>
+<li><b>Local disk</b>: M9gd has up to 11.4 TB of NVMe, with 30% higher IOPS than M8gd <sup>[2]</sup>.</li>
+<li><b>Energy efficiency</b>: AWS calls Graviton5 the most energy-efficient processor it has ever built <sup>[5]</sup>.</li>
+</ul>
+</section>
+<section class="content-section" id="perf">
+<h2 class="section-title">4 · <span>Official performance numbers</span></h2>
+<table class="cmp">
+<thead><tr><th>Compare</th><th>Published by AWS (up to)</th></tr></thead>
+<tbody>
+<tr><td><b>M7g vs M6g</b>(Graviton3 vs 2)</td><td>Up to 25% faster overall; up to 2x floating point; up to 2x cryptography; 50% more memory bandwidth <sup>[6]</sup></td></tr>
+<tr><td><b>M8g vs M7g</b>(Graviton4 vs 3)</td><td>Up to 30% faster overall <sup>[4]</sup></td></tr>
+<tr><td><b>X8g vs X2gd</b></td><td>Up to 60% faster <sup>[9]</sup></td></tr>
+<tr><td><b>M9g vs M8g</b>(Graviton5 vs 4)</td><td>Up to 25% faster compute; 35% for web applications; 35% for ML inference; 30% for databases <sup>[2][7]</sup></td></tr>
+<tr><td><b>C9g vs C8g</b></td><td>Up to 25% higher performance per vCPU <sup>[3]</sup></td></tr>
+<tr><td><b>R9g vs R8g</b></td><td>Up to 25% higher compute performance per vCPU <sup>[5]</sup></td></tr>
+</tbody>
+</table>
+<div class="callout warn">
+<div class="lead">How to read these numbers</div>
+                All published by AWS <b>"at most"</b> gains, measured under different test conditions, so they can't be added together or converted into one another. Always run A/B load tests on your own workload; to judge whether the CPU is really saturated, see this series' <a href="../saturation/">Telling when resources are maxed out on ARM</a>.
+            </div>
+</section>
+<section class="content-section" id="io">
+<h2 class="section-title">5 · <span>Networking and storage</span></h2>
+<table class="cmp">
+<thead><tr><th>Largest size</th><th>Network</th><th>EBS</th></tr></thead>
+<tbody>
+<tr><td><span class="pill i">m8g.48xlarge</span></td><td>50 Gbps</td><td>40 Gbps</td></tr>
+<tr><td><span class="pill g">c9g / r9g .48xlarge</span></td><td class="up">100 Gbps</td><td class="up">72 Gbps</td></tr>
+<tr><td><span class="pill i">m8gn (network-enhanced)</span></td><td>Up to 600 Gbps</td><td>—</td></tr>
+<tr><td><span class="pill i">m8gb (EBS-enhanced)</span></td><td>—</td><td>Up to 300 Gbps / 1,440K IOPS</td></tr>
+</tbody>
+</table>
+<p>Gen 9 currently only has M / C / R and their local-disk variants (gd). There are no network- or EBS-optimized variants like M8gn or M8gb yet. So if you need<b>Limit</b>network or EBS bandwidth, the 8th-gen gn / gb variants are currently higher <sup>[3][4][5]</sup>.</p>
+</section>
+<section class="content-section" id="sec">
+<h2 class="section-title">6 · <span>Safety</span></h2>
+<ul>
+<li><b>7th gen</b>: Memory is always encrypted (always-on memory encryption), with support for Pointer Authentication (PAC) <sup>[1][6]</sup>.</li>
+<li><b>8th gen</b>: Adds Branch Target Identification (BTI), and each vCPU gets its own dedicated cache <sup>[1][4]</sup>.</li>
+<li><b>Gen 9</b>: First introduced <b>Nitro Isolation Engine</b>. It handles isolation between VMs (including access to VM memory, CPU registers and I/O devices), and uses<b>Formal verification</b>Mathematically proves that the isolation holds; AWS says this makes Nitro the first formally verified cloud hypervisor <sup>[2][5]</sup>.</li>
+</ul>
+</section>
+<section class="content-section" id="timeline">
+<h2 class="section-title">7 · <span>Time to market</span></h2>
+<ul>
+<li><b class="gen4">Gen 8</b>: C8g and M8g became generally available in 2024-09 <sup>[8]</sup>; R8g, X8g, I8g and the gd / gn / gb variants followed, and as of 2025-12 Regions are still being added <sup>[10]</sup>.</li>
+<li><b class="gen5">Gen 9</b>: M9g preview announced at re:Invent in 2025-12 <sup>[7]</sup> → 2026-06 M9g / M9gd and C9g / C9gd generally available <sup>[2][3]</sup> → 2026-08 R9g / R9gd generally available <sup>[5]</sup> → From 2026-09, rolling out to more Regions (e.g., C9g in Tokyo); Lambda Managed Instances also start supporting Graviton5 <sup>[11][12]</sup>.</li>
+</ul>
+<p class="note">Gen 7 launch dates aren't listed here: this page only cites sources checked against the original.</p>
+</section>
+<section class="content-section" id="migrate">
+<h2 class="section-title">8 · <span>What to watch for when upgrading</span></h2>
+<div class="steps">
+<div class="step">
+<h4 class="gen4">7th gen → 8th gen</h4>
+<ul>
+<li>Compiler flags <code>-mcpu=neoverse-512tvb</code> Applies to all three generations; usually<b>No recompilation needed</b> <sup>[1]</sup>.</li>
+<li><b>32-bit userspace no longer supported</b>: Also, armv7 / 32-bit programs must first be replaced with 64-bit versions <sup>[1]</sup>.</li>
+<li>Vectors go from 2×256 bit SVE to 4×128 bit: SVE code tuned specifically for 256 bit needs to be re-benchmarked.</li>
+<li>48xlarge is two chips and two NUMA nodes, so pay attention to NUMA; see <a href="../../numa/">NUMA deep-dive guide</a>.</li>
+</ul>
+</div>
+<div class="step">
+<h4 class="gen5">8th gen → 9th gen</h4>
+<ul>
+<li>The instruction set is backward compatible, so code usually just runs; several customer cases got gains with "zero code changes" <sup>[2]</sup>.</li>
+<li>Memory-bandwidth-sensitive workloads (databases, caches, analytics) benefit most from DDR5-8800 and the larger L3.</li>
+<li>16xlarge and 48xlarge still have 2 NUMA nodes, so large sizes still need NUMA pinning <sup>[1]</sup>.</li>
+<li>If you need maximum network or EBS bandwidth, the 8th-gen gn / gb models currently go higher. First confirm that 9th gen is available in your Region.</li>
+</ul>
+</div>
+</div>
+</section>
+<div class="refs">
+<h4>References (all public sources, checked 2026-11)</h4>
+<ol>
+<li>[1] <a href="https://github.com/aws/aws-graviton-getting-started">aws/aws-graviton-getting-started</a> — README processor comparison table</li>
+<li>[2] <a href="https://aws.amazon.com/blogs/aws/now-available-amazon-ec2-m9g-and-m9gd-instances-powered-by-new-aws-graviton5-processors/">AWS News Blog: M9g / M9gd now generally available (2026-06)</a></li>
+<li>[3] <a href="https://aws.amazon.com/blogs/aws/amazon-ec2-c9g-and-c9gd-instances-powered-by-aws-graviton5-processors-are-now-available/">AWS News Blog: C9g / C9gd now generally available (2026-06)</a></li>
+<li>[4] <a href="https://aws.amazon.com/ec2/instance-types/m8g/">Amazon EC2 M8g instance page</a></li>
+<li>[5] <a href="https://aws.amazon.com/blogs/aws/amazon-ec2-r9g-and-r9gd-instances-powered-by-aws-graviton5-processors-are-now-generally-available/">AWS News Blog: R9g / R9gd now generally available (2026-08)</a></li>
+<li>[6] <a href="https://aws.amazon.com/ec2/instance-types/m7g/">Amazon EC2 M7g instance page</a></li>
+<li>[7] <a href="https://aws.amazon.com/about-aws/whats-new/2025/12/ec2-m9g-instances-graviton5-processors-preview/">What's New: M9g preview (2025-12)</a></li>
+<li>[8] <a href="https://aws.amazon.com/about-aws/whats-new/2024/09/amazon-ec2-c8g-m8g-instances/">What's New: C8g and M8g generally available (2024-09)</a></li>
+<li>[9] <a href="https://aws.amazon.com/ec2/instance-types/x8g/">Amazon EC2 X8g instance page</a>, <a href="https://aws.amazon.com/ec2/instance-types/r8g/">R8g instance page</a></li>
+<li>[10] <a href="https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-c8g-m8g-r8g-instances-additional-regions/">What's New: C8g, M8g, R8g expand to more Regions (2025-12)</a></li>
+<li>[11] <a href="https://aws.amazon.com/about-aws/whats-new/2026/09/ec2-c9g-c9gd-asia-pacific-tokyo/">What's New: C9g and C9gd arrive in Tokyo (2026-09)</a></li>
+<li>[12] <a href="https://aws.amazon.com/about-aws/whats-new/2026/09/aws-lambda-graviton5-ec2/">What's New: Lambda supports Graviton5 (2026-09)</a></li>
+</ol>
+</div>
+<div class="next">
+<div class="left">Related</div>
+<div class="right">
+<a href="../compare/">01 / 04 · Hardware comparison</a>
+<a class="big" href="../compare/">M8g vs M7i: full comparison →</a>
+</div>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../../">Home</a> · <a href="../">Graviton Guide</a></p>
+</footer>
+<a data-cur="en" data-to="zh" href="../../../../ec2/graviton/generations/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh">
+
+<html lang="zh-CN">
 <head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>核心论文 · 深度解读 · Harness Self-Evolution</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>核心论文 · 深度解读 · Harness Self-Evolution</title>
+<link href="../../assets/style.css" rel="stylesheet"/>
+<style>
       :root {
         --pp-accent: rgb(0, 217, 130);
         --pp-purple: rgb(139, 92, 246);
@@ -267,467 +268,358 @@
     </style>
 </head>
 <body>
-
 <nav class="nav">
-    <div class="brand"><a href="../../.." style="color:inherit;">liucao<span>.me</span></a></div>
-    <div class="links">
-        <a href="../">← Intro</a>
-        <a href="../talk/">Talk</a>
-        <a href="../run/">Live Demo</a>
-            <a href="../play/">Play</a>
-    </div>
+<div class="brand"><a href="../../.." style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← Intro</a>
+<a href="../talk/">Talk</a>
+<a href="../run/">Live Demo</a>
+<a href="../play/">Play</a>
+</div>
 </nav>
-
 <main class="pp-wrap">
-
-  <div class="pp-hero">
-    <span class="pp-kicker">3 篇核心论文 · AI 深度解读 · 无微信外发</span>
-    <h1>Harness Self-Evolution · <span class="grad">核心论文</span></h1>
-    <p class="sub">评测方法（AlphaEvolve）· 谱系起点（DGM · Meta-Harness）· 引擎（ShinkaEvolve 论文 + 源码走读）· 题目灵感（BRIGHT）</p>
-    <p class="byline">5 篇论文 + 1 份源码走读 · 完整覆盖 demo 的所有 IP · 阅读约 25 分钟</p>
-  </div>
-
-  
-  <div class="pp-index">
-    
-    <a href="#alphaevolve">1 · AlphaEvolve</a>
-    
-    <a href="#dgm">2 · Darwin Gödel Machine</a>
-    
-    <a href="#meta-harness">3 · 元-Harness</a>
-    
-    <a href="#shinka">4 · ShinkaEvolve</a>
-    
-    <a href="#shinka-code">5 · ShinkaEvolve 源码走读 · </a>
-    
-    <a href="#bright">6 · BRIGHT</a>
-    
-    <a href="../talk/">← Talk 总览</a>
-  </div>
-
-  
-  <section class="pp-paper" id="alphaevolve">
-    <div class="pp-p-head">
-      <span class="pp-p-num">P1</span>
-      <span class="pp-p-id"><a href="https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" target="_blank" rel="noopener">DeepMind whitepaper · 2024 ↗</a></span>
-      <span class="pp-p-date">2024-05-14</span>
-    </div>
-
-    <div class="pp-p-titles">
-      <h2>AlphaEvolve：Gemini 驱动的算法设计 coding agent</h2>
-      <div class="pp-p-title-en">AlphaEvolve: A Gemini-powered coding agent for designing advanced algorithms</div>
-      <div class="pp-p-authors">DeepMind team · 2024-05</div>
-    </div>
-
-    <div class="pp-one-liner">用 evaluation cascade + Gemini 双模型进化，直接改写 Google 生产代码的祖师爷</div>
-
-    <div class="pp-why">这是「用 LLM 做真·算法发现」这个 field 的开山之作 —— 在它之前 FunSearch 只能进化单个函数，AlphaEvolve 第一次把 evolutionary code search 拉到整个 codebase 级别，并且直接进了 Google Borg、Gemini 训练 kernel、TPU Verilog 这些真金白银的生产系统。它是闭源的，只对少数学术用户开放 Early Access；今天你能在 GitHub 上 pip install 到的 Shinka、DGM，本质上都是这篇论文思想的开源子孙。理解 AlphaEvolve = 理解今天所有 code evolution 框架的祖宗设计。</div>
-
-    <div class="pp-h3">3 个核心洞见</div>
-    <div class="pp-insights">
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">1</span>
-          <span>Evaluation Cascade：分层评测，通不过就不往下走</span>
-        </div>
-        <div class="pp-insight-body">AlphaEvolve 最核心的机制不是 LLM，而是 evaluator。每个 candidate program 生成后，评测是分成多层跑的：先跑最便宜的一层（比如 unit test、小规模 input、几秒钟能跑完的 sanity check），只有通过这一层的候选才被允许进入下一层（更长的 benchmark、held-out 数据集、perturbed 输入），最后一层才是真正昂贵的完整评测（比如整套 correctness proof、大规模性能测试）。这样绝大部分明显错误或明显平庸的 candidate 在第一层就被 kill，宝贵的评测算力只花在真正有潜力的 patch 上。这就是「evaluation cascade」—— 它把 evolutionary search 里最贵的那一步从「每个 candidate 都全评」压成了「金字塔漏斗」，是整个 pipeline 能 scale 到万级样本的关键。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">2</span>
-          <span>把矩阵乘法从 Strassen 手里抢过来：4×4 复矩阵 48 次乘法</span>
-        </div>
-        <div class="pp-insight-body">1969 年 Strassen 提出的算法用 49 次标量乘法算 4×4 矩阵；56 年之后，AlphaEvolve 在 4×4 复矩阵这个 setting 上找到了 48 次乘法的新算法 —— 是自 Strassen 之后第一次在这个 case 上被压下来。这不是玩具：同一套系统还把 Gemini 训练里一个关键 matmul kernel 提速 23%，直接让 Gemini 整体训练时间下降 1%；FlashAttention kernel 提速最高 32.5%；给一个高度优化过的 TPU 算术电路提了一版 Verilog 改写，正确性验证通过后已经整合进下一代 TPU。在 Borg 上跑了一年多的调度启发式，平均帮 Google 全球算力回收 0.7%，一年省下的相当于新造一座数据中心。在约 50 个数学 open problem 上，75% 追平 SOTA，20% 直接刷新 —— 包括 11 维 kissing number 找到 593 个外接球的新下界。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">3</span>
-          <span>Gemini Flash 广撒网 + Gemini Pro 深挖：双模型 ensemble</span>
-        </div>
-        <div class="pp-insight-body">AlphaEvolve 没有押注单一模型。Gemini Flash 便宜、快，负责「广度」—— 一轮吐几十上百个想法，做大规模 exploration；Gemini Pro 贵、慢、深，负责「深度」—— 在 Flash 找到的有希望方向上做更 insightful 的改写。中间是一个 prompt sampler 从 programs database（archive）里挑父代拼 prompt，LLM 输出 candidate patch，evaluator cascade 打分，通过的进 archive 成为下一轮父代 —— 一个非常干净的 evolutionary loop。跟 FunSearch 相比最大的不同：FunSearch 只能进化单个 Python 函数，AlphaEvolve 能进化整个 codebase，可以跨文件、跨模块改动。这也是它能直接改 Verilog、改 CUDA、改 Borg 调度器的原因。</div>
-      </div>
-      
-    </div>
-
-    
-    <div class="pp-h3">最精彩的一句</div>
-    <div class="pp-quote">
-      AlphaEvolve continuously recovers, on average, 0.7% of Google&#39;s worldwide compute resources. 
+<div class="pp-hero">
+<span class="pp-kicker">3 篇核心论文 · AI 深度解读 · 无微信外发</span>
+<h1>Harness Self-Evolution · <span class="grad">核心论文</span></h1>
+<p class="sub">评测方法（AlphaEvolve）· 谱系起点（DGM · Meta-Harness）· 引擎（ShinkaEvolve 论文 + 源码走读）· 题目灵感（BRIGHT）</p>
+<p class="byline">5 篇论文 + 1 份源码走读 · 完整覆盖 demo 的所有 IP · 阅读约 25 分钟</p>
+</div>
+<div class="pp-index">
+<a href="#alphaevolve">1 · AlphaEvolve</a>
+<a href="#dgm">2 · Darwin Gödel Machine</a>
+<a href="#meta-harness">3 · 元-Harness</a>
+<a href="#shinka">4 · ShinkaEvolve</a>
+<a href="#shinka-code">5 · ShinkaEvolve 源码走读 · </a>
+<a href="#bright">6 · BRIGHT</a>
+<a href="../talk/">← Talk 总览</a>
+</div>
+<section class="pp-paper" id="alphaevolve">
+<div class="pp-p-head">
+<span class="pp-p-num">P1</span>
+<span class="pp-p-id"><a href="https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" rel="noopener" target="_blank">DeepMind whitepaper · 2024 ↗</a></span>
+<span class="pp-p-date">2024-05-14</span>
+</div>
+<div class="pp-p-titles">
+<h2>AlphaEvolve：Gemini 驱动的算法设计 coding agent</h2>
+<div class="pp-p-title-en">AlphaEvolve: A Gemini-powered coding agent for designing advanced algorithms</div>
+<div class="pp-p-authors">DeepMind team · 2024-05</div>
+</div>
+<div class="pp-one-liner">用 evaluation cascade + Gemini 双模型进化，直接改写 Google 生产代码的祖师爷</div>
+<div class="pp-why">这是「用 LLM 做真·算法发现」这个 field 的开山之作 —— 在它之前 FunSearch 只能进化单个函数，AlphaEvolve 第一次把 evolutionary code search 拉到整个 codebase 级别，并且直接进了 Google Borg、Gemini 训练 kernel、TPU Verilog 这些真金白银的生产系统。它是闭源的，只对少数学术用户开放 Early Access；今天你能在 GitHub 上 pip install 到的 Shinka、DGM，本质上都是这篇论文思想的开源子孙。理解 AlphaEvolve = 理解今天所有 code evolution 框架的祖宗设计。</div>
+<div class="pp-h3">3 个核心洞见</div>
+<div class="pp-insights">
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">1</span>
+<span>Evaluation Cascade：分层评测，通不过就不往下走</span>
+</div>
+<div class="pp-insight-body">AlphaEvolve 最核心的机制不是 LLM，而是 evaluator。每个 candidate program 生成后，评测是分成多层跑的：先跑最便宜的一层（比如 unit test、小规模 input、几秒钟能跑完的 sanity check），只有通过这一层的候选才被允许进入下一层（更长的 benchmark、held-out 数据集、perturbed 输入），最后一层才是真正昂贵的完整评测（比如整套 correctness proof、大规模性能测试）。这样绝大部分明显错误或明显平庸的 candidate 在第一层就被 kill，宝贵的评测算力只花在真正有潜力的 patch 上。这就是「evaluation cascade」—— 它把 evolutionary search 里最贵的那一步从「每个 candidate 都全评」压成了「金字塔漏斗」，是整个 pipeline 能 scale 到万级样本的关键。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">2</span>
+<span>把矩阵乘法从 Strassen 手里抢过来：4×4 复矩阵 48 次乘法</span>
+</div>
+<div class="pp-insight-body">1969 年 Strassen 提出的算法用 49 次标量乘法算 4×4 矩阵；56 年之后，AlphaEvolve 在 4×4 复矩阵这个 setting 上找到了 48 次乘法的新算法 —— 是自 Strassen 之后第一次在这个 case 上被压下来。这不是玩具：同一套系统还把 Gemini 训练里一个关键 matmul kernel 提速 23%，直接让 Gemini 整体训练时间下降 1%；FlashAttention kernel 提速最高 32.5%；给一个高度优化过的 TPU 算术电路提了一版 Verilog 改写，正确性验证通过后已经整合进下一代 TPU。在 Borg 上跑了一年多的调度启发式，平均帮 Google 全球算力回收 0.7%，一年省下的相当于新造一座数据中心。在约 50 个数学 open problem 上，75% 追平 SOTA，20% 直接刷新 —— 包括 11 维 kissing number 找到 593 个外接球的新下界。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">3</span>
+<span>Gemini Flash 广撒网 + Gemini Pro 深挖：双模型 ensemble</span>
+</div>
+<div class="pp-insight-body">AlphaEvolve 没有押注单一模型。Gemini Flash 便宜、快，负责「广度」—— 一轮吐几十上百个想法，做大规模 exploration；Gemini Pro 贵、慢、深，负责「深度」—— 在 Flash 找到的有希望方向上做更 insightful 的改写。中间是一个 prompt sampler 从 programs database（archive）里挑父代拼 prompt，LLM 输出 candidate patch，evaluator cascade 打分，通过的进 archive 成为下一轮父代 —— 一个非常干净的 evolutionary loop。跟 FunSearch 相比最大的不同：FunSearch 只能进化单个 Python 函数，AlphaEvolve 能进化整个 codebase，可以跨文件、跨模块改动。这也是它能直接改 Verilog、改 CUDA、改 Borg 调度器的原因。</div>
+</div>
+</div>
+<div class="pp-h3">最精彩的一句</div>
+<div class="pp-quote">
+      AlphaEvolve continuously recovers, on average, 0.7% of Google's worldwide compute resources. 
       
       <div class="pp-quote-cn">AlphaEvolve 已经在 Borg 上持续运行了一年多，平均为 Google 全球算力回收 0.7%。</div>
+</div>
+<div class="pp-relation">
+<div class="pp-relation-h">跟这个 Demo 的关系</div>
+<div class="pp-relation-body">今天 demo 里 evaluate.py 那条 `combined = 0.7·public + 0.2·heldout + 0.1·perturbed` 综合分公式，以及 H tier 只有当 E 分 &gt;= 0.7 且 M 分 &gt;= 0.5 才计分的 cascade gate，直接就是照 AlphaEvolve 的 evaluation cascade 抄的 —— 先便宜后贵、先局部后全局、通不过前一层就不进下一层。你可以把今天 demo 理解成：把 AlphaEvolve 的评测哲学从「Google 内部闭源系统」搬到「一张 GPU + Bedrock Claude」也能跑的开源 setup。</div>
+</div>
+<div class="pp-takeaway">AlphaEvolve 教给你的不是「用 LLM 写代码」，而是「用 cascade 评测把 LLM 关进笼子里，让它只在真的能证明自己的时候才被认可」—— 这才是 code evolution 真正 work 的秘密。</div>
+</section>
+<section class="pp-paper" id="dgm">
+<div class="pp-p-head">
+<span class="pp-p-num">P2</span>
+<span class="pp-p-id"><a href="https://arxiv.org/abs/2505.22954" rel="noopener" target="_blank">arXiv:2505.22954 ↗</a></span>
+<span class="pp-p-date">2025-05-29</span>
+</div>
+<div class="pp-p-titles">
+<h2>Darwin Gödel Machine：自我改进 agent 的开放式进化</h2>
+<div class="pp-p-title-en">Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Agents</div>
+<div class="pp-p-authors">Jenny Zhang, Shengran Hu, Cong Lu, Robert Lange, Jeff Clune（UBC + Sakana AI + Vector Institute）</div>
+</div>
+<div class="pp-one-liner">让 agent 改自己的代码，用 benchmark 代替形式化证明，用进化档案代替单线优化</div>
+<div class="pp-why">站在 2026 年回看，DGM 是 self-improving agent 这条谱系的起点。它第一次把 Schmidhuber 2003 年的 Gödel machine 从理论拉进工程可跑的范围——把「证明每次改动是净收益」这个不可能的要求，换成「跑 SWE-bench 看分数」。更关键的是，它把 open-endedness 研究里的 archive 思想搬进了 agent 自改进：不是贪心地往前推最优解，而是保留一整棵包含失败分支的进化树。今天 Sakana 的 ShinkaEvolve、以及各家自演化 harness，血脉都从这里来。</div>
+<div class="pp-h3">3 个核心洞见</div>
+<div class="pp-insights">
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">1</span>
+<span>从形式化证明到 empirical validation</span>
+</div>
+<div class="pp-insight-body">Schmidhuber 的 Gödel machine 要求 agent 每次改自己前先证明「改动是净收益」——理论优雅但工程上不可能，因为大多数有意义的改动没法被形式化证明。DGM 的做法很务实：把「证明」换成「跑 benchmark」。每一版新 agent 在 SWE-bench 或 Polyglot 上跑，分数说话。这一步看似简单，但它是让自我改进真正落地的关键——把一个数学问题降级成了工程问题。代价是失去了理论保证，但换来了可以真跑起来的系统。这个务实转向，几乎决定了 2025 年之后所有 self-improving agent 的技术路线。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">2</span>
+<span>Archive-based open-endedness：保留失败分支</span>
+</div>
+<div class="pp-insight-body">这是 DGM 最反直觉、也最重要的设计。传统优化会丢掉分数低的分支，只保留最优。DGM 反着来：维护一个 archive，每一代生成的 agent 都留着，包括那些当下看起来失败的。下一代不是从最优里挑，而是从 archive 里「有趣地」采样，让基础模型基于这个父本生成新变体。这形成一棵不断分叉的树，并行探索多条路径。为什么这样做？因为在开放式搜索里，今天的失败往往是明天突破的 stepping stone——某个中间形态本身不好用，但它上面加一步就是新维度。这个思路直接来自 Jeff Clune 组多年的 open-endedness 研究（Quality-Diversity、MAP-Elites 那一脉）。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">3</span>
+<span>元层次的复利：更好的工具→更好的改进能力</span>
+</div>
+<div class="pp-insight-body">DGM 改的不是模型权重，而是 agent 的 codebase 本身——工具定义、prompt、上下文管理、评审流程。这里有个 recursive 的效应：agent 改进了自己的 code editing tool，下一代 agent 用这个更好的工具去改自己，改得更好。论文里跑出来的具体演化例子很说明问题：DGM 自发地给自己加了 patch validation、长上下文的分块处理、还有 peer-review 机制（一个 agent 生成 patch，另一个 agent 审）。SWE-bench 从 20.0% 拉到 50.0%，Polyglot 从 14.2% 拉到 30.7%，而且显著超过没有 self-improvement 或没有 open-ended exploration 的 baseline。这不是简单的 scaling，是元层次的复利。</div>
+</div>
+</div>
+<div class="pp-h3">最精彩的一句</div>
+<div class="pp-quote">
+      "The DGM is a significant step toward self-improving AI, capable of gathering its own stepping stones along paths that unfold into endless innovation." —— DGM 是迈向自我改进 AI 的关键一步：它能自己捡起沿途的踏脚石，走出一条通往无尽创新的路径。
       
     </div>
-    
-
-    <div class="pp-relation">
-      <div class="pp-relation-h">跟这个 Demo 的关系</div>
-      <div class="pp-relation-body">今天 demo 里 evaluate.py 那条 `combined = 0.7·public + 0.2·heldout + 0.1·perturbed` 综合分公式，以及 H tier 只有当 E 分 &gt;= 0.7 且 M 分 &gt;= 0.5 才计分的 cascade gate，直接就是照 AlphaEvolve 的 evaluation cascade 抄的 —— 先便宜后贵、先局部后全局、通不过前一层就不进下一层。你可以把今天 demo 理解成：把 AlphaEvolve 的评测哲学从「Google 内部闭源系统」搬到「一张 GPU + Bedrock Claude」也能跑的开源 setup。</div>
-    </div>
-
-    <div class="pp-takeaway">AlphaEvolve 教给你的不是「用 LLM 写代码」，而是「用 cascade 评测把 LLM 关进笼子里，让它只在真的能证明自己的时候才被认可」—— 这才是 code evolution 真正 work 的秘密。</div>
-  </section>
-  
-  <section class="pp-paper" id="dgm">
-    <div class="pp-p-head">
-      <span class="pp-p-num">P2</span>
-      <span class="pp-p-id"><a href="https://arxiv.org/abs/2505.22954" target="_blank" rel="noopener">arXiv:2505.22954 ↗</a></span>
-      <span class="pp-p-date">2025-05-29</span>
-    </div>
-
-    <div class="pp-p-titles">
-      <h2>Darwin Gödel Machine：自我改进 agent 的开放式进化</h2>
-      <div class="pp-p-title-en">Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Agents</div>
-      <div class="pp-p-authors">Jenny Zhang, Shengran Hu, Cong Lu, Robert Lange, Jeff Clune（UBC + Sakana AI + Vector Institute）</div>
-    </div>
-
-    <div class="pp-one-liner">让 agent 改自己的代码，用 benchmark 代替形式化证明，用进化档案代替单线优化</div>
-
-    <div class="pp-why">站在 2026 年回看，DGM 是 self-improving agent 这条谱系的起点。它第一次把 Schmidhuber 2003 年的 Gödel machine 从理论拉进工程可跑的范围——把「证明每次改动是净收益」这个不可能的要求，换成「跑 SWE-bench 看分数」。更关键的是，它把 open-endedness 研究里的 archive 思想搬进了 agent 自改进：不是贪心地往前推最优解，而是保留一整棵包含失败分支的进化树。今天 Sakana 的 ShinkaEvolve、以及各家自演化 harness，血脉都从这里来。</div>
-
-    <div class="pp-h3">3 个核心洞见</div>
-    <div class="pp-insights">
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">1</span>
-          <span>从形式化证明到 empirical validation</span>
-        </div>
-        <div class="pp-insight-body">Schmidhuber 的 Gödel machine 要求 agent 每次改自己前先证明「改动是净收益」——理论优雅但工程上不可能，因为大多数有意义的改动没法被形式化证明。DGM 的做法很务实：把「证明」换成「跑 benchmark」。每一版新 agent 在 SWE-bench 或 Polyglot 上跑，分数说话。这一步看似简单，但它是让自我改进真正落地的关键——把一个数学问题降级成了工程问题。代价是失去了理论保证，但换来了可以真跑起来的系统。这个务实转向，几乎决定了 2025 年之后所有 self-improving agent 的技术路线。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">2</span>
-          <span>Archive-based open-endedness：保留失败分支</span>
-        </div>
-        <div class="pp-insight-body">这是 DGM 最反直觉、也最重要的设计。传统优化会丢掉分数低的分支，只保留最优。DGM 反着来：维护一个 archive，每一代生成的 agent 都留着，包括那些当下看起来失败的。下一代不是从最优里挑，而是从 archive 里「有趣地」采样，让基础模型基于这个父本生成新变体。这形成一棵不断分叉的树，并行探索多条路径。为什么这样做？因为在开放式搜索里，今天的失败往往是明天突破的 stepping stone——某个中间形态本身不好用，但它上面加一步就是新维度。这个思路直接来自 Jeff Clune 组多年的 open-endedness 研究（Quality-Diversity、MAP-Elites 那一脉）。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">3</span>
-          <span>元层次的复利：更好的工具→更好的改进能力</span>
-        </div>
-        <div class="pp-insight-body">DGM 改的不是模型权重，而是 agent 的 codebase 本身——工具定义、prompt、上下文管理、评审流程。这里有个 recursive 的效应：agent 改进了自己的 code editing tool，下一代 agent 用这个更好的工具去改自己，改得更好。论文里跑出来的具体演化例子很说明问题：DGM 自发地给自己加了 patch validation、长上下文的分块处理、还有 peer-review 机制（一个 agent 生成 patch，另一个 agent 审）。SWE-bench 从 20.0% 拉到 50.0%，Polyglot 从 14.2% 拉到 30.7%，而且显著超过没有 self-improvement 或没有 open-ended exploration 的 baseline。这不是简单的 scaling，是元层次的复利。</div>
-      </div>
-      
-    </div>
-
-    
-    <div class="pp-h3">最精彩的一句</div>
-    <div class="pp-quote">
-      &#34;The DGM is a significant step toward self-improving AI, capable of gathering its own stepping stones along paths that unfold into endless innovation.&#34; —— DGM 是迈向自我改进 AI 的关键一步：它能自己捡起沿途的踏脚石，走出一条通往无尽创新的路径。
+<div class="pp-relation">
+<div class="pp-relation-h">跟这个 Demo 的关系</div>
+<div class="pp-relation-body">本次 demo 用的 ShinkaEvolve（arXiv:2509.19349，2025-09）是 Robert Lange 在 Sakana AI 做的产品化后续——DGM 的共同作者变成了 ShinkaEvolve 的一作。技术脉络一目了然：DGM 证明了「archive + LLM mutation + benchmark validation」这条路走得通，但样本效率差（要几千次采样）；ShinkaEvolve 在同一个框架上加了 parent sampling、novelty rejection、bandit-based LLM ensemble，把样本量压到 150 就能出 SOTA。DGM 是原型，ShinkaEvolve 是可用工具。今天的 harness self-evolution demo，本质上跑的是 DGM 定下的范式。</div>
+</div>
+<div class="pp-takeaway">自我改进 agent 不需要证明每一步是对的——只要留住所有分支，让 benchmark 当裁判，进化会自己找到路。</div>
+</section>
+<section class="pp-paper" id="meta-harness">
+<div class="pp-p-head">
+<span class="pp-p-num">P3</span>
+<span class="pp-p-id"><a href="https://arxiv.org/abs/2603.28052" rel="noopener" target="_blank">arXiv:2603.28052 ↗</a></span>
+<span class="pp-p-date">2026-03-30</span>
+</div>
+<div class="pp-p-titles">
+<h2>元-Harness：模型 Harness 的端到端优化</h2>
+<div class="pp-p-title-en">Meta-Harness: End-to-End Optimization of Model Harnesses</div>
+<div class="pp-p-authors">Yoonho Lee, Roshen Nair, Qizheng Zhang, Omar Khattab, Chelsea Finn 等（Stanford / KRAFTON / MIT）</div>
+</div>
+<div class="pp-one-liner">把整段 harness 交给 coding agent 去搜索，用文件系统当反馈通道。</div>
+<div class="pp-why">2026 年大家都在讨论 harness engineering——同一个模型，换个 harness 能拉出 6 倍性能差距。之前的 text optimizer 全在压缩反馈：OPRO 只看 scalar，GEPA 塞 summary，TextGrad 只看当前 artifact。这篇直接把上限打到 10M tokens/iter，比现有方法多三个数量级。它证明了：让 coding agent 自己 grep、cat 历史 trace，比人肉调 prompt 强，也比任何结构化 search loop 强。</div>
+<div class="pp-h3">3 个核心洞见</div>
+<div class="pp-insights">
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">1</span>
+<span>反馈通道从 prompt 变成文件系统</span>
+</div>
+<div class="pp-insight-body">之前的 text optimizer 有个共同毛病：把历史压成一句 summary 塞进 prompt。OPRO 是 0.002 MTok/iter，GEPA 0.008，TTT-Discover 0.026——单位是百万 token。Meta-Harness 直接是 10.0 MTok/iter，三个数量级的差距。Proposer 不是一次性吃完，而是像个真程序员：中位数每轮 grep 82 个文件（41% 是历史 harness 源码，40% 是 execution trace），横跨 20+ 个历史候选。这是 non-Markovian 的——它不只看上一版，而是随手翻早期的失败案例来推理。这个设计的隐含前提是：coding agent 2026 年初才刚好够强，能自己决定看什么。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">2</span>
+<span>trace 才是关键，summary 反而有害</span>
+</div>
+<div class="pp-insight-body">论文做了个很干净的 ablation：scores-only（34.6 中位数 / 41.3 最佳）、scores+summary（34.9 / 38.7）、完整 Meta-Harness（50.0 / 56.7）。summary 版本的最佳成绩甚至比 scores-only 还低 2.6 分。作者的解读很直接：LLM 生成的 summary 把诊断信息压没了。harness 的一个错误可能在几十步之后才爆——你需要看到那条完整的 trajectory 才能定位到最初的 retrieval 逻辑写错了。这就像修分布式系统 bug，只看错误码没用，得看完整的 log。这条 insight 也解释了为什么之前的 GEPA、TextGrad 上限打不上去。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">3</span>
+<span>少即是多的 outer loop</span>
+</div>
+<div class="pp-insight-body">跟 AlphaEvolve、AFlow 那种精心设计的进化框架不一样，Meta-Harness 的 outer loop 极简：不设 parent selection rule，不搞 archive 结构，就一个 Pareto 前沿。作者的话说是 deliberately minimal——把诊断和修改的决策权完全下放给 coding agent。文件系统里所有历史都在，agent 想看什么自己去找。这个哲学很 Bitter Lesson：一旦搜索空间可访问，通用 agent 就会打败手工设计的 heuristic。Text classification 上 Meta-Harness 4 轮就赶上 OpenEvolve 和 TTT-Discover 跑 60 轮的效果，10× 加速——不是算法巧妙，是不折腾。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">4</span>
+<span>跨模型迁移的 harness 才是真资产</span>
+</div>
+<div class="pp-insight-body">IMO 数学题这个实验特别有说服力。用 GPT-OSS-20B 搜出来一个 retrieval harness，然后拿去测 GPT-5.4-nano、GPT-5.4-mini、Gemini-3.1-Flash-Lite、Gemini-3-Flash——五个模型全部涨点，平均 +4.7。对比一下 dense retrieval 在 GPT-5.4-mini 上倒退 0.5 分，在 Gem-3-Flash 上倒退 0.9 分。这说明搜出来的不是过拟合到某个模型的黑魔法，而是一个可读、可迁移的策略。Discussion 里作者也强调这点：code-space 的过拟合是可检查的——if-chain、hardcoded mapping 一眼就能看出来，比 weight-space 的过拟合友好太多。TerminalBench-2 上 Haiku 4.5 版本涨到 37.6% 拿第一，Opus 4.6 版本 76.4% 拿第二，一个开源 automatic search 打赢一堆手工调参的 leaderboard 选手。</div>
+</div>
+</div>
+<div class="pp-h3">最精彩的一句</div>
+<div class="pp-quote">
+      "The proposer reads a median of 82 files per iteration ... referencing over 20 prior candidates per step. A single evaluation can produce up to 10,000,000 tokens of diagnostic information, roughly three orders of magnitude beyond the largest feedback budgets used in prior text optimization settings." —— 每轮中位数读 82 个文件、跨 20+ 个历史候选；单次 evaluation 能产生 1000 万 token 的诊断信息，比之前所有 text optimizer 高出三个数量级。
       
     </div>
-    
-
-    <div class="pp-relation">
-      <div class="pp-relation-h">跟这个 Demo 的关系</div>
-      <div class="pp-relation-body">本次 demo 用的 ShinkaEvolve（arXiv:2509.19349，2025-09）是 Robert Lange 在 Sakana AI 做的产品化后续——DGM 的共同作者变成了 ShinkaEvolve 的一作。技术脉络一目了然：DGM 证明了「archive + LLM mutation + benchmark validation」这条路走得通，但样本效率差（要几千次采样）；ShinkaEvolve 在同一个框架上加了 parent sampling、novelty rejection、bandit-based LLM ensemble，把样本量压到 150 就能出 SOTA。DGM 是原型，ShinkaEvolve 是可用工具。今天的 harness self-evolution demo，本质上跑的是 DGM 定下的范式。</div>
-    </div>
-
-    <div class="pp-takeaway">自我改进 agent 不需要证明每一步是对的——只要留住所有分支，让 benchmark 当裁判，进化会自己找到路。</div>
-  </section>
-  
-  <section class="pp-paper" id="meta-harness">
-    <div class="pp-p-head">
-      <span class="pp-p-num">P3</span>
-      <span class="pp-p-id"><a href="https://arxiv.org/abs/2603.28052" target="_blank" rel="noopener">arXiv:2603.28052 ↗</a></span>
-      <span class="pp-p-date">2026-03-30</span>
-    </div>
-
-    <div class="pp-p-titles">
-      <h2>元-Harness：模型 Harness 的端到端优化</h2>
-      <div class="pp-p-title-en">Meta-Harness: End-to-End Optimization of Model Harnesses</div>
-      <div class="pp-p-authors">Yoonho Lee, Roshen Nair, Qizheng Zhang, Omar Khattab, Chelsea Finn 等（Stanford / KRAFTON / MIT）</div>
-    </div>
-
-    <div class="pp-one-liner">把整段 harness 交给 coding agent 去搜索，用文件系统当反馈通道。</div>
-
-    <div class="pp-why">2026 年大家都在讨论 harness engineering——同一个模型，换个 harness 能拉出 6 倍性能差距。之前的 text optimizer 全在压缩反馈：OPRO 只看 scalar，GEPA 塞 summary，TextGrad 只看当前 artifact。这篇直接把上限打到 10M tokens/iter，比现有方法多三个数量级。它证明了：让 coding agent 自己 grep、cat 历史 trace，比人肉调 prompt 强，也比任何结构化 search loop 强。</div>
-
-    <div class="pp-h3">3 个核心洞见</div>
-    <div class="pp-insights">
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">1</span>
-          <span>反馈通道从 prompt 变成文件系统</span>
-        </div>
-        <div class="pp-insight-body">之前的 text optimizer 有个共同毛病：把历史压成一句 summary 塞进 prompt。OPRO 是 0.002 MTok/iter，GEPA 0.008，TTT-Discover 0.026——单位是百万 token。Meta-Harness 直接是 10.0 MTok/iter，三个数量级的差距。Proposer 不是一次性吃完，而是像个真程序员：中位数每轮 grep 82 个文件（41% 是历史 harness 源码，40% 是 execution trace），横跨 20+ 个历史候选。这是 non-Markovian 的——它不只看上一版，而是随手翻早期的失败案例来推理。这个设计的隐含前提是：coding agent 2026 年初才刚好够强，能自己决定看什么。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">2</span>
-          <span>trace 才是关键，summary 反而有害</span>
-        </div>
-        <div class="pp-insight-body">论文做了个很干净的 ablation：scores-only（34.6 中位数 / 41.3 最佳）、scores+summary（34.9 / 38.7）、完整 Meta-Harness（50.0 / 56.7）。summary 版本的最佳成绩甚至比 scores-only 还低 2.6 分。作者的解读很直接：LLM 生成的 summary 把诊断信息压没了。harness 的一个错误可能在几十步之后才爆——你需要看到那条完整的 trajectory 才能定位到最初的 retrieval 逻辑写错了。这就像修分布式系统 bug，只看错误码没用，得看完整的 log。这条 insight 也解释了为什么之前的 GEPA、TextGrad 上限打不上去。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">3</span>
-          <span>少即是多的 outer loop</span>
-        </div>
-        <div class="pp-insight-body">跟 AlphaEvolve、AFlow 那种精心设计的进化框架不一样，Meta-Harness 的 outer loop 极简：不设 parent selection rule，不搞 archive 结构，就一个 Pareto 前沿。作者的话说是 deliberately minimal——把诊断和修改的决策权完全下放给 coding agent。文件系统里所有历史都在，agent 想看什么自己去找。这个哲学很 Bitter Lesson：一旦搜索空间可访问，通用 agent 就会打败手工设计的 heuristic。Text classification 上 Meta-Harness 4 轮就赶上 OpenEvolve 和 TTT-Discover 跑 60 轮的效果，10× 加速——不是算法巧妙，是不折腾。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">4</span>
-          <span>跨模型迁移的 harness 才是真资产</span>
-        </div>
-        <div class="pp-insight-body">IMO 数学题这个实验特别有说服力。用 GPT-OSS-20B 搜出来一个 retrieval harness，然后拿去测 GPT-5.4-nano、GPT-5.4-mini、Gemini-3.1-Flash-Lite、Gemini-3-Flash——五个模型全部涨点，平均 +4.7。对比一下 dense retrieval 在 GPT-5.4-mini 上倒退 0.5 分，在 Gem-3-Flash 上倒退 0.9 分。这说明搜出来的不是过拟合到某个模型的黑魔法，而是一个可读、可迁移的策略。Discussion 里作者也强调这点：code-space 的过拟合是可检查的——if-chain、hardcoded mapping 一眼就能看出来，比 weight-space 的过拟合友好太多。TerminalBench-2 上 Haiku 4.5 版本涨到 37.6% 拿第一，Opus 4.6 版本 76.4% 拿第二，一个开源 automatic search 打赢一堆手工调参的 leaderboard 选手。</div>
-      </div>
-      
-    </div>
-
-    
-    <div class="pp-h3">最精彩的一句</div>
-    <div class="pp-quote">
-      &#34;The proposer reads a median of 82 files per iteration ... referencing over 20 prior candidates per step. A single evaluation can produce up to 10,000,000 tokens of diagnostic information, roughly three orders of magnitude beyond the largest feedback budgets used in prior text optimization settings.&#34; —— 每轮中位数读 82 个文件、跨 20+ 个历史候选；单次 evaluation 能产生 1000 万 token 的诊断信息，比之前所有 text optimizer 高出三个数量级。
-      
-    </div>
-    
-
-    <div class="pp-relation">
-      <div class="pp-relation-h">跟这个 Demo 的关系</div>
-      <div class="pp-relation-body">你的 8 章 talk 讲的是 harness self-evolution——让 harness 自己迭代自己。Meta-Harness 就是这个思路的学术定型版：它把 harness 提升为一等公民的优化对象，把 coding agent 作为唯一的 proposer，把文件系统作为无损的记忆通道。你 demo 里那些自我改写的 pattern，在论文里对应到 Algorithm 1 的三行伪代码。特别值得对齐的是：论文用的 proposer 就是 Claude Code + Opus 4.6，跟你现场跑的栈基本一致。看完你的 demo 再看这篇，会觉得学术界只是给你的工程直觉盖了个章。</div>
-    </div>
-
-    <div class="pp-takeaway">harness 不再靠手调——把 trace 完整摊在文件系统上，让 coding agent 自己去 grep 历史，就是新一代 auto-ML。</div>
-  </section>
-  
-  <section class="pp-paper" id="shinka">
-    <div class="pp-p-head">
-      <span class="pp-p-num">P4</span>
-      <span class="pp-p-id"><a href="https://arxiv.org/abs/2509.19349" target="_blank" rel="noopener">arXiv:2509.19349 ↗</a></span>
-      <span class="pp-p-date">2025-09-17</span>
-    </div>
-
-    <div class="pp-p-titles">
-      <h2>ShinkaEvolve：走向开放式与样本高效的程序进化</h2>
-      <div class="pp-p-title-en">ShinkaEvolve: Towards Open-Ended And Sample-Efficient Program Evolution</div>
-      <div class="pp-p-authors">Robert Tjarko Lange, Yuki Imajuku, Edoardo Cetin (Sakana AI)</div>
-    </div>
-
-    <div class="pp-one-liner">全球唯一开源、开箱即用的 LLM 程序进化框架（Shinka = 日语「進化」）</div>
-
-    <div class="pp-why">这是今天 harness self-evolution demo 背后直接跑的引擎，也是当前唯一一个真正 pip install 就能用的 code-evolution 框架。它把 AlphaEvolve 那类闭源、动辄几千 samples 才收敛的重工具，压到 150 samples 就能刷出 circle packing 的 SOTA。作者 Robert Lange 同时也是 Darwin Gödel Machine（DGM）的一作，ShinkaEvolve 基本可以理解为 DGM 的产品化落地版本，同一批人把研究原型做成了工程框架。出品方是 Sakana AI —— 东京，Transformer 论文作者 Llion Jones 创办的实验室。</div>
-
-    <div class="pp-h3">3 个核心洞见</div>
-    <div class="pp-insights">
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">1</span>
-          <span>Parent Sampling：不是纯精英，而是 explore/exploit 平衡</span>
-        </div>
-        <div class="pp-insight-body">传统 evolutionary code search 要么每一代只从最优个体 mutate（陷入局部最优），要么均匀采样（浪费预算）。ShinkaEvolve 把 population 组织成多个 island，每个 island 内部提供 weighted、power_law、beam_search 三种 parent selection 策略，再加上 island 之间的 migration 和 dynamic island spawning。archive 侧则用 elite_selection_ratio 0.3、crowding-based replacement 保持种群多样性。核心思想是：让每一步 mutation 有一定概率去啃「次优但潜力大」的分支，避免整个搜索坍缩到当前 leader 附近。这是 150 samples 就能出 SOTA 的第一根支柱。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">2</span>
-          <span>Code Novelty Rejection Sampling：LLM 生成完先做去重</span>
-        </div>
-        <div class="pp-insight-body">LLM 作为 mutation operator 有一个已知病：面对同一个 prompt 会反复输出结构非常相似的 patch，几千次采样里真正有信息量的可能不到十分之一。ShinkaEvolve 在 LLM 生成完 candidate 之后，先跑一次 embedding（默认 text-embedding-3-small）做相似度检查，与 archive 里已有代码过于接近的直接 reject，不进评测队列。评测才是最贵的一步（要跑真代码、真 benchmark），所以在评测前先做 novelty gate，直接把样本效率再拉高一档。这是把 evolutionary search 从「暴力采样」变成「有信息量采样」的关键改动。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">3</span>
-          <span>Bandit-based LLM Ensemble：让模型自己竞标下一次 mutation</span>
-        </div>
-        <div class="pp-insight-body">框架默认同时接入 gpt-5-mini、gemini-3-flash、gemini-3.1-pro、gpt-5.4 等多个模型，每一次 mutation 不是固定某一个模型，而是用 multi-armed bandit 根据历史上「谁提出的 patch 更容易被 select 进 archive」动态调权。便宜的小模型负责广撒网做 exploration，贵的旗舰模型只在 bandit 认为值得的时候才被调用。配合 max_api_costs 这个 USD 预算硬闸门，整个 run 的钱花在刀刃上。这也是它敢标榜 cost-efficient、democratize open-ended discovery 的底气。</div>
-      </div>
-      
-    </div>
-
-    
-    <div class="pp-h3">最精彩的一句</div>
-    <div class="pp-quote">
+<div class="pp-relation">
+<div class="pp-relation-h">跟这个 Demo 的关系</div>
+<div class="pp-relation-body">你的 8 章 talk 讲的是 harness self-evolution——让 harness 自己迭代自己。Meta-Harness 就是这个思路的学术定型版：它把 harness 提升为一等公民的优化对象，把 coding agent 作为唯一的 proposer，把文件系统作为无损的记忆通道。你 demo 里那些自我改写的 pattern，在论文里对应到 Algorithm 1 的三行伪代码。特别值得对齐的是：论文用的 proposer 就是 Claude Code + Opus 4.6，跟你现场跑的栈基本一致。看完你的 demo 再看这篇，会觉得学术界只是给你的工程直觉盖了个章。</div>
+</div>
+<div class="pp-takeaway">harness 不再靠手调——把 trace 完整摊在文件系统上，让 coding agent 自己去 grep 历史，就是新一代 auto-ML。</div>
+</section>
+<section class="pp-paper" id="shinka">
+<div class="pp-p-head">
+<span class="pp-p-num">P4</span>
+<span class="pp-p-id"><a href="https://arxiv.org/abs/2509.19349" rel="noopener" target="_blank">arXiv:2509.19349 ↗</a></span>
+<span class="pp-p-date">2025-09-17</span>
+</div>
+<div class="pp-p-titles">
+<h2>ShinkaEvolve：走向开放式与样本高效的程序进化</h2>
+<div class="pp-p-title-en">ShinkaEvolve: Towards Open-Ended And Sample-Efficient Program Evolution</div>
+<div class="pp-p-authors">Robert Tjarko Lange, Yuki Imajuku, Edoardo Cetin (Sakana AI)</div>
+</div>
+<div class="pp-one-liner">全球唯一开源、开箱即用的 LLM 程序进化框架（Shinka = 日语「進化」）</div>
+<div class="pp-why">这是今天 harness self-evolution demo 背后直接跑的引擎，也是当前唯一一个真正 pip install 就能用的 code-evolution 框架。它把 AlphaEvolve 那类闭源、动辄几千 samples 才收敛的重工具，压到 150 samples 就能刷出 circle packing 的 SOTA。作者 Robert Lange 同时也是 Darwin Gödel Machine（DGM）的一作，ShinkaEvolve 基本可以理解为 DGM 的产品化落地版本，同一批人把研究原型做成了工程框架。出品方是 Sakana AI —— 东京，Transformer 论文作者 Llion Jones 创办的实验室。</div>
+<div class="pp-h3">3 个核心洞见</div>
+<div class="pp-insights">
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">1</span>
+<span>Parent Sampling：不是纯精英，而是 explore/exploit 平衡</span>
+</div>
+<div class="pp-insight-body">传统 evolutionary code search 要么每一代只从最优个体 mutate（陷入局部最优），要么均匀采样（浪费预算）。ShinkaEvolve 把 population 组织成多个 island，每个 island 内部提供 weighted、power_law、beam_search 三种 parent selection 策略，再加上 island 之间的 migration 和 dynamic island spawning。archive 侧则用 elite_selection_ratio 0.3、crowding-based replacement 保持种群多样性。核心思想是：让每一步 mutation 有一定概率去啃「次优但潜力大」的分支，避免整个搜索坍缩到当前 leader 附近。这是 150 samples 就能出 SOTA 的第一根支柱。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">2</span>
+<span>Code Novelty Rejection Sampling：LLM 生成完先做去重</span>
+</div>
+<div class="pp-insight-body">LLM 作为 mutation operator 有一个已知病：面对同一个 prompt 会反复输出结构非常相似的 patch，几千次采样里真正有信息量的可能不到十分之一。ShinkaEvolve 在 LLM 生成完 candidate 之后，先跑一次 embedding（默认 text-embedding-3-small）做相似度检查，与 archive 里已有代码过于接近的直接 reject，不进评测队列。评测才是最贵的一步（要跑真代码、真 benchmark），所以在评测前先做 novelty gate，直接把样本效率再拉高一档。这是把 evolutionary search 从「暴力采样」变成「有信息量采样」的关键改动。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">3</span>
+<span>Bandit-based LLM Ensemble：让模型自己竞标下一次 mutation</span>
+</div>
+<div class="pp-insight-body">框架默认同时接入 gpt-5-mini、gemini-3-flash、gemini-3.1-pro、gpt-5.4 等多个模型，每一次 mutation 不是固定某一个模型，而是用 multi-armed bandit 根据历史上「谁提出的 patch 更容易被 select 进 archive」动态调权。便宜的小模型负责广撒网做 exploration，贵的旗舰模型只在 bandit 认为值得的时候才被调用。配合 max_api_costs 这个 USD 预算硬闸门，整个 run 的钱花在刀刃上。这也是它敢标榜 cost-efficient、democratize open-ended discovery 的底气。</div>
+</div>
+</div>
+<div class="pp-h3">最精彩的一句</div>
+<div class="pp-quote">
       ShinkaEvolve discovers a new state-of-the-art circle packing solution using only 150 samples. （ShinkaEvolve 仅用 150 个样本就发现了 circle packing 问题的新 SOTA 解。）
       
     </div>
-    
-
-    <div class="pp-relation">
-      <div class="pp-relation-h">跟这个 Demo 的关系</div>
-      <div class="pp-relation-body">今天 demo 直接跑的就是这个框架。我们做了三处 monkey-patch 让它兼容 Bedrock 上的 Claude Opus 4.7 / 4.8：一是把它内置的 OpenAI / Gemini client 换成 Bedrock client，二是把 pricing lookup 从 models.dev 改成本地表（Opus 不在 models.dev 里），三是把 headless CLI 那条路径关掉。剩下的 aggregate_fn 契约（combined_score + public + private + text_feedback）原封不动 —— 这个契约刚好给我们塞进「三档评测」的空间：快评、中评、终评分别写在 aggregate_fn 里。</div>
-    </div>
-
-    <div class="pp-takeaway">如果你今天想跑 code evolution，不用再自己造轮子 —— pip install shinka-evolve，把 aggregate_fn 写清楚，剩下的 sample efficiency 它已经替你想好了。</div>
-  </section>
-  
-  <section class="pp-paper" id="shinka-code">
-    <div class="pp-p-head">
-      <span class="pp-p-num">P5</span>
-      <span class="pp-p-id"><a href="https://github.com/SakanaAI/ShinkaEvolve" target="_blank" rel="noopener">GitHub · SakanaAI/ShinkaEvolve@v0.0.7 ↗</a></span>
-      <span class="pp-p-date">v0.0.7 · 最新 commit 2026-08</span>
-    </div>
-
-    <div class="pp-p-titles">
-      <h2>ShinkaEvolve 源码走读 · 从 API 到 hook 点</h2>
-      <div class="pp-p-title-en">ShinkaEvolve · Source Code Walkthrough</div>
-      <div class="pp-p-authors">1,398 stars · 280 forks · Apache 2.0</div>
-    </div>
-
-    <div class="pp-one-liner">所有 hook 点都是模块级函数或 dataclass 字段，monkey-patch 比 fork 更省事</div>
-
-    <div class="pp-why">读完论文你知道它「能干什么」，但真正让 ShinkaEvolve 好用的其实是它的边界设计：LLM provider 是一个模块级 query_* 函数、pricing 是一张 CSV、评测契约是一个 metrics dict。这三条边界让整个框架既能被替换成 Bedrock，也能被塞进任何自定义任务，而不需要 fork。这份走读带你从 shinka/ 目录出发，一路走到 aggregate_fn 契约和 monkey-patch 三处的具体行号，让你有信心去改造它。</div>
-
-    <div class="pp-h3">3 个核心洞见</div>
-    <div class="pp-insights">
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">1</span>
-          <span>1 · 目录结构一览 · shinka/core、llm、database、edit、launch、pricing 各做什么</span>
-        </div>
-        <div class="pp-insight-body">顶层 shinka/ 只有 8 个真正在跑的子模块。`shinka/core/` 是进化主循环（async_runner.py 6254 行 + config.py 中的 EvolutionConfig + wrap_eval.py 中的 run_shinka_eval + novelty_judge.py + sampler.py）。`shinka/database/` 是 SQLite 支撑的 archive/island 存储（dbase.py 中的 DatabaseConfig + Program dataclass + parents.py 中的 5 种 ParentSamplingStrategy）。`shinka/llm/` 是 provider 无关的调度层（llm.py 里 LLMClient / AsyncLLMClient + kwargs.py 里 sample_model_kwargs + prioritization.py 里的 bandit）。`shinka/llm/providers/` 是每个云厂商一个文件（anthropic.py / openai.py / gemini.py / deepseek.py / local_openai.py / headless.py）加一张 pricing.csv。`shinka/edit/` 处理 LLM 输出的 patch 落地（apply_diff.py 搜索替换、apply_full.py 全文件覆盖、marker_validation.py 检查 EVOLVE-BLOCK-START/END 标记）。`shinka/launch/` 只是 subprocess 包装（LocalJobConfig / SlurmJobConfig / JobScheduler），把 evaluate.py 当成子进程来跑。`shinka/pricing/` 是运行时价目表 catalog，从 CSV + models.dev API 合并加载。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">2</span>
-          <span>2 · 进化主循环 · ShinkaEvolveRunner.run() → _run_async() 的三条并发任务</span>
-        </div>
-        <div class="pp-insight-body">入口是 `shinka/core/async_runner.py:1002 def run(self)`，同步包装器直接调用 `run_async()`（1017 行）→ `_run_async()`（1024 行）。真正的主循环不是 for 循环，而是 asyncio.gather 三条协程：`_job_monitor_task`（2037 行，监视 evaluate.py 子进程完成情况）、`_proposal_coordinator_task`（2417 行，根据 pipeline_target 和 max_evaluation_jobs 决定是否再拉一个 patch）、`_meta_summarizer_task`（可选，每 meta_rec_interval 代跑一次总结）。每次 propose 走 `_generate_evolved_proposal`（2702 行）：先从 database 里 `sample_parent()`（parents.py:89 抽象方法），再调 `PromptSampler.sample()`（core/sampler.py:77）拼 prompt，再走 `LLMClient.query()`（llm/llm.py:288）拿 patch，再调 `apply_patch_async`（edit/async_apply.py:67）把 patch 落到文件系统，最后 `JobScheduler.submit_async`（launch/scheduler.py:288）用 subprocess 跑 evaluate.py。所有事件都进 SQLite（database/dbase.py:434 建表 SQL）。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">3</span>
-          <span>3 · aggregate_fn 契约 · combined_score / public / private / text_feedback / extra_data 的消费位置</span>
-        </div>
-        <div class="pp-insight-body">契约的服务端在 `shinka/core/wrap_eval.py:106 run_shinka_eval`（evaluate.py 里通常直接调它）。你的 `aggregate_metrics_fn` 会被 391 行调用，返回值必须是一个 dict，里面看得见的键在 `async_runner.py:1631` 被解构：`combined_score` 是排序主键、`public` 是 LLM 反馈时会看到的指标、`private` 是留给 leaderboard 但不喂给 LLM 的 hold-out、`text_feedback` 是自然语言反馈（受 `evo_config.use_text_feedback` 开关控制）、`extra_data` 会被 pop 出来 pickle 存盘（wrap_eval.py:462）用来画图。Program 数据类（database/dbase.py:148）持有这四个字段作为一等公民，并被写入 SQLite `programs` 表（dbase.py:434 建表 DDL 里就有 public_metrics / private_metrics 两列）。`combined_score` 是 NaN/Inf 会被判为不 correct（wrap_eval.py:432）。archive 的排序权重在 `default_archive_criteria`（defaults.py:49）里就是 `{&#39;combined_score&#39;: 1.0}`。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">4</span>
-          <span>4 · 父代 sampling &amp; Novelty rejection · 都是 dataclass 字段可直接改</span>
-        </div>
-        <div class="pp-insight-body">岛屿 / archive / 父代策略全部在 `shinka/database/dbase.py:52 DatabaseConfig` 里作为 dataclass 字段直接暴露：`num_islands`（55）、`archive_size`（56）、`elite_selection_ratio`（62）、`migration_interval / migration_rate / island_elitism`（67-69）、`enable_dynamic_islands / stagnation_threshold`（76-77）、`parent_selection_strategy = weighted / power_law / beam_search`（84）、`exploitation_alpha / exploitation_ratio`（89-90）、`archive_selection_strategy = fitness / crowding`（99）。这些不需要子类化，构造 DatabaseConfig 时直接传。父代策略实现全在 `shinka/database/parents.py`：PowerLawSamplingStrategy（102）、WeightedSamplingStrategy（237）、BeamSearchSamplingStrategy（436）、BestOfNSamplingStrategy（534）、SequentialSamplingStrategy（601），由 `CombinedParentSelector`（669）统一分发。Novelty rejection 在 `shinka/core/novelty_judge.py:60 assess_novelty_with_rejection_sampling`：先看 embedding 余弦相似（第 89 行 `database.compute_similarity`），阈值超过 `code_embed_sim_threshold`（config.py:59，默认 0.99）就 reject；如果同时配了 novelty LLM，会再做一轮 LLM 判定（第 122 行），最多重试 `max_novelty_attempts` 次（config.py:58，默认 3）。所有 reject 决策发生在 evaluate 之前，评测的钱不白花。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">5</span>
-          <span>5 · LLM providers · Bedrock 就是伪装的 Anthropic，且共享同一个 query_anthropic</span>
-        </div>
-        <div class="pp-insight-body">`shinka/llm/providers/anthropic.py` 只有 212 行，一个模块级 `query_anthropic`（85）和一个 `query_anthropic_async`（157），两个函数几乎一模一样，只差 await。第 108 行直接调 `client.messages.create(...)` —— client 是从上层传下来的，可以是 `anthropic.Anthropic`、`anthropic.AnthropicBedrock`、`anthropic.AsyncAnthropic`、`anthropic.AsyncAnthropicBedrock` 中的任意一个（provider 分发在 `shinka/llm/client.py:123-146` 的 `_sync_constructors / _async_constructors` 字典）。Bedrock 的 client 构造在 client.py:196 `_constructor_configuration`，只认几个固定的环境变量里的 AWS 凭证 —— 但 IAM instance profile（boto3 默认链）不在这个白名单里，所以 EC2 上必须绕过预检查（这就是我们 demo 第一处 monkey-patch 的原因）。`NO_TEMPERATURE_MODELS` 在 `shinka/llm/kwargs.py:25`，是一个模块级 set，第 128 行 `sample_model_kwargs` 会检查 api_model_name 是否在里面，命中就不写 `temperature` 字段 —— 这也是模块级 set，可以在导入后直接 `.update({...})` 加自定义 model id。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">6</span>
-          <span>6 · pricing.csv 为什么是 CSV 而不是硬编码</span>
-        </div>
-        <div class="pp-insight-body">`shinka/llm/providers/pricing.csv` 只有 76 行，每一行是 `model_name,provider,input_price,output_price,input_price_tier2,output_price_tier2,tier_threshold,is_reasoning,think_temp_fixed,requires_reasoning`。加载路径是 `shinka/pricing/normalization.py:284 _load_llm_csv`：用 stdlib `csv.DictReader` 读一次，每行转成一个 `ModelPrice` frozen dataclass（catalog.py:47），然后合入 catalog（catalog.py:82 PricingCatalog 索引）。之所以是 CSV 而不是 Python 常量：因为它同时是 fallback 也是可以在运行时 append 追加的。运行时 catalog 优先尝试从 models.dev API 拉最新价目（catalog.py:23 MODELS_DEV_URL、268 `_refresh_online`），失败就落回这张 CSV（normalization.py:37 include_bundled=True）。也就是说，如果你的模型（比如 Opus 4.7 尚未在 models.dev 收录）价格找不到，往这张 CSV append 一行就能救活整个 cost tracking，不需要改 Python 代码。查询 API 是 `shinka/llm/providers/pricing.py:37 model_exists` / 27 `calculate_cost`，后者被 `anthropic.py:28 get_anthropic_costs` 调用；如果查不到就 warning + fallback 到 0，不会阻断已经完成的生成（anthropic.py:29-33 注释里明说了）。</div>
-      </div>
-      
-    </div>
-
-    
-    <div class="pp-h3">最精彩的一句</div>
-    <div class="pp-quote">
+<div class="pp-relation">
+<div class="pp-relation-h">跟这个 Demo 的关系</div>
+<div class="pp-relation-body">今天 demo 直接跑的就是这个框架。我们做了三处 monkey-patch 让它兼容 Bedrock 上的 Claude Opus 4.7 / 4.8：一是把它内置的 OpenAI / Gemini client 换成 Bedrock client，二是把 pricing lookup 从 models.dev 改成本地表（Opus 不在 models.dev 里），三是把 headless CLI 那条路径关掉。剩下的 aggregate_fn 契约（combined_score + public + private + text_feedback）原封不动 —— 这个契约刚好给我们塞进「三档评测」的空间：快评、中评、终评分别写在 aggregate_fn 里。</div>
+</div>
+<div class="pp-takeaway">如果你今天想跑 code evolution，不用再自己造轮子 —— pip install shinka-evolve，把 aggregate_fn 写清楚，剩下的 sample efficiency 它已经替你想好了。</div>
+</section>
+<section class="pp-paper" id="shinka-code">
+<div class="pp-p-head">
+<span class="pp-p-num">P5</span>
+<span class="pp-p-id"><a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" target="_blank">GitHub · SakanaAI/ShinkaEvolve@v0.0.7 ↗</a></span>
+<span class="pp-p-date">v0.0.7 · 最新 commit 2026-08</span>
+</div>
+<div class="pp-p-titles">
+<h2>ShinkaEvolve 源码走读 · 从 API 到 hook 点</h2>
+<div class="pp-p-title-en">ShinkaEvolve · Source Code Walkthrough</div>
+<div class="pp-p-authors">1,398 stars · 280 forks · Apache 2.0</div>
+</div>
+<div class="pp-one-liner">所有 hook 点都是模块级函数或 dataclass 字段，monkey-patch 比 fork 更省事</div>
+<div class="pp-why">读完论文你知道它「能干什么」，但真正让 ShinkaEvolve 好用的其实是它的边界设计：LLM provider 是一个模块级 query_* 函数、pricing 是一张 CSV、评测契约是一个 metrics dict。这三条边界让整个框架既能被替换成 Bedrock，也能被塞进任何自定义任务，而不需要 fork。这份走读带你从 shinka/ 目录出发，一路走到 aggregate_fn 契约和 monkey-patch 三处的具体行号，让你有信心去改造它。</div>
+<div class="pp-h3">3 个核心洞见</div>
+<div class="pp-insights">
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">1</span>
+<span>1 · 目录结构一览 · shinka/core、llm、database、edit、launch、pricing 各做什么</span>
+</div>
+<div class="pp-insight-body">顶层 shinka/ 只有 8 个真正在跑的子模块。`shinka/core/` 是进化主循环（async_runner.py 6254 行 + config.py 中的 EvolutionConfig + wrap_eval.py 中的 run_shinka_eval + novelty_judge.py + sampler.py）。`shinka/database/` 是 SQLite 支撑的 archive/island 存储（dbase.py 中的 DatabaseConfig + Program dataclass + parents.py 中的 5 种 ParentSamplingStrategy）。`shinka/llm/` 是 provider 无关的调度层（llm.py 里 LLMClient / AsyncLLMClient + kwargs.py 里 sample_model_kwargs + prioritization.py 里的 bandit）。`shinka/llm/providers/` 是每个云厂商一个文件（anthropic.py / openai.py / gemini.py / deepseek.py / local_openai.py / headless.py）加一张 pricing.csv。`shinka/edit/` 处理 LLM 输出的 patch 落地（apply_diff.py 搜索替换、apply_full.py 全文件覆盖、marker_validation.py 检查 EVOLVE-BLOCK-START/END 标记）。`shinka/launch/` 只是 subprocess 包装（LocalJobConfig / SlurmJobConfig / JobScheduler），把 evaluate.py 当成子进程来跑。`shinka/pricing/` 是运行时价目表 catalog，从 CSV + models.dev API 合并加载。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">2</span>
+<span>2 · 进化主循环 · ShinkaEvolveRunner.run() → _run_async() 的三条并发任务</span>
+</div>
+<div class="pp-insight-body">入口是 `shinka/core/async_runner.py:1002 def run(self)`，同步包装器直接调用 `run_async()`（1017 行）→ `_run_async()`（1024 行）。真正的主循环不是 for 循环，而是 asyncio.gather 三条协程：`_job_monitor_task`（2037 行，监视 evaluate.py 子进程完成情况）、`_proposal_coordinator_task`（2417 行，根据 pipeline_target 和 max_evaluation_jobs 决定是否再拉一个 patch）、`_meta_summarizer_task`（可选，每 meta_rec_interval 代跑一次总结）。每次 propose 走 `_generate_evolved_proposal`（2702 行）：先从 database 里 `sample_parent()`（parents.py:89 抽象方法），再调 `PromptSampler.sample()`（core/sampler.py:77）拼 prompt，再走 `LLMClient.query()`（llm/llm.py:288）拿 patch，再调 `apply_patch_async`（edit/async_apply.py:67）把 patch 落到文件系统，最后 `JobScheduler.submit_async`（launch/scheduler.py:288）用 subprocess 跑 evaluate.py。所有事件都进 SQLite（database/dbase.py:434 建表 SQL）。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">3</span>
+<span>3 · aggregate_fn 契约 · combined_score / public / private / text_feedback / extra_data 的消费位置</span>
+</div>
+<div class="pp-insight-body">契约的服务端在 `shinka/core/wrap_eval.py:106 run_shinka_eval`（evaluate.py 里通常直接调它）。你的 `aggregate_metrics_fn` 会被 391 行调用，返回值必须是一个 dict，里面看得见的键在 `async_runner.py:1631` 被解构：`combined_score` 是排序主键、`public` 是 LLM 反馈时会看到的指标、`private` 是留给 leaderboard 但不喂给 LLM 的 hold-out、`text_feedback` 是自然语言反馈（受 `evo_config.use_text_feedback` 开关控制）、`extra_data` 会被 pop 出来 pickle 存盘（wrap_eval.py:462）用来画图。Program 数据类（database/dbase.py:148）持有这四个字段作为一等公民，并被写入 SQLite `programs` 表（dbase.py:434 建表 DDL 里就有 public_metrics / private_metrics 两列）。`combined_score` 是 NaN/Inf 会被判为不 correct（wrap_eval.py:432）。archive 的排序权重在 `default_archive_criteria`（defaults.py:49）里就是 `{'combined_score': 1.0}`。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">4</span>
+<span>4 · 父代 sampling &amp; Novelty rejection · 都是 dataclass 字段可直接改</span>
+</div>
+<div class="pp-insight-body">岛屿 / archive / 父代策略全部在 `shinka/database/dbase.py:52 DatabaseConfig` 里作为 dataclass 字段直接暴露：`num_islands`（55）、`archive_size`（56）、`elite_selection_ratio`（62）、`migration_interval / migration_rate / island_elitism`（67-69）、`enable_dynamic_islands / stagnation_threshold`（76-77）、`parent_selection_strategy = weighted / power_law / beam_search`（84）、`exploitation_alpha / exploitation_ratio`（89-90）、`archive_selection_strategy = fitness / crowding`（99）。这些不需要子类化，构造 DatabaseConfig 时直接传。父代策略实现全在 `shinka/database/parents.py`：PowerLawSamplingStrategy（102）、WeightedSamplingStrategy（237）、BeamSearchSamplingStrategy（436）、BestOfNSamplingStrategy（534）、SequentialSamplingStrategy（601），由 `CombinedParentSelector`（669）统一分发。Novelty rejection 在 `shinka/core/novelty_judge.py:60 assess_novelty_with_rejection_sampling`：先看 embedding 余弦相似（第 89 行 `database.compute_similarity`），阈值超过 `code_embed_sim_threshold`（config.py:59，默认 0.99）就 reject；如果同时配了 novelty LLM，会再做一轮 LLM 判定（第 122 行），最多重试 `max_novelty_attempts` 次（config.py:58，默认 3）。所有 reject 决策发生在 evaluate 之前，评测的钱不白花。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">5</span>
+<span>5 · LLM providers · Bedrock 就是伪装的 Anthropic，且共享同一个 query_anthropic</span>
+</div>
+<div class="pp-insight-body">`shinka/llm/providers/anthropic.py` 只有 212 行，一个模块级 `query_anthropic`（85）和一个 `query_anthropic_async`（157），两个函数几乎一模一样，只差 await。第 108 行直接调 `client.messages.create(...)` —— client 是从上层传下来的，可以是 `anthropic.Anthropic`、`anthropic.AnthropicBedrock`、`anthropic.AsyncAnthropic`、`anthropic.AsyncAnthropicBedrock` 中的任意一个（provider 分发在 `shinka/llm/client.py:123-146` 的 `_sync_constructors / _async_constructors` 字典）。Bedrock 的 client 构造在 client.py:196 `_constructor_configuration`，只认几个固定的环境变量里的 AWS 凭证 —— 但 IAM instance profile（boto3 默认链）不在这个白名单里，所以 EC2 上必须绕过预检查（这就是我们 demo 第一处 monkey-patch 的原因）。`NO_TEMPERATURE_MODELS` 在 `shinka/llm/kwargs.py:25`，是一个模块级 set，第 128 行 `sample_model_kwargs` 会检查 api_model_name 是否在里面，命中就不写 `temperature` 字段 —— 这也是模块级 set，可以在导入后直接 `.update({...})` 加自定义 model id。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">6</span>
+<span>6 · pricing.csv 为什么是 CSV 而不是硬编码</span>
+</div>
+<div class="pp-insight-body">`shinka/llm/providers/pricing.csv` 只有 76 行，每一行是 `model_name,provider,input_price,output_price,input_price_tier2,output_price_tier2,tier_threshold,is_reasoning,think_temp_fixed,requires_reasoning`。加载路径是 `shinka/pricing/normalization.py:284 _load_llm_csv`：用 stdlib `csv.DictReader` 读一次，每行转成一个 `ModelPrice` frozen dataclass（catalog.py:47），然后合入 catalog（catalog.py:82 PricingCatalog 索引）。之所以是 CSV 而不是 Python 常量：因为它同时是 fallback 也是可以在运行时 append 追加的。运行时 catalog 优先尝试从 models.dev API 拉最新价目（catalog.py:23 MODELS_DEV_URL、268 `_refresh_online`），失败就落回这张 CSV（normalization.py:37 include_bundled=True）。也就是说，如果你的模型（比如 Opus 4.7 尚未在 models.dev 收录）价格找不到，往这张 CSV append 一行就能救活整个 cost tracking，不需要改 Python 代码。查询 API 是 `shinka/llm/providers/pricing.py:37 model_exists` / 27 `calculate_cost`，后者被 `anthropic.py:28 get_anthropic_costs` 调用；如果查不到就 warning + fallback 到 0，不会阻断已经完成的生成（anthropic.py:29-33 注释里明说了）。</div>
+</div>
+</div>
+<div class="pp-h3">最精彩的一句</div>
+<div class="pp-quote">
       Fall back to a zero cost (with a warning) on an unknown model instead of raising, mirroring openai/local so a pricing-catalog miss never aborts a completed generation. 
       
       <div class="pp-quote-cn">遇到 pricing catalog 里查不到的 model，宁可 warning + 0 成本，也不能让一次已经完成的生成因为查价失败而作废（shinka/llm/providers/anthropic.py:24-33）。</div>
-      
-    </div>
-    
-
-    <div class="pp-relation">
-      <div class="pp-relation-h">跟这个 Demo 的关系</div>
-      <div class="pp-relation-body">demo 里 `evolution/run_evo.py` 顶部三处 monkey-patch 精准打在 (1) `shinka.model_availability._model_env_access_issues`（放行 Bedrock IAM 认证，绕开 client.py:196 那圈 env 变量检查）、(2) `shinka.llm.kwargs.NO_TEMPERATURE_MODELS`（往 kwargs.py:25 那个模块级 set 里 .update 加上我们的 Bedrock inference profile id）、(3) `shinka.llm.providers.anthropic.query_anthropic / query_anthropic_async`（把 kwargs.py:181-192 生成的旧版 `thinking={type: enabled, budget_tokens: N}` 在调用前重写成 Opus 4.7+ 的 `thinking={type: adaptive}` + `extra_body.output_config.effort`）。`evaluate.py` 返回的 dict 里 `combined_score / public / private / text_feedback` 直接对应 `async_runner.py:1631` 那四行解构，其中 `public` 塞的是 tier E/M/H 的可见指标（会喂给下一代 LLM 看），`private` 塞的是 hold-out 分数（只写进 SQLite，不进 prompt）。</div>
-    </div>
-
-    <div class="pp-takeaway">整个框架的可扩展点几乎都是模块级函数或 dataclass 字段 —— 不用 fork，import 之后 monkey-patch 或者构造时传参就能改，这就是它作为工程框架比同类研究原型好用的根本原因。</div>
-  </section>
-  
-  <section class="pp-paper" id="bright">
-    <div class="pp-p-head">
-      <span class="pp-p-num">P6</span>
-      <span class="pp-p-id"><a href="https://arxiv.org/abs/2407.12883" target="_blank" rel="noopener">arXiv:2407.12883 ↗</a></span>
-      <span class="pp-p-date">2024-07</span>
-    </div>
-
-    <div class="pp-p-titles">
-      <h2>BRIGHT：面向推理密集型检索的真实且困难基准</h2>
-      <div class="pp-p-title-en">BRIGHT: A Realistic and Challenging Benchmark for Reasoning-Intensive Retrieval</div>
-      <div class="pp-p-authors">Hongjin Su, Howard Yen 等 15 人（HKU + Princeton + UW + CMU + Google DeepMind）</div>
-    </div>
-
-    <div class="pp-one-liner">把 retrieval 从「找关键词」升级到「靠推理」——顶级 embedder 集体崩盘</div>
-
-    <div class="pp-why">过去十年的检索评测（BEIR、MTEB）几乎全是 information-seeking：query 和文档字面上有大量重合，BM25 已经能打到 50 分以上。BRIGHT 把 SFR-Embedding-Mistral 这种 MTEB 榜首模型直接从 59.0 nDCG@10 拉到 18.3，掉了整整 40 分。这不是模型不够大，而是任务本身变了——query 里根本没有答案文档的关键词，必须先做一步 reasoning 才能连起来。这条 benchmark 一发布，reasoning-heavy retrieval 就成了 IR 领域最新的公开难题，GPT-4 加 BM25 都做不好。</div>
-
-    <div class="pp-h3">3 个核心洞见</div>
-    <div class="pp-insights">
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">1</span>
-          <span>洞见 1 · 什么叫 reasoning-intensive query</span>
-        </div>
-        <div class="pp-insight-body">举个论文里的例子：一个经济学家问「有没有另一个故事，跟这个故事背后是同一个经济学原理？」——query 里没有任何关键词能告诉你目标文档在讲哪条定理；你必须先推断出「哦这是 moral hazard」，再去找另一个 moral hazard 的案例。再比如程序员拿一条 error message 去搜对应的 syntax 文档，报错信息和文档正文几乎零字面重合。BRIGHT 把这类 query 系统化地做成了 1,384 道题，覆盖 Biology、Economics、Psychology、Robotics、Earth Science、Stack Overflow、Sustainable Living 七个 StackExchange 子版，加上 LeetCode 和数学 Olympiad。共同特征：query 和 gold document 之间需要一次 domain reasoning 才能连起来。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">2</span>
-          <span>洞见 2 · 顶级 embedder 大幅掉分 59.0 → 18.3</span>
-        </div>
-        <div class="pp-insight-body">SFR-Embedding-Mistral 在 MTEB 上 nDCG@10 = 59.0，在 BRIGHT 上只有 18.3。BM25 baseline 14.3，最强 dense model 不做增强也只到 24.3——比 MTEB 上的成绩差了三分之二。更打脸的是：给 query 加一段 GPT-4 生成的 chain-of-thought 推理再丢给 BM25，BM25 反而反超所有神经检索器登顶榜单，涨幅高达 +12.2 nDCG@10。作者的解释是：dense embedder 在短 information-seeking query 上过拟合，遇到 out-of-distribution 的长推理型 query 反而不如朴素 BM25 灵活。这告诉大家：目前 embedding 模型学到的「语义」很大程度上还是浅层字面语义。</div>
-      </div>
-      
-      <div class="pp-insight">
-        <div class="pp-insight-h">
-          <span class="pp-insight-num">3</span>
-          <span>洞见 3 · 造这类题目的方法（Google-mined hard negatives + PhD 双审）</span>
-        </div>
-        <div class="pp-insight-body">标注流程精心设计：先从 StackExchange 选带 accepted answer 或 &gt;5 votes 且回答里含 URL 的高质量 post，把 URL 指向的网页切成 passage 作为 gold positive。关键在 hard negative——**annotator 用 Google 搜 post 标题或 LLM 抽出的关键词，从结果里挑出「话题上很像但其实回答不了这个问题」的页面**，每道题最多收 5 个 Google-mined 硬负例，切成若干负例 passage。整个流程先由一位 CS 学生初标，再由两位领域 PhD 独立验证，只有两位专家一致同意才保留。这个「Google 造硬负例」的思路很值得借鉴：机器再强，也很难自动生成「主题贴脸但不解题」的干扰项，只有真人配搜索引擎能做出来。</div>
-      </div>
-      
-    </div>
-
-    
-    <div class="pp-h3">最精彩的一句</div>
-    <div class="pp-quote">
+</div>
+<div class="pp-relation">
+<div class="pp-relation-h">跟这个 Demo 的关系</div>
+<div class="pp-relation-body">demo 里 `evolution/run_evo.py` 顶部三处 monkey-patch 精准打在 (1) `shinka.model_availability._model_env_access_issues`（放行 Bedrock IAM 认证，绕开 client.py:196 那圈 env 变量检查）、(2) `shinka.llm.kwargs.NO_TEMPERATURE_MODELS`（往 kwargs.py:25 那个模块级 set 里 .update 加上我们的 Bedrock inference profile id）、(3) `shinka.llm.providers.anthropic.query_anthropic / query_anthropic_async`（把 kwargs.py:181-192 生成的旧版 `thinking={type: enabled, budget_tokens: N}` 在调用前重写成 Opus 4.7+ 的 `thinking={type: adaptive}` + `extra_body.output_config.effort`）。`evaluate.py` 返回的 dict 里 `combined_score / public / private / text_feedback` 直接对应 `async_runner.py:1631` 那四行解构，其中 `public` 塞的是 tier E/M/H 的可见指标（会喂给下一代 LLM 看），`private` 塞的是 hold-out 分数（只写进 SQLite，不进 prompt）。</div>
+</div>
+<div class="pp-takeaway">整个框架的可扩展点几乎都是模块级函数或 dataclass 字段 —— 不用 fork，import 之后 monkey-patch 或者构造时传参就能改，这就是它作为工程框架比同类研究原型好用的根本原因。</div>
+</section>
+<section class="pp-paper" id="bright">
+<div class="pp-p-head">
+<span class="pp-p-num">P6</span>
+<span class="pp-p-id"><a href="https://arxiv.org/abs/2407.12883" rel="noopener" target="_blank">arXiv:2407.12883 ↗</a></span>
+<span class="pp-p-date">2024-07</span>
+</div>
+<div class="pp-p-titles">
+<h2>BRIGHT：面向推理密集型检索的真实且困难基准</h2>
+<div class="pp-p-title-en">BRIGHT: A Realistic and Challenging Benchmark for Reasoning-Intensive Retrieval</div>
+<div class="pp-p-authors">Hongjin Su, Howard Yen 等 15 人（HKU + Princeton + UW + CMU + Google DeepMind）</div>
+</div>
+<div class="pp-one-liner">把 retrieval 从「找关键词」升级到「靠推理」——顶级 embedder 集体崩盘</div>
+<div class="pp-why">过去十年的检索评测（BEIR、MTEB）几乎全是 information-seeking：query 和文档字面上有大量重合，BM25 已经能打到 50 分以上。BRIGHT 把 SFR-Embedding-Mistral 这种 MTEB 榜首模型直接从 59.0 nDCG@10 拉到 18.3，掉了整整 40 分。这不是模型不够大，而是任务本身变了——query 里根本没有答案文档的关键词，必须先做一步 reasoning 才能连起来。这条 benchmark 一发布，reasoning-heavy retrieval 就成了 IR 领域最新的公开难题，GPT-4 加 BM25 都做不好。</div>
+<div class="pp-h3">3 个核心洞见</div>
+<div class="pp-insights">
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">1</span>
+<span>洞见 1 · 什么叫 reasoning-intensive query</span>
+</div>
+<div class="pp-insight-body">举个论文里的例子：一个经济学家问「有没有另一个故事，跟这个故事背后是同一个经济学原理？」——query 里没有任何关键词能告诉你目标文档在讲哪条定理；你必须先推断出「哦这是 moral hazard」，再去找另一个 moral hazard 的案例。再比如程序员拿一条 error message 去搜对应的 syntax 文档，报错信息和文档正文几乎零字面重合。BRIGHT 把这类 query 系统化地做成了 1,384 道题，覆盖 Biology、Economics、Psychology、Robotics、Earth Science、Stack Overflow、Sustainable Living 七个 StackExchange 子版，加上 LeetCode 和数学 Olympiad。共同特征：query 和 gold document 之间需要一次 domain reasoning 才能连起来。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">2</span>
+<span>洞见 2 · 顶级 embedder 大幅掉分 59.0 → 18.3</span>
+</div>
+<div class="pp-insight-body">SFR-Embedding-Mistral 在 MTEB 上 nDCG@10 = 59.0，在 BRIGHT 上只有 18.3。BM25 baseline 14.3，最强 dense model 不做增强也只到 24.3——比 MTEB 上的成绩差了三分之二。更打脸的是：给 query 加一段 GPT-4 生成的 chain-of-thought 推理再丢给 BM25，BM25 反而反超所有神经检索器登顶榜单，涨幅高达 +12.2 nDCG@10。作者的解释是：dense embedder 在短 information-seeking query 上过拟合，遇到 out-of-distribution 的长推理型 query 反而不如朴素 BM25 灵活。这告诉大家：目前 embedding 模型学到的「语义」很大程度上还是浅层字面语义。</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">3</span>
+<span>洞见 3 · 造这类题目的方法（Google-mined hard negatives + PhD 双审）</span>
+</div>
+<div class="pp-insight-body">标注流程精心设计：先从 StackExchange 选带 accepted answer 或 &gt;5 votes 且回答里含 URL 的高质量 post，把 URL 指向的网页切成 passage 作为 gold positive。关键在 hard negative——**annotator 用 Google 搜 post 标题或 LLM 抽出的关键词，从结果里挑出「话题上很像但其实回答不了这个问题」的页面**，每道题最多收 5 个 Google-mined 硬负例，切成若干负例 passage。整个流程先由一位 CS 学生初标，再由两位领域 PhD 独立验证，只有两位专家一致同意才保留。这个「Google 造硬负例」的思路很值得借鉴：机器再强，也很难自动生成「主题贴脸但不解题」的干扰项，只有真人配搜索引擎能做出来。</div>
+</div>
+</div>
+<div class="pp-h3">最精彩的一句</div>
+<div class="pp-quote">
       The first text retrieval benchmark that requires intensive reasoning to retrieve relevant documents. 
       
       <div class="pp-quote-cn">首个需要密集推理才能检索到相关文档的文本检索基准。</div>
-      
-    </div>
-    
-
-    <div class="pp-relation">
-      <div class="pp-relation-h">跟这个 Demo 的关系</div>
-      <div class="pp-relation-body">Demo Tier H 那 4 道 functional-intent 题——「给要坐长途飞机的人的安静礼物 → 降噪耳机」「14 寸 MacBook 在飞机上充电 → USB-C 65W」——**灵感直接来自 BRIGHT 的 reasoning-intensive 设计**。query 里完全没有「headphones」「USB-C」这种关键词，用户说的是场景和功能诉求，需要一层推理才能落到具体商品。BRIGHT 已经证明这类题会把所有 BM25 变体和多数 embedder 打到 20 分以下，这正是我们 demo 想在电商检索场景里复现和攻克的核心难题。</div>
-    </div>
-
-    <div class="pp-takeaway">Retrieval 的下一场硬仗不是更大的 embedding，而是让检索器学会 reason——BRIGHT 把这道题摆到了台面上。</div>
-  </section>
-  
-  
-
-  <div class="pp-cta">
-    <h3>看完了？把方法论看一遍</h3>
-    <p>Talk 页面把这三篇论文串成 10 章故事 · Live Demo 让你亲自跑一次 ShinkaEvolve</p>
-    <a class="primary" href="../talk/">→ Talk 总览</a>
-    <a class="secondary" href="../run/">→ Live Demo</a>
-    <a class="secondary" href="../">← Intro</a>
-  </div>
-
+</div>
+<div class="pp-relation">
+<div class="pp-relation-h">跟这个 Demo 的关系</div>
+<div class="pp-relation-body">Demo Tier H 那 4 道 functional-intent 题——「给要坐长途飞机的人的安静礼物 → 降噪耳机」「14 寸 MacBook 在飞机上充电 → USB-C 65W」——**灵感直接来自 BRIGHT 的 reasoning-intensive 设计**。query 里完全没有「headphones」「USB-C」这种关键词，用户说的是场景和功能诉求，需要一层推理才能落到具体商品。BRIGHT 已经证明这类题会把所有 BM25 变体和多数 embedder 打到 20 分以下，这正是我们 demo 想在电商检索场景里复现和攻克的核心难题。</div>
+</div>
+<div class="pp-takeaway">Retrieval 的下一场硬仗不是更大的 embedding，而是让检索器学会 reason——BRIGHT 把这道题摆到了台面上。</div>
+</section>
+<div class="pp-cta">
+<h3>看完了？把方法论看一遍</h3>
+<p>Talk 页面把这三篇论文串成 10 章故事 · Live Demo 让你亲自跑一次 ShinkaEvolve</p>
+<a class="primary" href="../talk/">→ Talk 总览</a>
+<a class="secondary" href="../run/">→ Live Demo</a>
+<a class="secondary" href="../">← Intro</a>
+</div>
 </main>
-
 <script>
 (function() {
   // Fade-in on scroll
@@ -749,6 +641,5 @@
   }, { passive: true });
 })();
 </script>
-
-</body>
+<a data-cur="zh" data-to="en" href="../../../en/rsi/demo/papers/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>

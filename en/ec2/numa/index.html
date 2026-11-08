@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NUMA deep-dive guide: the hidden tax of large instances · liucao.me</title>
+<meta content="A complete guide to Non-Uniform Memory Access: physical origins, kernel semantics, five mempolicies, a real MySQL incident, and NUMA layouts on EC2" name="description"/>
+<link href="../../../ec2/assets/style.css" rel="stylesheet"/>
+<style>
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .fig { margin: 1.2rem 0 1.4rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .fig svg { display: block; width: 100%; height: auto; }
+        .fig figcaption { text-align: center; font-size: 0.8rem; color: var(--text-mute); margin-top: 0.6rem; }
+        .photo { position: relative; }
+        .photo img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
+        .pin { position: absolute; transform: translate(-50%, -50%); background: rgba(11,15,20,0.88); border: 1px solid var(--accent); color: var(--accent); font-size: 0.74rem; font-weight: 600; padding: 0.12rem 0.55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+        .pin.n1 { border-color: #60a5fa; color: #60a5fa; }
+        .fig figcaption a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .tldr { background: var(--surface); border: 1px solid var(--accent-dim); border-radius: var(--radius); padding: 1.1rem 1.3rem; margin: 0.4rem 0 2.2rem; }
+        .tldr .lead { color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; }
+        .tldr ol { color: var(--text-dim); padding-left: 1.2rem; }
+        .tldr li { margin-bottom: 0.3rem; }
+        .tldr b { color: var(--text); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.87rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        pre.ascii { line-height: 1.35; font-size: 0.78rem; }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">EC2</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hero">
+<div class="crumb"><a href="../">EC2</a> · Concept · applies to Intel / AMD / Graviton</div>
+<h1><span class="g">NUMA</span>: The hidden tax of large instance types</h1>
+<p class="sub">You rent a big 192-core machine, but benchmarks come in at only 60% of what you expected. The CPU graphs look normal, and memory isn't full. The problem often isn't "how much is used" but "where the data lives." This post starts from a real motherboard and works up to the kernel, databases, and Kubernetes.</p>
+<nav class="toc">
+<a href="#physics">1 · Physical origins</a>
+<a href="#name">2 · Why it's called NUMA</a>
+<a href="#inspect">3 · Look at the topology</a>
+<a href="#policy">4 · Where to put memory</a>
+<a href="#counters">5 · Counters</a>
+<a href="#autobalance">6 · Automatic migration</a>
+<a href="#casestudy">7 · Real MySQL incidents</a>
+<a href="#traps">8 · Common pitfalls</a>
+<a href="#ec2">9 · EC2 topology</a>
+<a href="#k8s">10 · K8s</a>
+<a href="#skip">11 · When to leave it alone</a>
+</nav>
+</div>
+<div class="tldr">
+<div class="lead">NUMA in three sentences</div>
+<ol>
+<li>A large server has several CPUs,<b>Each CPU manages its own set of memory</b>. A CPU plus its memory is called a NUMA node.</li>
+<li>Reading your own node's memory is fast; reading another node's memory<b>About twice as slow</b>.</li>
+<li>So on large machines, besides looking at "how much memory is used", you also need to look at<b>"Which node the memory is placed on"</b>. Small instances (single node) don't need to worry about this at all.</li>
+</ol>
+</div>
+<!-- 1 -->
+<section class="content-section" id="physics">
+<h2 class="section-title">1 · <span>Physical origins</span></h2>
+<p>Let's start with an analogy. A company rents two buildings, and each building has its own file room. Employees who need a file from their own building's file room just walk a few steps. To get a file from the other building, they have to cross the skybridge between the two. The route is longer, the skybridge is only so wide, and when it gets crowded they have to queue.</p>
+<p>This is exactly how memory is laid out in a server:</p>
+<ol>
+<li><b>Building = CPU socket</b>(a CPU socket holds one CPU; it can also be a CCD / tile within a chip, i.e. a group of cores inside the chip). Each socket has its own<b>Memory controller</b>(the circuitry that reads and writes the memory DIMMs).</li>
+<li><b>Records room = DIMM memory module</b>. Each DIMM connects to a specific memory controller, so it "belongs" to a particular socket.</li>
+<li><b>Corridor = interconnect between sockets</b>. Intel calls it UPI (formerly QPI), AMD calls it Infinity Fabric, and Arm Neoverse platforms use a CMN mesh (on-chip mesh network) plus inter-chip coherent links. Bandwidth is limited, and there's extra latency.</li>
+</ol>
+<p>A description alone isn't very intuitive, so let's look at a real dual-socket motherboard:</p>
+<figure class="fig">
+<div class="photo">
+<img alt="Intel S2600CP4 dual-socket server motherboard, with each of the two CPU heatsinks surrounded by 8 memory slots" height="993" loading="lazy" src="../../../ec2/numa/img/intel-s2600cp4.jpg" width="1100"/>
+<span class="pin" style="left:26%;top:64%">CPU (node 0)</span>
+<span class="pin" style="left:23%;top:41.5%">node 0's memory slots</span>
+<span class="pin" style="left:23%;top:85.5%">node 0's memory slots</span>
+<span class="pin n1" style="left:66%;top:69%">CPU (node 1)</span>
+<span class="pin n1" style="left:70%;top:48%">Memory slots on node 1</span>
+<span class="pin n1" style="left:69%;top:91.5%">Memory slots on node 1</span>
+</div>
+<figcaption>Figure 1: A real dual-socket server motherboard (Intel S2600CP4). Each of the two large heatsinks sits on a CPU, and each CPU has 4 memory slots above and 4 below; these 8 slots connect only to its own memory controller. The QPI interconnect between the two CPUs runs inside the board and isn't visible in the photo. Which CPU counts as node 0 is decided by the firmware; the labels here are only illustrative. Photo:<a href="https://commons.wikimedia.org/wiki/File:Intel_S2600CP4.jpg" rel="noopener" target="_blank">Phiarc / Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a>.</figcaption>
+</figure>
+<p>In the photo you can see the "buildings" and the "archive rooms," but not the "skybridges." Drawn as a diagram, it looks like this. A socket plus its own memory is called a <b>NUMA node</b>:</p>
+<figure class="fig">
+<svg aria-label="Two NUMA nodes, each with its own memory controller and DIMMs; reading the other's memory goes over the inter-socket interconnect" role="img" viewbox="0 0 720 300">
+<defs>
+<marker id="ah-g" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"></path></marker>
+<marker id="ah-r" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"></path></marker>
+</defs>
+<text fill="#e8edf2" font-size="13" font-weight="600" text-anchor="middle" x="135" y="18">NUMA node 0</text>
+<rect fill="#11171f" height="46" rx="4" stroke="#34455a" width="40" x="38" y="30"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="58" y="58">DIMM</text><rect fill="#11171f" height="46" rx="4" stroke="#34455a" width="40" x="90" y="30"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="110" y="58">DIMM</text><rect fill="#11171f" height="46" rx="4" stroke="#34455a" width="40" x="142" y="30"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="162" y="58">DIMM</text><rect fill="#11171f" height="46" rx="4" stroke="#34455a" width="40" x="194" y="30"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="214" y="58">DIMM</text>
+<rect fill="#151c26" height="142" rx="10" stroke="#26313f" width="230" x="20" y="100"></rect>
+<rect fill="#11171f" height="34" rx="6" stroke="#0bbd87" width="170" x="50" y="124"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="140" y="146">Memory controller</text>
+<rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="42" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="61" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="90" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="109" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="138" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="157" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="186" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="205" y="209">Core</text>
+<text fill="#64717f" font-size="10" text-anchor="middle" x="135" y="236">CPU socket 0</text>
+<text fill="#e8edf2" font-size="13" font-weight="600" text-anchor="middle" x="585" y="18">NUMA node 1</text>
+<rect fill="#11171f" height="46" rx="4" stroke="#34455a" width="40" x="488" y="30"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="508" y="58">DIMM</text><rect fill="#11171f" height="46" rx="4" stroke="#34455a" width="40" x="540" y="30"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="560" y="58">DIMM</text><rect fill="#11171f" height="46" rx="4" stroke="#34455a" width="40" x="592" y="30"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="612" y="58">DIMM</text><rect fill="#11171f" height="46" rx="4" stroke="#34455a" width="40" x="644" y="30"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="664" y="58">DIMM</text>
+<rect fill="#151c26" height="142" rx="10" stroke="#26313f" width="230" x="470" y="100"></rect>
+<rect fill="#11171f" height="34" rx="6" stroke="#0bbd87" width="170" x="500" y="124"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="590" y="146">Memory controller</text>
+<rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="492" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="511" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="540" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="559" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="588" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="607" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="636" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="655" y="209">Core</text>
+<text fill="#64717f" font-size="10" text-anchor="middle" x="585" y="236">CPU socket 1</text>
+<rect fill="#11171f" height="22" rx="11" stroke="#f59e0b" stroke-dasharray="5 4" width="220" x="250" y="130"></rect>
+<text fill="#f59e0b" font-size="11" text-anchor="middle" x="360" y="176">socket interconnect: UPI / Infinity Fabric / CMN</text>
+<path d="M60,190 V80" fill="none" marker-end="url(#ah-g)" stroke="#00e5a0" stroke-width="2.5"></path>
+<path d="M205,190 V141 H508 V80" fill="none" marker-end="url(#ah-r)" stroke="#f59e0b" stroke-dasharray="6 4" stroke-width="2.5"></path>
+<text fill="#00e5a0" font-size="12" x="18" y="275">● Local access ≈ 80 ns</text>
+<text fill="#f59e0b" font-size="12" x="250" y="275">● Remote access (cross-socket) ≈ 150–200 ns, about 2× slower</text>
+</svg>
+<figcaption>Figure 2: Two NUMA nodes. The green line is local access: a core reads its own DIMMs through its node's memory controller. The orange dashed line is remote access: it has to cross the socket interconnect to reach the other node's DIMMs.</figcaption>
+</figure>
+<p>How much slower exactly? Here are typical latencies:</p>
+<table class="cmp">
+<thead><tr><th>Where the data lives</th><th>Latency</th></tr></thead>
+<tbody>
+<tr><td>L1 cache (the fastest cache inside the CPU)</td><td>~1 ns</td></tr>
+<tr><td>L2 cache</td><td>~4 ns</td></tr>
+<tr><td>L3 cache</td><td>~15 ns</td></tr>
+<tr><td>Local DRAM (memory modules)</td><td>~80 ns</td></tr>
+<tr><td>Remote DRAM (cross-socket)</td><td>~150–200 ns</td></tr>
+</tbody>
+</table>
+<p>Compared with local, cross-socket is roughly<b>2x slower</b>. In other words, for the same memory read, if the data is on the wrong node, you wait twice as long. Multiply that by billions of memory accesses per second and you get a performance gap you can actually feel.</p>
+</section>
+<!-- 2 -->
+<section class="content-section" id="name">
+<h2 class="section-title">2 · Why it's called <span>NUMA</span></h2>
+<p>NUMA is <b>Non-Uniform Memory Access</b> , short for Non-Uniform Memory Access. “Non-uniform” refers to the behavior described in the previous section:<b>How long a memory read takes depends on where the memory is</b>. Local is fast, remote is slow, and the gap isn't a fixed number.</p>
+<p>Where there's "non-uniform", there's "uniform". Its opposite is called <b>UMA</b>(Uniform Memory Access):</p>
+<figure class="fig">
+<svg aria-label="Left, UMA: multiple CPUs share one bus and one memory controller; right, NUMA: each CPU has its own memory controller and memory" role="img" viewbox="0 0 720 272">
+<text fill="#e8edf2" font-size="13" font-weight="600" text-anchor="middle" x="175" y="20">Before: UMA (Uniform Memory Access)</text>
+<rect fill="#11171f" height="32" rx="5" stroke="#34455a" width="60" x="30" y="38"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="60" y="59">CPU 0</text>
+<line stroke="#f59e0b" stroke-width="2" x1="60" x2="60" y1="70" y2="100"></line>
+<rect fill="#11171f" height="32" rx="5" stroke="#34455a" width="60" x="105" y="38"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="135" y="59">CPU 1</text>
+<line stroke="#f59e0b" stroke-width="2" x1="135" x2="135" y1="70" y2="100"></line>
+<rect fill="#11171f" height="32" rx="5" stroke="#34455a" width="60" x="180" y="38"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="210" y="59">CPU 2</text>
+<line stroke="#f59e0b" stroke-width="2" x1="210" x2="210" y1="70" y2="100"></line>
+<rect fill="#11171f" height="32" rx="5" stroke="#34455a" width="60" x="255" y="38"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="285" y="59">CPU 3</text>
+<line stroke="#f59e0b" stroke-width="2" x1="285" x2="285" y1="70" y2="100"></line>
+<line stroke="#f59e0b" stroke-width="4" x1="40" x2="310" y1="100" y2="100"></line>
+<text fill="#f59e0b" font-size="11" text-anchor="middle" x="175" y="118">One shared front-side bus (FSB), and everyone waits in line</text>
+<line stroke="#f59e0b" stroke-width="2" x1="175" x2="175" y1="100" y2="138"></line>
+<rect fill="#11171f" height="36" rx="6" stroke="#0bbd87" width="180" x="85" y="138"></rect><text fill="#e8edf2" font-size="12" text-anchor="middle" x="175" y="161">Northbridge: the only memory controller</text>
+<line stroke="#34455a" stroke-width="2" x1="175" x2="175" y1="174" y2="196"></line>
+<rect fill="#11171f" height="34" rx="6" stroke="#34455a" width="180" x="85" y="196"></rect><text fill="#9aa7b4" font-size="12" text-anchor="middle" x="175" y="218">All memory</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="175" y="258">Equally far for everyone: uniform latency, but the bus is the bottleneck</text>
+<line stroke="#34455a" stroke-dasharray="4 4" x1="360" x2="360" y1="20" y2="262"></line>
+<text fill="#e8edf2" font-size="13" font-weight="600" text-anchor="middle" x="545" y="20">Now: NUMA (Non-Uniform Memory Access)</text>
+<rect fill="#11171f" height="32" rx="5" stroke="#34455a" width="120" x="395" y="38"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="455" y="59">CPU 0</text>
+<line stroke="#00e5a0" stroke-width="2" x1="455" x2="455" y1="70" y2="138"></line>
+<rect fill="#11171f" height="36" rx="6" stroke="#0bbd87" width="120" x="395" y="138"></rect><text fill="#e8edf2" font-size="12" text-anchor="middle" x="455" y="161">its own memory controller</text>
+<line stroke="#00e5a0" stroke-width="2" x1="455" x2="455" y1="174" y2="196"></line>
+<rect fill="#11171f" height="34" rx="6" stroke="#34455a" width="120" x="395" y="196"></rect><text fill="#9aa7b4" font-size="12" text-anchor="middle" x="455" y="218">node 0's memory</text>
+<rect fill="#11171f" height="32" rx="5" stroke="#34455a" width="120" x="575" y="38"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="635" y="59">CPU 1</text>
+<line stroke="#00e5a0" stroke-width="2" x1="635" x2="635" y1="70" y2="138"></line>
+<rect fill="#11171f" height="36" rx="6" stroke="#0bbd87" width="120" x="575" y="138"></rect><text fill="#e8edf2" font-size="12" text-anchor="middle" x="635" y="161">its own memory controller</text>
+<line stroke="#00e5a0" stroke-width="2" x1="635" x2="635" y1="174" y2="196"></line>
+<rect fill="#11171f" height="34" rx="6" stroke="#34455a" width="120" x="575" y="196"></rect><text fill="#9aa7b4" font-size="12" text-anchor="middle" x="635" y="218">node 1's memory</text>
+<line stroke="#f59e0b" stroke-dasharray="5 4" stroke-width="2.5" x1="515" x2="575" y1="54" y2="54"></line>
+<text fill="#f59e0b" font-size="11" text-anchor="middle" x="545" y="92">socket interconnect</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="545" y="258">Bandwidth scales with CPU count; the trade-off is fast local access, slow remote access</text>
+</svg>
+<figcaption>Figure 3: On the left is the early UMA design: all CPUs share one bus and read memory through the single memory controller in the northbridge, so it's equally far for everyone. On the right is today's NUMA: each CPU has its own memory controller and memory, so total bandwidth grows with the number of CPUs, at the cost of slower remote access.</figcaption>
+</figure>
+<p>Back to the archive room analogy: UMA is like a company with only one archive room. It's equally far for everyone, so access time is "uniform." That's fine when there are few people, but once there are many, everyone crowds into the same hallway, and the hallway becomes the bottleneck.</p>
+<p>The fix is for each building to have its own records room, i.e.<b>Moved the memory controller into the CPU</b>. AMD did this first with Opteron in 2003, and Intel followed with the Nehalem architecture in 2008 (the server Xeon 5500 launched in 2009). Since then, almost every dual-socket server has been NUMA.</p>
+<p>NUMA as a design actually goes back further: in the 1990s, large machines like Sequent's NUMA-Q and SGI's Origin already used it. Back then it was limited to expensive specialized machines. Only once the memory controller moved into the CPU did it become something any developer might run into.<sup>[10]</sup></p>
+</section>
+<!-- 3 -->
+<section class="content-section" id="inspect">
+<h2 class="section-title">3 · Look at<span>Topology</span></h2>
+<p>Before tuning, look at the "floor plan": how many buildings this machine has, and which CPUs and how much memory each building holds. The most common command is <code>numactl -H</code>. Below is a dual-socket x86 machine (<code>m7i.48xlarge</code>, 192 vCPU, 768 GiB) output:</p>
+<pre><span class="c">$ numactl -H</span>
+available: 2 nodes (0-1)
+node 0 cpus: 0-47 96-143
+node 0 size: 386420 MB
+node 0 free: 12034 MB
+node 1 cpus: 48-95 144-191
+node 1 size: 386547 MB
+node distances:
+node   0   1
+  0:  10  21
+  1:  21  10</pre>
+<p>Line by line:</p>
+<ul>
+<li><b>available: 2 nodes</b>: two buildings.</li>
+<li><b>node 0 cpus: 0-47 96-143</b>: Why two ranges? Because Intel has Hyper-Threading enabled (SMT, where one physical core runs two threads at once), so each physical core has two vCPUs. 0-47 are the first threads of the 48 physical cores, and 96-143 are the second threads of the same cores. Graviton has no Hyper-Threading, so on Graviton you'll see one continuous range of numbers.</li>
+<li><b>node distances</b>:<code>10</code> means local,<code>21</code> means one hop away. The ratio is about 2.1, which matches the latency table in the previous section.</li>
+</ul>
+<h3 class="sub-h">Where do numbers like node 0 and node 1 come from</h3>
+<p>It's not Linux guessing on its own; it's<b>What the firmware tells it</b>. At boot, the BIOS / UEFI places two tables in ACPI:</p>
+<ul>
+<li><b>SRAT</b>(System Resource Affinity Table): lists which CPUs and which ranges of physical memory belong to the same proximity domain.</li>
+<li><b>SLIT</b>(System Locality Information Table): lists the relative distances between these domains, i.e. the 10 / 21 table above.</li>
+</ul>
+<p>At boot, Linux reads these two tables, maps each proximity domain to a node number starting from 0, and then in <code>/sys/devices/system/node/</code> build under it <code>node0</code>, <code>node1</code>……<sup>[11]</sup></p>
+<p>Arm servers (including Graviton) use ACPI too. In a VM, these two tables are generated by the hypervisor (Nitro on EC2), while on metal instances they come directly from the motherboard firmware. To see the raw records, you can use <code>dmesg | grep -i -E "srat|numa"</code>.</p>
+<figure class="fig">
+<svg aria-label="The firmware generates two tables, SRAT and SLIT; Linux reads them and builds node0 and node1" role="img" viewbox="0 0 720 180">
+<defs>
+<marker id="pa-g" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"></path></marker>
+<marker id="pa-o" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"></path></marker>
+<marker id="pa-d" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b4"></path></marker>
+</defs>
+<rect fill="#11171f" height="60" rx="7" stroke="#0bbd87" width="150" x="10" y="60"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="85.0" y="86.0">Firmware</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="85.0" y="102.0">BIOS / UEFI or Nitro</text>
+<rect fill="#11171f" height="56" rx="7" stroke="#34455a" width="170" x="215" y="20"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="300.0" y="44.0">SRAT table</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="300.0" y="60.0">Who shares an affinity domain with whom</text>
+<rect fill="#11171f" height="56" rx="7" stroke="#34455a" width="170" x="215" y="104"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="300.0" y="128.0">SLIT table</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="300.0" y="144.0">How far apart affinity domains are</text>
+<rect fill="#11171f" height="60" rx="7" stroke="#34455a" width="110" x="440" y="60"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="495.0" y="86.0">Linux kernel</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="495.0" y="102.0">Reads the table at boot</text>
+<rect fill="#11171f" height="44" rx="7" stroke="#00e5a0" width="110" x="600" y="30"></rect>
+<text fill="#00e5a0" font-size="12" text-anchor="middle" x="655.0" y="56.0">node0</text>
+<rect fill="#11171f" height="44" rx="7" stroke="#60a5fa" width="110" x="600" y="106"></rect>
+<text fill="#60a5fa" font-size="12" text-anchor="middle" x="655.0" y="132.0">node1</text>
+<path d="M160,82 H190 V48 H210" fill="none" marker-end="url(#pa-d)" stroke="#9aa7b4" stroke-width="2"></path>
+<path d="M160,98 H190 V132 H210" fill="none" marker-end="url(#pa-d)" stroke="#9aa7b4" stroke-width="2"></path>
+<path d="M385,48 H412 V82 H435" fill="none" marker-end="url(#pa-d)" stroke="#9aa7b4" stroke-width="2"></path>
+<path d="M385,132 H412 V98 H435" fill="none" marker-end="url(#pa-d)" stroke="#9aa7b4" stroke-width="2"></path>
+<path d="M550,82 H572 V52 H595" fill="none" marker-end="url(#pa-g)" stroke="#00e5a0" stroke-width="2"></path>
+<path d="M550,98 H572 V128 H595" fill="none" marker-end="url(#pa-g)" stroke="#60a5fa" stroke-width="2"></path>
+<text fill="#64717f" font-size="10" text-anchor="middle" x="655" y="170">/sys/devices/system/node/</text>
+<text fill="#64717f" font-size="10" text-anchor="middle" x="85" y="140">Knows how the motherboard is wired</text>
+</svg>
+<figcaption>Figure 4: Where node numbers come from. The firmware knows best which CPUs and memory are connected together, and it records this in two ACPI tables, SRAT and SLIT. At boot, Linux reads these tables and numbers each affinity domain starting from 0.</figcaption>
+</figure>
+<div class="callout warn">
+<div class="lead">A node is a logical concept and doesn't necessarily map to a socket</div>
+                A single CPU can also be split into several nodes: AMD EPYC can set NPS (Nodes Per Socket) = 1 / 2 / 4 in BIOS; Intel has SNC (Sub-NUMA Clustering). Conversely, CXL-expanded memory often shows up as a<b>CPU-less node</b>. So always go by <code>numactl -H</code> output as the source of truth; don't just count CPUs.
+            </div>
+<h3 class="sub-h">See other details</h3>
+<pre><span class="c">$ lscpu | grep NUMA</span>
+NUMA node(s):        2
+NUMA node0 CPU(s):   0-47,96-143
+NUMA node1 CPU(s):   48-95,144-191
+
+<span class="c">$ cat /sys/devices/system/node/node0/meminfo | head -3</span>
+Node 0 MemTotal:  395694568 kB
+Node 0 MemFree:    12323400 kB
+Node 0 MemUsed:   383371168 kB
+
+<span class="c"># NICs and NVMe devices also belong to a node (-1 means a single-node machine)</span>
+<span class="c">$ cat /sys/class/net/eth0/device/numa_node</span>
+0</pre>
+<p>You can also see exactly where a process's memory lands:</p>
+<pre><span class="c">$ numastat -p $(pgrep -f postgres | head -1)</span>
+Per-node process memory usage (in MBs):
+                Node 0   Node 1   Total
+Heap             12043    20988   33031   <span class="c">← memory split in half</span>
+Stack                0        1       1
+Private          14200    22103   36303</pre>
+<p>One level deeper, look at which policy each virtual memory region uses:</p>
+<pre><span class="c">$ cat /proc/12345/numa_maps | head -3</span>
+7f8a1c000000 default anon=524288 dirty=524288 N0=262144 N1=262144
+7f8a5c000000 bind:0  anon=131072 dirty=131072 N0=131072</pre>
+<p><code>N0=… N1=…</code> is the actual number of pages of this memory region on each node.<code>default</code>, <code>bind:0</code> is the "strategy" covered in the next section.</p>
+</section>
+<!-- 4 -->
+<section class="content-section" id="policy">
+<h2 class="section-title">4 · Where to put memory:<span>mempolicy</span></h2>
+<p>Let's start with the most important default behavior:<b>first-touch</b>. The program <code>malloc</code> a large chunk of memory, the kernel doesn't actually allocate it right away; it waits until some thread<b>First write</b>a page (the smallest unit of memory allocation, usually 4 KB) is that page actually allocated, and it is placed on<b>the node that thread was on at the time</b>.</p>
+<p>It's like parking: spaces aren't assigned in advance. Whoever drives in first parks in the lot closest to them. Many problems later on happen because "the first one to drive in" isn't the one who actually uses that memory most afterward.</p>
+<p>If you don't want the default behavior, you can set a policy (mempolicy) on a process or a memory range. The most commonly used ones in the kernel docs are <sup>[1]</sup>:</p>
+<figure class="fig">
+<svg aria-label="Distribution of pages across node 0 and node 1 under four memory policies" role="img" viewbox="0 0 720 318">
+<defs>
+<marker id="m-g" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"></path></marker>
+<marker id="m-o" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"></path></marker>
+<marker id="m-r" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#ef4444"></path></marker>
+</defs>
+<text fill="#e8edf2" font-size="12" font-weight="600" text-anchor="middle" x="330" y="18">node 0</text>
+<text fill="#e8edf2" font-size="12" font-weight="600" text-anchor="middle" x="590" y="18">node 1</text>
+<text fill="#e8edf2" font-family="monospace" font-size="13" font-weight="600" x="10" y="52">local / default</text>
+<text fill="#64717f" font-size="11" x="10" y="72">Allocate on the node of whichever CPU it runs on</text>
+<rect fill="#151c26" height="52" rx="8" stroke="#26313f" width="260" x="200" y="30"></rect>
+<rect fill="#151c26" height="52" rx="8" stroke="#26313f" width="260" x="460" y="30"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="214" y="44"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="474" y="44"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="244" y="44"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="504" y="44"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="274" y="44"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="534" y="44"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="304" y="44"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="564" y="44"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="334" y="44"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="594" y="44"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="364" y="44"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="624" y="44"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="394" y="44"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="654" y="44"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="424" y="44"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="684" y="44"></rect>
+<text fill="#e8edf2" font-family="monospace" font-size="13" font-weight="600" x="10" y="118">bind 0</text>
+<text fill="#64717f" font-size="11" x="10" y="138">Only node 0 allowed; fails when it's full</text>
+<rect fill="#151c26" height="52" rx="8" stroke="#26313f" width="260" x="200" y="96"></rect>
+<rect fill="#151c26" height="52" rx="8" stroke="#26313f" width="260" x="460" y="96"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="214" y="110"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="474" y="110"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="244" y="110"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="504" y="110"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="274" y="110"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="534" y="110"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="304" y="110"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="564" y="110"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="334" y="110"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="594" y="110"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="364" y="110"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="624" y="110"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="394" y="110"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="654" y="110"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="424" y="110"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="684" y="110"></rect>
+<line stroke="#ef4444" stroke-width="2" x1="470" x2="710" y1="104" y2="140"></line><line stroke="#ef4444" stroke-width="2" x1="710" x2="470" y1="104" y2="140"></line>
+<text fill="#ef4444" font-size="12" font-weight="700" paint-order="stroke" stroke="#151c26" stroke-width="4" text-anchor="middle" x="590" y="126">Not allowed</text>
+<text fill="#ef4444" font-size="10" text-anchor="middle" x="330" y="160">Full → OOM</text>
+<text fill="#e8edf2" font-family="monospace" font-size="13" font-weight="600" x="10" y="184">preferred 0</text>
+<text fill="#64717f" font-size="11" x="10" y="204">Use node 0 first, then go elsewhere when it's full</text>
+<rect fill="#151c26" height="52" rx="8" stroke="#26313f" width="260" x="200" y="162"></rect>
+<rect fill="#151c26" height="52" rx="8" stroke="#26313f" width="260" x="460" y="162"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="214" y="176"></rect>
+<rect fill="#f59e0b" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="474" y="176"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="244" y="176"></rect>
+<rect fill="#f59e0b" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="504" y="176"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="274" y="176"></rect>
+<rect fill="#f59e0b" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="534" y="176"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="304" y="176"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="564" y="176"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="334" y="176"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="594" y="176"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="364" y="176"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="624" y="176"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="394" y="176"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="654" y="176"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="424" y="176"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="684" y="176"></rect>
+<text fill="#e8edf2" font-family="monospace" font-size="13" font-weight="600" x="10" y="250">interleave 0,1</text>
+<text fill="#64717f" font-size="11" x="10" y="270">Shown one page at a time</text>
+<rect fill="#151c26" height="52" rx="8" stroke="#26313f" width="260" x="200" y="228"></rect>
+<rect fill="#151c26" height="52" rx="8" stroke="#26313f" width="260" x="460" y="228"></rect>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="214" y="242"></rect>
+<text fill="#04120d" font-size="10" font-weight="700" text-anchor="middle" x="226" y="259">1</text>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="474" y="242"></rect>
+<text fill="#04120d" font-size="10" font-weight="700" text-anchor="middle" x="486" y="259">2</text>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="244" y="242"></rect>
+<text fill="#04120d" font-size="10" font-weight="700" text-anchor="middle" x="256" y="259">3</text>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="504" y="242"></rect>
+<text fill="#04120d" font-size="10" font-weight="700" text-anchor="middle" x="516" y="259">4</text>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="274" y="242"></rect>
+<text fill="#04120d" font-size="10" font-weight="700" text-anchor="middle" x="286" y="259">5</text>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="534" y="242"></rect>
+<text fill="#04120d" font-size="10" font-weight="700" text-anchor="middle" x="546" y="259">6</text>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="304" y="242"></rect>
+<text fill="#04120d" font-size="10" font-weight="700" text-anchor="middle" x="316" y="259">7</text>
+<rect fill="#00e5a0" fill-opacity="0.85" height="24" rx="3" stroke="#34455a" width="24" x="564" y="242"></rect>
+<text fill="#04120d" font-size="10" font-weight="700" text-anchor="middle" x="576" y="259">8</text>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="334" y="242"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="594" y="242"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="364" y="242"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="624" y="242"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="394" y="242"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="654" y="242"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="424" y="242"></rect>
+<rect fill="#11171f" fill-opacity="1" height="24" rx="3" stroke="#34455a" width="24" x="684" y="242"></rect>
+<rect fill="#00e5a0" height="12" rx="2" width="12" x="200" y="298"></rect><text fill="#9aa7b4" font-size="11" x="218" y="309">Pages placed by policy</text>
+<rect fill="#f59e0b" height="12" rx="2" width="12" x="330" y="298"></rect><text fill="#9aa7b4" font-size="11" x="348" y="309">Pages spilled over to another node</text>
+<text fill="#9aa7b4" font-size="11" x="480" y="309">Number = allocation order</text>
+</svg>
+<figcaption>Figure 5: The result of allocating the same few pages under four policies. local places them on the current CPU's node; bind can only use the specified node and fails when it's full; preferred tries the specified node first and spills over elsewhere when it's full; interleave places pages round-robin, half on each side.</figcaption>
+</figure>
+<ul>
+<li><b>MPOL_DEFAULT</b>: not set separately; it inherits the policy from the level above and ultimately falls back to the system default, which is local.</li>
+<li><b>MPOL_LOCAL</b>: Place it on the node of the CPU doing the allocation. This is first-touch.</li>
+<li><b>MPOL_BIND</b>: Allocate only from the specified set of nodes. If the set has multiple nodes, pick the one closest to the allocating point that has enough free memory. If all are full, you get<b>Fails outright</b>, and won't borrow from elsewhere.</li>
+<li><b>MPOL_PREFERRED</b>: prefer allocating from the specified<b>One node</b> allocation; if that fails, try other nodes from nearest to farthest.</li>
+<li><b>MPOL_INTERLEAVE</b>: Interleave allocation page by page across the specified nodes. Good for large shared memory regions that "everyone reads", such as database caches.</li>
+</ul>
+<p>Newer kernels add two more:<code>MPOL_PREFERRED_MANY</code>(since 5.15, can prefer a set of nodes) and <code>MPOL_WEIGHTED_INTERLEAVE</code>(since 6.9, interleaves pages by weight, often used with CXL memory).</p>
+<p>On the command line, this corresponds to <code>numactl</code> 's key parameters <sup>[4]</sup>:</p>
+<pre><span class="c"># Bind both the process and its memory to node 0</span>
+numactl --cpunodebind=0 --membind=0 ./server
+<span class="c"># Interleave memory across all nodes</span>
+numactl --interleave=all ./mysqld
+<span class="c"># Prefer node 1, fall back when it's full</span>
+numactl --preferred=1 ./batch-job</pre>
+<div class="callout warn">
+<div class="lead">The sentence people trip over most</div>
+                The kernel docs say it verbatim: "pages already faulted in ... remain where they were allocated based on the policy at the time." In other words, changing the policy<b>No</b>move memory that has already been allocated, unless you explicitly call <code>mbind()</code> or <code>migrate_pages()</code>. So changing the policy after the service has already warmed up does little; set it at startup.<sup>[1]</sup>
+</div>
+</section>
+<!-- 5 -->
+<section class="content-section" id="counters">
+<h2 class="section-title">5 · Interpreting the results <span>numastat counters</span></h2>
+<p>Type directly <code>numastat</code>, you'll see a column of counters for each node. Think of it like hotel booking records: you wanted to stay at Hotel A, but A was full, so you were put in Hotel B. In that case, A records a "guest who didn't get in" and B records a "guest who wasn't meant for us."</p>
+<table class="cmp">
+<thead><tr><th>counters</th><th>Meaning (man 8 numastat)<sup>[5]</sup></th></tr></thead>
+<tbody>
+<tr><td><code>numa_hit</code></td><td>Meant to land on this node, and it did land on this node.</td></tr>
+<tr><td><code>numa_miss</code></td><td>The process wanted another node but ended up on this node.</td></tr>
+<tr><td><code>numa_foreign</code></td><td>Meant to go on this node, but ended up on another node.<b>Every miss on one node corresponds to a foreign on another node.</b></td></tr>
+<tr><td><code>interleave_hit</code></td><td>Placed on this node as planned under the interleave policy.</td></tr>
+<tr><td><code>local_node</code></td><td>The process runs on this node, and its memory is also allocated on this node.</td></tr>
+<tr><td><code>other_node</code></td><td>The process runs on another node, but its memory is allocated on this node.</td></tr>
+</tbody>
+</table>
+<figure class="fig">
+<svg aria-label="Process P runs on node 1, but node 1 is full, so the page lands on node 0: node 0 records numa_miss, node 1 records numa_foreign" role="img" viewbox="0 0 720 172">
+<defs>
+<marker id="pb-g" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"></path></marker>
+<marker id="pb-o" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"></path></marker>
+<marker id="pb-d" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b4"></path></marker>
+</defs>
+<rect fill="#151c26" height="130" rx="10" stroke="#26313f" width="300" x="20" y="30"></rect>
+<rect fill="#151c26" height="130" rx="10" stroke="#26313f" width="300" x="400" y="30"></rect>
+<text fill="#e8edf2" font-size="13" font-weight="600" text-anchor="middle" x="170" y="22">node 0</text>
+<text fill="#e8edf2" font-size="13" font-weight="600" text-anchor="middle" x="550" y="22">node 1</text>
+<rect fill="#11171f" height="40" rx="7" stroke="#60a5fa" width="110" x="430" y="48"></rect>
+<text fill="#60a5fa" font-size="12" text-anchor="middle" x="485.0" y="72.0">Process P</text>
+<rect fill="#11171f" height="40" rx="7" stroke="#ef4444" width="115" x="565" y="48"></rect>
+<text fill="#ef4444" font-size="12" text-anchor="middle" x="622.5" y="64.0">Memory</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="622.5" y="80.0">Already full</text>
+<rect fill="#11171f" height="40" rx="7" stroke="#f59e0b" width="120" x="50" y="100"></rect>
+<text fill="#f59e0b" font-size="12" text-anchor="middle" x="110.0" y="116.0">New page</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="110.0" y="132.0">so it has to go here</text>
+<path d="M540,68 H560" fill="none" marker-end="url(#pb-d)" stroke="#9aa7b4" stroke-dasharray="4 3" stroke-width="2"></path>
+<text fill="#64717f" font-size="10" text-anchor="middle" x="555" y="104">Want to keep it local</text>
+<path d="M430,78 C330,78 260,120 175,120" fill="none" marker-end="url(#pb-o)" stroke="#f59e0b" stroke-width="2"></path>
+<text fill="#f59e0b" font-size="12" font-weight="700" x="200" y="62">numa_miss +1</text>
+<text fill="#64717f" font-size="10" x="200" y="80">It wasn't aimed at me, but it landed on my desk</text>
+<text fill="#f59e0b" font-size="12" font-weight="700" x="440" y="120">numa_foreign +1</text>
+<text fill="#64717f" font-size="10" x="440" y="138">Should have been placed here, but went elsewhere</text>
+</svg>
+<figcaption>Figure 6: One "misplaced" allocation is recorded twice. Process P wants to allocate on node 1, but node 1 is full, so the page lands on node 0. As a result, node 0's numa_miss goes up by 1 and node 1's numa_foreign goes up by 1.</figcaption>
+</figure>
+<p>The most common rule of thumb:<b>node A's <code>numa_miss</code> high, while node B's <code>numa_foreign</code> is also high</b>, it means B has run out of memory, and memory that should have been on B got pushed to A. Next, check which process on B is using the most (<code>numastat -p</code>).</p>
+<p>Note that these are all cumulative values since boot. To see what's happening "now", sample twice a few seconds apart and look at the difference.</p>
+</section>
+<!-- 6 -->
+<section class="content-section" id="autobalance">
+<h2 class="section-title">6 · Automatic migration:<span>Auto-NUMA balancing</span></h2>
+<p>Since first-touch often puts pages in the wrong place, can the kernel fix it on its own? Yes, and that's NUMA balancing. It works like a moving company: it watches which building you most often go to for files, then moves the files there. But the "watching" and the "moving" both take effort.</p>
+<pre><span class="c">$ cat /proc/sys/kernel/numa_balancing</span>
+1</pre>
+<p>When it's on, the kernel periodically "unmaps" some pages temporarily. The next time a thread accesses one of these pages, it triggers a lightweight page fault (the CPU notifies the kernel when a page isn't in the mapping). The kernel uses this to record "who accessed it and from which node," and moves the page to the accessor's node if needed.</p>
+<figure class="fig">
+<svg aria-label="The four-step NUMA balancing loop: unmap, hint fault, accounting, page migration" role="img" viewbox="0 0 720 162">
+<defs>
+<marker id="pc-g" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"></path></marker>
+<marker id="pc-o" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"></path></marker>
+<marker id="pc-d" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b4"></path></marker>
+</defs>
+<rect fill="#11171f" height="58" rx="7" stroke="#34455a" width="140" x="20" y="30"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="90.0" y="55.0">① Unmap</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="90.0" y="71.0">Periodically pick a batch of pages</text>
+<rect fill="#11171f" height="58" rx="7" stroke="#34455a" width="140" x="200" y="30"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="270.0" y="55.0">② hint fault</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="270.0" y="71.0">a thread accesses it</text>
+<rect fill="#11171f" height="58" rx="7" stroke="#34455a" width="140" x="380" y="30"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="450.0" y="55.0">③ Accounting</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="450.0" y="71.0">Who, from which node</text>
+<rect fill="#11171f" height="58" rx="7" stroke="#00e5a0" width="140" x="560" y="30"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="630.0" y="55.0">④ Migrate pages</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="630.0" y="71.0">Migrate if frequently accessed remotely</text>
+<path d="M160,59 H196" fill="none" marker-end="url(#pc-d)" stroke="#9aa7b4" stroke-width="2"></path>
+<path d="M340,59 H376" fill="none" marker-end="url(#pc-d)" stroke="#9aa7b4" stroke-width="2"></path>
+<path d="M520,59 H556" fill="none" marker-end="url(#pc-d)" stroke="#9aa7b4" stroke-width="2"></path>
+<path d="M630,88 V130 H90 V93" fill="none" marker-end="url(#pc-g)" stroke="#00e5a0" stroke-dasharray="5 4" stroke-width="2"></path>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="360" y="150">It keeps looping: threads and their memory increasingly "live together," but every round has overhead</text>
+</svg>
+<figcaption>Figure 7: The NUMA balancing loop. It doesn't move everything at once; it keeps sampling, tracking, and migrating.</figcaption>
+</figure>
+<p>The kernel docs put it bluntly: these unmappings and faults add overhead, in the hope of earning it back through better locality, but<b>Profit not guaranteed</b>; if the workload is already manually pinned to a node, turn it off.<sup>[2]</sup></p>
+<p>To tell whether it's helping, look at <code>/proc/vmstat</code>:</p>
+<pre>numa_pte_updates          <span class="c">← pages sampled</span>
+numa_hint_faults          <span class="c">← hint faults triggered</span>
+numa_hint_faults_local    <span class="c">← of which, accesses where the accessor was already local</span>
+numa_pages_migrated       <span class="c">← pages actually migrated</span>
+pgmigrate_success/fail    <span class="c">← migration succeeded / failed</span></pre>
+<p><b>Healthy signals:</b><code>numa_hint_faults_local / numa_hint_faults</code> This ratio rises over time, showing that the kernel is "aligning" threads with memory.</p>
+<p><b>Unhealthy signs:</b>This ratio stays low, while <code>numa_pages_migrated</code> keeps rising, pages are just being moved back and forth for nothing. In that case, use <code>sysctl kernel.numa_balancing=0</code> Turn it off and pin manually instead.</p>
+</section>
+<!-- 7 -->
+<section class="content-section" id="casestudy">
+<h2 class="section-title">7 · <span>Real failure</span>: MySQL "swap insanity"</h2>
+<p>Here's a classic case. In 2010, Jeremy Cole (then at Twitter) wrote a postmortem <sup>[3]</sup>:</p>
+<ul>
+<li>Machine: dual-socket,<b>64 GB memory</b>, i.e. about 32 GB per node.</li>
+<li>MySQL's InnoDB buffer pool set to <b>48 GB</b>, actually using about 51 GB.</li>
+<li>Strange: the machine clearly still has free memory, yet MySQL keeps swapping (moving memory pages to disk and back), and performance is poor.</li>
+</ul>
+<p>He uses <code>/proc/&lt;pid&gt;/numa_maps</code> A quick look shows the buffer pool has, on node 0, <b>30.45 GB</b>, on node 1 there's only <b>20.75 GB</b>. node 0 is almost entirely taken up by a single MySQL process.</p>
+<figure class="fig">
+<svg aria-label="MySQL: before the fix, node 0 was maxed out while node 1 still had free memory; after the fix, each node uses 26 GB" role="img" viewbox="0 0 720 292">
+<defs>
+<marker id="m-g" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"></path></marker>
+<marker id="m-o" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"></path></marker>
+<marker id="m-r" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#ef4444"></path></marker>
+</defs>
+<text fill="#e8edf2" font-size="13" font-weight="600" text-anchor="middle" x="170" y="22">Before fix: default policy</text>
+<rect fill="#11171f" height="170" rx="6" stroke="#34455a" width="70" x="60" y="50"></rect>
+<rect fill="#ef4444" fill-opacity="0.75" height="161.8" rx="6" width="70" x="60" y="58.2"></rect>
+<text fill="#04120d" font-size="11" font-weight="700" text-anchor="middle" x="95" y="143.1">30.45 GB</text>
+<rect fill="#11171f" height="170" rx="6" stroke="#34455a" width="70" x="190" y="50"></rect>
+<rect fill="#00e5a0" fill-opacity="0.75" height="110.2" rx="6" width="70" x="190" y="109.8"></rect>
+<text fill="#04120d" font-size="11" font-weight="700" text-anchor="middle" x="225" y="168.9">20.75 GB</text>
+<text fill="#64717f" font-size="10" text-anchor="middle" x="225" y="83.9">Idle</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="95" y="240">node 0 (32 GB total)</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="225" y="240">node 1 (32 GB total)</text>
+<text fill="#ef4444" font-size="11" font-weight="700" text-anchor="middle" x="95" y="42">Full</text>
+<path d="M60,120 C20,120 20,200 40,262" fill="none" marker-end="url(#m-r)" stroke="#ef4444" stroke-width="2"></path>
+<text fill="#ef4444" font-size="11" x="50" y="282">The kernel swaps InnoDB pages out to swap</text>
+<text fill="#64717f" font-size="11" x="190" y="262">even though there's still free capacity here</text>
+<line stroke="#34455a" stroke-dasharray="4 4" x1="360" x2="360" y1="14" y2="286"></line>
+<text fill="#e8edf2" font-size="13" font-weight="600" text-anchor="middle" x="550" y="22">After fix: numactl --interleave all</text>
+<rect fill="#11171f" height="170" rx="6" stroke="#34455a" width="70" x="440" y="50"></rect>
+<rect fill="#00e5a0" fill-opacity="0.75" height="138.1" rx="6" width="70" x="440" y="81.9"></rect>
+<text fill="#04120d" font-size="11" font-weight="700" text-anchor="middle" x="475" y="154.9">26.00 GB</text>
+<text fill="#64717f" font-size="10" text-anchor="middle" x="475" y="69.9">Idle</text>
+<rect fill="#11171f" height="170" rx="6" stroke="#34455a" width="70" x="570" y="50"></rect>
+<rect fill="#00e5a0" fill-opacity="0.75" height="138.1" rx="6" width="70" x="570" y="81.9"></rect>
+<text fill="#04120d" font-size="11" font-weight="700" text-anchor="middle" x="605" y="154.9">26.00 GB</text>
+<text fill="#64717f" font-size="10" text-anchor="middle" x="605" y="69.9">Idle</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="475" y="240">node 0</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="605" y="240">node 1</text>
+<text fill="#00e5a0" font-size="11" text-anchor="middle" x="540" y="268">Leave 6 GB on each side for the page cache (file cache); no more swapping</text>
+</svg>
+<figcaption>Figure 8: On the left, before the fix. Most of the buffer pool landed on node 0, and once node 0 was full, the kernel would rather swap InnoDB pages out to swap (the swap area on disk) than use the free memory on node 1. On the right, after adding interleave, each node holds 26 GB with room to spare. Data from Jeremy Cole's original post.</figcaption>
+</figure>
+<p>Why does this happen? It's the first-touch behavior described earlier: most of the buffer pool was first written by threads running on node 0, so it all landed on node 0. On top of that, when local node memory ran short, the kernel at the time tended to reclaim local memory first (including swapping) rather than immediately allocating on a remote node.</p>
+<p>The fix is just one line, in <code>mysqld_safe</code> add:</p>
+<pre>cmd=<span class="k">"/usr/bin/numactl --interleave all $cmd"</span></pre>
+<p>After that, the buffer pool on the two nodes<b>26.00 GB each</b>, and swap disappeared.</p>
+<p>MySQL 5.7 later simply added <code>innodb_numa_interleave</code> parameters to do this <sup>[9]</sup>; another related switch <code>vm.zone_reclaim_mode</code>, and for databases the common advice is to set it to 0 (the default since Linux 3.16).</p>
+</section>
+<!-- 8 -->
+<section class="content-section" id="traps">
+<h2 class="section-title">8 · Common <span>Performance pitfalls</span></h2>
+<p>The pitfalls below almost all share the same root cause:<b>The thread that first writes the memory and the threads that later use it most are not on the same node</b>.</p>
+<figure class="fig">
+<svg aria-label="The init thread writes the data first on node 0, but the worker doing the job is on node 1, so it keeps reading remotely" role="img" viewbox="0 0 720 210">
+<defs>
+<marker id="pd-g" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"></path></marker>
+<marker id="pd-o" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"></path></marker>
+<marker id="pd-d" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b4"></path></marker>
+</defs>
+<rect fill="#151c26" height="160" rx="10" stroke="#26313f" width="300" x="20" y="20"></rect>
+<rect fill="#151c26" height="160" rx="10" stroke="#26313f" width="300" x="400" y="20"></rect>
+<text fill="#e8edf2" font-size="12" font-weight="600" text-anchor="middle" x="170" y="40">node 0</text>
+<text fill="#e8edf2" font-size="12" font-weight="600" text-anchor="middle" x="550" y="40">node 1</text>
+<rect fill="#11171f" height="44" rx="7" stroke="#00e5a0" width="160" x="40" y="55"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="120.0" y="73.0">Parent process / initialization thread</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="120.0" y="89.0">Wrote the data first</text>
+<rect fill="#11171f" height="44" rx="7" stroke="#00e5a0" width="260" x="40" y="120"></rect>
+<text fill="#00e5a0" font-size="12" text-anchor="middle" x="170.0" y="138.0">Large arrays / caches / heap</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="170.0" y="154.0">all on node 0 under first-touch</text>
+<path d="M120,99 V115" fill="none" marker-end="url(#pd-g)" stroke="#00e5a0" stroke-width="2"></path>
+<rect fill="#11171f" height="30" rx="7" stroke="#60a5fa" width="120" x="560" y="55"></rect>
+<text fill="#60a5fa" font-size="11" text-anchor="middle" x="620.0" y="74.0">worker 1</text>
+<path d="M560,70 C470,70 400,142 305,142" fill="none" marker-end="url(#pd-o)" stroke="#f59e0b" stroke-dasharray="5 4" stroke-width="2"></path>
+<rect fill="#11171f" height="30" rx="7" stroke="#60a5fa" width="120" x="560" y="92"></rect>
+<text fill="#60a5fa" font-size="11" text-anchor="middle" x="620.0" y="111.0">worker 2</text>
+<path d="M560,107 C470,107 400,142 305,142" fill="none" marker-end="url(#pd-o)" stroke="#f59e0b" stroke-dasharray="5 4" stroke-width="2"></path>
+<rect fill="#11171f" height="30" rx="7" stroke="#60a5fa" width="120" x="560" y="129"></rect>
+<text fill="#60a5fa" font-size="11" text-anchor="middle" x="620.0" y="148.0">worker 3</text>
+<path d="M560,144 C470,144 400,142 305,142" fill="none" marker-end="url(#pd-o)" stroke="#f59e0b" stroke-dasharray="5 4" stroke-width="2"></path>
+<text fill="#f59e0b" font-size="11" text-anchor="middle" x="360" y="200">The thread doing the actual work is on node 1, so every data read crosses the socket</text>
+</svg>
+<figcaption>Figure 9: Nearly every NUMA pitfall looks like this diagram. The "first writer" and the "frequent user" are not on the same node.</figcaption>
+</figure>
+<h3 class="sub-h">JVM</h3>
+<p>By default the JVM is not NUMA-aware: which node each page of the heap (the memory holding Java objects) lands on depends on who writes to it first, so the distribution is often very uneven.</p>
+<p>Open <code>-XX:+UseNUMA</code>, the JVM has each thread allocate new objects on its local node first. Parallel GC has long supported this; G1 has supported it since JDK 14 <sup>[8]</sup>. Another option is to run one JVM per node:<code>numactl --cpunodebind=N --membind=N java …</code>.</p>
+<h3 class="sub-h">PostgreSQL / MySQL</h3>
+<p>Database cache (<code>shared_buffers</code>, InnoDB buffer pool) is a large chunk of memory shared by all connections, and each page lands on the node of the process that first writes to it. Query-handling processes can be scheduled on any node, so cross-node reads are very common.</p>
+<p>Two ways to fix it: at startup, add <code>numactl --interleave=all</code>, so the cache is spread evenly across both nodes; or bind the entire database to one node and leave the other node for the system and other services.</p>
+<h3 class="sub-h">Python multiprocessing</h3>
+<p><code>Pool(64)</code> It forks a batch of workers, and the scheduler spreads them across nodes; but large arrays built in the parent process before the fork live only on the parent's node. As a result, half the workers keep reading remote memory.</p>
+<p>Fix: bind both the parent process and the workers to the same node, or have each worker load its own data after fork.</p>
+<h3 class="sub-h">Docker container</h3>
+<p>Not set <code>--cpuset-cpus</code> and <code>--cpuset-mems</code> containers, every scheduling decision is a gamble. Setting only CPU without memory only counts as<b>Half fixed</b>: the CPU is on node 0, but the memory may be entirely on node 1.</p>
+<h3 class="sub-h">NIC queues (ENA)</h3>
+<p>The NIC also belongs to a node. ENA has multiple TX/RX queues, and each queue has an interrupt (an MSI-X IRQ, the signal the NIC uses to "wake up" a CPU). Packets are processed on whichever CPU the interrupt is pinned to.</p>
+<p>If your application runs on node 1 but the receive interrupts land on node 0, every packet has to cross the socket interconnect. AWS's ENA best practices recommend placing the application and the queues it uses on the same node <sup>[7]</sup>.</p>
+<pre><span class="c"># See which CPU each ENA interrupt lands on, then compare with /sys/devices/system/node/nodeX/cpulist</span>
+grep ena /proc/interrupts | awk '{print $1, $NF}'
+<span class="c"># Which node the NIC itself is on</span>
+cat /sys/class/net/eth0/device/numa_node</pre>
+<p>On large multi-node instance types, it also depends on the ENA driver's <code>rx_queue#_lpc_wrong_numa</code> counters (<code>ethtool -S eth0</code>); if it's non-zero, the receive buffers are on the wrong node <sup>[7]</sup>.</p>
+</section>
+<!-- 9 -->
+<section class="content-section" id="ec2">
+<h2 class="section-title">9 · EC2 <span>Topology quick reference</span>: the M8 and M9 generations</h2>
+<p>On EC2 you don't see the motherboard directly, but it's still there. How many NUMA nodes an instance has depends on how many CPUs sit behind it and how each CPU is partitioned internally.</p>
+<figure class="fig">
+<div class="photo">
+<img alt="A dual-socket server with two AMD EPYC 9754 CPUs, with memory slots fully populated on both sides of each CPU" height="619" loading="lazy" src="../../../ec2/numa/img/amd-epyc-9754-dual.jpg" width="1100"/>
+</div>
+<figcaption>Figure 10: Today's large machines still look like this. This server has two AMD EPYC 9754 processors (128 cores each), and each CPU has its own row of DDR5 DIMMs next to it. The largest instances in the cloud are often backed by this kind of two-socket machine. Photo:<a href="https://commons.wikimedia.org/wiki/File:AMD_Epyc_9754_in_Dual-CPU-Socket-Serversystem_(%E6%9E%81%E5%AE%A2%E6%B9%BEGeekerwan)_07.png" rel="noopener" target="_blank">Geekerwan / Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener" target="_blank">CC BY 3.0</a>.</figcaption>
+</figure>
+<p>Many people assume the rule is simple: "it only becomes two nodes when one CPU can't fit everything." That's true for m8g and m8a. But the newer m8i and m9g are different,<b>A single CPU can also contain several nodes</b>. First, the big picture:</p>
+<figure class="fig">
+<svg aria-label="NUMA node count for each m8g, m8a, m8i, and m9g size" role="img" viewbox="0 0 720 274">
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="197.5" y="26">≤12xlarge</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="292.5" y="26">16xlarge</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="387.5" y="26">24xlarge</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="482.5" y="26">32xlarge</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="577.5" y="26">48xlarge</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="672.5" y="26">96xlarge</text>
+<text fill="#e8edf2" font-family="monospace" font-size="14" font-weight="700" x="10" y="60">m8g</text>
+<text fill="#64717f" font-size="10" x="10" y="76">Graviton4</text>
+<rect fill="#11171f" height="36" rx="6" stroke="#9aa7b4" width="87" x="154" y="44"></rect>
+<text fill="#9aa7b4" font-size="13" font-weight="700" text-anchor="middle" x="197.5" y="67">1 node</text>
+<rect fill="#11171f" height="36" rx="6" stroke="#9aa7b4" width="87" x="249" y="44"></rect>
+<text fill="#9aa7b4" font-size="13" font-weight="700" text-anchor="middle" x="292.5" y="67">1 node</text>
+<rect fill="#11171f" height="36" rx="6" stroke="#9aa7b4" width="87" x="344" y="44"></rect>
+<text fill="#9aa7b4" font-size="13" font-weight="700" text-anchor="middle" x="387.5" y="67">1 node</text>
+<text fill="#2c3846" font-size="11" text-anchor="middle" x="482.5" y="67">Not available in this size</text>
+<rect fill="#3a2a0c" height="36" rx="6" stroke="#f59e0b" width="87" x="534" y="44"></rect>
+<text fill="#f59e0b" font-size="13" font-weight="700" text-anchor="middle" x="577.5" y="67">2 nodes</text>
+<text fill="#2c3846" font-size="11" text-anchor="middle" x="672.5" y="67">Not available in this size</text>
+<text fill="#e8edf2" font-family="monospace" font-size="14" font-weight="700" x="10" y="110">m8a</text>
+<text fill="#64717f" font-size="10" x="10" y="126">EPYC Turin</text>
+<rect fill="#11171f" height="36" rx="6" stroke="#9aa7b4" width="87" x="154" y="94"></rect>
+<text fill="#9aa7b4" font-size="13" font-weight="700" text-anchor="middle" x="197.5" y="117">1 node</text>
+<rect fill="#11171f" height="36" rx="6" stroke="#9aa7b4" width="87" x="249" y="94"></rect>
+<text fill="#9aa7b4" font-size="13" font-weight="700" text-anchor="middle" x="292.5" y="117">1 node</text>
+<rect fill="#11171f" height="36" rx="6" stroke="#9aa7b4" width="87" x="344" y="94"></rect>
+<text fill="#9aa7b4" font-size="13" font-weight="700" text-anchor="middle" x="387.5" y="117">1 node</text>
+<text fill="#2c3846" font-size="11" text-anchor="middle" x="482.5" y="117">Not available in this size</text>
+<rect fill="#3a2a0c" height="36" rx="6" stroke="#f59e0b" width="87" x="534" y="94"></rect>
+<text fill="#f59e0b" font-size="13" font-weight="700" text-anchor="middle" x="577.5" y="117">2 nodes</text>
+<text fill="#2c3846" font-size="11" text-anchor="middle" x="672.5" y="117">Not available in this size</text>
+<text fill="#e8edf2" font-family="monospace" font-size="14" font-weight="700" x="10" y="160">m8i</text>
+<text fill="#64717f" font-size="10" x="10" y="176">Xeon 6 · SNC</text>
+<rect fill="#11171f" height="36" rx="6" stroke="#9aa7b4" width="87" x="154" y="144"></rect>
+<text fill="#9aa7b4" font-size="13" font-weight="700" text-anchor="middle" x="197.5" y="167">1 node</text>
+<rect fill="#11171f" height="36" rx="6" stroke="#9aa7b4" width="87" x="249" y="144"></rect>
+<text fill="#9aa7b4" font-size="13" font-weight="700" text-anchor="middle" x="292.5" y="167">1 node</text>
+<rect fill="#3a2a0c" height="36" rx="6" stroke="#f59e0b" width="87" x="344" y="144"></rect>
+<text fill="#f59e0b" font-size="13" font-weight="700" text-anchor="middle" x="387.5" y="167">2 nodes</text>
+<rect fill="#3a2a0c" height="36" rx="6" stroke="#f59e0b" width="87" x="439" y="144"></rect>
+<text fill="#f59e0b" font-size="13" font-weight="700" text-anchor="middle" x="482.5" y="167">2 nodes</text>
+<rect fill="#3b1414" height="36" rx="6" stroke="#ef4444" width="87" x="534" y="144"></rect>
+<text fill="#ef4444" font-size="13" font-weight="700" text-anchor="middle" x="577.5" y="167">3 nodes</text>
+<rect fill="#3b1414" height="36" rx="6" stroke="#ef4444" width="87" x="629" y="144"></rect>
+<text fill="#ef4444" font-size="13" font-weight="700" text-anchor="middle" x="672.5" y="167">6 nodes</text>
+<text fill="#e8edf2" font-family="monospace" font-size="14" font-weight="700" x="10" y="210">m9g</text>
+<text fill="#64717f" font-size="10" x="10" y="226">Graviton5</text>
+<rect fill="#11171f" height="36" rx="6" stroke="#9aa7b4" width="87" x="154" y="194"></rect>
+<text fill="#9aa7b4" font-size="13" font-weight="700" text-anchor="middle" x="197.5" y="217">1 node</text>
+<rect fill="#3a2a0c" height="36" rx="6" stroke="#f59e0b" width="87" x="249" y="194"></rect>
+<text fill="#f59e0b" font-size="13" font-weight="700" text-anchor="middle" x="292.5" y="217">2 nodes</text>
+<rect fill="#11171f" height="36" rx="6" stroke="#9aa7b4" width="87" x="344" y="194"></rect>
+<text fill="#9aa7b4" font-size="13" font-weight="700" text-anchor="middle" x="387.5" y="217">1 node</text>
+<text fill="#2c3846" font-size="11" text-anchor="middle" x="482.5" y="217">Not available in this size</text>
+<rect fill="#3a2a0c" height="36" rx="6" stroke="#f59e0b" width="87" x="534" y="194"></rect>
+<text fill="#f59e0b" font-size="13" font-weight="700" text-anchor="middle" x="577.5" y="217">2 nodes</text>
+<text fill="#2c3846" font-size="11" text-anchor="middle" x="672.5" y="217">Not available in this size</text>
+<text fill="#64717f" font-size="11" x="10" y="262">Gray = single node, nothing to worry about; orange = 2 nodes; red = 3 or more. Data: SpareCores measurements from lscpu / lstopo, one sample per instance type.</text>
+</svg>
+<figcaption>Figure 11: Number of NUMA nodes per size for M8 / M9 general purpose instances. m8g and m8a split into two nodes only at 48xlarge; m8i splits starting at 24xlarge; m9g is the odd one out: 16xlarge has 2 nodes, while 24xlarge has just 1.</figcaption>
+</figure>
+<h3 class="sub-h">m8g (Graviton4): the simplest</h3>
+<p>Each Graviton4 has 96 cores and no hyperthreading, so one vCPU is one physical core. Each CPU has 12 DDR5 channels.</p>
+<ul>
+<li><b>medium to 24xlarge</b>(up to 96 vCPU): uses only one CPU,<b>1 node</b>.</li>
+<li><b>48xlarge / metal-48xl</b>(192 vCPU, 768 GiB): two CPUs,<b>2 nodes</b>, each node has about 372 GiB, and the node distance is 10 / 20.</li>
+</ul>
+<p>AWS's Graviton documentation is also clear on this: the number of NUMA nodes is 1, and only 48xlarge has 2.<sup>[12]</sup></p>
+<h3 class="sub-h">m8a (AMD EPYC Turin): same as m8g</h3>
+<p>Each EPYC 9R45 has 96 cores and no hyperthreading. AMD can use NPS to split one CPU into multiple nodes, but AWS uses NPS1 on m8a, meaning one node per CPU.</p>
+<ul>
+<li><b>medium to 24xlarge</b>:<b>1 node</b>.</li>
+<li><b>48xlarge / metal-48xl</b>: two CPUs,<b>2 nodes</b>. m8a has no 32xlarge.</li>
+</ul>
+<h3 class="sub-h">m8i (Intel Xeon 6, Granite Rapids): one CPU split into three</h3>
+<p>This is the generation where it's easiest to trip up. Each CPU has 96 physical cores (192 vCPUs with Hyper-Threading), but AWS enabled Intel's <b>SNC</b>(Sub-NUMA Clustering), which splits one CPU into <b>3 nodes, 32 cores per node</b>.<sup>[13]</sup></p>
+<p>Think of it this way: it's still the same building, but the building is split into three zones, each with its own records room. Getting files from another zone is quicker than going to another building, but still slower than your own zone.</p>
+<ul>
+<li><b>large to 16xlarge</b>(up to 64 vCPU, i.e. 32 cores): fits exactly into one domain,<b>1 node</b>. m8i-flex tops out at 16xlarge, so flex is always single-node.</li>
+<li><b>24xlarge</b>(96 vCPU, 48 cores) and <b>32xlarge</b>(128 vCPU, 64 cores): still on one CPU, but already spans regions,<b>2 nodes</b>.</li>
+<li><b>48xlarge / metal-48xl</b>(192 vCPU): one whole CPU,<b>3 nodes</b>.</li>
+<li><b>96xlarge / metal-96xl</b>(384 vCPU, 1536 GiB): two CPUs,<b>6 nodes</b>.</li>
+</ul>
+<p>Supporting evidence: when you customize the core count via CPU options, m8i.48xlarge only allows multiples of 3, and 96xlarge only multiples of 6, matching exactly 3 and 6 nodes.</p>
+<h3 class="sub-h">m9g (Graviton5): one chip, two halves</h3>
+<p>Graviton5 packs 192 cores into a single package, with no hyperthreading and 2 × 96 MB of L3 cache. Judging from the measured topology, the chip looks like<b>Two 96-core halves</b>joined together; each half is one node.<sup>[12]</sup><sup>[14]</sup></p>
+<ul>
+<li><b>medium to 12xlarge</b>(up to 48 vCPU):<b>1 node</b>.</li>
+<li><b>16xlarge</b>(64 vCPU):<b>2 nodes</b>, each side with 32 cores and about 124 GiB. AWS's Graviton docs also state that "16xlarge and 48xlarge have 2 nodes".</li>
+<li><b>24xlarge</b>(96 vCPU): back to <b>1 node</b>, exactly filling one half.</li>
+<li><b>48xlarge / metal-48xl</b>(192 vCPU, 768 GiB): only one chip, but <b>2 nodes</b>, distance 10 / 20.</li>
+</ul>
+<p>In other words, <b>On m9g, the intuition that "larger instances have more nodes" doesn't hold</b>. The 16xlarge is smaller than the 24xlarge, yet it spans two nodes. If your service is latency-sensitive and needs around 64 cores, m9g.24xlarge is actually less hassle than 16xlarge.</p>
+<h3 class="sub-h">vs. previous generation</h3>
+<table class="cmp">
+<thead><tr><th>Family</th><th>Single-node sizes</th><th>Multi-node sizes</th></tr></thead>
+<tbody>
+<tr><td>m7g (Graviton3, 64 cores)</td><td>All, up to 16xlarge / metal</td><td>None</td></tr>
+<tr><td>m7i (Sapphire Rapids, 48 cores per CPU)</td><td>24xlarge and below</td><td>48xlarge / metal-48xl: 2 nodes</td></tr>
+<tr><td>m7a (EPYC Genoa)</td><td>24xlarge and below</td><td>32xlarge (2 × 64 cores), 48xlarge: 2 nodes</td></tr>
+</tbody>
+</table>
+<div class="callout warn">
+<div class="lead">How to remember it</div>
+<b>At 12xlarge and below, every family above is a single node.</b>At 16xlarge the only exception is m9g; at 24xlarge, only m8i. Above that, always run this first:  <code>numactl -H</code> before going live. This data comes from public measured samples (one instance per size). AWS doesn't promise the topology will never change, so rely on your own measurements for your own machines.
+            </div>
+</section>
+<!-- 10 -->
+<section class="content-section" id="k8s">
+<h2 class="section-title">10 · <span>Kubernetes</span> 's NUMA trio</h2>
+<p>In Kubernetes, the kubelet handles this. Think of it like arranging seats at a banquet: the CPU, memory, NIC, or GPU a Pod uses should ideally be seated at<b>Same hall</b>, not split across two buildings. Inside kubelet there are three components working together <sup>[6]</sup>:</p>
+<ul>
+<li><b>CPU Manager</b>(<code>static</code> policy): for Pods with Guaranteed QoS (requests equal to limits) and integer CPU requests <b>Exclusive</b>a group of cores.</li>
+<li><b>Memory Manager</b>(<code>Static</code> policy): reserves memory for these Pods on the specified NUMA node.</li>
+<li><b>Topology Manager</b>: Coordinates by combining the hints from the first two and the device plugins, deciding "which hall to sit in". It has four policies:
+                    <ul>
+<li><code>none</code>: the default; alignment is ignored.</li>
+<li><code>best-effort</code>: Align if possible; if not, still let the Pod start.</li>
+<li><code>restricted</code>: Align if possible; if not,<b>Reject</b>this Pod.</li>
+<li><code>single-numa-node</code>: CPU, memory, and devices must all be on the same node, or the request is rejected.</li>
+</ul>
+</li>
+</ul>
+<figure class="fig">
+<svg aria-label="Three components each give NUMA hints; Topology Manager merges them and decides which node the Pod goes on" role="img" viewbox="0 0 720 200">
+<defs>
+<marker id="pe-g" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#00e5a0"></path></marker>
+<marker id="pe-o" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"></path></marker>
+<marker id="pe-d" markerheight="7" markerwidth="7" orient="auto" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b4"></path></marker>
+</defs>
+<rect fill="#11171f" height="46" rx="7" stroke="#34455a" width="190" x="20" y="20"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="115.0" y="39.0">CPU Manager</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="115.0" y="55.0">Recommendation: node 0 or node 1</text>
+<rect fill="#11171f" height="46" rx="7" stroke="#34455a" width="190" x="20" y="82"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="115.0" y="101.0">Memory Manager</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="115.0" y="117.0">Recommendation: node 0</text>
+<rect fill="#11171f" height="46" rx="7" stroke="#34455a" width="190" x="20" y="144"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="115.0" y="163.0">Device plugins (GPU, NIC)</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="115.0" y="179.0">Recommendation: node 0</text>
+<rect fill="#11171f" height="70" rx="7" stroke="#0bbd87" width="170" x="290" y="70"></rect>
+<text fill="#e8edf2" font-size="12" text-anchor="middle" x="375.0" y="101.0">Topology Manager</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="375.0" y="117.0">Find a node everyone agrees on</text>
+<rect fill="#11171f" height="46" rx="7" stroke="#00e5a0" width="160" x="540" y="44"></rect>
+<text fill="#00e5a0" font-size="12" text-anchor="middle" x="620.0" y="63.0">Lines up</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="620.0" y="79.0">Pod placed on node 0</text>
+<rect fill="#11171f" height="46" rx="7" stroke="#f59e0b" width="160" x="540" y="120"></rect>
+<text fill="#f59e0b" font-size="12" text-anchor="middle" x="620.0" y="139.0">Doesn't line up</text>
+<text fill="#9aa7b4" font-size="11" text-anchor="middle" x="620.0" y="155.0">Per policy: allow or deny</text>
+<path d="M210,43 C250,43 250,105 285,105" fill="none" marker-end="url(#pe-d)" stroke="#9aa7b4" stroke-width="2"></path>
+<path d="M210,105 C250,105 250,105 285,105" fill="none" marker-end="url(#pe-d)" stroke="#9aa7b4" stroke-width="2"></path>
+<path d="M210,167 C250,167 250,105 285,105" fill="none" marker-end="url(#pe-d)" stroke="#9aa7b4" stroke-width="2"></path>
+<path d="M460,95 C500,95 500,67 535,67" fill="none" marker-end="url(#pe-g)" stroke="#00e5a0" stroke-width="2"></path>
+<path d="M460,115 C500,115 500,143 535,143" fill="none" marker-end="url(#pe-o)" stroke="#f59e0b" stroke-width="2"></path>
+</svg>
+<figcaption>Figure 12: Topology Manager works like a meeting chair. Each component reports the nodes it can accept, and it finds the intersection; what happens when there is none is decided by the policy.</figcaption>
+</figure>
+<p><b>Key prerequisite:</b>Exclusive CPUs and reserved memory only apply to <b>Guaranteed QoS + integer CPUs</b> Pods. Ordinary Burstable / BestEffort Pods don't get any of this and still get scattered across nodes.</p>
+</section>
+<!-- 11 -->
+<section class="content-section" id="skip">
+<h2 class="section-title">11 · When<span>No need to worry about it</span></h2>
+<ul>
+<li><b>Single-node instances</b>: For example <code>m8g</code> / <code>m8a</code> 's 24xlarge and below, <code>m8i</code> 's 16xlarge and below, <code>m9g</code> 's 12xlarge and below (plus m9g.24xlarge).<code>numactl -H</code> shows only one node, this article doesn't apply to you.</li>
+<li><b>Stateless, horizontally scalable services</b>: Running several small instances or small Pods is simpler than using one huge instance.</li>
+<li><b>The bottleneck isn't memory at all</b>: What actually bottlenecks you is disk, network, or a downstream API.</li>
+</ul>
+<div class="callout"><b>To be honest:</b>If your stack isn't NUMA-friendly (a JVM with default settings, single-process Python, untuned Postgres),<b>don't buy large dual-socket instances</b>. Two <code>m8g.24xlarge</code> behind an ALB, usually versus a single <code>m8g.48xlarge</code> Easier to use, and less hassle to operate.</div>
+<p>NUMA isn't black magic — it's just the physical shape of the machine you're renting.<b>First use <code>numactl -H</code> Check the topology once, then pick one of three approaches ("pin, interleave, or leave it alone") and you never have to think about it again.</b></p>
+</section>
+<div class="refs">
+<h4>Sources</h4>
+<ol>
+<li>[1] <a href="https://www.kernel.org/doc/html/latest/admin-guide/mm/numa_memory_policy.html">kernel.org · NUMA Memory Policy</a></li>
+<li>[2] <a href="https://www.kernel.org/doc/html/latest/admin-guide/sysctl/kernel.html#numa-balancing">kernel.org · kernel.numa_balancing sysctl</a></li>
+<li>[3] <a href="https://blog.jcole.us/2010/09/28/mysql-swap-insanity-and-the-numa-architecture/">Jeremy Cole · MySQL Swap Insanity and the NUMA Architecture</a></li>
+<li>[4] <a href="https://man7.org/linux/man-pages/man8/numactl.8.html">man 8 numactl</a></li>
+<li>[5] <a href="https://man7.org/linux/man-pages/man8/numastat.8.html">man 8 numastat</a></li>
+<li>[6] <a href="https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/">Kubernetes · Control Topology Management Policies on a node</a></li>
+<li>[7] <a href="https://github.com/amzn/amzn-drivers/blob/master/kernel/linux/ena/ENA_Linux_Best_Practices.rst">ENA Linux Best Practices</a></li>
+<li>[8] <a href="https://openjdk.org/jeps/345">JEP 345 · NUMA-Aware Memory Allocation for G1</a></li>
+<li>[9] <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_numa_interleave">MySQL · innodb_numa_interleave</a></li>
+<li>[10] <a href="https://en.wikipedia.org/wiki/Non-uniform_memory_access">Wikipedia · Non-uniform memory access</a></li>
+<li>[11] <a href="https://www.kernel.org/doc/html/latest/mm/numa.html">kernel.org · What is NUMA?</a></li>
+<li>[12] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/README.md">AWS Graviton Getting Started · NUMA / LLC / DDR table</a></li>
+<li>[13] <a href="https://github.com/intel/optimization-zone/blob/main/software/kafka/README.md">Intel Optimization Zone · Kafka (SNC, 3 nodes per socket)</a></li>
+<li>[14] <a href="https://github.com/SpareCores/sc-inspector-data">SpareCores sc-inspector-data · measured lscpu / lstopo on EC2</a></li>
+</ol>
+</div>
+<div class="next">
+<div class="left">Related reading</div>
+<div class="right">
+<a href="../graviton/">Graviton4 &amp; EC2</a>
+<a class="big" href="../graviton/">Graviton4 &amp; EC2 Deep Dive Guide →</a>
+</div>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../">Home</a> · <a href="../">EC2</a></p>
+</footer>
+<a data-cur="en" data-to="zh" href="../../../ec2/numa/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

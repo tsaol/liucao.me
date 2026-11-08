@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Speaker script · Speaker Script · Harness Self-Evolution</title>
+<link href="../../../../rsi/assets/style.css" rel="stylesheet"/>
+<style>
+      :root {
+        --sk-accent: rgb(0, 217, 130);
+        --sk-purple: rgb(139, 92, 246);
+        --sk-warm: rgb(250, 180, 90);
+        --sk-danger: rgb(239, 68, 68);
+      }
+      body { background: #050a0f; }
+      main.sk-wrap {
+        max-width: 900px; margin: 0 auto;
+        padding: 2rem 1.5rem 6rem;
+        color: var(--text);
+      }
+
+      /* Hero */
+      .sk-hero { text-align: center; padding: 1.2rem 0 2rem; }
+      .sk-kicker {
+        display: inline-block; padding: 4px 12px;
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        border-radius: 999px;
+        color: rgb(230, 130, 130); font-size: 0.72rem;
+        margin-bottom: 0.8rem;
+      }
+      .sk-hero h1 {
+        font-size: 2rem; font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.4rem;
+      }
+      .sk-hero p.sub { color: var(--text-dim); font-size: 0.95rem; }
+      .sk-hero p.byline { color: var(--text-mute); font-size: 0.78rem; margin-top: 0.3rem; }
+
+      /* Sticky top strip */
+      .sk-strip {
+        position: sticky; top: 0;
+        z-index: 20;
+        margin: 0 -1.5rem 1.5rem;
+        padding: 0.55rem 1.5rem;
+        background: rgba(5, 10, 15, 0.94);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        display: flex; gap: 6px; overflow-x: auto;
+        font-family: var(--mono); font-size: 0.68rem;
+      }
+      .sk-strip a {
+        white-space: nowrap;
+        padding: 3px 9px; border-radius: 3px;
+        background: var(--surface-2); color: var(--text-mute);
+        border: 1px solid var(--border);
+        text-decoration: none;
+      }
+      .sk-strip a:hover, .sk-strip a.current {
+        background: var(--accent-glow); color: var(--accent);
+        border-color: var(--accent);
+      }
+      .sk-strip .totalt { margin-left: auto; color: var(--sk-warm); }
+
+      /* Section */
+      .sk-sec {
+        margin: 2rem 0;
+        padding: 1.5rem 1.6rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--sk-purple);
+        border-radius: 8px;
+      }
+      .sk-sec.critical { border-left-color: var(--sk-danger); background: linear-gradient(135deg, rgba(239,68,68,0.03), var(--surface)); }
+      .sk-sec.climax { border-left-color: var(--sk-accent); }
+
+      .sk-head {
+        display: flex; align-items: baseline; gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 0.8rem;
+      }
+      .sk-num {
+        font-family: var(--mono); font-size: 0.75rem;
+        color: var(--sk-purple); font-weight: 700;
+        padding: 3px 8px; border-radius: 3px;
+        background: rgba(139, 92, 246, 0.1);
+      }
+      .sk-time {
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--sk-warm);
+        padding: 2px 8px; border-radius: 3px;
+        background: rgba(250, 180, 90, 0.12);
+      }
+      .sk-cue {
+        font-family: var(--mono); font-size: 0.7rem;
+        color: var(--text-mute);
+        margin-left: auto;
+      }
+      .sk-title {
+        font-size: 1.15rem; font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+
+      /* Main line — the big口播 line */
+      .sk-mainline {
+        font-size: 1.1rem;
+        line-height: 1.65;
+        color: var(--text);
+        font-weight: 500;
+        padding: 0.8rem 1rem;
+        margin: 0.8rem 0;
+        background: rgba(0, 217, 130, 0.05);
+        border-left: 3px solid var(--sk-accent);
+        border-radius: 0 6px 6px 0;
+      }
+      .sk-mainline em { color: var(--sk-accent); font-style: normal; font-weight: 700; }
+
+      /* Backup points */
+      .sk-h3 {
+        font-family: var(--mono); font-size: 0.7rem;
+        color: var(--sk-purple);
+        text-transform: uppercase; letter-spacing: 0.08em;
+        margin: 1.2rem 0 0.5rem;
+      }
+      .sk-h3::before { content: "▸ "; }
+      .sk-backup {
+        list-style: none; padding: 0; margin: 0;
+      }
+      .sk-backup li {
+        padding: 0.35rem 0 0.35rem 1.2rem;
+        position: relative;
+        font-size: 0.82rem; color: var(--text-dim); line-height: 1.55;
+        border-bottom: 1px dashed rgba(255,255,255,0.04);
+      }
+      .sk-backup li::before {
+        content: "•"; position: absolute; left: 4px; color: var(--sk-purple);
+      }
+      .sk-backup li b { color: var(--text); }
+
+      /* Audience POV note */
+      .sk-audience {
+        margin-top: 0.9rem;
+        padding: 0.6rem 0.9rem;
+        background: rgba(139, 92, 246, 0.06);
+        border-radius: 6px;
+        border: 1px dashed rgba(139, 92, 246, 0.3);
+        font-size: 0.78rem; color: var(--text-dim);
+      }
+      .sk-audience::before {
+        content: "👀 观众此时看到 · ";
+        font-family: var(--mono); font-size: 0.68rem;
+        color: var(--sk-purple);
+      }
+
+      /* Numeric cue */
+      .sk-numeric {
+        margin-top: 0.6rem;
+        font-family: var(--mono); font-size: 0.75rem;
+        color: rgb(230, 200, 130);
+        padding: 0.4rem 0.7rem;
+        background: rgba(250, 180, 90, 0.08);
+        border-radius: 4px;
+        border-left: 2px solid var(--sk-warm);
+      }
+      .sk-numeric::before { content: "🔢 关键数字 · "; font-weight: 700; }
+
+      /* Danger box · 卡壳救场 */
+      .sk-danger {
+        margin: 2.5rem 0 1rem;
+        padding: 1.2rem;
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(250, 180, 90, 0.04));
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        border-radius: 8px;
+      }
+      .sk-danger h3 { font-size: 1rem; color: var(--sk-danger); margin-bottom: 0.6rem; }
+      .sk-danger dl { display: grid; grid-template-columns: 1fr 2fr; gap: 6px 12px; }
+      .sk-danger dt {
+        color: var(--sk-warm); font-family: var(--mono); font-size: 0.75rem; font-weight: 600;
+        padding: 4px 0; border-bottom: 1px dashed var(--border);
+      }
+      .sk-danger dd {
+        color: var(--text-dim); font-size: 0.8rem; margin: 0;
+        padding: 4px 0; border-bottom: 1px dashed var(--border); line-height: 1.55;
+      }
+
+      /* Footer nav */
+      .sk-nav-back {
+        margin-top: 3rem;
+        text-align: center;
+        padding: 1.5rem;
+        border-radius: 10px;
+        background: rgba(139, 92, 246, 0.06);
+        border: 1px solid rgba(139, 92, 246, 0.25);
+      }
+      .sk-nav-back p { color: var(--text-dim); margin-bottom: 0.8rem; font-size: 0.85rem; }
+      .sk-nav-back a {
+        display: inline-block; margin: 4px;
+        padding: 7px 16px; border-radius: 6px;
+        text-decoration: none; font-weight: 600; font-size: 0.85rem;
+      }
+      .sk-nav-back a.primary { background: var(--sk-accent); color: #04120c; }
+      .sk-nav-back a.secondary { border: 1px solid var(--sk-purple); color: rgb(180,160,240); }
+
+      @media (max-width: 720px) {
+        .sk-hero h1 { font-size: 1.5rem; }
+        .sk-mainline { font-size: 0.98rem; }
+      }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← Intro</a>
+<a href="../talk/">Talk</a>
+<a href="../papers/">Papers</a>
+<a href="../run/">Live Demo</a>
+<a href="../play/">Play</a>
+<a href="../script-v2/">Script v2</a>
+<a href="../script-play/">Script (Play)</a>
+</div>
+</nav>
+<div class="sk-strip">
+<a href="#s0">Opening</a>
+<a href="#s1">Click</a>
+<a href="#s2">Select parent · pull failed questions</a>
+<a href="#s3">AI writes code</a>
+<a href="#s4">Application + evaluation</a>
+<a href="#s5">Verdict</a>
+<a href="#s6">Gen 1 results</a>
+<a href="#s7">3 generations complete</a>
+<a href="#s8">Wrap-up</a>
+<span class="totalt">Total duration ≈ 8-10 minutes</span>
+</div>
+<main class="sk-wrap">
+<div class="sk-hero">
+<span class="sk-kicker">🎤 PRESENTER ONLY · Speaker script</span>
+<h1>Harness Self-Evolution · Talk Script</h1>
+<p class="sub">Use alongside the Live Demo · 8 voiceover segments + recovery tips for when you get stuck</p>
+<p class="byline">Total duration about 8-10 minutes · Large text is the script · Gray text is backup points · Numbers are key metrics</p>
+</div>
+<!-- ═══════════════════════════════════════════════════════════
+       Section 0 · 开场
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec" id="s0">
+<div class="sk-head">
+<span class="sk-num">S0</span>
+<span class="sk-time">45-60 seconds</span>
+<span class="sk-title">Opening · Setting the scene</span>
+<span class="sk-cue">Demo not started yet</span>
+</div>
+<div class="sk-mainline">
+      "What we're optimizing today is a <em>E-commerce product search agent</em> —— the user enters a query · it returns a top-5 product ranking.
+      Right now it looks like this: a 60-line Python <em>search()</em> function, BM25 baseline, hit rate <em>30%</em>.
+      We don't touch a single Claude weight · we let it rewrite, generation after generation, this <em>search()</em>
+      · using <em>ShinkaEvolve</em> Engine · Target: within 60~120 seconds, climb to <em>90%+</em>."
+    </div>
+<div class="sk-h3">The two real problems it addresses (for the boss)</div>
+<ul class="sk-backup">
+<li>Sonnet is cheap, Opus costs 3x more · <b>Which one to choose</b>?</li>
+<li>After the AI edits the code · <b>How to prove it's real progress, not memorized answers</b>?</li>
+<li>Standard hit-rate evaluation can't handle these two problems · the demo shows an evaluation system that can answer both</li>
+</ul>
+<div class="sk-h3">Backup points (if time permits)</div>
+<ul class="sk-backup">
+<li>Over 12 months in the field, <b>779 papers</b>Self-evolution papers · Sakana open-sourced ShinkaEvolve · now is the golden window</li>
+<li>The setup from PPT slides 4-5 · this isn't black magic · it's measurable</li>
+<li>If the audience is highly technical · you can say "freeze the weights, evolve the periphery, evaluate first, gate acceptance"</li>
+</ul>
+<div class="sk-audience">Intro / Talk page · or the Live Demo ready to click</div>
+<div class="sk-numeric">779 papers / 12 months · 439 core · Sakana Shinka is the only open-source one</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       Section 1 · 点击
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec critical" id="s1">
+<div class="sk-head">
+<span class="sk-num">S1</span>
+<span class="sk-time">5 seconds</span>
+<span class="sk-title">Click "Start evolution"</span>
+<span class="sk-cue">Just clicked</span>
+</div>
+<div class="sk-mainline">
+      "What I'm choosing now is <em>Opus 4.8 · The strongest model</em>. One run evolves 3 generations, 60~120 seconds total.
+      Click Start · let's watch it run."
+    </div>
+<div class="sk-h3">Pause for a beat</div>
+<ul class="sk-backup">
+<li>After clicking · let the audience watch the progress bar · <b>Don't rush to explain</b></li>
+<li>If someone asks "Is this real?" · open the Shinka card on the Papers page · prove in a second that the source code exists</li>
+</ul>
+<div class="sk-audience">Progress bar starts at 0% · "Launch ShinkaEvolve process" appears · workflow node 1 pulses</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       Section 2 · 选亲本 · 拉错题
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec climax" id="s2">
+<div class="sk-head">
+<span class="sk-num">S2</span>
+<span class="sk-time">10-15 seconds</span>
+<span class="sk-title">Evidence for "evaluation first" · select parents + pull the list of failed questions · <span style="color:rgb(120,210,255);">🔵 Observe</span></span>
+<span class="sk-cue">stage=sampling</span>
+</div>
+<div class="sk-mainline">
+      "Look at this step · <em>Not AI changing code at random · run the eval first to get the list of failures · then hand it to the AI</em>.
+      This is the core of my whole talk · <em>Evaluation first</em>. A green badge on node 2 of the workflow points this out."
+    </div>
+<div class="sk-h3">Backup points</div>
+<ul class="sk-backup">
+<li>Point the audience to the green "evaluation first" badge on node 2 · this is deliberately visualized</li>
+<li>Note: the archive has several candidates · pick one · attach the questions it got wrong out of the 31</li>
+<li>The archive that keeps failed branches, from PPT slide 21 · this is it</li>
+</ul>
+<div class="sk-audience">Node 2 pulses · subtitle: "Pick a previous-generation harness from the archive · attach its mistakes on the 31 tasks"</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       Section 3 · AI 写代码
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec" id="s3">
+<div class="sk-head">
+<span class="sk-num">S3</span>
+<span class="sk-time">20-40 seconds</span>
+<span class="sk-title">AI rewrites code for failed problems · <span style="color:rgb(180,160,240);">🟣 Propose</span></span>
+<span class="sk-cue">stage=querying · longest segment</span>
+</div>
+<div class="sk-mainline">
+      "This step takes the most time · <em>AI read the list of 31 missed questions</em>and then write an improvement plan.
+      See right · already generated <em>A diff of N bytes</em>. Wait about 20-40 seconds."
+    </div>
+<div class="sk-h3">What these 30 seconds cover · 4 choices</div>
+<ul class="sk-backup">
+<li><b>Cover harness vs prompt</b>: The AI changes "code", not "prompts" · more thorough · trackable in git</li>
+<li><b>Cover fine-tune vs evolution</b>: one RL run $500k · one harness evolution $50 · a thousand times cheaper</li>
+<li><b>Cover selection bias</b>: This is only a 31-problem concept demo · production needs N ≥ 200 per tier</li>
+<li><b>Cover the 3 monkey-patches</b>: ShinkaEvolve isn't perfect · we had to apply 3 patches to get it running</li>
+</ul>
+<div class="sk-audience">Node 3 pulses · "AI rewrites code to target the mistakes → feedback loop" · bytes counter ticks up</div>
+<div class="sk-numeric">Bedrock generates diffs of roughly 500-3000 bytes · Opus 4.8 costs about $0.10 per call</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       Section 4 · 应用 + 评测
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec" id="s4">
+<div class="sk-head">
+<span class="sk-num">S4</span>
+<span class="sk-time">15-25 seconds</span>
+<span class="sk-title">Apply patch + run evaluation · <span style="color:rgb(250,200,130);">🟠 Apply</span> → <span style="color:var(--sk-accent);">🟢 Verify</span></span>
+<span class="sk-cue">stage=applying → evaluating</span>
+</div>
+<div class="sk-mainline">
+      "The AI returned a diff · now apply it to the parent · generate new Python. Then run the eval — <em>31 public questions + 5 hold-out + 31 typo</em>
+      All three eval suites must run · for it to count as a gate."
+    </div>
+<div class="sk-h3">Three anti-cheating gates</div>
+<ul class="sk-backup">
+<li><b>31 public questions</b>: visible to the AI · main score</li>
+<li><b>5 hold-out problems</b>:<em>Never seen by the AI</em> · catches rote memorization</li>
+<li><b>Typo · 31 questions</b>: Randomly swap characters in each word · catches lookup-table cheat sheets (`apple → aplpe`)</li>
+<li>Blended score = 0.7 × public + 0.2 × hold-out + 0.1 × typo − code penalty</li>
+</ul>
+<div class="sk-audience">Nodes 4/5 activate · eval progress bar advances · "Generate next round of mistakes" badge highlights</div>
+<div class="sk-numeric">31 + 5 + 31 = <b>67 searches</b>Every generation · ~15-25 seconds of evaluation per generation</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       Section 5 · 判决
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec" id="s5">
+<div class="sk-head">
+<span class="sk-num">S5</span>
+<span class="sk-time">5 seconds</span>
+<span class="sk-title">Blended score · Gate verdict · <span style="color:rgb(240,130,130);">🔴 Commit</span></span>
+<span class="sk-cue">stage=scoring</span>
+</div>
+<div class="sk-mainline">
+      "The overall score is in · <em>&gt; 0 means promotion</em>. This is the "keep or discard"
+      gating from Karpathy's autoresearch · but I added an anti-cheating layer."
+    </div>
+<div class="sk-h3">Backup points</div>
+<ul class="sk-backup">
+<li>The 5-step loop on PPT slide 11 · this is the whole thing</li>
+<li>Gate rejection example: Harvey R4 gained 0.6pp, but tokens rose +46%, so the cost penalty rejected it</li>
+</ul>
+<div class="sk-audience">Node 6 pulses · NDCG/combined numbers ease in · "✓ Promoted" or "✗ Rejected"</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       Section 6 · Gen 1 出结果
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec climax" id="s6">
+<div class="sk-head">
+<span class="sk-num">S6</span>
+<span class="sk-time">15-20 seconds</span>
+<span class="sk-title">First Gen card appears · numbers change</span>
+<span class="sk-cue">generation_done · Gen 1 card appears</span>
+</div>
+<div class="sk-mainline">
+      "Look · <em>Gen 1 is out</em>. NDCG went from <em>46 rises to 90+</em>. The key is <em>Tier H · Hardest questions</em>
+      From 9% to 80% — that's what Opus 4.8 can do."
+    </div>
+<div class="sk-h3">This is the key part · don't miss it</div>
+<ul class="sk-backup">
+<li>Numbers ease up from 0 · so the audience watches them change</li>
+<li>Blended score breakdown bar, 4 segments: green (public) + purple (hold-out) + blue (robustness) − red (code penalty)</li>
+<li>This shows hold-out improved too · which shows <b>Not rote memorization · real generalization</b></li>
+<li>If the audience asks "How do you prove it isn't luck?": just load it 3 times and get the same result · mention CI</li>
+</ul>
+<div class="sk-audience">Gen 1 card fades up · NDCG number counts up · composite score bar grows in 4 staggered segments</div>
+<div class="sk-numeric">Typical Gen 1 · NDCG 90-95% · Tier H 60-85% · hold-out 80-100%</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       Section 7 · 3 代完成
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec climax" id="s7">
+<div class="sk-head">
+<span class="sk-num">S7</span>
+<span class="sk-time">30-45 seconds</span>
+<span class="sk-title">All three generations done · comparison view</span>
+<span class="sk-cue">complete · Comparison views appear</span>
+</div>
+<div class="sk-mainline">
+      "All three generations have finished. Chart C · three bars show the climb. Chart A · same query, before vs. after · the ones that started out wrong are now all correct.
+      <em>Whole run: 60-120 seconds · $0.10</em>."
+    </div>
+<div class="sk-h3">The one line I most want the audience to take away</div>
+<ul class="sk-backup">
+<li><b>"Sonnet stuck at 9% on Tier H · Opus 4.8 reaches 90%"</b>: The model's capability ceiling · evals can measure it</li>
+<li><b>"Hold-out 100%"</b>: not memorizing answers · actually able to solve them</li>
+<li><b>"$0.10 per run"</b>: not the $500K of fine-tuning · 5 orders of magnitude cheaper</li>
+<li>Switch to Sonnet 4.5 and run it live for comparison (if time permits): Tier H is stuck at 9%</li>
+</ul>
+<div class="sk-audience">C score comparison chart (3 bars growing in staggered sequence) · A per-query flips, 5 rows · D 31-question matrix</div>
+<div class="sk-numeric">Baseline 30% → Opus 4.8 92% · Tier H 9% → 80%+ · Hold-out 60% → 100%</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       Section 8 · 收束
+       ═══════════════════════════════════════════════════════════ -->
+<section class="sk-sec" id="s8">
+<div class="sk-head">
+<span class="sk-num">S8</span>
+<span class="sk-time">60 seconds</span>
+<span class="sk-title">Wrap-up · call to action</span>
+<span class="sk-cue">Leave demo · back to PPT slide 38</span>
+</div>
+<div class="sk-mainline">
+      "What this demo shows isn't "AI can modify code" — it's <em>The eval system is the scarce asset</em>.
+      The engine (ShinkaEvolve) is someone else's · but <em>Three-tier evals + hold-out + gating</em> is my IP.
+      Suggested action · go back and build a 72-question golden set for your most important agent · <em>You can get started in two weeks</em>."
+    </div>
+<div class="sk-h3">If time allows · expand</div>
+<ul class="sk-backup">
+<li>Switch to the Shinka source walkthrough on the Papers page · explain that you can fork it yourself · modifiable in 30 minutes</li>
+<li>Switch to Ch 9 on the Talk page · give action recommendations for 6 roles</li>
+<li>GitHub link · scan the QR code</li>
+</ul>
+<div class="sk-audience">Papers page · or Talk Ch 9 So What · or scan the QR code for GitHub</div>
+<div class="sk-numeric">GitHub · tsaol/harness-self-evolution · Apache 2.0</div>
+</section>
+<!-- ═══════════════════════════════════════════════════════════
+       Danger box · 卡壳救场
+       ═══════════════════════════════════════════════════════════ -->
+<div class="sk-danger">
+<h3>🚨 Recovery lines · Say this if something goes wrong</h3>
+<dl>
+<dt>Bedrock error / timeout</dt>
+<dd>"The network is lagging · let's look at the code walkthrough on the Papers page · the logic is just as clear" → switch to /demo/harness/papers/</dd>
+<dt>All 3 generations rejected for promotion</dt>
+<dd>"Look · this is the gate kicking in · <b>No progress means no progress · the threshold held</b>. The eval itself is trustworthy."</dd>
+<dt>Tier H score didn't improve</dt>
+<dd>"This is Sonnet's ceiling · rerun with Opus 4.8 and it breaks through · let me run it for you first."</dd>
+<dt>Audience asks "How do you prove the AI didn't cheat?"</dt>
+<dd>Point to hold-out (hidden from the AI) + perturbed (typo version) · show the composite score formula.</dd>
+<dt>Audience asks "How is this different from Cursor / Copilot?"</dt>
+<dd>"Cursor helps people write code · here the AI modifies its own code · and <b>The eval system tells it whether it's right</b>."</dd>
+<dt>Audience asks "Is it production-ready?"</dt>
+<dd>Be honest: "N=31 is toy scale · production needs N ≥ 200 per tier · but the methodology is the same."</dd>
+<dt>Audience follow-up on selection bias</dt>
+<dd>"Right · I came up with the questions first and then built the catalog · it's a concept demo. Only a real benchmark like BRIGHT is free of bias."</dd>
+</dl>
+</div>
+<div class="sk-nav-back">
+<p>Ready to start the talk?</p>
+<a class="primary" href="../run/">→ Open Live Demo</a>
+<a class="secondary" href="../talk/">Talk overview</a>
+<a class="secondary" href="../papers/">Papers</a>
+</div>
+</main>
+<script>
+(function() {
+  // Sticky strip current highlight
+  const links = document.querySelectorAll(".sk-strip a[href^='#']");
+  const sections = document.querySelectorAll(".sk-sec");
+  window.addEventListener("scroll", () => {
+    let current = null;
+    sections.forEach(s => {
+      const r = s.getBoundingClientRect();
+      if (r.top < 200) current = s.id;
+    });
+    links.forEach(a => a.classList.toggle("current", a.getAttribute("href") === "#" + current));
+  }, { passive: true });
+})();
+</script>
+<a data-cur="en" data-to="zh" href="../../../../rsi/demo/script/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

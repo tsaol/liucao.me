@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Core papers · Deep dive · Harness Self-Evolution</title>
+<link href="../../../../rsi/assets/style.css" rel="stylesheet"/>
+<style>
+      :root {
+        --pp-accent: rgb(0, 217, 130);
+        --pp-purple: rgb(139, 92, 246);
+        --pp-blue: rgb(80, 200, 255);
+        --pp-warm: rgb(250, 180, 90);
+        --pp-danger: rgb(239, 68, 68);
+      }
+      body { background: #050a0f; }
+      main.pp-wrap {
+        max-width: 900px; margin: 0 auto;
+        padding: 3rem 1.5rem 6rem;
+        color: var(--text);
+      }
+
+      /* Hero */
+      .pp-hero { text-align: center; padding: 1.5rem 0 2.5rem; }
+      .pp-kicker {
+        display: inline-block; padding: 4px 12px;
+        border: 1px solid rgba(139,92,246,0.35);
+        border-radius: 999px;
+        color: rgb(180,160,240); font-size: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .pp-hero h1 {
+        font-size: 2.2rem; font-weight: 800;
+        letter-spacing: -0.02em; line-height: 1.15;
+        margin-bottom: 0.6rem;
+      }
+      .pp-hero h1 .grad {
+        background: linear-gradient(90deg, var(--pp-purple), var(--pp-accent), var(--pp-blue), var(--pp-purple));
+        background-size: 300% 100%;
+        background-clip: text; -webkit-background-clip: text;
+        color: transparent; -webkit-text-fill-color: transparent;
+        animation: ppGrad 8s linear infinite;
+      }
+      @keyframes ppGrad { to { background-position: 300% 0; } }
+      .pp-hero p.sub { color: var(--text-dim); font-size: 1rem; }
+      .pp-hero p.byline { color: var(--text-mute); font-size: 0.8rem; margin-top: 0.4rem; }
+
+      /* Sticky index */
+      .pp-index {
+        position: sticky; top: 0;
+        z-index: 20;
+        margin: 0 -1.5rem 2rem;
+        padding: 0.7rem 1.5rem;
+        background: rgba(5, 10, 15, 0.92);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        display: flex; gap: 6px; overflow-x: auto;
+        font-family: var(--mono); font-size: 0.7rem;
+      }
+      .pp-index a {
+        white-space: nowrap;
+        padding: 4px 10px; border-radius: 3px;
+        background: var(--surface-2); color: var(--text-mute);
+        border: 1px solid var(--border);
+        text-decoration: none;
+      }
+      .pp-index a:hover, .pp-index a.current {
+        background: var(--accent-glow); color: var(--accent);
+        border-color: var(--accent);
+      }
+
+      /* Paper card */
+      .pp-paper {
+        margin: 3rem 0;
+        padding: 2rem;
+        border-radius: 14px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--pp-purple);
+        opacity: 0; transform: translateY(20px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .pp-paper.visible { opacity: 1; transform: none; }
+      .pp-paper:nth-child(2n) { border-left-color: var(--pp-accent); }
+      .pp-paper:nth-child(3n) { border-left-color: var(--pp-blue); }
+
+      .pp-p-head {
+        display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+        margin-bottom: 0.7rem;
+      }
+      .pp-p-num {
+        font-family: var(--mono); font-size: 0.9rem;
+        color: var(--pp-purple); font-weight: 700;
+      }
+      .pp-p-id {
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--text-mute);
+        padding: 2px 8px; border-radius: 3px;
+        background: rgba(139,92,246,0.08);
+      }
+      .pp-p-id a { color: inherit; text-decoration: none; }
+      .pp-p-id a:hover { color: var(--pp-accent); }
+      .pp-p-date {
+        margin-left: auto;
+        font-family: var(--mono); font-size: 0.7rem; color: var(--text-mute);
+      }
+
+      .pp-p-titles h2 {
+        font-size: 1.4rem; font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: 0.2rem;
+        line-height: 1.25;
+      }
+      .pp-p-title-en {
+        font-size: 0.9rem; color: var(--text-mute);
+        font-family: var(--mono);
+        margin-bottom: 0.6rem;
+      }
+      .pp-p-authors {
+        font-size: 0.8rem; color: var(--text-dim);
+        margin-bottom: 1rem;
+        padding-bottom: 0.8rem;
+        border-bottom: 1px dashed var(--border);
+      }
+
+      /* One-liner + why matters */
+      .pp-one-liner {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: var(--text);
+        font-weight: 500;
+        border-left: 3px solid var(--pp-purple);
+        padding: 0.5rem 0 0.5rem 1rem;
+        margin: 1rem 0;
+      }
+      .pp-paper:nth-child(2n) .pp-one-liner { border-left-color: var(--pp-accent); }
+      .pp-paper:nth-child(3n) .pp-one-liner { border-left-color: var(--pp-blue); }
+
+      .pp-why {
+        font-size: 0.9rem; line-height: 1.7; color: var(--text-dim);
+        margin: 1.2rem 0;
+      }
+      .pp-why b { color: var(--text); }
+
+      /* Insight blocks */
+      .pp-h3 {
+        font-size: 0.85rem; color: var(--pp-accent);
+        margin: 1.7rem 0 0.7rem;
+        font-weight: 700;
+        font-family: var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .pp-h3::before {
+        content: ""; display: inline-block; width: 3px; height: 12px;
+        background: var(--pp-accent); margin-right: 6px; vertical-align: -1px;
+      }
+      .pp-insights {
+        display: grid; gap: 12px;
+      }
+      .pp-insight {
+        padding: 1rem 1.2rem;
+        background: rgba(255,255,255,0.02);
+        border-radius: 8px;
+        border: 1px solid var(--border);
+      }
+      .pp-insight-h {
+        font-size: 0.95rem; color: var(--text); font-weight: 600;
+        margin-bottom: 6px;
+        display: flex; align-items: baseline; gap: 8px;
+      }
+      .pp-insight-num {
+        font-family: var(--mono); font-size: 0.72rem;
+        color: var(--pp-accent); font-weight: 700;
+        min-width: 20px;
+      }
+      .pp-insight-body {
+        font-size: 0.82rem; color: var(--text-dim); line-height: 1.7;
+      }
+
+      /* Quote block */
+      .pp-quote {
+        margin: 1.3rem 0;
+        padding: 1rem 1.2rem;
+        background: linear-gradient(135deg, rgba(139,92,246,0.06), rgba(0,217,130,0.04));
+        border-radius: 8px;
+        border-left: 3px solid var(--pp-warm);
+        font-family: var(--mono); font-size: 0.8rem;
+        color: var(--text-dim); line-height: 1.7;
+      }
+      .pp-quote::before { content: "❝ "; color: var(--pp-warm); font-size: 1.4rem; vertical-align: -4px; }
+      .pp-quote-cn {
+        margin-top: 6px;
+        font-family: var(--font); font-style: italic;
+        color: rgb(220, 210, 180);
+      }
+
+      /* Demo relation callout */
+      .pp-relation {
+        margin: 1.3rem 0;
+        padding: 1rem 1.2rem;
+        background: rgba(0, 217, 130, 0.06);
+        border-radius: 8px;
+        border-left: 3px solid var(--pp-accent);
+      }
+      .pp-relation-h {
+        font-size: 0.75rem; color: var(--pp-accent);
+        font-family: var(--mono); font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.08em;
+        margin-bottom: 6px;
+      }
+      .pp-relation-body {
+        font-size: 0.85rem; color: var(--text-dim); line-height: 1.65;
+      }
+
+      /* Takeaway */
+      .pp-takeaway {
+        margin-top: 1.4rem;
+        padding: 1rem 1.2rem;
+        border-radius: 8px;
+        text-align: center;
+        background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,217,130,0.08));
+        border: 1px solid rgba(139,92,246,0.3);
+        font-size: 0.98rem; font-weight: 500;
+        color: var(--text);
+      }
+      .pp-takeaway::before { content: "→ "; color: var(--pp-accent); font-weight: 700; }
+
+      /* Footer CTA */
+      .pp-cta {
+        margin-top: 4rem;
+        padding: 2rem;
+        text-align: center;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,217,130,0.08));
+        border: 1px solid rgba(139,92,246,0.3);
+      }
+      .pp-cta h3 { font-size: 1.2rem; margin-bottom: 0.6rem; }
+      .pp-cta p { color: var(--text-dim); margin-bottom: 1rem; font-size: 0.9rem; }
+      .pp-cta a {
+        display: inline-block;
+        margin: 4px;
+        padding: 8px 18px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600; font-size: 0.85rem;
+      }
+      .pp-cta a.primary { background: var(--pp-accent); color: #04120c; }
+      .pp-cta a.secondary {
+        background: transparent;
+        border: 1px solid var(--pp-purple);
+        color: rgb(180,160,240);
+      }
+
+      /* Empty state */
+      .pp-empty {
+        margin: 3rem 0; padding: 2rem; text-align: center;
+        border: 1px dashed var(--border-hi);
+        border-radius: 8px;
+        color: var(--text-mute);
+      }
+
+      @media (max-width: 720px) {
+        .pp-hero h1 { font-size: 1.6rem; }
+        .pp-p-titles h2 { font-size: 1.15rem; }
+      }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← Intro</a>
+<a href="../talk/">Talk</a>
+<a href="../run/">Live Demo</a>
+<a href="../play/">Play</a>
+</div>
+</nav>
+<main class="pp-wrap">
+<div class="pp-hero">
+<span class="pp-kicker">3 core papers · AI deep-dive · no WeChat sharing</span>
+<h1>Harness Self-Evolution · <span class="grad">Core papers</span></h1>
+<p class="sub">Evaluation method (AlphaEvolve) · lineage origins (DGM · Meta-Harness) · engine (ShinkaEvolve paper + source walkthrough) · task inspiration (BRIGHT)</p>
+<p class="byline">5 papers + 1 source walkthrough · covers all the IP in the demo · about a 25-minute read</p>
+</div>
+<div class="pp-index">
+<a href="#alphaevolve">1 · AlphaEvolve</a>
+<a href="#dgm">2 · Darwin Gödel Machine</a>
+<a href="#meta-harness">3 · Meta-Harness</a>
+<a href="#shinka">4 · ShinkaEvolve</a>
+<a href="#shinka-code">5 · ShinkaEvolve source walkthrough · </a>
+<a href="#bright">6 · BRIGHT</a>
+<a href="../talk/">← Talk Overview</a>
+</div>
+<section class="pp-paper" id="alphaevolve">
+<div class="pp-p-head">
+<span class="pp-p-num">P1</span>
+<span class="pp-p-id"><a href="https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" rel="noopener" target="_blank">DeepMind whitepaper · 2024 ↗</a></span>
+<span class="pp-p-date">2024-05-14</span>
+</div>
+<div class="pp-p-titles">
+<h2>AlphaEvolve: a Gemini-powered coding agent for algorithm design</h2>
+<div class="pp-p-title-en">AlphaEvolve: A Gemini-powered coding agent for designing advanced algorithms</div>
+<div class="pp-p-authors">DeepMind team · 2024-05</div>
+</div>
+<div class="pp-one-liner">The granddaddy of them all: uses an evaluation cascade + Gemini dual-model evolution to directly rewrite Google's production code</div>
+<div class="pp-why">This is the founding work of the field of "real algorithm discovery with LLMs". Before it, FunSearch could only evolve a single function. AlphaEvolve was the first to scale evolutionary code search to an entire codebase, and it went straight into high-stakes production systems like Google Borg, Gemini training kernels, and TPU Verilog. It's closed-source, with Early Access available only to a small number of academic users. The Shinka and DGM you can pip install from GitHub today are essentially open-source descendants of this paper's ideas. Understanding AlphaEvolve = understanding the original design behind every code evolution framework today.</div>
+<div class="pp-h3">3 core insights</div>
+<div class="pp-insights">
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">1</span>
+<span>Evaluation Cascade: tiered evaluation; if a tier fails, it stops there</span>
+</div>
+<div class="pp-insight-body">The core mechanism of AlphaEvolve isn't the LLM, it's the evaluator. After each candidate program is generated, evaluation runs in multiple stages: first the cheapest stage (e.g., unit tests, small inputs, sanity checks that finish in seconds); only candidates that pass this stage are allowed into the next one (longer benchmarks, held-out datasets, perturbed inputs); and only the final stage is the truly expensive full evaluation (e.g., a complete correctness proof, large-scale performance tests). This way, the vast majority of obviously wrong or obviously mediocre candidates are killed at the first stage, and precious evaluation compute is spent only on patches with real potential. This is the "evaluation cascade" — it compresses the most expensive step in evolutionary search from "fully evaluate every candidate" into a "pyramid funnel," and it's the key to scaling the whole pipeline to tens of thousands of samples.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">2</span>
+<span>Taking matrix multiplication back from Strassen: 4×4 complex matrices in 48 multiplications</span>
+</div>
+<div class="pp-insight-body">In 1969, Strassen's algorithm multiplied 4×4 matrices using 49 scalar multiplications. 56 years later, AlphaEvolve found a new algorithm using 48 multiplications for 4×4 complex matrices, the first improvement on this case since Strassen. This is no toy: the same system sped up a key matmul kernel in Gemini training by 23%, cutting overall Gemini training time by 1%. It sped up the FlashAttention kernel by up to 32.5%. It also proposed a Verilog rewrite of a highly optimized TPU arithmetic circuit, which passed correctness verification and has been integrated into the next-generation TPU. A scheduling heuristic that has run on Borg for over a year recovers an average of 0.7% of Google's global compute, saving the equivalent of building a new data center each year. On about 50 open math problems, it matched SOTA on 75% and set new records on 20%, including a new lower bound of 593 outer spheres for the kissing number in 11 dimensions.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">3</span>
+<span>Gemini Flash casts a wide net + Gemini Pro digs deep: two-model ensemble</span>
+</div>
+<div class="pp-insight-body">AlphaEvolve doesn't bet on a single model. Gemini Flash is cheap and fast and handles "breadth" — producing dozens to hundreds of ideas per round for large-scale exploration; Gemini Pro is expensive, slow, and deep, and handles "depth" — making more insightful rewrites along the promising directions Flash finds. In between, a prompt sampler picks parents from the programs database (archive) to assemble prompts, the LLM outputs candidate patches, the evaluator cascade scores them, and those that pass enter the archive to become parents for the next round — a very clean evolutionary loop. The biggest difference from FunSearch: FunSearch can only evolve a single Python function, while AlphaEvolve can evolve an entire codebase, with changes across files and modules. That's also why it can directly modify Verilog, CUDA, and the Borg scheduler.</div>
+</div>
+</div>
+<div class="pp-h3">The best line</div>
+<div class="pp-quote">
+      AlphaEvolve continuously recovers, on average, 0.7% of Google's worldwide compute resources. 
+      
+      <div class="pp-quote-cn">AlphaEvolve has been running continuously on Borg for over a year, recovering an average of 0.7% of Google's worldwide compute.</div>
+</div>
+<div class="pp-relation">
+<div class="pp-relation-h">How it relates to this demo</div>
+<div class="pp-relation-body">In today's demo, the composite score formula in evaluate.py, `combined = 0.7·public + 0.2·heldout + 0.1·perturbed`, and the cascade gate that scores the H tier only when the E score &gt;= 0.7 and the M score &gt;= 0.5, are copied straight from AlphaEvolve's evaluation cascade — cheap before expensive, local before global, and nothing advances to the next tier without passing the previous one. You can think of today's demo as taking AlphaEvolve's evaluation philosophy from "a closed-source system inside Google" to an open-source setup that runs on "a single GPU + Bedrock Claude."</div>
+</div>
+<div class="pp-takeaway">What AlphaEvolve teaches you isn't "use an LLM to write code" but "use an evaluation cascade to lock the LLM in a cage, so it only gets credit when it can actually prove itself" — that's the real secret to making code evolution work.</div>
+</section>
+<section class="pp-paper" id="dgm">
+<div class="pp-p-head">
+<span class="pp-p-num">P2</span>
+<span class="pp-p-id"><a href="https://arxiv.org/abs/2505.22954" rel="noopener" target="_blank">arXiv:2505.22954 ↗</a></span>
+<span class="pp-p-date">2025-05-29</span>
+</div>
+<div class="pp-p-titles">
+<h2>Darwin Gödel Machine: open-ended evolution of self-improving agents</h2>
+<div class="pp-p-title-en">Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Agents</div>
+<div class="pp-p-authors">Jenny Zhang, Shengran Hu, Cong Lu, Robert Lange, Jeff Clune (UBC + Sakana AI + Vector Institute)</div>
+</div>
+<div class="pp-one-liner">Let the agent modify its own code, use benchmarks instead of formal proofs, and use an evolutionary archive instead of single-line optimization</div>
+<div class="pp-why">Looking back from 2026, DGM is the starting point of the self-improving agent lineage. It was the first to bring Schmidhuber's 2003 Gödel machine out of theory and into something you can actually run, replacing the impossible requirement of "proving every change is a net gain" with "run SWE-bench and check the score." More importantly, it brought the archive idea from open-endedness research into agent self-improvement: instead of greedily pushing the best solution forward, it keeps an entire evolutionary tree, failed branches included. Today, Sakana's ShinkaEvolve and the various self-evolving harnesses all trace their lineage back to it.</div>
+<div class="pp-h3">3 core insights</div>
+<div class="pp-insights">
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">1</span>
+<span>From formal proofs to empirical validation</span>
+</div>
+<div class="pp-insight-body">Schmidhuber's Gödel machine requires an agent to prove that a change is a "net gain" before each self-modification — theoretically elegant but impossible in practice, because most meaningful changes can't be formally proven. DGM takes a pragmatic approach: replace "proof" with "run the benchmark." Each new agent version runs on SWE-bench or Polyglot, and the score decides. This step looks simple, but it's the key to making self-improvement actually work — it turns a math problem into an engineering problem. The cost is losing theoretical guarantees; the payoff is a system that actually runs. This pragmatic shift largely set the technical direction for every self-improving agent from 2025 onward.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">2</span>
+<span>Archive-based open-endedness: keep failed branches</span>
+</div>
+<div class="pp-insight-body">This is DGM's most counterintuitive and most important design choice. Traditional optimization discards low-scoring branches and keeps only the best. DGM does the opposite: it maintains an archive that keeps every agent from every generation, including those that look like failures at the time. The next generation isn't picked from the best. Instead, a parent is sampled "interestingly" from the archive, and the foundation model generates a new variant from it. This forms a constantly branching tree that explores many paths in parallel. Why do it this way? In open-ended search, today's failure is often the stepping stone to tomorrow's breakthrough. An intermediate form may not be useful on its own, but one more step on top of it can open a new dimension. The idea comes directly from Jeff Clune's group and its years of open-endedness research (the Quality-Diversity and MAP-Elites line of work).</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">3</span>
+<span>Compounding at the meta level: better tools → better ability to improve</span>
+</div>
+<div class="pp-insight-body">DGM doesn't modify the model weights; it modifies the agent's own codebase: tool definitions, prompts, context management, and review workflows. This creates a recursive effect: the agent improves its own code editing tool, and the next-generation agent uses that better tool to modify itself, and does it better. The concrete evolution examples in the paper are telling: DGM spontaneously added patch validation, chunked handling of long contexts, and a peer-review mechanism (one agent generates a patch, another reviews it). SWE-bench went from 20.0% to 50.0%, Polyglot from 14.2% to 30.7%, significantly outperforming baselines without self-improvement or without open-ended exploration. This isn't simple scaling; it's compounding at the meta level.</div>
+</div>
+</div>
+<div class="pp-h3">The best line</div>
+<div class="pp-quote">
+      "The DGM is a significant step toward self-improving AI, capable of gathering its own stepping stones along paths that unfold into endless innovation." — DGM is a key step toward self-improving AI: it picks up its own stepping stones along the way, forging a path toward endless innovation.
+      
+    </div>
+<div class="pp-relation">
+<div class="pp-relation-h">How it relates to this demo</div>
+<div class="pp-relation-body">The ShinkaEvolve used in this demo (arXiv:2509.19349, 2025-09) is the productized follow-up Robert Lange built at Sakana AI. A co-author of DGM became the first author of ShinkaEvolve. The technical lineage is clear: DGM proved that the "archive + LLM mutation + benchmark validation" approach works, but its sample efficiency is poor (it needs thousands of samples). ShinkaEvolve adds parent sampling, novelty rejection, and a bandit-based LLM ensemble to the same framework, cutting the sample count to 150 while still reaching SOTA. DGM is the prototype; ShinkaEvolve is the usable tool. Today's harness self-evolution demo essentially runs the paradigm DGM established.</div>
+</div>
+<div class="pp-takeaway">A self-improving agent doesn't need to prove every step is correct. Keep every branch, let the benchmark be the judge, and evolution will find its own way.</div>
+</section>
+<section class="pp-paper" id="meta-harness">
+<div class="pp-p-head">
+<span class="pp-p-num">P3</span>
+<span class="pp-p-id"><a href="https://arxiv.org/abs/2603.28052" rel="noopener" target="_blank">arXiv:2603.28052 ↗</a></span>
+<span class="pp-p-date">2026-03-30</span>
+</div>
+<div class="pp-p-titles">
+<h2>Meta-Harness: End-to-End Optimization of Model Harnesses</h2>
+<div class="pp-p-title-en">Meta-Harness: End-to-End Optimization of Model Harnesses</div>
+<div class="pp-p-authors">Yoonho Lee, Roshen Nair, Qizheng Zhang, Omar Khattab, Chelsea Finn, et al. (Stanford / KRAFTON / MIT)</div>
+</div>
+<div class="pp-one-liner">Hand the entire harness to a coding agent to search, using the file system as the feedback channel.</div>
+<div class="pp-why">In 2026 everyone is talking about harness engineering: the same model can show a 6x performance gap with a different harness. Previous text optimizers all compress feedback. OPRO only sees a scalar, GEPA stuffs in a summary, and TextGrad only looks at the current artifact. This paper raises the ceiling to 10M tokens/iter, three orders of magnitude more than existing methods. It shows that letting a coding agent grep and cat historical traces on its own beats manual prompt tuning, and beats any structured search loop.</div>
+<div class="pp-h3">3 core insights</div>
+<div class="pp-insights">
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">1</span>
+<span>The feedback channel shifts from the prompt to the file system</span>
+</div>
+<div class="pp-insight-body">Earlier text optimizers share a common flaw: they compress the history into a one-line summary and stuff it into the prompt. OPRO uses 0.002 MTok/iter, GEPA 0.008, TTT-Discover 0.026, in millions of tokens. Meta-Harness uses a full 10.0 MTok/iter, a gap of three orders of magnitude. The proposer doesn't consume it all at once; it works like a real programmer: each round it greps a median of 82 files (41% historical harness source code, 40% execution traces), spanning 20+ historical candidates. This is non-Markovian: it doesn't just look at the previous version, but freely digs into early failure cases to reason. The implicit premise of this design: only in early 2026 did coding agents become just strong enough to decide for themselves what to look at.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">2</span>
+<span>The trace is what matters; the summary actually hurts</span>
+</div>
+<div class="pp-insight-body">The paper ran a very clean ablation: scores-only (34.6 median / 41.3 best), scores+summary (34.9 / 38.7), and full Meta-Harness (50.0 / 56.7). The best score of the summary version was even 2.6 points lower than scores-only. The authors' interpretation is blunt: LLM-generated summaries crush the diagnostic information. A harness bug may only blow up dozens of steps later, and you need to see the full trajectory to trace it back to the original faulty retrieval logic. It's like debugging a distributed system: error codes alone are useless, and you have to read the full log. This insight also explains why earlier approaches like GEPA and TextGrad hit a ceiling.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">3</span>
+<span>A less-is-more outer loop</span>
+</div>
+<div class="pp-insight-body">Unlike carefully engineered evolutionary frameworks such as AlphaEvolve and AFlow, Meta-Harness's outer loop is extremely minimal: no parent selection rule, no archive structure, just a Pareto frontier. In the authors' words, it's deliberately minimal—all decisions about diagnosis and modification are handed to the coding agent. The entire history lives in the file system, and the agent looks up whatever it wants. The philosophy is very Bitter Lesson: once the search space is accessible, a general-purpose agent beats hand-designed heuristics. On text classification, Meta-Harness matches in 4 rounds what OpenEvolve and TTT-Discover reach in 60, a 10× speedup. The algorithm isn't clever; it just doesn't overcomplicate things.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">4</span>
+<span>A harness that transfers across models is the real asset</span>
+</div>
+<div class="pp-insight-body">The IMO math experiment is especially convincing. A retrieval harness found via search with GPT-OSS-20B was then tested on GPT-5.4-nano, GPT-5.4-mini, Gemini-3.1-Flash-Lite, and Gemini-3-Flash. All five models improved, by +4.7 on average. By comparison, dense retrieval drops 0.5 points on GPT-5.4-mini and 0.9 points on Gem-3-Flash. This shows that the search didn't find black magic overfitted to one model, but a readable, transferable strategy. The authors stress this in the Discussion as well: overfitting in code space is inspectable. If-chains and hardcoded mappings are obvious at a glance, which makes it far friendlier than overfitting in weight space. On TerminalBench-2, the Haiku 4.5 version climbed to 37.6% to take first place, and the Opus 4.6 version took second with 76.4%. An open-source automatic search beat a leaderboard full of hand-tuned entries.</div>
+</div>
+</div>
+<div class="pp-h3">The best line</div>
+<div class="pp-quote">
+      "The proposer reads a median of 82 files per iteration ... referencing over 20 prior candidates per step. A single evaluation can produce up to 10,000,000 tokens of diagnostic information, roughly three orders of magnitude beyond the largest feedback budgets used in prior text optimization settings." — Each iteration reads a median of 82 files across 20+ prior candidates; a single evaluation can produce 10 million tokens of diagnostic information, three orders of magnitude more than any previous text optimizer.
+      
+    </div>
+<div class="pp-relation">
+<div class="pp-relation-h">How it relates to this demo</div>
+<div class="pp-relation-body">Your 8-chapter talk is about harness self-evolution — letting the harness iterate on itself. Meta-Harness is the formalized academic version of this idea: it elevates the harness to a first-class optimization target, uses a coding agent as the sole proposer, and uses the file system as a lossless memory channel. The self-rewriting patterns in your demo map to the three lines of pseudocode in the paper's Algorithm 1. Especially worth noting: the proposer used in the paper is Claude Code + Opus 4.6, essentially the same stack you run live. Read this after watching your demo, and it feels like academia has simply put its stamp on your engineering intuition.</div>
+</div>
+<div class="pp-takeaway">Harnesses are no longer hand-tuned. Lay the full traces out on the file system and let a coding agent grep the history itself. That's the new auto-ML.</div>
+</section>
+<section class="pp-paper" id="shinka">
+<div class="pp-p-head">
+<span class="pp-p-num">P4</span>
+<span class="pp-p-id"><a href="https://arxiv.org/abs/2509.19349" rel="noopener" target="_blank">arXiv:2509.19349 ↗</a></span>
+<span class="pp-p-date">2025-09-17</span>
+</div>
+<div class="pp-p-titles">
+<h2>ShinkaEvolve: Towards Open-Ended and Sample-Efficient Program Evolution</h2>
+<div class="pp-p-title-en">ShinkaEvolve: Towards Open-Ended And Sample-Efficient Program Evolution</div>
+<div class="pp-p-authors">Robert Tjarko Lange, Yuki Imajuku, Edoardo Cetin (Sakana AI)</div>
+</div>
+<div class="pp-one-liner">The world's only open-source, ready-to-use LLM program evolution framework (Shinka = Japanese for "evolution", 進化)</div>
+<div class="pp-why">This is the engine running directly behind today's harness self-evolution demo, and currently the only code-evolution framework you can actually pip install and use. Closed-source heavyweight tools like AlphaEvolve often need thousands of samples to converge. ShinkaEvolve reaches SOTA on circle packing in just 150 samples. Its author, Robert Lange, is also the first author of the Darwin Gödel Machine (DGM), so ShinkaEvolve is essentially the productized version of DGM: the same team turned a research prototype into an engineering framework. It comes from Sakana AI, the Tokyo lab founded by Transformer paper author Llion Jones.</div>
+<div class="pp-h3">3 core insights</div>
+<div class="pp-insights">
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">1</span>
+<span>Parent Sampling: not pure elitism, but an explore/exploit balance</span>
+</div>
+<div class="pp-insight-body">Traditional evolutionary code search either mutates only from the best individual each generation (getting stuck in local optima) or samples uniformly (wasting budget). ShinkaEvolve organizes the population into multiple islands, each offering three parent selection strategies — weighted, power_law, and beam_search — plus migration between islands and dynamic island spawning. On the archive side, elite_selection_ratio 0.3 and crowding-based replacement maintain population diversity. The core idea: give each mutation some probability of exploring "suboptimal but high-potential" branches, so the whole search doesn't collapse around the current leader. This is the first pillar behind reaching SOTA with just 150 samples.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">2</span>
+<span>Code Novelty Rejection Sampling: deduplicate right after the LLM generates code</span>
+</div>
+<div class="pp-insight-body">LLMs used as mutation operators have a known flaw: given the same prompt, they keep producing patches with very similar structure, and out of thousands of samples, perhaps fewer than one in ten carry real information. After the LLM generates a candidate, ShinkaEvolve first computes an embedding (text-embedding-3-small by default) for a similarity check. Anything too close to existing code in the archive is rejected outright and never enters the evaluation queue. Evaluation is the most expensive step (it runs real code on real benchmarks), so a novelty gate before evaluation pushes sample efficiency up another notch. This is the key change that turns evolutionary search from "brute-force sampling" into "informative sampling".</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">3</span>
+<span>Bandit-based LLM Ensemble: letting models bid for the next mutation</span>
+</div>
+<div class="pp-insight-body">By default, the framework connects to multiple models at once, including gpt-5-mini, gemini-3-flash, gemini-3.1-pro, and gpt-5.4. Each mutation isn't tied to one fixed model. Instead, a multi-armed bandit dynamically adjusts weights based on history: "whose patches are more likely to be selected into the archive." Cheap small models cast a wide net for exploration, while expensive flagship models are only called when the bandit thinks it's worth it. Combined with max_api_costs as a hard USD budget cap, the whole run spends money where it counts. This is also why it can claim to be cost-efficient and to democratize open-ended discovery.</div>
+</div>
+</div>
+<div class="pp-h3">The best line</div>
+<div class="pp-quote">
+      ShinkaEvolve discovers a new state-of-the-art circle packing solution using only 150 samples.
+      
+    </div>
+<div class="pp-relation">
+<div class="pp-relation-h">How it relates to this demo</div>
+<div class="pp-relation-body">Today's demo runs this framework directly. We applied three monkey-patches to make it work with Claude Opus 4.7 / 4.8 on Bedrock: first, we swapped its built-in OpenAI / Gemini client for a Bedrock client; second, we changed the pricing lookup from models.dev to a local table (Opus isn't on models.dev); third, we disabled the headless CLI path. The rest of the aggregate_fn contract (combined_score + public + private + text_feedback) is untouched — and that contract happens to leave room for our "three-tier evaluation": the fast, medium, and final evals are all written into aggregate_fn.</div>
+</div>
+<div class="pp-takeaway">If you want to run code evolution today, you don't need to build it yourself — pip install shinka-evolve, define aggregate_fn clearly, and it has already handled sample efficiency for you.</div>
+</section>
+<section class="pp-paper" id="shinka-code">
+<div class="pp-p-head">
+<span class="pp-p-num">P5</span>
+<span class="pp-p-id"><a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" target="_blank">GitHub · SakanaAI/ShinkaEvolve@v0.0.7 ↗</a></span>
+<span class="pp-p-date">v0.0.7 · latest commit 2026-08</span>
+</div>
+<div class="pp-p-titles">
+<h2>ShinkaEvolve source walkthrough · from API to hook points</h2>
+<div class="pp-p-title-en">ShinkaEvolve · Source Code Walkthrough</div>
+<div class="pp-p-authors">1,398 stars · 280 forks · Apache 2.0</div>
+</div>
+<div class="pp-one-liner">All hook points are module-level functions or dataclass fields, so monkey-patching is easier than forking</div>
+<div class="pp-why">After reading the paper you know what it can do, but what really makes ShinkaEvolve easy to use is its boundary design: the LLM provider is a module-level query_* function, pricing is a CSV, and the eval contract is a metrics dict. These three boundaries let the whole framework be switched to Bedrock and plugged into any custom task, without forking. This walkthrough starts from the shinka/ directory and goes all the way to the aggregate_fn contract and the exact line numbers of the three monkey-patches, so you can modify it with confidence.</div>
+<div class="pp-h3">3 core insights</div>
+<div class="pp-insights">
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">1</span>
+<span>1 · Directory structure at a glance · what shinka/core, llm, database, edit, launch, and pricing each do</span>
+</div>
+<div class="pp-insight-body">Top-level shinka/ has only 8 submodules that actually run. `shinka/core/` is the main evolution loop (async_runner.py at 6254 lines + EvolutionConfig in config.py + run_shinka_eval in wrap_eval.py + novelty_judge.py + sampler.py). `shinka/database/` is SQLite-backed archive/island storage (DatabaseConfig + Program dataclass in dbase.py + 5 ParentSamplingStrategy types in parents.py). `shinka/llm/` is the provider-agnostic dispatch layer (LLMClient / AsyncLLMClient in llm.py + sample_model_kwargs in kwargs.py + the bandit in prioritization.py). `shinka/llm/providers/` has one file per cloud vendor (anthropic.py / openai.py / gemini.py / deepseek.py / local_openai.py / headless.py) plus a pricing.csv. `shinka/edit/` handles applying LLM-generated patches (apply_diff.py does search-and-replace, apply_full.py overwrites the whole file, marker_validation.py checks EVOLVE-BLOCK-START/END markers). `shinka/launch/` is just a subprocess wrapper (LocalJobConfig / SlurmJobConfig / JobScheduler) that runs evaluate.py as a child process. `shinka/pricing/` is the runtime pricing catalog, loaded by merging the CSV + models.dev API.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">2</span>
+<span>2 · Main evolution loop · The three concurrent tasks of ShinkaEvolveRunner.run() → _run_async()</span>
+</div>
+<div class="pp-insight-body">The entry point is `shinka/core/async_runner.py:1002 def run(self)`. The synchronous wrapper directly calls `run_async()` (line 1017) → `_run_async()` (line 1024). The real main loop isn't a for loop but an asyncio.gather over three coroutines: `_job_monitor_task` (line 2037, monitors completion of evaluate.py subprocesses), `_proposal_coordinator_task` (line 2417, decides whether to pull another patch based on pipeline_target and max_evaluation_jobs), and `_meta_summarizer_task` (optional, runs a summary every meta_rec_interval generations). Each propose goes through `_generate_evolved_proposal` (line 2702). It first calls `sample_parent()` on the database (parents.py:89 abstract method), then `PromptSampler.sample()` (core/sampler.py:77) to build the prompt, then `LLMClient.query()` (llm/llm.py:288) to get the patch, then `apply_patch_async` (edit/async_apply.py:67) to write the patch to the file system, and finally `JobScheduler.submit_async` (launch/scheduler.py:288) to run evaluate.py via subprocess. All events go into SQLite (database/dbase.py:434 table-creation SQL).</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">3</span>
+<span>3 · aggregate_fn contract · Where combined_score / public / private / text_feedback / extra_data are consumed</span>
+</div>
+<div class="pp-insight-body">The server side of the contract is `shinka/core/wrap_eval.py:106 run_shinka_eval` (evaluate.py usually calls it directly). Your `aggregate_metrics_fn` is called at line 391 and must return a dict, whose visible keys are destructured at `async_runner.py:1631`: `combined_score` is the primary sort key, `public` holds the metrics the LLM sees in feedback, `private` is a hold-out kept for the leaderboard but not fed to the LLM, `text_feedback` is natural-language feedback (controlled by the `evo_config.use_text_feedback` switch), and `extra_data` is popped out and pickled to disk (wrap_eval.py:462) for plotting. The Program dataclass (database/dbase.py:148) holds these four fields as first-class citizens, and they are written to the SQLite `programs` table (the table DDL at dbase.py:434 already has public_metrics / private_metrics columns). A `combined_score` of NaN/Inf is judged not correct (wrap_eval.py:432). The archive's sort weights in `default_archive_criteria` (defaults.py:49) are simply `{'combined_score': 1.0}`.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">4</span>
+<span>4 · Parent sampling &amp; novelty rejection · all dataclass fields you can edit directly</span>
+</div>
+<div class="pp-insight-body">Islands / archive / parent strategies are all exposed directly as dataclass fields in `shinka/database/dbase.py:52 DatabaseConfig`: `num_islands` (55), `archive_size` (56), `elite_selection_ratio` (62), `migration_interval / migration_rate / island_elitism` (67-69), `enable_dynamic_islands / stagnation_threshold` (76-77), `parent_selection_strategy = weighted / power_law / beam_search` (84), `exploitation_alpha / exploitation_ratio` (89-90), `archive_selection_strategy = fitness / crowding` (99). No subclassing needed — just pass them when constructing DatabaseConfig. Parent strategy implementations all live in `shinka/database/parents.py`: PowerLawSamplingStrategy (102), WeightedSamplingStrategy (237), BeamSearchSamplingStrategy (436), BestOfNSamplingStrategy (534), SequentialSamplingStrategy (601), all dispatched by `CombinedParentSelector` (669). Novelty rejection is in `shinka/core/novelty_judge.py:60 assess_novelty_with_rejection_sampling`: it first checks embedding cosine similarity (line 89, `database.compute_similarity`) and rejects if it exceeds `code_embed_sim_threshold` (config.py:59, default 0.99); if a novelty LLM is also configured, it runs an additional LLM judgment (line 122), retrying up to `max_novelty_attempts` times (config.py:58, default 3). All reject decisions happen before evaluate, so no evaluation budget is wasted.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">5</span>
+<span>5 · LLM providers · Bedrock is Anthropic in disguise and shares the same query_anthropic</span>
+</div>
+<div class="pp-insight-body">`shinka/llm/providers/anthropic.py` is only 212 lines: one module-level `query_anthropic` (85) and one `query_anthropic_async` (157). The two functions are nearly identical and differ only by await. Line 108 calls `client.messages.create(...)` directly. The client is passed down from the caller and can be any of `anthropic.Anthropic`, `anthropic.AnthropicBedrock`, `anthropic.AsyncAnthropic` or `anthropic.AsyncAnthropicBedrock` (provider dispatch lives in the `_sync_constructors / _async_constructors` dicts at `shinka/llm/client.py:123-146`). The Bedrock client is built in `_constructor_configuration` at client.py:196, which only accepts AWS credentials from a few fixed environment variables. The IAM instance profile (boto3 default chain) isn't on that allowlist, so on EC2 the precheck has to be bypassed. That's why our demo needs its first monkey-patch. `NO_TEMPERATURE_MODELS` is a module-level set at `shinka/llm/kwargs.py:25`. `sample_model_kwargs` at line 128 checks whether api_model_name is in it and, if it is, omits the `temperature` field. Because it's a module-level set, you can call `.update({...})` on it right after import to add custom model ids.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">6</span>
+<span>6 · Why pricing.csv is a CSV instead of hardcoded</span>
+</div>
+<div class="pp-insight-body">`shinka/llm/providers/pricing.csv` is only 76 lines, and each row is `model_name,provider,input_price,output_price,input_price_tier2,output_price_tier2,tier_threshold,is_reasoning,think_temp_fixed,requires_reasoning`. It's loaded via `shinka/pricing/normalization.py:284 _load_llm_csv`, which reads it once with stdlib `csv.DictReader`, converts each row into a `ModelPrice` frozen dataclass (catalog.py:47), then merges it into the catalog (catalog.py:82 PricingCatalog index). It's a CSV rather than Python constants because it serves as a fallback and can also be appended to at runtime. At runtime, the catalog first tries to pull the latest prices from the models.dev API (catalog.py:23 MODELS_DEV_URL, 268 `_refresh_online`). If that fails, it falls back to this CSV (normalization.py:37 include_bundled=True). So if your model's price can't be found (e.g., Opus 4.7 isn't listed on models.dev yet), appending one row to this CSV brings cost tracking back to life without changing any Python code. The lookup APIs are `shinka/llm/providers/pricing.py:37 model_exists` and 27 `calculate_cost`, and the latter is called by `anthropic.py:28 get_anthropic_costs`. If the lookup fails, it logs a warning and falls back to 0 without blocking generations that have already completed, as the comments at anthropic.py:29-33 state explicitly.</div>
+</div>
+</div>
+<div class="pp-h3">The best line</div>
+<div class="pp-quote">
+      Fall back to a zero cost (with a warning) on an unknown model instead of raising, mirroring openai/local so a pricing-catalog miss never aborts a completed generation. 
+      
+      <div class="pp-quote-cn">If a model isn't found in the pricing catalog, it's better to log a warning and use 0 cost than to discard an already completed generation because the price lookup failed (shinka/llm/providers/anthropic.py:24-33).</div>
+</div>
+<div class="pp-relation">
+<div class="pp-relation-h">How it relates to this demo</div>
+<div class="pp-relation-body">In the demo, three monkey-patches at the top of `evolution/run_evo.py` target exactly these points. (1) `shinka.model_availability._model_env_access_issues` lets Bedrock IAM auth through and bypasses the env var checks around client.py:196. (2) `shinka.llm.kwargs.NO_TEMPERATURE_MODELS` gets our Bedrock inference profile id added to the module-level set at kwargs.py:25 via .update. (3) `shinka.llm.providers.anthropic.query_anthropic / query_anthropic_async` rewrites the legacy `thinking={type: enabled, budget_tokens: N}` generated by kwargs.py:181-192 into Opus 4.7+'s `thinking={type: adaptive}` + `extra_body.output_config.effort` before the call. The `combined_score / public / private / text_feedback` in the dict returned by `evaluate.py` map directly to the four-line destructuring at `async_runner.py:1631`. `public` holds the visible tier E/M/H metrics, which are fed to the next generation's LLM. `private` holds the hold-out scores, which are written only to SQLite and never go into the prompt.</div>
+</div>
+<div class="pp-takeaway">Nearly every extension point in the framework is a module-level function or a dataclass field. No fork needed: just import and monkey-patch, or pass parameters at construction. That's the fundamental reason it's more usable as an engineering framework than comparable research prototypes.</div>
+</section>
+<section class="pp-paper" id="bright">
+<div class="pp-p-head">
+<span class="pp-p-num">P6</span>
+<span class="pp-p-id"><a href="https://arxiv.org/abs/2407.12883" rel="noopener" target="_blank">arXiv:2407.12883 ↗</a></span>
+<span class="pp-p-date">2024-07</span>
+</div>
+<div class="pp-p-titles">
+<h2>BRIGHT: A Realistic and Challenging Benchmark for Reasoning-Intensive Retrieval</h2>
+<div class="pp-p-title-en">BRIGHT: A Realistic and Challenging Benchmark for Reasoning-Intensive Retrieval</div>
+<div class="pp-p-authors">Hongjin Su, Howard Yen, et al. (15 authors; HKU + Princeton + UW + CMU + Google DeepMind)</div>
+</div>
+<div class="pp-one-liner">Upgrade retrieval from "keyword matching" to "reasoning": top embedders collapse across the board</div>
+<div class="pp-why">Retrieval benchmarks from the past decade (BEIR, MTEB) are almost entirely information-seeking: queries and documents overlap heavily at the literal level, and BM25 already scores above 50. BRIGHT drags MTEB leaderboard leaders like SFR-Embedding-Mistral from 59.0 nDCG@10 down to 18.3, a full 40-point drop. The model isn't too small; the task itself has changed. The query doesn't contain the answer document's keywords at all, so a reasoning step is needed to connect them. As soon as this benchmark was released, reasoning-heavy retrieval became the newest open problem in IR. Even GPT-4 plus BM25 doesn't handle it well.</div>
+<div class="pp-h3">3 core insights</div>
+<div class="pp-insights">
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">1</span>
+<span>Insight 1 · What is a reasoning-intensive query</span>
+</div>
+<div class="pp-insight-body">An example from the paper: an economist asks, "Is there another story that rests on the same economic principle as this one?" Nothing in the query tells you which theorem the target document is about; you first have to infer "oh, this is moral hazard" and then go find another moral hazard case. Or a programmer searches with an error message for the corresponding syntax docs, where the error text and the doc body have almost zero literal overlap. BRIGHT systematizes queries like these into 1,384 questions, covering seven StackExchange sub-sites (Biology, Economics, Psychology, Robotics, Earth Science, Stack Overflow, Sustainable Living), plus LeetCode and math Olympiad problems. The common trait: connecting the query to the gold document requires a step of domain reasoning.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">2</span>
+<span>Insight 2 · Top embedders drop sharply 59.0 → 18.3</span>
+</div>
+<div class="pp-insight-body">SFR-Embedding-Mistral scores nDCG@10 = 59.0 on MTEB but only 18.3 on BRIGHT. The BM25 baseline gets 14.3, and the strongest dense model without augmentation reaches only 24.3 — two-thirds lower than its MTEB score. Even more embarrassing: add GPT-4-generated chain-of-thought reasoning to the query and feed it to BM25, and BM25 overtakes every neural retriever to top the leaderboard, gaining as much as +12.2 nDCG@10. The authors' explanation: dense embedders overfit to short information-seeking queries, so on out-of-distribution, long reasoning-heavy queries they're less flexible than plain BM25. The takeaway: the "semantics" today's embedding models learn is still largely shallow, surface-level semantics.</div>
+</div>
+<div class="pp-insight">
+<div class="pp-insight-h">
+<span class="pp-insight-num">3</span>
+<span>Insight 3 · How these problems are built (Google-mined hard negatives + dual PhD review)</span>
+</div>
+<div class="pp-insight-body">The annotation pipeline is carefully designed: first, high-quality StackExchange posts with an accepted answer or &gt;5 votes and a URL in the answer are selected, and the web pages those URLs point to are split into passages as gold positives. The key is the hard negatives: **annotators search Google for the post title or LLM-extracted keywords and pick pages from the results that are "topically very similar but can't actually answer the question"**. Each question gets up to 5 Google-mined hard negatives, split into several negative passages. Everything is first annotated by a CS student, then independently verified by two domain PhDs, and an item is kept only if both experts agree. This "Google-mined hard negatives" idea is well worth borrowing: no matter how capable machines get, it's hard to automatically generate distractors that are "right on topic but don't solve the problem". Only humans with a search engine can produce them.</div>
+</div>
+</div>
+<div class="pp-h3">The best line</div>
+<div class="pp-quote">
+      The first text retrieval benchmark that requires intensive reasoning to retrieve relevant documents. 
+      
+      <div class="pp-quote-cn">The first text retrieval benchmark that requires intensive reasoning to retrieve relevant documents.</div>
+</div>
+<div class="pp-relation">
+<div class="pp-relation-h">How it relates to this demo</div>
+<div class="pp-relation-body">The 4 functional-intent questions in Demo Tier H ("a quiet gift for someone taking a long flight → noise-canceling headphones", "charging a 14-inch MacBook on a plane → USB-C 65W") **were directly inspired by BRIGHT's reasoning-intensive design**. The queries contain no keywords like "headphones" or "USB-C". Users describe scenarios and functional needs, which take a layer of reasoning to map to specific products. BRIGHT has already shown that questions like these push all BM25 variants and most embedders below 20 points, and that is exactly the core challenge our demo aims to reproduce and solve for e-commerce retrieval.</div>
+</div>
+<div class="pp-takeaway">The next hard battle in retrieval isn't bigger embeddings but teaching retrievers to reason — BRIGHT puts this problem squarely on the table.</div>
+</section>
+<div class="pp-cta">
+<h3>Done? Read through the methodology</h3>
+<p>The Talk page weaves these three papers into a 10-chapter story · The Live Demo lets you run ShinkaEvolve yourself</p>
+<a class="primary" href="../talk/">→ Talk Overview</a>
+<a class="secondary" href="../run/">→ Live Demo</a>
+<a class="secondary" href="../">← Intro</a>
+</div>
+</main>
+<script>
+(function() {
+  // Fade-in on scroll
+  const papers = document.querySelectorAll(".pp-paper");
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
+  }, { threshold: 0.15 });
+  papers.forEach(p => io.observe(p));
+
+  // Sticky index current highlight
+  const links = document.querySelectorAll(".pp-index a[href^='#']");
+  window.addEventListener("scroll", () => {
+    let current = null;
+    papers.forEach(s => {
+      const r = s.getBoundingClientRect();
+      if (r.top < 200) current = s.id;
+    });
+    links.forEach(a => a.classList.toggle("current", a.getAttribute("href") === "#" + current));
+  }, { passive: true });
+})();
+</script>
+<a data-cur="en" data-to="zh" href="../../../../rsi/demo/papers/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

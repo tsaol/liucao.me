@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M8g vs M7i — Graviton Deep Dive Guide 01</title>
+<meta content="Amazon EC2 M8g (Graviton4 / Neoverse V2) vs M7i (Sapphire Rapids) full comparison: architecture, specs, performance, migration" name="description"/>
+<link href="../../../../ec2/assets/style.css" rel="stylesheet"/>
+<style>
+        /* ── shared graviton subpage styles ── */
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.87rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+        .cmp .pill { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; font-family: var(--mono); font-size: 0.7rem; border: 1px solid var(--border); margin-right: 0.3rem; }
+        .pill.g { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-glow); }
+        .pill.i { color: #60a5fa; border-color: rgba(96,165,250,0.35); background: rgba(96,165,250,0.10); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../../">EC2</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hero">
+<div class="crumb"><a href="../">Graviton Guide</a> · 01 / 04 · Hardware comparison</div>
+<h1><span class="g">M8g</span> vs M7i — full comparison</h1>
+<p class="sub">Architecture, specs, performance, ecosystem, and migration: Amazon Graviton4 (Neoverse V2 / Armv9.0-A) vs Intel 4th-gen Xeon Scalable (Sapphire Rapids).</p>
+<nav class="toc">
+<a href="#tldr">TL;DR</a>
+<a href="#arch">1 · Microarchitecture</a>
+<a href="#sizes">2 · Spec sheet</a>
+<a href="#perf">3 · Performance</a>
+<a href="#ecosystem">4 · Ecosystem compatibility</a>
+<a href="#migration">5 · Migration playbook</a>
+<a href="#stay">6 · When to stay on M7i</a>
+<a href="#cost">7 · Pricing</a>
+<a href="#family">8 · A brief history of the Graviton family</a>
+</nav>
+</div>
+<!-- TL;DR -->
+<section class="content-section" id="tldr">
+<div class="callout">
+<div class="lead">Bottom line</div>
+                If your software stack supports arm64 (most do now), choose M8g: about 11% cheaper per vCPU, about 60% better energy efficiency, better single-core latency, and no SMT — 1 vCPU = 1 physical core. There are only five cases where you still need M7i: x86-only commercial software, CPU inference accelerated by AVX-512/AMX, Windows Server, software licensed per Intel core, and single-threaded workloads that rely on Turbo Boost for higher clock speeds.
+            </div>
+</section>
+<!-- 1. arch -->
+<section class="content-section" id="arch">
+<h2 class="section-title">1 · <span>Microarchitecture</span>Differences</h2>
+<h3 class="sub-h">M8g — AWS Graviton4 / Arm Neoverse V2 "Demeter"</h3>
+<ul>
+<li>Instruction set <b>Armv9.0-A</b>, which mandates SVE2, Pointer Authentication (PAC), and Branch Target Identification (BTI).</li>
+<li>Pipeline: 6-wide decode, 8-wide rename/dispatch, 320-entry ROB, 15 execution ports, 1536-entry micro-op cache.</li>
+<li>Per-core cache:<b>L1 64 KB I + 64 KB D · L2 2 MB</b>(twice that of Graviton3). L3 is a shared <b>CMN-700 mesh SLC</b>——up to 512 MB per die.</li>
+<li>96 physical cores / socket, up to 2 sockets per machine (<code>48xlarge</code> and <code>metal-48xl</code> has 192 vCPUs).<b>No SMT</b>——1 vCPU is 1 physical core.</li>
+<li>Memory: M8g is <b>12-channel DDR5-5600</b>; the M8gn / M8gb variants move up to DDR5-6400.</li>
+<li>Fixed clock speed: 2.8 GHz (<code>48xlarge</code> is 2.7 GHz).<b>No Turbo Boost.</b></li>
+<li>Always-on memory encryption; dedicated L1/L2 per vCPU; PAC + BTI hardware anti-ROP.<sup>[4]</sup></li>
+</ul>
+<h3 class="sub-h">M7i — Intel Xeon Scalable 4th gen "Sapphire Rapids" (AWS custom SKU)</h3>
+<ul>
+<li>Instruction set x86_64,<b>AVX-512</b>(512-bit VNNI + bfloat16) + <b>AMX</b> Matrix tile acceleration (INT8/BF16 GEMM, available across all M7i sizes) + DSA/IAA/QAT (<b>Bare-metal only</b>).</li>
+<li>Clock speed: 3.2 GHz all-core turbo, 3.8 GHz max-core turbo (about 14~35% higher than M8g).</li>
+<li>DDR5, TME memory encryption, EFA supported on 48xlarge / metal-48xl.</li>
+<li><b>SMT enabled</b>——2 threads per core;<code>m7i.4xlarge</code> 's 16 vCPUs are actually <b>8 physical cores + 8 SMT threads</b>. This is the biggest source of the "Graviton is 30% faster" illusion.<sup>[3]</sup></li>
+</ul>
+<h3 class="sub-h">What SVE2 actually brings</h3>
+<p>SVE2 is a "vector-length agnostic" instruction set: the same binary auto-vectorizes on 128-bit V2 cores and future 256-bit cores without recompiling.<b>SVE2 on Graviton4 is 128-bit wide</b>(Graviton3's SVE1 is 256-bit; V2 switched to two narrower SVE units).<sup>[2]</sup> Real-world gains: memcpy / memcmp / strlen (glibc 2.35+), zlib-ng, ChaCha and AES-GCM in OpenSSL 3.2+, and FFmpeg's h.264 / AV1 dsputil.</p>
+<p><b>AVX-512 still leads</b>is dense linear algebra and CPU-side LLM inference, roughly a 4× vector-width gap; AMX widens the gap further on INT8 matrix multiplication.</p>
+<div class="callout warn"><b>Two easy-to-miss "not available" pitfalls:</b>Graviton4 has no Turbo Boost, and no<b>32-bit userspace no longer supported</b>. Any single-threaded x86 code that relies on high clock speeds, or old programs running 32-bit ELF binaries, will regress when moved to M8g.<sup>[1]</sup></div>
+</section>
+<!-- 2. sizes -->
+<section class="content-section" id="sizes">
+<h2 class="section-title">2 · Full<span>Spec sheet</span></h2>
+<p>M8g has four sub-families: standard,<b>M8gd</b>(with local NVMe),<b>M8gn</b>(600 Gbps networking),<b>M8gb</b>(EBS 300 Gbps). M7i only has base + m7i-flex.</p>
+<table class="cmp">
+<thead>
+<tr><th>Specs</th><th>vCPU / RAM</th><th>Net Gbps</th><th>EBS Gbps</th><th>NUMA</th></tr>
+</thead>
+<tbody>
+<tr><td><span class="pill g">m8g.medium</span></td><td>1 / 4</td><td>up to 12.5</td><td>up to 10</td><td>1</td></tr>
+<tr><td><span class="pill g">m8g.xlarge</span></td><td>4 / 16</td><td>up to 12.5</td><td>up to 10</td><td>1</td></tr>
+<tr><td><span class="pill g">m8g.4xlarge</span></td><td>16 / 64</td><td>up to 15</td><td>up to 10</td><td>1</td></tr>
+<tr><td><span class="pill g">m8g.16xlarge</span></td><td>64 / 256</td><td>30</td><td>20</td><td>1</td></tr>
+<tr><td><span class="pill g">m8g.24xlarge</span></td><td>96 / 384</td><td>40</td><td>30</td><td><b>1</b>(single-socket limit)</td></tr>
+<tr><td><span class="pill g">m8g.48xlarge</span></td><td>192 / 768</td><td>50</td><td>40</td><td><b>2</b></td></tr>
+<tr><td><span class="pill g">m8g.metal-48xl</span></td><td>192 / 768</td><td>50</td><td>40</td><td>2</td></tr>
+<tr><td colspan="5" style="padding-top:0.9rem; color:var(--text-mute); font-family:var(--mono); font-size:0.75rem;">— M7i —</td></tr>
+<tr><td><span class="pill i">m7i.xlarge</span></td><td>4 / 16</td><td>up to 12.5</td><td>up to 10</td><td>1</td></tr>
+<tr><td><span class="pill i">m7i.4xlarge</span></td><td>16 / 64</td><td>up to 12.5</td><td>up to 10</td><td>1</td></tr>
+<tr><td><span class="pill i">m7i.24xlarge</span></td><td>96 / 384</td><td>37.5</td><td>30</td><td>1</td></tr>
+<tr><td><span class="pill i">m7i.48xlarge</span></td><td>192 / 768</td><td>50</td><td>40</td><td><b>2</b></td></tr>
+<tr><td><span class="pill i">m7i.metal-48xl</span></td><td>192 / 768</td><td>50</td><td>40</td><td>2</td></tr>
+</tbody>
+</table>
+<p><b>Key points on M8g's special sub-families:</b> M8gd: up to 6×1.9 TB NVMe;<b>M8gn.48xlarge network peak 600 Gbps</b>(highest of all non-accelerated instances);<b>M8gb.48xlarge EBS peak 300 Gbps · 1.44M IOPS</b>.</p>
+<p><b>M7i's unique advantages:</b> EBS volume attachments jump from 28 on M6i to <b>128 volumes</b>, and for workloads that need a huge number of volumes, M7i currently has an operational advantage.<sup>[3]</sup></p>
+</section>
+<!-- 3. perf -->
+<section class="content-section" id="perf">
+<h2 class="section-title">3 · <span>Performance</span>——self-reported by AWS and customers</h2>
+<ul>
+<li>AWS claims M8g over M7g (Graviton3)<b>compute 30% faster</b>; vCPU / memory limits are 3× higher than M7g.<sup>[4]</sup></li>
+<li>The Graviton family vs. same-generation x86 <b>About 20% cheaper, about 60% lower energy use</b>.<sup>[4]</sup></li>
+<li>M7i vs M6i:<b>15% better price-performance</b>; M7i-flex 19%.<sup>[3]</sup></li>
+<li><b>Salesforce</b>(M7i): throughput <b>+25%</b>, response <b>11% faster</b>.<sup>[3]</sup></li>
+<li><b>Tufts Medicine</b>(M7i): performance <b>+68%</b>, cost <b>-64%</b>($1.2M/year).<sup>[3]</sup></li>
+<li><b>Bright Data</b>(M6g → M8g):<b>+66%</b> Performance.<sup>[4]</sup></li>
+<li><b>IBM Instana</b>(M8g): CPU utilization drops further <b>30%</b>.<sup>[4]</sup></li>
+</ul>
+<div class="callout warn">
+<div class="lead">Note on third-party benchmark credibility</div>
+                In-depth Graviton4 reviews from Phoronix / AnandTech / ChipsAndCheese currently return 403 / 404 (original links broken or sites archived). The numbers above come from AWS and its customer case studies; leave a 20% safety margin if you use them as a reference. Always A/B test real workloads.
+            </div>
+</section>
+<!-- 4. ecosystem -->
+<section class="content-section" id="ecosystem">
+<h2 class="section-title">4 · Ecosystem<span>Compatibility</span>Quick reference</h2>
+<table class="cmp">
+<thead><tr><th>Tech stack</th><th>arm64 status</th><th>Pitfalls</th></tr></thead>
+<tbody>
+<tr><td>Node.js</td><td>Native (≥16)</td><td>None</td></tr>
+<tr><td>Python</td><td>Native</td><td><b>pip must be ≥ 19.3</b> before manylinux2014-aarch64 wheels can be installed.<code>psycopg2-binary</code>, older cryptography versions may fall back to building from source</td></tr>
+<tr><td>Java (Corretto)</td><td>First-class citizen</td><td>Use Corretto 11.0.20+ / 17.0.8+ / 21+; older versions statically link zlib and don't get zlib-ng acceleration.<b>Exception throwing is 2× slower than on x86</b> <sup>[5]</sup></td></tr>
+<tr><td>Go</td><td>Native</td><td><code>GOARCH=arm64</code>. Go 1.16+ uses Armv8.1 atomic instructions; in containers, manually set <code>GOMAXPROCS</code>——CFS quota doesn't shrink the visible CPU count<sup>[7]</sup></td></tr>
+<tr><td>Rust</td><td>Native</td><td><code>aarch64-unknown-linux-gnu</code> is the default rustup target</td></tr>
+<tr><td>PostgreSQL</td><td>15+ perfect</td><td><b>Not enabled in Ubuntu's official apt postgresql <code>-moutline-atomics</code></b>, LSE isn't used; switch to the PGDG PPA or RDS</td></tr>
+<tr><td>MySQL</td><td>8.0.23+</td><td>Self-compiled with <code>-moutline-atomics</code></td></tr>
+<tr><td>nginx</td><td>Native</td><td>Use <code>-mcpu=neoverse-512tvb</code> Compiling pushes peak throughput up another notch</td></tr>
+<tr><td>HAProxy</td><td>2.4+</td><td>Reuse <code>CPU=armv81</code> compiled, the official benchmark says <b>~4× speedup</b></td></tr>
+<tr><td>Docker</td><td>Native</td><td><code>docker buildx</code> Produce a multi-arch manifest</td></tr>
+<tr><td>K8s</td><td>Native</td><td>Mixed-architecture clusters need the image to ship a multi-arch manifest, and the Pod needs to add <code>nodeSelector</code></td></tr>
+</tbody>
+</table>
+<h3 class="sub-h">Recommended compiler flags for Graviton4 <sup>[1]</sup></h3>
+<pre><span class="c"># Graviton4-only fleet — GCC 13+ or Clang 16+ (AL2023's GCC 11 has the backport)</span>
+CFLAGS=<span class="k">"-O3 -mcpu=neoverse-v2"</span>
+
+<span class="c"># One binary for Graviton3/4/5 — the officially recommended balanced setting</span>
+CFLAGS=<span class="k">"-O3 -mcpu=neoverse-512tvb"</span>
+
+<span class="c"># Most conservative: compatible with Graviton2/3/4/5, no inlined LSE</span>
+CFLAGS=<span class="k">"-O2 -march=armv8.2-a -moutline-atomics"</span></pre>
+</section>
+<!-- 5. migration -->
+<section class="content-section" id="migration">
+<h2 class="section-title">5 · Migration <span>playbook</span>: M7i → M8g</h2>
+<ol>
+<li><b>Inventory binary dependencies</b>— scan a typical M7i host with the script below.</li>
+<li><b>Rebuild the image as multi-arch</b>——<code>docker buildx build --platform linux/amd64,linux/arm64 --push ...</code>, with ECR storing the multi-arch manifest.</li>
+<li><b>Mixed ASG trial run</b>——add the M8g launch template with weight 0 at first, and watch the health check pass rate and error rate.</li>
+<li><b>Head-to-head load test</b>— compare p50/p95/p99 <b>and</b> CPU utilization, not just throughput (Graviton4 has stronger single-core performance, so CPU utilization is often lower at the same throughput).</li>
+<li><b>Switch</b>— shift weights gradually, and keep the M7i template for 30 days as the rollback AMI.</li>
+<li><b>Right-sizing</b>——Graviton4 has no SMT but faster single cores; compared to M7i, the number of vCPUs you need is usually <b>Less</b>. Rule of thumb: 32 vCPU M7i → 24 vCPU M8g.</li>
+</ol>
+<h3 class="sub-h">An x86 compatibility scan script</h3>
+<pre><span class="c">#!/bin/bash</span>
+<span class="c"># arm64-readiness.sh — run on M7i to find everything that's still x86-only</span>
+<span class="k">set -euo pipefail</span>
+
+<span class="k">echo</span> "== Find non-portable binaries under /opt /usr/local /srv =="
+find /opt /usr/local /srv -type f \( -perm -u+x -o -name '*.so*' \) 2&gt;/dev/null | \
+  while read -r f; <span class="k">do</span>
+    file <span class="k">"$f"</span> | grep -q 'ELF.*x86-64' &amp;&amp; <span class="k">echo</span> "x86-only: $f"
+  <span class="k">done</span>
+
+<span class="k">echo</span> "== Docker image check =="
+<span class="k">if</span> command -v docker &gt;/dev/null; <span class="k">then</span>
+  docker image ls --format '{{.Repository}}:{{.Tag}}' | while read img; <span class="k">do</span>
+    arches=<span class="k">$(</span>docker manifest inspect "$img" 2&gt;/dev/null | \
+      grep -oP '"architecture":\s*"\K[^"]+' | sort -u | paste -sd,<span class="k">)</span>
+    [[ "$arches" == *arm64* ]] || <span class="k">echo</span> "no-arm64: $img ($arches)"
+  <span class="k">done</span>
+<span class="k">fi</span>
+
+<span class="k">echo</span> "== Java native lib (JNI) =="
+find / -name '*.so' 2&gt;/dev/null | xargs -I{} file {} 2&gt;/dev/null | \
+  grep -i 'x86-64' | grep -Ei 'jni|netty|snappy|rocksdb|leveldb'
+
+<span class="k">echo</span> "== Python wheel =="
+find / -name '*.whl' 2&gt;/dev/null | grep -E 'x86_64|manylinux.*x86'</pre>
+<p>The three kinds of items in the output are your migration tickets:<code>x86-only:</code>, <code>no-arm64:</code>, and x86 JNI libraries.</p>
+</section>
+<!-- 6. stay -->
+<section class="content-section" id="stay">
+<h2 class="section-title">6 · When to<span>Don't migrate</span></h2>
+<ol>
+<li><b>x86-only commercial software</b>——Oracle DB, some SAS/SPSS/MATLAB, older Splunk agents, IBM MQ's JNI libraries.<sup>[1]</sup></li>
+<li><b>CPU-side LLM / traditional ML inference</b>——AVX-512 + AMX lead Graviton4's 128-bit SVE2 by a wide margin on INT8/BF16 GEMM. Unless you move to GPU / Inferentia, stay on M7i / C7i / R7iz.</li>
+<li><b>Windows Server</b>——Windows on Graviton is only in preview.</li>
+<li><b>Software licensed per Intel core</b>——some commercial databases, older ISVs.</li>
+<li><b>Depends on 32-bit userspace</b>——Graviton4/5 drop 32-bit entirely.<sup>[1]</sup></li>
+<li><b>Single-threaded workloads that rely on Turbo Boost for higher clock speeds</b>——M7i 3.8 GHz vs M8g 2.8 GHz is a 35% gap.</li>
+<li><b>Kernel &lt; 4.15</b>(no SVE support) or AL2 4.14 — migrate to AL2023 first before considering a chip switch.<sup>[5]</sup></li>
+<li><b>Monitoring / security agents only have x86 builds</b>——CrowdStrike, older Splunk versions, some EDRs. Ecosystem debt often eats up that ~11% instance savings.</li>
+</ol>
+</section>
+<!-- 7. cost -->
+<section class="content-section" id="cost">
+<h2 class="section-title">7 · <span>Price</span>(us-east-1, Linux, on-demand)</h2>
+<table class="cmp">
+<thead><tr><th>Specs</th><th>m8g $/h</th><th>m7i $/h</th><th>M8g is cheaper</th></tr></thead>
+<tbody>
+<tr><td>xlarge</td><td>~$0.180</td><td>~$0.202</td><td>~11%</td></tr>
+<tr><td>2xlarge</td><td>~$0.359</td><td>~$0.403</td><td>~11%</td></tr>
+<tr><td>4xlarge</td><td>~$0.718</td><td>~$0.806</td><td>~11%</td></tr>
+<tr><td>8xlarge</td><td>~$1.436</td><td>~$1.613</td><td>~11%</td></tr>
+</tbody>
+</table>
+<p>Figures from instances.vantage.sh, for reference only. Tokyo (ap-northeast-1) is typically 10–15% more expensive than us-east-1.</p>
+<div class="callout"><b>Rule of thumb:</b>~11% cheaper on paper + ~30% faster per vCPU + no SMT tax = real savings for scale-out web/app tiers <b>30–40%</b>.</div>
+</section>
+<!-- 8. family -->
+<section class="content-section" id="family">
+<h2 class="section-title">8 · Graviton <span>Family</span>A brief history</h2>
+<p>Graviton1 (2018, EC2 A1) was a trial run with 16 Cortex-A72 cores and modest performance. Graviton2 (2019, M6g/C6g/R6g) jumped to 64 Neoverse N1 cores, 7nm, and DDR4, bringing Arm on AWS into the mainstream. Graviton3 (2022, M7g/C7g) moved to Neoverse V1, Armv8.4, SVE1, and DDR5.</p>
+<p><b>Graviton4 (2024, R8g / M8g / C8g)</b>——Neoverse V2, Armv9.0, SVE2, 96 cores, 12-channel DDR5.<b>Graviton5 (Neoverse V3, 192 cores, PCIe Gen 6, 3 nm) reaches GA in June 2026</b>, available in M9g / M9gd, which AWS claims is another ~25% faster than M8g. This means <b>M8g is now the "middle generation"</b>——not cutting-edge, but the most mature ecosystem.</p>
+</section>
+<!-- refs -->
+<div class="refs">
+<h4>Sources</h4>
+<ol>
+<li>[1] <a href="https://github.com/aws/aws-graviton-getting-started">github.com/aws/aws-graviton-getting-started</a> — README + c-c++.md</li>
+<li>[2] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/perfrunbook/debug_hw_perf.md">perfrunbook/debug_hw_perf.md</a></li>
+<li>[3] <a href="https://aws.amazon.com/ec2/instance-types/m7i/">aws.amazon.com/ec2/instance-types/m7i/</a></li>
+<li>[4] <a href="https://aws.amazon.com/ec2/instance-types/m8g/">aws.amazon.com/ec2/instance-types/m8g/</a></li>
+<li>[5] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/java.md">graviton-getting-started/java.md</a></li>
+<li>[6] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/python.md">python.md</a></li>
+<li>[7] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/golang.md">golang.md</a></li>
+<li>[8] <a href="https://en.wikipedia.org/wiki/AWS_Graviton">Wikipedia: AWS Graviton</a></li>
+<li>[9] <a href="https://en.wikipedia.org/wiki/Neoverse">Wikipedia: Arm Neoverse</a></li>
+</ol>
+</div>
+<!-- next -->
+<div class="next">
+<div class="left">Next stop</div>
+<div class="right">
+<a href="../monitor/">02 / 04</a>
+<a class="big" href="../monitor/">Three-layer EC2 monitoring stack →</a>
+</div>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../../">Home</a> · <a href="../">Graviton Guide</a></p>
+</footer>
+<a data-cur="en" data-to="zh" href="../../../../ec2/graviton/compare/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazon Web Services GPU</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Amazon Web Services GPU</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Fira+Code:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<style>
         :root {
             --primary-bg: #f0f4f8;
             --glass-bg: rgba(255, 255, 255, 0.75);
@@ -711,611 +712,604 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <div>
-                    <h1>Amazon Web Services <span>GPU</span></h1>
-                    <p class="subtitle">AWS GPU 与 AI 加速实例完整列表 · 最后更新: <span id="last-updated">2026-11-08</span></p>
-                    <div class="chip-row">
-                        <span class="chip"><span class="dot"></span>Blackwell Ultra · GB300 NVL72</span>
-                        <span class="chip"><span class="dot"></span>RTX PRO Blackwell · G7 / G7e</span>
-                        <span class="chip c2"><span class="dot"></span>Trainium3 · 3nm</span>
-                        <span class="chip c3"><span class="dot"></span>Global + China</span>
-                    </div>
-                </div>
-                <div class="header-actions">
-                    <button class="theme-toggle" onclick="toggleTheme()">
-                        <span id="theme-icon">🌙</span>
-                        <span id="theme-text">深色模式</span>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">GPU 实例总数</div>
-                <div class="stat-value highlight" id="total-instances">99</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">最新发布</div>
-                <div class="stat-value">G7 系列</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">价格区间</div>
-                <div class="stat-value">$0.37-142/h</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">支持区域</div>
-                <div class="stat-value">Global + China</div>
-            </div>
-        </div>
-
-        <!-- Toolbar -->
-        <div class="toolbar">
-            <div class="toolbar-row">
-                <div class="search-box">
-                    <input type="text" id="search-input" placeholder="搜索实例名称、GPU型号..." oninput="filterTable()">
-                </div>
-                <div class="filter-group">
-                    <select class="filter-select" id="filter-workload" onchange="filterTable()">
-                        <option value="">全部类型</option>
-                        <option value="训练">训练</option>
-                        <option value="推理">推理</option>
-                    </select>
-                    <select class="filter-select" id="filter-region" onchange="filterTable()">
-                        <option value="">全部区域</option>
-                        <option value="Global">Global</option>
-                        <option value="China">China</option>
-                    </select>
-                    <select class="filter-select" id="filter-gpu-count" onchange="filterTable()">
-                        <option value="">GPU数量</option>
-                        <option value="1">1 GPU</option>
-                        <option value="4">4 GPU</option>
-                        <option value="8">8+ GPU</option>
-                    </select>
-                    <button class="clear-btn" onclick="clearFilters()">清空筛选</button>
-                </div>
-                <span class="result-count" id="result-count"></span>
-            </div>
-            <div class="quick-nav">
-                <button class="quick-nav-btn" onclick="scrollToSection('nvidia-section')">NVIDIA GPU</button>
-                <button class="quick-nav-btn" onclick="scrollToSection('aws-section')">AWS 自研芯片</button>
-                <button class="quick-nav-btn" onclick="scrollToSection('case-section')">客户案例</button>
-            </div>
-        </div>
-
-        <!-- NVIDIA GPU Section -->
-        <section class="section" id="nvidia-section">
-            <h2 class="section-title">NVIDIA GPU</h2>
-            <div class="table-container">
-                <table id="nvidia-table">
-                    <thead>
-                        <tr>
-                            <th class="sortable" data-sort="name">实例家族</th>
-                            <th>Workload类型</th>
-                            <th>区域</th>
-                            <th class="sortable" data-sort="gpu">GPU 数量</th>
-                            <th>GPU型号</th>
-                            <th>GPU 显存</th>
-                            <th>应用场景</th>
-                            <th>vCPU</th>
-                            <th>系统内存</th>
-                            <th class="sortable" data-sort="price">价格(按需)</th>
-                            <th class="sortable" data-sort="year">发布时间</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr data-workload="训练" data-region="Global" data-gpu="72">
-                            <td class="instance-name"><a href="https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available/" target="_blank" rel="noopener">P6e (GB300)</a></td>
-                            <td><span class="tag tag-training">训练</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>72 (UltraServer)</td>
-                            <td class="gpu-name">GB300 NVL72 Blackwell Ultra</td>
-                            <td>~279GB（GB200 的 1.5 倍，整机近 20TB）</td>
-                            <td>万亿参数级训练与推理 (UltraServers)</td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td>已发布 (GA)</td>
-                            <td>2025</td>
-                        </tr>
-                        <tr data-workload="训练" data-region="Global" data-gpu="72">
-                            <td class="instance-name"><a href="instances/p6e-gb200.html">P6e (GB200)</a></td>
-                            <td><span class="tag tag-training">训练</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>4/36/72</td>
-                            <td class="gpu-name">GB200 Grace Blackwell</td>
-                            <td>185GB</td>
-                            <td>超大规模 AI 训练 (UltraServers)</td>
-                            <td>144</td>
-                            <td>960 GiB</td>
-                            <td>已发布 (GA)</td>
-                            <td>2025</td>
-                        </tr>
-                        <tr data-workload="训练" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/p6-b300.html">P6 (B300)</a></td>
-                            <td><span class="tag tag-training">训练</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>8</td>
-                            <td class="gpu-name">B300 Blackwell Ultra</td>
-                            <td>262GB</td>
-                            <td>顶级训练性能、万亿参数模型</td>
-                            <td>192</td>
-                            <td>4 TB</td>
-                            <td>~$142.42/小时</td>
-                            <td>2025</td>
-                        </tr>
-                        <tr data-workload="训练" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/p6-b200.html">P6 (B200)</a></td>
-                            <td><span class="tag tag-training">训练</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>8</td>
-                            <td class="gpu-name">B200 Blackwell</td>
-                            <td>180GB</td>
-                            <td>顶级训练性能、超大模型推理</td>
-                            <td>192</td>
-                            <td>2,048 GB</td>
-                            <td>~$113.93/小时</td>
-                            <td>2025</td>
-                        </tr>
-                        <tr data-workload="训练,推理" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/p5en.html">P5en</a></td>
-                            <td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>8</td>
-                            <td class="gpu-name">H200</td>
-                            <td>141GB</td>
-                            <td>大规模训练、增强内存 (12个区域)</td>
-                            <td>192</td>
-                            <td>2,048 GB</td>
-                            <td>~$63/小时</td>
-                            <td>2024</td>
-                        </tr>
-                        <tr data-workload="训练,推理" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/p5e.html">P5e</a></td>
-                            <td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>8</td>
-                            <td class="gpu-name">H200</td>
-                            <td>141GB</td>
-                            <td>高性能训练</td>
-                            <td>192</td>
-                            <td>2,048 GB</td>
-                            <td>~$70/小时</td>
-                            <td>2024</td>
-                        </tr>
-                        <tr data-workload="训练,推理" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/p5.html">P5</a></td>
-                            <td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1/8</td>
-                            <td class="gpu-name">H100</td>
-                            <td>80GB</td>
-                            <td>大模型训练、生成式 AI</td>
-                            <td>192</td>
-                            <td>2,048 GB</td>
-                            <td>~$58-72/小时</td>
-                            <td>2023-2024</td>
-                        </tr>
-                        <tr data-workload="训练,推理" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/p4de.html">P4de</a></td>
-                            <td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>8</td>
-                            <td class="gpu-name">A100</td>
-                            <td>80GB</td>
-                            <td>通用训练、20B-70B模型推理</td>
-                            <td>96</td>
-                            <td>1,152 GB</td>
-                            <td>~$40.97/小时</td>
-                            <td>2020</td>
-                        </tr>
-                        <tr data-workload="训练,推理" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/p4d.html">P4d</a></td>
-                            <td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>8</td>
-                            <td class="gpu-name">A100</td>
-                            <td>40GB</td>
-                            <td>预算有限的训练、中小型模型</td>
-                            <td>96</td>
-                            <td>1,152 GB</td>
-                            <td>~$32.77/小时</td>
-                            <td>2020</td>
-                        </tr>
-                        <tr data-workload="训练,推理" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/p3dn.html">P3dn</a></td>
-                            <td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>8</td>
-                            <td class="gpu-name">V100</td>
-                            <td>32GB</td>
-                            <td>传统深度学习、教学</td>
-                            <td>96</td>
-                            <td>768 GB</td>
-                            <td>~$31.21/小时</td>
-                            <td>2018</td>
-                        </tr>
-                        <tr data-workload="训练,推理" data-region="Global,China" data-gpu="8">
-                            <td class="instance-name"><a href="instances/p3.html">P3</a></td>
-                            <td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
-                            <td>1/4/8</td>
-                            <td class="gpu-name">V100</td>
-                            <td>16GB</td>
-                            <td>传统深度学习、教学</td>
-                            <td>8-64</td>
-                            <td>61-488 GB</td>
-                            <td>~$3.06-24.48/小时</td>
-                            <td>2017</td>
-                        </tr>
-                        <tr data-workload="训练,推理" data-region="Global" data-gpu="16">
-                            <td class="instance-name"><a href="instances/p2.html">P2</a></td>
-                            <td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1/8/16</td>
-                            <td class="gpu-name">K80</td>
-                            <td>12GB</td>
-                            <td>旧代 GPU、预算有限场景</td>
-                            <td>4-64</td>
-                            <td>61-732 GB</td>
-                            <td>~$0.90-14.40/小时</td>
-                            <td>2016</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/g7e.html">G7e</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1/2/4/8</td>
-                            <td class="gpu-name">RTX PRO 6000 Blackwell</td>
-                            <td>96GB</td>
-                            <td>LLM推理部署、AI图像视频生成、机器人仿真、3D渲染</td>
-                            <td>8-192</td>
-                            <td>64-2048 GB</td>
-                            <td>~$3.36-33.14/小时</td>
-                            <td>2026</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/g7.html">G7</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1/2/4/8</td>
-                            <td class="gpu-name">RTX PRO 4500 Blackwell</td>
-                            <td>32GB</td>
-                            <td>AI推理、图形渲染、GPU加速分析、AR/VR与CAD</td>
-                            <td>8-192</td>
-                            <td>32-768 GB</td>
-                            <td>~$2.52-28.51/小时</td>
-                            <td>2026</td>
-                        </tr>
-                        <tr data-workload="训练,推理" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/g6e.html">G6e</a></td>
-                            <td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1/4/8</td>
-                            <td class="gpu-name">L40S</td>
-                            <td>48GB</td>
-                            <td>20B以下的模型推理、AI图像视频生成模型</td>
-                            <td>4-192</td>
-                            <td>32-1536 GB</td>
-                            <td>~$1.86-30.13/小时</td>
-                            <td>2024</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/g6.html">G6</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1/4/8</td>
-                            <td class="gpu-name">L4</td>
-                            <td>24GB</td>
-                            <td>AI视频生成、实时推理</td>
-                            <td>4-192</td>
-                            <td>16-768 GB</td>
-                            <td>~$1.16-9.28/小时</td>
-                            <td>2023</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global,China" data-gpu="8">
-                            <td class="instance-name"><a href="instances/g5.html">G5</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
-                            <td>1/4/8</td>
-                            <td class="gpu-name">A10G</td>
-                            <td>24GB</td>
-                            <td>小模型实时推理(&lt;20B)</td>
-                            <td>4-192</td>
-                            <td>16-768 GB</td>
-                            <td>~$1.01-16.29/小时</td>
-                            <td>2021</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global" data-gpu="2">
-                            <td class="instance-name"><a href="instances/g5g.html">G5g</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1/2</td>
-                            <td class="gpu-name">T4G</td>
-                            <td>16GB</td>
-                            <td>Android游戏流、ARM原生应用</td>
-                            <td>4-64</td>
-                            <td>8-128 GB</td>
-                            <td>~$0.42-2.74/小时</td>
-                            <td>2021</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global,China" data-gpu="8">
-                            <td class="instance-name"><a href="instances/g4dn.html">G4dn</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
-                            <td>1/4/8</td>
-                            <td class="gpu-name">T4</td>
-                            <td>16GB</td>
-                            <td>经济型推理、小模型部署</td>
-                            <td>4-48</td>
-                            <td>16-192 GB</td>
-                            <td>~$0.53-3.91/小时</td>
-                            <td>2019</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global" data-gpu="4">
-                            <td class="instance-name"><a href="instances/g4ad.html">G4ad</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1/2/4</td>
-                            <td class="gpu-name">AMD Radeon Pro V520</td>
-                            <td>8GB</td>
-                            <td>图形工作站、远程桌面</td>
-                            <td>4-64</td>
-                            <td>16-256 GB</td>
-                            <td>~$0.38-2.18/小时</td>
-                            <td>2020</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global" data-gpu="4">
-                            <td class="instance-name"><a href="instances/g6f.html">G6f</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1</td>
-                            <td class="gpu-name">L40 (Fractional)</td>
-                            <td>48GB</td>
-                            <td>轻量AI推理、小模型部署</td>
-                            <td>2-16</td>
-                            <td>8-64 GB</td>
-                            <td>~$0.65-2.56/小时</td>
-                            <td>2024</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global" data-gpu="2">
-                            <td class="instance-name"><a href="instances/gr6.html">GR6</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1/2</td>
-                            <td class="gpu-name">L4</td>
-                            <td>24GB</td>
-                            <td>光线追踪、图形渲染</td>
-                            <td>16-64</td>
-                            <td>128-256 GB</td>
-                            <td>~$1.56-3.12/小时</td>
-                            <td>2024</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global" data-gpu="1">
-                            <td class="instance-name"><a href="instances/gr6f.html">GR6f</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1</td>
-                            <td class="gpu-name">L40 (Fractional)</td>
-                            <td>48GB</td>
-                            <td>光线追踪、轻量图形</td>
-                            <td>16</td>
-                            <td>64 GB</td>
-                            <td>~$1.62/小时</td>
-                            <td>2024</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global,China" data-gpu="4">
-                            <td class="instance-name"><a href="instances/g3.html">G3</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
-                            <td>1/2/4</td>
-                            <td class="gpu-name">M60</td>
-                            <td>8GB</td>
-                            <td>图形工作站 (旧代)</td>
-                            <td>4-64</td>
-                            <td>30.5-488 GB</td>
-                            <td>~$0.75-4.56/小时</td>
-                            <td>2017</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global,China" data-gpu="1">
-                            <td class="instance-name"><a href="instances/g3s.html">G3s</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
-                            <td>1</td>
-                            <td class="gpu-name">M60</td>
-                            <td>8GB</td>
-                            <td>图形工作站 (旧代)</td>
-                            <td>4</td>
-                            <td>30.5 GB</td>
-                            <td>~$0.75/小时</td>
-                            <td>2017</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global" data-gpu="4">
-                            <td class="instance-name"><a href="instances/g2.html">G2</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1/4</td>
-                            <td class="gpu-name">GRID K520</td>
-                            <td>4GB</td>
-                            <td>图形 (旧代)</td>
-                            <td>8-32</td>
-                            <td>15-60 GB</td>
-                            <td>~$0.65-2.60/小时</td>
-                            <td>2013</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- AWS Custom Chips Section -->
-        <section class="section" id="aws-section">
-            <h2 class="section-title">AWS 自研芯片</h2>
-            <div class="table-container">
-                <table id="aws-table">
-                    <thead>
-                        <tr>
-                            <th class="sortable" data-sort="name">实例家族</th>
-                            <th>Workload类型</th>
-                            <th>区域</th>
-                            <th class="sortable" data-sort="chip">芯片数量</th>
-                            <th>芯片型号</th>
-                            <th>应用场景</th>
-                            <th>vCPU</th>
-                            <th>系统内存</th>
-                            <th class="sortable" data-sort="price">价格(按需)</th>
-                            <th class="sortable" data-sort="year">发布时间</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr data-workload="训练,推理" data-region="Global" data-gpu="144">
-                            <td class="instance-name"><a href="https://aws.amazon.com/ec2/instance-types/trn3/" target="_blank" rel="noopener">Trn3</a></td>
-                            <td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>最多 144 (UltraServer)</td>
-                            <td class="gpu-name">AWS Trainium3 (3nm, 每颗 144GB HBM3e)</td>
-                            <td>前沿大模型训练与推理、Agent / 推理 / 视频生成</td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td>已发布 (GA)</td>
-                            <td>2025</td>
-                        </tr>
-                        <tr data-workload="训练,推理" data-region="Global" data-gpu="16">
-                            <td class="instance-name"><a href="instances/trn2.html">Trn2</a></td>
-                            <td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>16</td>
-                            <td class="gpu-name">AWS Trainium2</td>
-                            <td>万亿参数级模型训练</td>
-                            <td>192</td>
-                            <td>2TB</td>
-                            <td>~$35.76/小时</td>
-                            <td>2024</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global" data-gpu="12">
-                            <td class="instance-name"><a href="instances/inf2.html">Inf2</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1/6/12</td>
-                            <td class="gpu-name">AWS Inferentia2</td>
-                            <td>小模型批量推理(&lt;20B)</td>
-                            <td>4-192</td>
-                            <td>16-384 GB</td>
-                            <td>~$0.76-12.98/小时</td>
-                            <td>2022</td>
-                        </tr>
-                        <tr data-workload="训练" data-region="Global" data-gpu="16">
-                            <td class="instance-name"><a href="instances/trn1.html">Trn1</a></td>
-                            <td><span class="tag tag-training">训练</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>1/16</td>
-                            <td class="gpu-name">AWS Trainium</td>
-                            <td>中大型模型训练、NLP模型</td>
-                            <td>8-128</td>
-                            <td>32-512 GB</td>
-                            <td>~$1.34-24.78/小时</td>
-                            <td>2022</td>
-                        </tr>
-                        <tr data-workload="训练" data-region="Global" data-gpu="16">
-                            <td class="instance-name"><a href="instances/trn1n.html">Trn1n</a></td>
-                            <td><span class="tag tag-training">训练</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>16</td>
-                            <td class="gpu-name">AWS Trainium (网络优化)</td>
-                            <td>分布式深度学习训练</td>
-                            <td>128</td>
-                            <td>512 GB</td>
-                            <td>~$24.78/小时</td>
-                            <td>2023</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global,China" data-gpu="1">
-                            <td class="instance-name"><a href="instances/inf1.html">Inf1</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
-                            <td>1</td>
-                            <td class="gpu-name">AWS Inferentia</td>
-                            <td>传统推理模型、成本优化</td>
-                            <td>4-8</td>
-                            <td>8-16 GB</td>
-                            <td>~$0.37-0.58/小时</td>
-                            <td>2019</td>
-                        </tr>
-                        <tr data-workload="训练" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/dl1.html">DL1</a></td>
-                            <td><span class="tag tag-training">训练</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>8</td>
-                            <td class="gpu-name">Habana Gaudi</td>
-                            <td>深度学习训练</td>
-                            <td>96</td>
-                            <td>768 GB</td>
-                            <td>~$13.11/小时</td>
-                            <td>2021</td>
-                        </tr>
-                        <tr data-workload="推理" data-region="Global" data-gpu="8">
-                            <td class="instance-name"><a href="instances/dl2q.html">DL2q</a></td>
-                            <td><span class="tag tag-inference">推理</span></td>
-                            <td><span class="tag tag-global">Global</span></td>
-                            <td>8</td>
-                            <td class="gpu-name">Qualcomm AI 100</td>
-                            <td>ML推理 (Qualcomm)</td>
-                            <td>96</td>
-                            <td>768 GB</td>
-                            <td>~$10.59/小时</td>
-                            <td>2023</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Customer Cases Section -->
-        <section class="section" id="case-section">
-            <h2 class="section-title">客户案例</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>客户</th>
-                            <th>场景</th>
-                            <th>使用服务</th>
-                            <th>基座模型</th>
-                            <th>效果提升</th>
-                            <th>详情</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="instance-name">斯曼森</td>
-                            <td>行业模型，法律咨询</td>
-                            <td>Amazon Nova Pro + SageMaker</td>
-                            <td class="gpu-name">Qwen1.5 7B</td>
-                            <td>案情识别 99%，满意度 +30%</td>
-                            <td><a href="https://aws.amazon.com/cn/blogs/china/smartions-use-amazon-nova-to-create-a-big-model-of-chinese-laws/" target="_blank" style="color: var(--accent-blue);">查看 →</a></td>
-                        </tr>
-                        <tr>
-                            <td class="instance-name">云学堂</td>
-                            <td>代码智能生成与补全</td>
-                            <td>Amazon SageMaker</td>
-                            <td class="gpu-name">DeepSeek Coder 6.7B</td>
-                            <td>业务代码生成 +44%，业务FIM显著提升</td>
-                            <td><a href="https://aws.amazon.com/cn/blogs/china/yxt-innovative-practice-of-fine-tuning-large-models-and-enabling-code-generation-based-on-amazon-sagemaker/" target="_blank" style="color: var(--accent-blue);">查看 →</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <footer>
-            <p>数据来源: <a href="https://aws.amazon.com" target="_blank">亚马逊云科技官方网站</a></p>
-        </footer>
-    </div>
-
-    <script src="data/meta.js"></script>
-    <script>
+<div class="container">
+<header>
+<div class="header-content">
+<div>
+<h1>Amazon Web Services <span>GPU</span></h1>
+<p class="subtitle">AWS GPU 与 AI 加速实例完整列表 · 最后更新: <span id="last-updated">2026-11-08</span></p>
+<div class="chip-row">
+<span class="chip"><span class="dot"></span>Blackwell Ultra · GB300 NVL72</span>
+<span class="chip"><span class="dot"></span>RTX PRO Blackwell · G7 / G7e</span>
+<span class="chip c2"><span class="dot"></span>Trainium3 · 3nm</span>
+<span class="chip c3"><span class="dot"></span>Global + China</span>
+</div>
+</div>
+<div class="header-actions">
+<button class="theme-toggle" onclick="toggleTheme()">
+<span id="theme-icon">🌙</span>
+<span id="theme-text">深色模式</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Stats Cards -->
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-label">GPU 实例总数</div>
+<div class="stat-value highlight" id="total-instances">99</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">最新发布</div>
+<div class="stat-value">G7 系列</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">价格区间</div>
+<div class="stat-value">$0.37-142/h</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">支持区域</div>
+<div class="stat-value">Global + China</div>
+</div>
+</div>
+<!-- Toolbar -->
+<div class="toolbar">
+<div class="toolbar-row">
+<div class="search-box">
+<input id="search-input" oninput="filterTable()" placeholder="搜索实例名称、GPU型号..." type="text"/>
+</div>
+<div class="filter-group">
+<select class="filter-select" id="filter-workload" onchange="filterTable()">
+<option value="">全部类型</option>
+<option value="训练">训练</option>
+<option value="推理">推理</option>
+</select>
+<select class="filter-select" id="filter-region" onchange="filterTable()">
+<option value="">全部区域</option>
+<option value="Global">Global</option>
+<option value="China">China</option>
+</select>
+<select class="filter-select" id="filter-gpu-count" onchange="filterTable()">
+<option value="">GPU数量</option>
+<option value="1">1 GPU</option>
+<option value="4">4 GPU</option>
+<option value="8">8+ GPU</option>
+</select>
+<button class="clear-btn" onclick="clearFilters()">清空筛选</button>
+</div>
+<span class="result-count" id="result-count"></span>
+</div>
+<div class="quick-nav">
+<button class="quick-nav-btn" onclick="scrollToSection('nvidia-section')">NVIDIA GPU</button>
+<button class="quick-nav-btn" onclick="scrollToSection('aws-section')">AWS 自研芯片</button>
+<button class="quick-nav-btn" onclick="scrollToSection('case-section')">客户案例</button>
+</div>
+</div>
+<!-- NVIDIA GPU Section -->
+<section class="section" id="nvidia-section">
+<h2 class="section-title">NVIDIA GPU</h2>
+<div class="table-container">
+<table id="nvidia-table">
+<thead>
+<tr>
+<th class="sortable" data-sort="name">实例家族</th>
+<th>Workload类型</th>
+<th>区域</th>
+<th class="sortable" data-sort="gpu">GPU 数量</th>
+<th>GPU型号</th>
+<th>GPU 显存</th>
+<th>应用场景</th>
+<th>vCPU</th>
+<th>系统内存</th>
+<th class="sortable" data-sort="price">价格(按需)</th>
+<th class="sortable" data-sort="year">发布时间</th>
+</tr>
+</thead>
+<tbody>
+<tr data-gpu="72" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available/" rel="noopener" target="_blank">P6e (GB300)</a></td>
+<td><span class="tag tag-training">训练</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>72 (UltraServer)</td>
+<td class="gpu-name">GB300 NVL72 Blackwell Ultra</td>
+<td>~279GB（GB200 的 1.5 倍，整机近 20TB）</td>
+<td>万亿参数级训练与推理 (UltraServers)</td>
+<td>—</td>
+<td>—</td>
+<td>已发布 (GA)</td>
+<td>2025</td>
+</tr>
+<tr data-gpu="72" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="instances/p6e-gb200.html">P6e (GB200)</a></td>
+<td><span class="tag tag-training">训练</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>4/36/72</td>
+<td class="gpu-name">GB200 Grace Blackwell</td>
+<td>185GB</td>
+<td>超大规模 AI 训练 (UltraServers)</td>
+<td>144</td>
+<td>960 GiB</td>
+<td>已发布 (GA)</td>
+<td>2025</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="instances/p6-b300.html">P6 (B300)</a></td>
+<td><span class="tag tag-training">训练</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">B300 Blackwell Ultra</td>
+<td>262GB</td>
+<td>顶级训练性能、万亿参数模型</td>
+<td>192</td>
+<td>4 TB</td>
+<td>~$142.42/小时</td>
+<td>2025</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="instances/p6-b200.html">P6 (B200)</a></td>
+<td><span class="tag tag-training">训练</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">B200 Blackwell</td>
+<td>180GB</td>
+<td>顶级训练性能、超大模型推理</td>
+<td>192</td>
+<td>2,048 GB</td>
+<td>~$113.93/小时</td>
+<td>2025</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="instances/p5en.html">P5en</a></td>
+<td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">H200</td>
+<td>141GB</td>
+<td>大规模训练、增强内存 (12个区域)</td>
+<td>192</td>
+<td>2,048 GB</td>
+<td>~$63/小时</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="instances/p5e.html">P5e</a></td>
+<td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">H200</td>
+<td>141GB</td>
+<td>高性能训练</td>
+<td>192</td>
+<td>2,048 GB</td>
+<td>~$70/小时</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="instances/p5.html">P5</a></td>
+<td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/8</td>
+<td class="gpu-name">H100</td>
+<td>80GB</td>
+<td>大模型训练、生成式 AI</td>
+<td>192</td>
+<td>2,048 GB</td>
+<td>~$58-72/小时</td>
+<td>2023-2024</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="instances/p4de.html">P4de</a></td>
+<td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">A100</td>
+<td>80GB</td>
+<td>通用训练、20B-70B模型推理</td>
+<td>96</td>
+<td>1,152 GB</td>
+<td>~$40.97/小时</td>
+<td>2020</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="instances/p4d.html">P4d</a></td>
+<td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">A100</td>
+<td>40GB</td>
+<td>预算有限的训练、中小型模型</td>
+<td>96</td>
+<td>1,152 GB</td>
+<td>~$32.77/小时</td>
+<td>2020</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="instances/p3dn.html">P3dn</a></td>
+<td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">V100</td>
+<td>32GB</td>
+<td>传统深度学习、教学</td>
+<td>96</td>
+<td>768 GB</td>
+<td>~$31.21/小时</td>
+<td>2018</td>
+</tr>
+<tr data-gpu="8" data-region="Global,China" data-workload="训练,推理">
+<td class="instance-name"><a href="instances/p3.html">P3</a></td>
+<td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
+<td>1/4/8</td>
+<td class="gpu-name">V100</td>
+<td>16GB</td>
+<td>传统深度学习、教学</td>
+<td>8-64</td>
+<td>61-488 GB</td>
+<td>~$3.06-24.48/小时</td>
+<td>2017</td>
+</tr>
+<tr data-gpu="16" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="instances/p2.html">P2</a></td>
+<td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/8/16</td>
+<td class="gpu-name">K80</td>
+<td>12GB</td>
+<td>旧代 GPU、预算有限场景</td>
+<td>4-64</td>
+<td>61-732 GB</td>
+<td>~$0.90-14.40/小时</td>
+<td>2016</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="instances/g7e.html">G7e</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/2/4/8</td>
+<td class="gpu-name">RTX PRO 6000 Blackwell</td>
+<td>96GB</td>
+<td>LLM推理部署、AI图像视频生成、机器人仿真、3D渲染</td>
+<td>8-192</td>
+<td>64-2048 GB</td>
+<td>~$3.36-33.14/小时</td>
+<td>2026</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="instances/g7.html">G7</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/2/4/8</td>
+<td class="gpu-name">RTX PRO 4500 Blackwell</td>
+<td>32GB</td>
+<td>AI推理、图形渲染、GPU加速分析、AR/VR与CAD</td>
+<td>8-192</td>
+<td>32-768 GB</td>
+<td>~$2.52-28.51/小时</td>
+<td>2026</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="instances/g6e.html">G6e</a></td>
+<td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/4/8</td>
+<td class="gpu-name">L40S</td>
+<td>48GB</td>
+<td>20B以下的模型推理、AI图像视频生成模型</td>
+<td>4-192</td>
+<td>32-1536 GB</td>
+<td>~$1.86-30.13/小时</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="instances/g6.html">G6</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/4/8</td>
+<td class="gpu-name">L4</td>
+<td>24GB</td>
+<td>AI视频生成、实时推理</td>
+<td>4-192</td>
+<td>16-768 GB</td>
+<td>~$1.16-9.28/小时</td>
+<td>2023</td>
+</tr>
+<tr data-gpu="8" data-region="Global,China" data-workload="推理">
+<td class="instance-name"><a href="instances/g5.html">G5</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
+<td>1/4/8</td>
+<td class="gpu-name">A10G</td>
+<td>24GB</td>
+<td>小模型实时推理(&lt;20B)</td>
+<td>4-192</td>
+<td>16-768 GB</td>
+<td>~$1.01-16.29/小时</td>
+<td>2021</td>
+</tr>
+<tr data-gpu="2" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="instances/g5g.html">G5g</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/2</td>
+<td class="gpu-name">T4G</td>
+<td>16GB</td>
+<td>Android游戏流、ARM原生应用</td>
+<td>4-64</td>
+<td>8-128 GB</td>
+<td>~$0.42-2.74/小时</td>
+<td>2021</td>
+</tr>
+<tr data-gpu="8" data-region="Global,China" data-workload="推理">
+<td class="instance-name"><a href="instances/g4dn.html">G4dn</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
+<td>1/4/8</td>
+<td class="gpu-name">T4</td>
+<td>16GB</td>
+<td>经济型推理、小模型部署</td>
+<td>4-48</td>
+<td>16-192 GB</td>
+<td>~$0.53-3.91/小时</td>
+<td>2019</td>
+</tr>
+<tr data-gpu="4" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="instances/g4ad.html">G4ad</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/2/4</td>
+<td class="gpu-name">AMD Radeon Pro V520</td>
+<td>8GB</td>
+<td>图形工作站、远程桌面</td>
+<td>4-64</td>
+<td>16-256 GB</td>
+<td>~$0.38-2.18/小时</td>
+<td>2020</td>
+</tr>
+<tr data-gpu="4" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="instances/g6f.html">G6f</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1</td>
+<td class="gpu-name">L40 (Fractional)</td>
+<td>48GB</td>
+<td>轻量AI推理、小模型部署</td>
+<td>2-16</td>
+<td>8-64 GB</td>
+<td>~$0.65-2.56/小时</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="2" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="instances/gr6.html">GR6</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/2</td>
+<td class="gpu-name">L4</td>
+<td>24GB</td>
+<td>光线追踪、图形渲染</td>
+<td>16-64</td>
+<td>128-256 GB</td>
+<td>~$1.56-3.12/小时</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="1" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="instances/gr6f.html">GR6f</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1</td>
+<td class="gpu-name">L40 (Fractional)</td>
+<td>48GB</td>
+<td>光线追踪、轻量图形</td>
+<td>16</td>
+<td>64 GB</td>
+<td>~$1.62/小时</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="4" data-region="Global,China" data-workload="推理">
+<td class="instance-name"><a href="instances/g3.html">G3</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
+<td>1/2/4</td>
+<td class="gpu-name">M60</td>
+<td>8GB</td>
+<td>图形工作站 (旧代)</td>
+<td>4-64</td>
+<td>30.5-488 GB</td>
+<td>~$0.75-4.56/小时</td>
+<td>2017</td>
+</tr>
+<tr data-gpu="1" data-region="Global,China" data-workload="推理">
+<td class="instance-name"><a href="instances/g3s.html">G3s</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
+<td>1</td>
+<td class="gpu-name">M60</td>
+<td>8GB</td>
+<td>图形工作站 (旧代)</td>
+<td>4</td>
+<td>30.5 GB</td>
+<td>~$0.75/小时</td>
+<td>2017</td>
+</tr>
+<tr data-gpu="4" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="instances/g2.html">G2</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/4</td>
+<td class="gpu-name">GRID K520</td>
+<td>4GB</td>
+<td>图形 (旧代)</td>
+<td>8-32</td>
+<td>15-60 GB</td>
+<td>~$0.65-2.60/小时</td>
+<td>2013</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- AWS Custom Chips Section -->
+<section class="section" id="aws-section">
+<h2 class="section-title">AWS 自研芯片</h2>
+<div class="table-container">
+<table id="aws-table">
+<thead>
+<tr>
+<th class="sortable" data-sort="name">实例家族</th>
+<th>Workload类型</th>
+<th>区域</th>
+<th class="sortable" data-sort="chip">芯片数量</th>
+<th>芯片型号</th>
+<th>应用场景</th>
+<th>vCPU</th>
+<th>系统内存</th>
+<th class="sortable" data-sort="price">价格(按需)</th>
+<th class="sortable" data-sort="year">发布时间</th>
+</tr>
+</thead>
+<tbody>
+<tr data-gpu="144" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="https://aws.amazon.com/ec2/instance-types/trn3/" rel="noopener" target="_blank">Trn3</a></td>
+<td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>最多 144 (UltraServer)</td>
+<td class="gpu-name">AWS Trainium3 (3nm, 每颗 144GB HBM3e)</td>
+<td>前沿大模型训练与推理、Agent / 推理 / 视频生成</td>
+<td>—</td>
+<td>—</td>
+<td>已发布 (GA)</td>
+<td>2025</td>
+</tr>
+<tr data-gpu="16" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="instances/trn2.html">Trn2</a></td>
+<td><span class="tag tag-training">训练</span><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>16</td>
+<td class="gpu-name">AWS Trainium2</td>
+<td>万亿参数级模型训练</td>
+<td>192</td>
+<td>2TB</td>
+<td>~$35.76/小时</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="12" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="instances/inf2.html">Inf2</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/6/12</td>
+<td class="gpu-name">AWS Inferentia2</td>
+<td>小模型批量推理(&lt;20B)</td>
+<td>4-192</td>
+<td>16-384 GB</td>
+<td>~$0.76-12.98/小时</td>
+<td>2022</td>
+</tr>
+<tr data-gpu="16" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="instances/trn1.html">Trn1</a></td>
+<td><span class="tag tag-training">训练</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/16</td>
+<td class="gpu-name">AWS Trainium</td>
+<td>中大型模型训练、NLP模型</td>
+<td>8-128</td>
+<td>32-512 GB</td>
+<td>~$1.34-24.78/小时</td>
+<td>2022</td>
+</tr>
+<tr data-gpu="16" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="instances/trn1n.html">Trn1n</a></td>
+<td><span class="tag tag-training">训练</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>16</td>
+<td class="gpu-name">AWS Trainium (网络优化)</td>
+<td>分布式深度学习训练</td>
+<td>128</td>
+<td>512 GB</td>
+<td>~$24.78/小时</td>
+<td>2023</td>
+</tr>
+<tr data-gpu="1" data-region="Global,China" data-workload="推理">
+<td class="instance-name"><a href="instances/inf1.html">Inf1</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
+<td>1</td>
+<td class="gpu-name">AWS Inferentia</td>
+<td>传统推理模型、成本优化</td>
+<td>4-8</td>
+<td>8-16 GB</td>
+<td>~$0.37-0.58/小时</td>
+<td>2019</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="instances/dl1.html">DL1</a></td>
+<td><span class="tag tag-training">训练</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">Habana Gaudi</td>
+<td>深度学习训练</td>
+<td>96</td>
+<td>768 GB</td>
+<td>~$13.11/小时</td>
+<td>2021</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="instances/dl2q.html">DL2q</a></td>
+<td><span class="tag tag-inference">推理</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">Qualcomm AI 100</td>
+<td>ML推理 (Qualcomm)</td>
+<td>96</td>
+<td>768 GB</td>
+<td>~$10.59/小时</td>
+<td>2023</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Customer Cases Section -->
+<section class="section" id="case-section">
+<h2 class="section-title">客户案例</h2>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>客户</th>
+<th>场景</th>
+<th>使用服务</th>
+<th>基座模型</th>
+<th>效果提升</th>
+<th>详情</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="instance-name">斯曼森</td>
+<td>行业模型，法律咨询</td>
+<td>Amazon Nova Pro + SageMaker</td>
+<td class="gpu-name">Qwen1.5 7B</td>
+<td>案情识别 99%，满意度 +30%</td>
+<td><a href="https://aws.amazon.com/cn/blogs/china/smartions-use-amazon-nova-to-create-a-big-model-of-chinese-laws/" style="color: var(--accent-blue);" target="_blank">查看 →</a></td>
+</tr>
+<tr>
+<td class="instance-name">云学堂</td>
+<td>代码智能生成与补全</td>
+<td>Amazon SageMaker</td>
+<td class="gpu-name">DeepSeek Coder 6.7B</td>
+<td>业务代码生成 +44%，业务FIM显著提升</td>
+<td><a href="https://aws.amazon.com/cn/blogs/china/yxt-innovative-practice-of-fine-tuning-large-models-and-enabling-code-generation-based-on-amazon-sagemaker/" style="color: var(--accent-blue);" target="_blank">查看 →</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<footer>
+<p>数据来源: <a href="https://aws.amazon.com" target="_blank">亚马逊云科技官方网站</a></p>
+</footer>
+</div>
+<script src="data/meta.js"></script>
+<script>
         // 从 data/meta.js 填充更新日期与实例总数。
         // HTML 里的值只是兜底，真实值以 data/ 为准（由 convert_data.py 生成）。
         (function() {
@@ -1532,5 +1526,5 @@
         // Initialize
         filterTable();
     </script>
-</body>
+<a data-cur="zh" data-to="en" href="../en/aws-gpu/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Three-layer EC2 monitoring stack — Graviton Guide 02</title>
+<meta content="CloudWatch → CloudWatch Agent → Prometheus + Node Exporter: USE / RED / Golden Signals, 2026 pricing pitfalls, Alertmanager in practice" name="description"/>
+<link href="../../../../ec2/assets/style.css" rel="stylesheet"/>
+<style>
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.87rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../../">EC2</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hero">
+<div class="crumb"><a href="../">Graviton Guide</a> · 02 / 04 · Observability</div>
+<h1><span class="g">Three-layer EC2</span>Monitoring stack</h1>
+<p class="sub">CloudWatch → CloudWatch Agent → Prometheus + Node Exporter, paired with three methodologies: USE / RED / Four Golden Signals.</p>
+<nav class="toc">
+<a href="#methodology">1 · Choose one of three methodologies</a>
+<a href="#layers">2 · Three layers of data sources</a>
+<a href="#cwa">3 · CloudWatch Agent</a>
+<a href="#nodeexp">4 · Node Exporter</a>
+<a href="#prometheus">5 · Prometheus</a>
+<a href="#logs">6 · Logging costs</a>
+<a href="#alerts">7 · Alertmanager</a>
+<a href="#minimal">8 · A minimal 3-machine closed loop</a>
+<a href="#decision">9 · Decision table</a>
+</nav>
+</div>
+<!-- 1 -->
+<section class="content-section" id="methodology">
+<h2 class="section-title">1 · <span>Methodology</span>——USE / RED / Golden Signals</h2>
+<table class="cmp">
+<thead><tr><th>Method</th><th>Perspective</th><th>Three metrics</th><th>Good for</th></tr></thead>
+<tbody>
+<tr>
+<td><b>USE</b><br/>(Brendan Gregg)</td>
+<td>Resources, bottom-up</td>
+<td><b>U</b>tilization / <b>S</b>aturation / <b>E</b>rrors</td>
+<td>host, each resource (CPU / mem / disk / net / mutex / FD limit)<sup>[1]</sup></td>
+</tr>
+<tr>
+<td><b>Four Golden Signals</b><br/>(Google SRE)</td>
+<td>Request, top-down</td>
+<td>Latency / Traffic / Errors / Saturation</td>
+<td>For user-facing services, alert on it<sup>[2]</sup></td>
+</tr>
+<tr>
+<td><b>RED</b><br/>(Tom Wilkie)</td>
+<td>Request, simplified</td>
+<td>Rate / Errors / Duration</td>
+<td>Stateless HTTP services</td>
+</tr>
+</tbody>
+</table>
+<p><b>The three don't conflict:</b>On EC2, host-level USE (Node Exporter) plus application-level Golden Signals (custom exporter / OpenTelemetry) is enough. In Gregg's words: "solves about 80% of server issues with 5% of the effort."<sup>[1]</sup></p>
+<p>The Google SRE Book has a special warning about latency:<b>Latency of successful requests</b>needs to be paired with<b>Latency of failed requests</b>Count them separately. "a slow error is even worse than a fast error": a 500 that returns slowly is much worse than a fast failure.<sup>[2]</sup></p>
+</section>
+<!-- 2 -->
+<section class="content-section" id="layers">
+<h2 class="section-title">2 · <span>Three layers</span>Data sources: the further down, the more accurate and the more expensive</h2>
+<table class="cmp">
+<thead><tr><th>Layer</th><th>Can see</th><th>Not visible</th><th>Cost</th></tr></thead>
+<tbody>
+<tr>
+<td><b>1</b> · CloudWatch built-in</td>
+<td>CPU, NetworkIn/Out, DiskReadBytes, StatusCheckFailed</td>
+<td><b>Memory, filesystem usage, process list, TCP connection state</b>——because it's collected from the hypervisor</td>
+<td>Basic is free, Detailed ~$2.10/month/instance</td>
+</tr>
+<tr>
+<td><b>2</b> · CloudWatch Agent</td>
+<td>Layer 1 + memory + disk usage + statsd + logs</td>
+<td>Protocol layer (TCP RTT, retransmit)</td>
+<td>~$0.30/metric/month + logs</td>
+</tr>
+<tr>
+<td><b>3</b> · Prometheus + Node Exporter</td>
+<td>Full <code>/proc</code> / <code>/sys</code>——1000+ metrics</td>
+<td>Go further up to the protocol layer <code>tcpstat</code> / eBPF exporter</td>
+<td>EC2 + storage; no per-metric pricing, cheapest long-term</td>
+</tr>
+</tbody>
+</table>
+<p><b>Proof layer 1 isn't enough</b>— run this API once:</p>
+<pre>aws cloudwatch list-metrics \
+  --namespace AWS/EC2 \
+  --dimensions Name=InstanceId,Value=&lt;your-instance-ID&gt;</pre>
+<p>The response includes CPUUtilization, NetworkIn/Out, DiskReadBytes, StatusCheckFailed, and EBSReadOps.<b>None</b> MemoryUsed, DiskSpaceUsed_Percent, ProcessCount, TCPEstablished. These metrics must come from an agent inside the guest.</p>
+</section>
+<!-- 3 -->
+<section class="content-section" id="cwa">
+<h2 class="section-title">3 · CloudWatch <span>Agent</span>——AL2023 + Graviton</h2>
+<p>The install command is the same on x86 and arm64; the package automatically installs the right architecture:</p>
+<pre>sudo dnf install -y amazon-cloudwatch-agent
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config -m ec2 -s \
+  -c file:/opt/aws/amazon-cloudwatch-agent/etc/cwa-config.json</pre>
+<p>A typical Flask / Gunicorn service's <code>cwa-config.json</code>:</p>
+<pre>{
+  <span class="k">"agent"</span>: { "metrics_collection_interval": 60, "run_as_user": "cwagent" },
+  <span class="k">"metrics"</span>: {
+    "namespace": "MyApp/EC2",
+    "append_dimensions": {
+      "InstanceId": "${aws:InstanceId}",
+      "AutoScalingGroupName": "${aws:AutoScalingGroupName}"
+    },
+    "metrics_collected": {
+      "mem":     { "measurement": ["mem_used_percent", "mem_available"] },
+      "disk":    {
+        "measurement": ["used_percent", "inodes_free"],
+        "resources": ["/", "/var/log"],
+        "ignore_file_system_types": ["sysfs", "devtmpfs", "tmpfs"]
+      },
+      "netstat": { "measurement": ["tcp_established", "tcp_time_wait"] },
+      "swap":    { "measurement": ["swap_used_percent"] }
+    }
+  },
+  <span class="k">"logs"</span>: {
+    "logs_collected": { "files": { "collect_list": [
+      { "file_path": "/var/log/gunicorn/access.log",
+        "log_group_name": "/myapp/gunicorn/access",
+        "log_stream_name": "{instance_id}",
+        "retention_in_days": 14 }
+    ]}}
+  }
+}</pre>
+<p>IAM: add to the instance role <code>CloudWatchAgentServerPolicy</code> managed policy.</p>
+</section>
+<!-- 4 -->
+<section class="content-section" id="nodeexp">
+<h2 class="section-title">4 · <span>Node Exporter</span>(AL2023 · arm64)</h2>
+<pre>VERSION=1.8.2
+curl -sL https://github.com/prometheus/node_exporter/releases/download/v${VERSION}/node_exporter-${VERSION}.linux-arm64.tar.gz \
+  | sudo tar -xz -C /usr/local/bin --strip-components=1 \
+    node_exporter-${VERSION}.linux-arm64/node_exporter
+sudo useradd -rs /sbin/nologin node_exporter</pre>
+<p>Systemd unit:</p>
+<pre>[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+ExecStart=/usr/local/bin/node_exporter \
+  --collector.systemd \
+  --collector.processes \
+  --collector.textfile.directory=/var/lib/node_exporter/textfile
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</pre>
+<h3 class="sub-h">Collectors that are off by default but worth enabling <sup>[4]</sup></h3>
+<ul>
+<li><code>--collector.systemd</code>——unit status (which services failed).</li>
+<li><code>--collector.processes</code>— aggregate <code>/proc</code> counts (required by Grafana dashboard 1860).</li>
+<li><code>--collector.textfile</code>——write custom metrics into <code>*.prom</code> files (cron results, backup exit code).<b>For writes, use <code>mv</code> Guarantees atomicity.</b></li>
+<li>On demand:<code>logind</code>, <code>ethtool</code>, <code>interrupts</code>, <code>mountstats</code>(NFS).</li>
+</ul>
+<div class="callout warn"><b>The README explicitly warns:</b>"Enable at most one at a time, testing first" — every time you add a collector, you need to check <code>scrape_duration_seconds</code> has gotten worse.<sup>[4]</sup></div>
+<h3 class="sub-h">Everyday essential metrics</h3>
+<ul>
+<li><code>node_load1</code>——1-minute load average</li>
+<li><code>node_memory_MemAvailable_bytes</code>——the amount the kernel promises it can reclaim</li>
+<li><code>node_filesystem_avail_bytes{mountpoint="/"}</code>— actual usable disk</li>
+<li><code>node_disk_io_time_seconds_total</code>——cumulative IO time</li>
+<li><code>node_cpu_seconds_total{mode="iowait"}</code>——the best entry point for "why is it slow"</li>
+</ul>
+<p><b>What Node Exporter can't see:</b>TCP RTT / retransmit / SACK (using <code>ss -ti</code> or eBPF <code>tcplife</code>); per-process CPU/RSS/FD (using <code>process_exporter</code>); HTTP probes (<code>blackbox_exporter</code>).</p>
+</section>
+<!-- 5 -->
+<section class="content-section" id="prometheus">
+<h2 class="section-title">5 · <span>Prometheus</span> Minimum configuration</h2>
+<pre>global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+scrape_configs:
+  - job_name: node
+    ec2_sd_configs:
+      - region: ap-northeast-1
+        port: 9100
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance
+
+remote_write:
+  - url: https://aps-workspaces.ap-northeast-1.amazonaws.com/workspaces/ws-xxx/api/v1/remote_write
+    sigv4: { region: ap-northeast-1 }</pre>
+<p>Kept locally:<code>--storage.tsdb.retention.time=15d</code>. Long retention <code>remote_write</code> to <b>Amazon Managed Prometheus</b>(150 days by default, extendable).</p>
+<h3 class="sub-h">AMP + AMG vs Grafana Cloud pricing</h3>
+<ul>
+<li><b>AMP</b>:<b>$0.90 / 10M ingest</b>(first 2B), $0.10 / 1B query samples, $0.03 / GB storage. Free tier: 40M ingest + 10 GB.<sup>[5]</sup></li>
+<li><b>Amazon Managed Grafana</b>:<b>$9 / editor</b>, $5 / viewer / month, Enterprise add-on +$45. Each workspace needs at least one editor.<sup>[6]</sup></li>
+<li><b>Grafana Cloud</b> Free tier: 10k active series + 50 GB logs + 14-day retention — the cheapest option for small single-machine projects.</li>
+</ul>
+<h3 class="sub-h">Grafana Dashboard ID quick reference</h3>
+<ul>
+<li><b>1860</b> — Node Exporter Full (classic)</li>
+<li><b>12486</b> — Node Exporter Full Modernized (newer Prometheus)</li>
+<li><b>7362</b> — MySQL Overview (requires mysqld_exporter)</li>
+<li><b>763</b> — Redis (requires redis_exporter)</li>
+</ul>
+</section>
+<!-- 6 -->
+<section class="content-section" id="logs">
+<h2 class="section-title">6 · <span>Logs</span> Cost comparison at 100 GB/month</h2>
+<table class="cmp">
+<thead><tr><th>Backend</th><th>Ingest</th><th>Storage</th><th>Query</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>CloudWatch Logs (Standard)</td><td>$0.50/GB × 100 = <b>$50</b></td><td>$0.03/GB/month ≈ $3</td><td>Insights $0.005/GB scan</td><td>IA class drops to $0.25/GB ingest</td></tr>
+<tr><td>OpenSearch (self-managed)</td><td>included</td><td>$100+ compute/EBS</td><td>Built into the UI</td><td>Run the cluster yourself</td></tr>
+<tr><td>Loki + S3</td><td>~$5</td><td>~$2.30/month</td><td>Free</td><td>You operate it; tag index</td></tr>
+<tr><td>Grafana Cloud Loki</td><td>included</td><td>included</td><td>included</td><td>Managed; the free tier is enough for small projects</td></tr>
+</tbody>
+</table>
+<div class="callout warn"><b>The three places where CloudWatch bills most often blow up:</b>(1) Pushing all 500 Node Exporter metrics as custom metrics: $150/month per machine; (2) embedding high-cardinality JSON such as request-id in logs, sending ingest GB through the roof; (3) Log Insights running full scans on unpartitioned log groups.<sup>[3]</sup></div>
+</section>
+<!-- 7 -->
+<section class="content-section" id="alerts">
+<h2 class="section-title">7 · <span>Alertmanager</span> Production-grade routing</h2>
+<pre>route:
+  receiver: default-slack
+  group_by: [alertname, cluster]
+  group_wait: 30s
+  routes:
+    - matchers: [team="db", severity="critical"]
+      receiver: db-pagerduty
+    - matchers: [team="frontend"]
+      receiver: frontend-slack
+      continue: true
+
+receivers:
+  - name: db-pagerduty
+    pagerduty_configs:
+      - routing_key: &lt;key&gt;
+        send_resolved: true
+  - name: frontend-slack
+    slack_configs:
+      - channel: '#fe-alerts'
+        send_resolved: true
+
+inhibit_rules:
+  - source_matchers: [severity="critical"]
+    target_matchers: [severity="warning"]
+    equal: [alertname, cluster]</pre>
+<p>Use <code>amtool check-config</code> validation; child routes inherit any fields they don't set from the parent. Inhibit rules suppress same-named warnings once a critical has fired, to avoid "one failure flooding the channel".</p>
+<h3 class="sub-h">Four starter alert rules</h3>
+<pre>groups:
+  - name: ec2.rules
+    rules:
+      - alert: HighCPU
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) &gt; 80
+        for: 5m
+        labels: { severity: warning }
+
+      - alert: LowMemory
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 &lt; 10
+        for: 3m
+        labels: { severity: critical }
+
+      - alert: HighIOWait
+        expr: avg by (instance) (rate(node_cpu_seconds_total{mode="iowait"}[5m])) * 100 &gt; 30
+        for: 5m
+        labels: { severity: warning }
+
+      - alert: InstanceStatusCheckFailed
+        expr: aws_ec2_status_check_failed &gt; 0
+        for: 2m
+        labels: { severity: critical }</pre>
+</section>
+<!-- 8 -->
+<section class="content-section" id="minimal">
+<h2 class="section-title">8 · A 3-machine <span>Minimal closed loop</span></h2>
+<p>Don't build a monitoring platform. Do these 5 things:</p>
+<ol>
+<li>Install Node Exporter on all 3 machines (done in 10 minutes)</li>
+<li>Sign up for a free grafana.com account (10k active metrics, 50 GB logs, 14-day retention)</li>
+<li>Use <code>grafana-agent</code> or <code>remote_write</code> Push to a free endpoint</li>
+<li>Import dashboard <b>1860</b></li>
+<li>Set up four alarms: CPU&gt;80%, mem&lt;10%, disk&lt;15%, EC2 status check failed</li>
+</ol>
+<p>That's it. Distributed tracing, custom dashboards, and log aggregation aren't needed on day one.</p>
+</section>
+<!-- 9 -->
+<section class="content-section" id="decision">
+<h2 class="section-title">9 · <span>Decision table</span></h2>
+<table class="cmp">
+<thead><tr><th>Scale</th><th>Monthly budget</th><th>Recommended stack</th></tr></thead>
+<tbody>
+<tr><td>1–3 instances</td><td>$0</td><td>Node Exporter → Grafana Cloud (free)</td></tr>
+<tr><td>4–20 instances</td><td>&lt;$100</td><td>CloudWatch Agent + built-in dashboards + CW Alarms</td></tr>
+<tr><td>20–100 instances</td><td>$100–500</td><td>Self-hosted Prometheus + Grafana + Loki (running on a <code>t4g.medium</code>)</td></tr>
+<tr><td>100+ machines</td><td>$500+</td><td>Amazon Managed Prometheus + Managed Grafana + Loki or OpenSearch</td></tr>
+<tr><td>Compliance / long retention</td><td>Any</td><td>AMP (≥150 days) + OpenSearch logs</td></tr>
+</tbody>
+</table>
+</section>
+<div class="refs">
+<h4>Sources</h4>
+<ol>
+<li>[1] <a href="https://www.brendangregg.com/usemethod.html">Brendan Gregg — The USE Method</a></li>
+<li>[2] <a href="https://sre.google/sre-book/monitoring-distributed-systems/">Google SRE Book — Monitoring Distributed Systems (Four Golden Signals)</a></li>
+<li>[3] <a href="https://aws.amazon.com/cloudwatch/pricing/">aws.amazon.com/cloudwatch/pricing/</a></li>
+<li>[4] <a href="https://github.com/prometheus/node_exporter">github.com/prometheus/node_exporter</a></li>
+<li>[5] <a href="https://aws.amazon.com/prometheus/pricing/">Amazon Managed Prometheus pricing</a></li>
+<li>[6] <a href="https://aws.amazon.com/grafana/pricing/">Amazon Managed Grafana pricing</a></li>
+<li>[7] <a href="https://prometheus.io/docs/alerting/latest/configuration/">Prometheus — Alerting configuration</a></li>
+<li>[8] <a href="https://grafana.com/grafana/dashboards/1860-node-exporter-full/">Grafana Dashboard 1860 — Node Exporter Full</a></li>
+</ol>
+</div>
+<div class="next">
+<div class="left">Next stop</div>
+<div class="right">
+<a href="../saturation/">03 / 04</a>
+<a class="big" href="../saturation/">Detecting resource saturation on ARM →</a>
+</div>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../../">Home</a> · <a href="../">Graviton Guide</a></p>
+</footer>
+<a data-cur="en" data-to="zh" href="../../../../ec2/graviton/monitor/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh">
+
+<html lang="zh-CN">
 <head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Play · Harness Self-Evolution</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Play · Harness Self-Evolution</title>
+<link href="../../assets/style.css" rel="stylesheet"/>
+<style>
       :root {
         --mk-accent: rgb(0, 217, 130);
         --mk-purple: rgb(139, 92, 246);
@@ -875,294 +876,281 @@
     </style>
 </head>
 <body>
-
 <nav class="nav">
-    <div class="brand"><a href="../../.." style="color:inherit;">liucao<span>.me</span></a></div>
-    <div class="links">
-        <a href="../">← Intro</a>
-        <a href="../talk/">Talk</a>
-        <a href="../papers/">Papers</a>
-        <a href="../run/">Live Demo</a>
-    </div>
+<div class="brand"><a href="../../.." style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← Intro</a>
+<a href="../talk/">Talk</a>
+<a href="../papers/">Papers</a>
+<a href="../run/">Live Demo</a>
+</div>
 </nav>
-
 <main class="mk-wrap">
-
-  <div class="mk-hero">
-    <h1>Harness <span class="grad">Self-Evolution</span> · Play</h1>
-    <p class="mk-hero-sub">电商搜索 Agent 的 Harness 自进化 · 3 代循环 · 每代都过<b>评测门控</b></p>
-  </div>
-
-  <!-- About-this-demo briefing (before controls) -->
-  <section class="mk-brief" aria-labelledby="mk-brief-title">
-    <div class="mk-brief-flow">
-      <div class="mk-brief-card what">
-        <div class="mk-brief-tag">被改进的对象</div>
-        <div class="mk-brief-headline">电商搜索 <span class="mk-brief-em">Agent</span></div>
-        <div class="mk-brief-meta"><code>search(query)</code> · BM25 baseline</div>
-        <div class="mk-brief-metric">
-          <span class="mk-brief-num">30<span class="pct">%</span></span>
-          <span class="mk-brief-num-lbl">起点命中率</span>
-        </div>
-      </div>
-      <div class="mk-brief-arrow" aria-hidden="true">
-        <svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="brArr1" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stop-color="rgb(80,200,255)"/>
-              <stop offset="1" stop-color="rgb(139,92,246)"/>
-            </linearGradient>
-          </defs>
-          <line x1="4" y1="20" x2="66" y2="20" stroke="url(#brArr1)" stroke-width="2"/>
-          <polyline points="60,12 72,20 60,28" fill="none" stroke="rgb(139,92,246)" stroke-width="2" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="mk-brief-card how">
-        <div class="mk-brief-tag">方法</div>
-        <div class="mk-brief-headline">让 AI <span class="mk-brief-em">重写代码</span></div>
-        <div class="mk-brief-meta">权重一分不动 · 只改 harness</div>
-        <div class="mk-brief-metric">
-          <span class="mk-brief-num">3<span class="pct">代</span></span>
-          <span class="mk-brief-num-lbl">循环 · 每代 31 题门控</span>
-        </div>
-      </div>
-      <div class="mk-brief-arrow" aria-hidden="true">
-        <svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="brArr2" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stop-color="rgb(139,92,246)"/>
-              <stop offset="1" stop-color="rgb(0,217,130)"/>
-            </linearGradient>
-          </defs>
-          <line x1="4" y1="20" x2="66" y2="20" stroke="url(#brArr2)" stroke-width="2"/>
-          <polyline points="60,12 72,20 60,28" fill="none" stroke="rgb(0,217,130)" stroke-width="2" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="mk-brief-card engine">
-        <div class="mk-brief-tag">引擎</div>
-        <div class="mk-brief-headline">
-          <a href="https://arxiv.org/abs/2509.19349" target="_blank" rel="noopener">ShinkaEvolve</a>
-        </div>
-        <div class="mk-brief-meta">Sakana AI · arXiv:2509.19349</div>
-        <div class="mk-brief-metric single">
-          <span class="mk-brief-num-lbl top">Proposer</span>
-          <span class="mk-brief-eng">Claude via Bedrock</span>
-          <span class="mk-brief-num-lbl">Sonnet 4.5 · Opus 4.7 / 4.8</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Sticky control bar -->
-  <div class="mk-controls">
-    <button class="mk-btn primary" id="mk-play">▶ 开始</button>
-    <button class="mk-btn" id="mk-step">⏭ 下一步</button>
-    <button class="mk-btn" id="mk-reset">🔄 重来</button>
-    <button class="mk-btn" id="mk-fs">⛶ 全屏</button>
-    <a class="mk-btn" id="mk-download" href="../static/play-standalone.html" download="harness-play.html" title="下载本页副本">📦 备份</a>
-    <div class="mk-progress">
-      <div class="mk-timeline" id="mk-timeline" aria-hidden="true">
-        <div class="mk-timeline-fill" id="mk-timeline-fill" style="width:0%"></div>
-      </div>
-      <span class="mk-step-label" id="mk-step-label"></span>
-    </div>
-  </div>
-
-  <div class="mk-panel">
-    <!-- 5-verb legend -->
-    <div class="mk-verbs">
-      <div class="mk-verbs-h">方法论 · 5 个动词 · <span style="color:var(--text-mute);font-weight:400;">整个 field 压成这 5 步 · 每代循环</span></div>
-      <div class="mk-verbs-row">
-        <span class="mk-verb v-run">Run</span><span class="mk-verb-arrow">→</span>
-        <span class="mk-verb v-observe">Observe</span><span class="mk-verb-arrow">→</span>
-        <span class="mk-verb v-propose">Propose</span><span class="mk-verb-arrow">→</span>
-        <span class="mk-verb v-verify">Verify</span><span class="mk-verb-arrow">→</span>
-        <span class="mk-verb v-commit">Commit</span>
-      </div>
-    </div>
-
-    <div class="mk-wf-header">
-      <span class="mk-gen-title"><span class="mk-gen-label">工作流 · 第</span><span id="mk-gen-num">0</span><span class="mk-gen-label">代</span></span>
-      <span id="mk-elapsed" title="本次运行累计时长">00:00</span>
-    </div>
-
-    <ol class="mk-wf-list">
-      <li class="mk-wf-node" data-node="run">
-        <div class="mk-wf-dot"><span class="mk-wf-num">1</span></div>
-        <div class="mk-wf-body">
-          <div class="mk-wf-name">跑父代代码 · 收集轨迹 <span class="mk-verb v-run">Run</span></div>
-          <div class="mk-wf-data">
-            <b>系统在做什么</b>：让父代代码在 31 道题上真跑一遍 · 收集执行轨迹（谁对谁错）。<br>
-            <b>Gen 0 特殊</b>：档案是空的 · 直接跑 BM25 baseline · 拿到起点分数。
+<div class="mk-hero">
+<h1>Harness <span class="grad">Self-Evolution</span> · Play</h1>
+<p class="mk-hero-sub">电商搜索 Agent 的 Harness 自进化 · 3 代循环 · 每代都过<b>评测门控</b></p>
+</div>
+<!-- About-this-demo briefing (before controls) -->
+<section aria-labelledby="mk-brief-title" class="mk-brief">
+<div class="mk-brief-flow">
+<div class="mk-brief-card what">
+<div class="mk-brief-tag">被改进的对象</div>
+<div class="mk-brief-headline">电商搜索 <span class="mk-brief-em">Agent</span></div>
+<div class="mk-brief-meta"><code>search(query)</code> · BM25 baseline</div>
+<div class="mk-brief-metric">
+<span class="mk-brief-num">30<span class="pct">%</span></span>
+<span class="mk-brief-num-lbl">起点命中率</span>
+</div>
+</div>
+<div aria-hidden="true" class="mk-brief-arrow">
+<svg viewbox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="brArr1" x1="0" x2="1" y1="0" y2="0">
+<stop offset="0" stop-color="rgb(80,200,255)"></stop>
+<stop offset="1" stop-color="rgb(139,92,246)"></stop>
+</lineargradient>
+</defs>
+<line stroke="url(#brArr1)" stroke-width="2" x1="4" x2="66" y1="20" y2="20"></line>
+<polyline fill="none" points="60,12 72,20 60,28" stroke="rgb(139,92,246)" stroke-linejoin="round" stroke-width="2"></polyline>
+</svg>
+</div>
+<div class="mk-brief-card how">
+<div class="mk-brief-tag">方法</div>
+<div class="mk-brief-headline">让 AI <span class="mk-brief-em">重写代码</span></div>
+<div class="mk-brief-meta">权重一分不动 · 只改 harness</div>
+<div class="mk-brief-metric">
+<span class="mk-brief-num">3<span class="pct">代</span></span>
+<span class="mk-brief-num-lbl">循环 · 每代 31 题门控</span>
+</div>
+</div>
+<div aria-hidden="true" class="mk-brief-arrow">
+<svg viewbox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="brArr2" x1="0" x2="1" y1="0" y2="0">
+<stop offset="0" stop-color="rgb(139,92,246)"></stop>
+<stop offset="1" stop-color="rgb(0,217,130)"></stop>
+</lineargradient>
+</defs>
+<line stroke="url(#brArr2)" stroke-width="2" x1="4" x2="66" y1="20" y2="20"></line>
+<polyline fill="none" points="60,12 72,20 60,28" stroke="rgb(0,217,130)" stroke-linejoin="round" stroke-width="2"></polyline>
+</svg>
+</div>
+<div class="mk-brief-card engine">
+<div class="mk-brief-tag">引擎</div>
+<div class="mk-brief-headline">
+<a href="https://arxiv.org/abs/2509.19349" rel="noopener" target="_blank">ShinkaEvolve</a>
+</div>
+<div class="mk-brief-meta">Sakana AI · arXiv:2509.19349</div>
+<div class="mk-brief-metric single">
+<span class="mk-brief-num-lbl top">Proposer</span>
+<span class="mk-brief-eng">Claude via Bedrock</span>
+<span class="mk-brief-num-lbl">Sonnet 4.5 · Opus 4.7 / 4.8</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Sticky control bar -->
+<div class="mk-controls">
+<button class="mk-btn primary" id="mk-play">▶ 开始</button>
+<button class="mk-btn" id="mk-step">⏭ 下一步</button>
+<button class="mk-btn" id="mk-reset">🔄 重来</button>
+<button class="mk-btn" id="mk-fs">⛶ 全屏</button>
+<a class="mk-btn" download="harness-play.html" href="../static/play-standalone.html" id="mk-download" title="下载本页副本">📦 备份</a>
+<div class="mk-progress">
+<div aria-hidden="true" class="mk-timeline" id="mk-timeline">
+<div class="mk-timeline-fill" id="mk-timeline-fill" style="width:0%"></div>
+</div>
+<span class="mk-step-label" id="mk-step-label"></span>
+</div>
+</div>
+<div class="mk-panel">
+<!-- 5-verb legend -->
+<div class="mk-verbs">
+<div class="mk-verbs-h">方法论 · 5 个动词 · <span style="color:var(--text-mute);font-weight:400;">整个 field 压成这 5 步 · 每代循环</span></div>
+<div class="mk-verbs-row">
+<span class="mk-verb v-run">Run</span><span class="mk-verb-arrow">→</span>
+<span class="mk-verb v-observe">Observe</span><span class="mk-verb-arrow">→</span>
+<span class="mk-verb v-propose">Propose</span><span class="mk-verb-arrow">→</span>
+<span class="mk-verb v-verify">Verify</span><span class="mk-verb-arrow">→</span>
+<span class="mk-verb v-commit">Commit</span>
+</div>
+</div>
+<div class="mk-wf-header">
+<span class="mk-gen-title"><span class="mk-gen-label">工作流 · 第</span><span id="mk-gen-num">0</span><span class="mk-gen-label">代</span></span>
+<span id="mk-elapsed" title="本次运行累计时长">00:00</span>
+</div>
+<ol class="mk-wf-list">
+<li class="mk-wf-node" data-node="run">
+<div class="mk-wf-dot"><span class="mk-wf-num">1</span></div>
+<div class="mk-wf-body">
+<div class="mk-wf-name">跑父代代码 · 收集轨迹 <span class="mk-verb v-run">Run</span></div>
+<div class="mk-wf-data">
+<b>系统在做什么</b>：让父代代码在 31 道题上真跑一遍 · 收集执行轨迹（谁对谁错）。<br/>
+<b>Gen 0 特殊</b>：档案是空的 · 直接跑 BM25 baseline · 拿到起点分数。
           </div>
-        </div>
-      </li>
-      <li class="mk-wf-node" data-node="observe">
-        <div class="mk-wf-dot"><span class="mk-wf-num">2</span></div>
-        <div class="mk-wf-body">
-          <div class="mk-wf-name">选亲本 + 看它的成绩单 <span class="mk-verb v-observe">Observe</span></div>
-          <div class="mk-wf-data">
-            <b>动作 A · 选亲本</b>（从档案里加权采样挑一版）：
+</div>
+</li>
+<li class="mk-wf-node" data-node="observe">
+<div class="mk-wf-dot"><span class="mk-wf-num">2</span></div>
+<div class="mk-wf-body">
+<div class="mk-wf-name">选亲本 + 看它的成绩单 <span class="mk-verb v-observe">Observe</span></div>
+<div class="mk-wf-data">
+<b>动作 A · 选亲本</b>（从档案里加权采样挑一版）：
             <div class="mk-archive">
-              <div class="mk-archive-h">档案 · Archive（最多 8 版 · 2 islands）· 加权采样</div>
-              <div class="mk-archive-slots" id="mk-archive-slots">
-                <div class="mk-archive-slot empty">待 Gen 0 生成</div>
-              </div>
-              <div class="mk-archive-legend">分越高越可能被选 · 但不独占（留探索空间）· 策略：<code>weighted</code></div>
-            </div>
-            <!-- Selection logic — visible only when archive has &gt;=1 candidate -->
-            <div class="mk-select" id="mk-select-panel" style="display:none;">
-              <div class="mk-select-h">🎯 <b>怎么选出来的</b> <span id="mk-select-summary" class="mk-select-summary"></span></div>
-              <div class="mk-select-formula">
+<div class="mk-archive-h">档案 · Archive（最多 8 版 · 2 islands）· 加权采样</div>
+<div class="mk-archive-slots" id="mk-archive-slots">
+<div class="mk-archive-slot empty">待 Gen 0 生成</div>
+</div>
+<div class="mk-archive-legend">分越高越可能被选 · 但不独占（留探索空间）· 策略：<code>weighted</code></div>
+</div>
+<!-- Selection logic — visible only when archive has &gt;=1 candidate -->
+<div class="mk-select" id="mk-select-panel" style="display:none;">
+<div class="mk-select-h">🎯 <b>怎么选出来的</b> <span class="mk-select-summary" id="mk-select-summary"></span></div>
+<div class="mk-select-formula">
                 权重 <code>w = exp(score / T)</code>（<code>T=0.15</code>）· 归一化后作为采样概率 · 高分优先但不独占
               </div>
-              <div class="mk-select-bars" id="mk-select-bars"></div>
-              <div class="mk-select-hint">条越长 · 被选中的概率越高 · <span id="mk-select-chosen" style="color:var(--mk-accent);"></span></div>
-            </div>
-            <b>动作 B · 拉成绩单</b>：附上这版代码在 <b>31 道题里做错的那几题</b> · AI 会针对性改。
+<div class="mk-select-bars" id="mk-select-bars"></div>
+<div class="mk-select-hint">条越长 · 被选中的概率越高 · <span id="mk-select-chosen" style="color:var(--mk-accent);"></span></div>
+</div>
+<b>动作 B · 拉成绩单</b>：附上这版代码在 <b>31 道题里做错的那几题</b> · AI 会针对性改。
             <!-- Error list — populated after per-Q is scored -->
-            <div class="mk-errors" id="mk-errors-panel" style="display:none;">
-              <div class="mk-errors-h">📝 <b>父代做错的题</b> <span class="mk-errors-summary" id="mk-errors-summary"></span></div>
-              <ul class="mk-errors-list" id="mk-errors-list"></ul>
-            </div>
-          </div>
-        </div>
-      </li>
-      <li class="mk-wf-node" data-node="propose">
-        <div class="mk-wf-dot"><span class="mk-wf-num">3</span></div>
-        <div class="mk-wf-body">
-          <div class="mk-wf-name">AI 提出候选方案 <span class="mk-verb v-propose">Propose</span></div>
-          <div class="mk-wf-data">
-            <b>系统在做什么</b>：把父代 + 错题给 Opus 4.8 · 它先<b>推理</b>再<b>生成 diff</b> · 系统贴回代码。
+<div class="mk-errors" id="mk-errors-panel" style="display:none;">
+<div class="mk-errors-h">📝 <b>父代做错的题</b> <span class="mk-errors-summary" id="mk-errors-summary"></span></div>
+<ul class="mk-errors-list" id="mk-errors-list"></ul>
+</div>
+</div>
+</div>
+</li>
+<li class="mk-wf-node" data-node="propose">
+<div class="mk-wf-dot"><span class="mk-wf-num">3</span></div>
+<div class="mk-wf-body">
+<div class="mk-wf-name">AI 提出候选方案 <span class="mk-verb v-propose">Propose</span></div>
+<div class="mk-wf-data">
+<b>系统在做什么</b>：把父代 + 错题给 Opus 4.8 · 它先<b>推理</b>再<b>生成 diff</b> · 系统贴回代码。
             <div class="mk-reasoning" id="mk-reasoning-panel" style="display:none;">
-              <div class="mk-reasoning-h">🧠 <b>AI 的思路</b> <span class="mk-reasoning-name" id="mk-reasoning-name"></span></div>
-              <div class="mk-reasoning-analysis" id="mk-reasoning-analysis"></div>
-              <div class="mk-reasoning-desc" id="mk-reasoning-desc"></div>
-            </div>
-            <div class="mk-diff" id="mk-diff-panel" style="display:none;">
-              <div class="mk-diff-h">💡 <b>AI 提议的改动</b> <span class="mk-diff-summary" id="mk-diff-summary"></span></div>
-              <pre class="mk-diff-body" id="mk-diff-body"></pre>
-            </div>
-          </div>
-        </div>
-      </li>
-      <li class="mk-wf-node" data-node="verify">
-        <div class="mk-wf-dot"><span class="mk-wf-num">4</span></div>
-        <div class="mk-wf-body">
-          <div class="mk-wf-name">给新代码打分 <span class="mk-verb v-verify">Verify</span></div>
-          <div class="mk-wf-data">
-            <b>系统在做什么</b>：新代码跑<b>三套测试</b> —— 31 公开 + 5 hold-out + 31 typo。<br>
-            <b>为什么</b>：防作弊 · 硬记答案会在后两套<b>崩盘</b>。
+<div class="mk-reasoning-h">🧠 <b>AI 的思路</b> <span class="mk-reasoning-name" id="mk-reasoning-name"></span></div>
+<div class="mk-reasoning-analysis" id="mk-reasoning-analysis"></div>
+<div class="mk-reasoning-desc" id="mk-reasoning-desc"></div>
+</div>
+<div class="mk-diff" id="mk-diff-panel" style="display:none;">
+<div class="mk-diff-h">💡 <b>AI 提议的改动</b> <span class="mk-diff-summary" id="mk-diff-summary"></span></div>
+<pre class="mk-diff-body" id="mk-diff-body"></pre>
+</div>
+</div>
+</div>
+</li>
+<li class="mk-wf-node" data-node="verify">
+<div class="mk-wf-dot"><span class="mk-wf-num">4</span></div>
+<div class="mk-wf-body">
+<div class="mk-wf-name">给新代码打分 <span class="mk-verb v-verify">Verify</span></div>
+<div class="mk-wf-data">
+<b>系统在做什么</b>：新代码跑<b>三套测试</b> —— 31 公开 + 5 hold-out + 31 typo。<br/>
+<b>为什么</b>：防作弊 · 硬记答案会在后两套<b>崩盘</b>。
             <div class="mk-perq" id="mk-perq-panel" style="display:none;">
-              <div class="mk-perq-h">📊 <b>31 题逐题打分</b> <span class="mk-perq-summary" id="mk-perq-summary"></span></div>
-              <!-- A · Currently-being-scored card (shows during reveal) -->
-              <div class="mk-perq-current" id="mk-perq-current" style="display:none;">
-                <div class="mk-perq-current-head">
-                  <span class="mk-perq-current-tier" id="mk-perq-current-tier">—</span>
-                  <span class="mk-perq-current-mark" id="mk-perq-current-mark">…</span>
-                  <span class="mk-perq-current-ndcg" id="mk-perq-current-ndcg"></span>
-                  <button type="button" class="mk-info" aria-label="NDCG 是什么"><span class="mk-info-body">
-                    <b>NDCG</b> · 这一道题的排名分 · <span class="num">0</span>-<span class="num">1</span>。<br>
-                    <b>金标排第 1</b> · 加 <b>近似款依次排 2-5</b> → <span class="num">1.0</span>。<br>
-                    金标虽然第 1 · 但被无关商品挤了后面槽位 → 略低于 <span class="num">1.0</span>（比如 <span class="num">0.986</span>）。<br>
+<div class="mk-perq-h">📊 <b>31 题逐题打分</b> <span class="mk-perq-summary" id="mk-perq-summary"></span></div>
+<!-- A · Currently-being-scored card (shows during reveal) -->
+<div class="mk-perq-current" id="mk-perq-current" style="display:none;">
+<div class="mk-perq-current-head">
+<span class="mk-perq-current-tier" id="mk-perq-current-tier">—</span>
+<span class="mk-perq-current-mark" id="mk-perq-current-mark">…</span>
+<span class="mk-perq-current-ndcg" id="mk-perq-current-ndcg"></span>
+<button aria-label="NDCG 是什么" class="mk-info" type="button"><span class="mk-info-body">
+<b>NDCG</b> · 这一道题的排名分 · <span class="num">0</span>-<span class="num">1</span>。<br/>
+<b>金标排第 1</b> · 加 <b>近似款依次排 2-5</b> → <span class="num">1.0</span>。<br/>
+                    金标虽然第 1 · 但被无关商品挤了后面槽位 → 略低于 <span class="num">1.0</span>（比如 <span class="num">0.986</span>）。<br/>
                     金标排第 3 → 约 <span class="num">0.5</span>；前 5 名里没有金标 → <span class="num">0.0</span>。
                   </span></button>
-                </div>
-                <div class="mk-perq-current-q" id="mk-perq-current-q"></div>
-                <div class="mk-perq-current-row">
-                  <span class="mk-perq-current-lbl">期望</span>
-                  <span class="mk-perq-current-gold" id="mk-perq-current-gold"></span>
-                </div>
-                <div class="mk-perq-current-row" id="mk-perq-current-pred-row" style="display:none;">
-                  <span class="mk-perq-current-lbl bad">实答</span>
-                  <span class="mk-perq-current-pred" id="mk-perq-current-pred"></span>
-                </div>
-                <!-- Top-5 rank view · shows where the gold actually sits and what else occupies the slots -->
-                <div class="mk-perq-current-ranks" id="mk-perq-current-ranks">
-                  <div class="mk-perq-current-ranks-h">
-                    <span>前 5 名排位</span>
-                    <button type="button" class="mk-info" aria-label="为什么命中还不满分"><span class="mk-info-body">
-                      NDCG = <span class="num">1.0</span> 只在 <b>金标排第 1 · 无关商品不占后面槽位</b> 时才拿到。<br>
+</div>
+<div class="mk-perq-current-q" id="mk-perq-current-q"></div>
+<div class="mk-perq-current-row">
+<span class="mk-perq-current-lbl">期望</span>
+<span class="mk-perq-current-gold" id="mk-perq-current-gold"></span>
+</div>
+<div class="mk-perq-current-row" id="mk-perq-current-pred-row" style="display:none;">
+<span class="mk-perq-current-lbl bad">实答</span>
+<span class="mk-perq-current-pred" id="mk-perq-current-pred"></span>
+</div>
+<!-- Top-5 rank view · shows where the gold actually sits and what else occupies the slots -->
+<div class="mk-perq-current-ranks" id="mk-perq-current-ranks">
+<div class="mk-perq-current-ranks-h">
+<span>前 5 名排位</span>
+<button aria-label="为什么命中还不满分" class="mk-info" type="button"><span class="mk-info-body">
+                      NDCG = <span class="num">1.0</span> 只在 <b>金标排第 1 · 无关商品不占后面槽位</b> 时才拿到。<br/>
                       如果金标虽然第 1 · 但相关近似款没占好第 2-5 位 · 分数就会略低。
                     </span></button>
-                  </div>
-                  <ol class="mk-perq-current-ranks-list" id="mk-perq-current-ranks-list"></ol>
-                </div>
-              </div>
-              <div class="mk-perq-tier-groups" id="mk-perq-grid"></div>
-              <!-- B · Wrong-only recap table (shows after reveal) -->
-              <div class="mk-perq-recap" id="mk-perq-recap" style="display:none;">
-                <div class="mk-perq-recap-h">
+</div>
+<ol class="mk-perq-current-ranks-list" id="mk-perq-current-ranks-list"></ol>
+</div>
+</div>
+<div class="mk-perq-tier-groups" id="mk-perq-grid"></div>
+<!-- B · Wrong-only recap table (shows after reveal) -->
+<div class="mk-perq-recap" id="mk-perq-recap" style="display:none;">
+<div class="mk-perq-recap-h">
                   🔍 <b>错题回顾</b>
-                  <span class="mk-perq-recap-summary" id="mk-perq-recap-summary"></span>
-                </div>
-                <div class="mk-perq-recap-body" id="mk-perq-recap-body"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-      <li class="mk-wf-node" data-node="commit">
-        <div class="mk-wf-dot"><span class="mk-wf-num">5</span></div>
-        <div class="mk-wf-body">
-          <div class="mk-wf-name">决定要不要"晋升" · 循环下一代 <span class="mk-verb v-commit">Commit</span></div>
-          <div class="mk-wf-data">
-            <b>系统在做什么</b>：四项加权算综合分 · <b>&gt; 0 才晋升</b>入档案 · 被拒直接丢弃。
+<span class="mk-perq-recap-summary" id="mk-perq-recap-summary"></span>
+</div>
+<div class="mk-perq-recap-body" id="mk-perq-recap-body"></div>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li class="mk-wf-node" data-node="commit">
+<div class="mk-wf-dot"><span class="mk-wf-num">5</span></div>
+<div class="mk-wf-body">
+<div class="mk-wf-name">决定要不要"晋升" · 循环下一代 <span class="mk-verb v-commit">Commit</span></div>
+<div class="mk-wf-data">
+<b>系统在做什么</b>：四项加权算综合分 · <b>&gt; 0 才晋升</b>入档案 · 被拒直接丢弃。
             <div class="mk-score-final" id="mk-score-final" style="display:none;">
-              <span class="k">NDCG@5<button type="button" class="mk-info" aria-label="NDCG 是什么" data-info="ndcg"><span class="mk-info-body">
-                <b>NDCG@5</b> · Normalized Discounted Cumulative Gain at 5<br>
-                衡量"前 5 名排得对不对"的常用检索指标 · 从 <span class="num">0</span>（完全错） 到 <span class="num">1</span>（完美）。<br>
+<span class="k">NDCG@5<button aria-label="NDCG 是什么" class="mk-info" data-info="ndcg" type="button"><span class="mk-info-body">
+<b>NDCG@5</b> · Normalized Discounted Cumulative Gain at 5<br/>
+                衡量"前 5 名排得对不对"的常用检索指标 · 从 <span class="num">0</span>（完全错） 到 <span class="num">1</span>（完美）。<br/>
                 简单讲：<b>命中越靠前 · 分越高</b>；漏掉正确答案 · 分为 0。
               </span></button></span><span class="v" id="mk-ndcg">—</span>
-              <span class="k" style="margin-left:12px;">综合分<button type="button" class="mk-info" aria-label="综合分怎么算" data-info="combined"><span class="mk-info-body">
-                <b>综合分</b> · 四项加权 · 大于 <span class="num">0</span> 才算晋升。<br>
-                <code>0.7·公开 + 0.2·hold-out + 0.1·typo − 0.005·代码惩罚</code><br>
+<span class="k" style="margin-left:12px;">综合分<button aria-label="综合分怎么算" class="mk-info" data-info="combined" type="button"><span class="mk-info-body">
+<b>综合分</b> · 四项加权 · 大于 <span class="num">0</span> 才算晋升。<br/>
+<code>0.7·公开 + 0.2·hold-out + 0.1·typo − 0.005·代码惩罚</code><br/>
                 hold-out 防背题 · typo 防脆弱 · 惩罚项防"代码越写越糙"。
               </span></button></span><span class="v" id="mk-combined">—</span>
-              <span class="verdict" id="mk-verdict">—</span>
-            </div>
-          </div>
-        </div>
-      </li>
-    </ol>
-  </div>
-
-  <div class="mk-gens" id="mk-gens"></div>
-
-  <!-- Methodology footer -->
-  <footer class="mk-footer">
-    <div class="mk-footer-h">方法参考</div>
-    <div class="mk-footer-refs">
-      <a href="https://arxiv.org/abs/2510.04618" target="_blank" rel="noopener">ACE <span>arXiv:2510.04618</span></a>
-      <a href="https://arxiv.org/abs/2603.28052" target="_blank" rel="noopener">Meta-Harness <span>arXiv:2603.28052</span></a>
-      <a href="https://arxiv.org/abs/2505.22954" target="_blank" rel="noopener">DGM <span>arXiv:2505.22954</span></a>
-      <a href="https://arxiv.org/abs/2509.19349" target="_blank" rel="noopener">ShinkaEvolve <span>arXiv:2509.19349</span></a>
-    </div>
-    <p class="mk-footer-body">
+<span class="verdict" id="mk-verdict">—</span>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="mk-gens" id="mk-gens"></div>
+<!-- Methodology footer -->
+<footer class="mk-footer">
+<div class="mk-footer-h">方法参考</div>
+<div class="mk-footer-refs">
+<a href="https://arxiv.org/abs/2510.04618" rel="noopener" target="_blank">ACE <span>arXiv:2510.04618</span></a>
+<a href="https://arxiv.org/abs/2603.28052" rel="noopener" target="_blank">Meta-Harness <span>arXiv:2603.28052</span></a>
+<a href="https://arxiv.org/abs/2505.22954" rel="noopener" target="_blank">DGM <span>arXiv:2505.22954</span></a>
+<a href="https://arxiv.org/abs/2509.19349" rel="noopener" target="_blank">ShinkaEvolve <span>arXiv:2509.19349</span></a>
+</div>
+<p class="mk-footer-body">
       每次点「开始进化」都是<b>真调 Bedrock</b>（proposer：Sonnet 4.5 / Opus 4.7 / 4.8）。
       评测集 <b>31 道电商搜索题</b>（8 简单 + 8 中等 + 15 最难）· 加 <b>5 道 hold-out</b> 防背题 · 加 <b>31 道 typo</b> 防脆弱。
       Proposer 现场生成 <b>3 版 harness 代码</b>，每次结果不同。运行完自动展示<b>分数柱状图</b>、<b>典型 query 前后对比</b>、<b>全 31 题矩阵</b>。
     </p>
-  </footer>
-
-  <!-- Inline "next generation" prompt · replaces the modal so the presenter
+</footer>
+<!-- Inline "next generation" prompt · replaces the modal so the presenter
        can keep talking and scrolling while it waits. Rendered inside the
        gens area so it lives right below the gen cards. -->
-  <section class="mk-nextgen" id="mk-nextgen" style="display:none;" aria-live="polite">
-    <div class="mk-nextgen-head">
-      <span class="mk-nextgen-tag">Gate</span>
-      <span class="mk-nextgen-title" id="mk-nextgen-title">这一代跑完了</span>
-    </div>
-    <p class="mk-nextgen-body" id="mk-nextgen-body"></p>
-    <div class="mk-nextgen-summary" id="mk-nextgen-summary"></div>
-    <div class="mk-nextgen-actions">
-      <button class="mk-btn primary" id="mk-nextgen-btn">▶ 进入下一代</button>
-      <span class="mk-nextgen-hint">按 <kbd>Enter</kbd> · 什么时候都可以</span>
-    </div>
-  </section>
-
+<section aria-live="polite" class="mk-nextgen" id="mk-nextgen" style="display:none;">
+<div class="mk-nextgen-head">
+<span class="mk-nextgen-tag">Gate</span>
+<span class="mk-nextgen-title" id="mk-nextgen-title">这一代跑完了</span>
+</div>
+<p class="mk-nextgen-body" id="mk-nextgen-body"></p>
+<div class="mk-nextgen-summary" id="mk-nextgen-summary"></div>
+<div class="mk-nextgen-actions">
+<button class="mk-btn primary" id="mk-nextgen-btn">▶ 进入下一代</button>
+<span class="mk-nextgen-hint">按 <kbd>Enter</kbd> · 什么时候都可以</span>
+</div>
+</section>
 </main>
-
 <script>
 (async function() {
   // ── Load run data ──
@@ -1902,6 +1890,5 @@
   updateProgress();
 })();
 </script>
-
-</body>
+<a data-cur="zh" data-to="en" href="../../../en/rsi/demo/play/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>

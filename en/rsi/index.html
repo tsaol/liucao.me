@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RSI Resource Pack · Recursive Self-Improvement · Harness Self-Evolution</title>
+<link href="../../rsi/assets/style.css" rel="stylesheet"/>
+<style>
+:root{--rs-bg:#0B0D12;--rs-bg2:#12151d;--rs-ink:#E6EAF2;--rs-dim:#8A94A6;--rs-cold:#4CC2FF;--rs-warm:#FFB020;--rs-ok:#38D39F;--rs-line:#232a36;
+--rs-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+--rs-mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+body{background:var(--rs-bg)}
+main.rs-wrap{color:var(--rs-ink);font-family:var(--rs-sans);font-size:17px;line-height:1.8;max-width:980px;margin:0 auto;padding:4vh 5vw 12vh}
+main.rs-wrap h1{font-size:36px;line-height:1.25;margin:0 0 .3em}
+main.rs-wrap h2{font-size:24px;margin:0 0 .9em;color:var(--rs-cold)}
+main.rs-wrap h3{font-size:18px;margin:1.6em 0 .6em;color:var(--rs-ink)}
+main.rs-wrap section{border-top:1px solid var(--rs-line);padding:2.4em 0;scroll-margin-top:56px}
+main.rs-wrap section.head{border-top:none;padding-top:0}
+main.rs-wrap p{margin:0 0 1em}
+main.rs-wrap b{color:var(--rs-warm);font-weight:600}
+main.rs-wrap a{color:var(--rs-cold);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.5)}
+main.rs-wrap a:hover{border-bottom-style:solid}
+main.rs-wrap .dim{color:var(--rs-dim)}
+main.rs-wrap .small{font-size:14px}
+main.rs-wrap code{font-family:var(--rs-mono);font-size:.86em;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:4px;padding:0 .3em}
+main.rs-wrap ul{margin:0 0 1em;padding-left:1.3em}
+main.rs-wrap li{margin:.35em 0}
+main.rs-wrap .lead{font-size:21px;line-height:1.6;padding:1em 1.2em;border-left:3px solid var(--rs-warm);background:var(--rs-bg2);border-radius:0 8px 8px 0;margin:1.2em 0}
+main.rs-wrap .note{font-size:14px;color:var(--rs-dim);background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.7em 1em;margin:1em 0}
+.rs-toc{position:sticky;top:0;z-index:5;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--rs-line);display:flex;gap:1.2em;justify-content:center;flex-wrap:wrap;padding:.55em 1em;font-size:14px}
+.rs-toc a{color:var(--rs-dim);text-decoration:none}
+.rs-toc a:hover{color:var(--rs-cold)}
+.rs-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:1.2em 0}
+.rs-card{display:block;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:1em 1.1em;color:var(--rs-ink)!important;border-bottom:1px solid var(--rs-line)!important;transition:border-color .2s}
+.rs-card:hover{border-color:var(--rs-cold)!important}
+.rs-card .k{font-size:13px;color:var(--rs-dim)}
+.rs-card .t{font-size:18px;font-weight:600;margin:.2em 0}
+.rs-card .d{font-size:14px;color:var(--rs-dim);line-height:1.6}
+.rs-q{background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:.2em 1.1em;margin:.8em 0}
+.rs-q summary{cursor:pointer;font-weight:600;padding:.7em 0;list-style:none}
+.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:var(--rs-warm)}
+.rs-q[open] summary::before{content:"− "}
+.rs-q > div{padding:0 0 .8em}
+table.rs-t{width:100%;border-collapse:collapse;font-size:15px;margin:.6em 0 1.2em}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--rs-line);padding:.55em .5em;text-align:left;vertical-align:top}
+table.rs-t th{color:var(--rs-dim);font-weight:500;font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--rs-line);border-radius:999px;padding:0 .6em;color:var(--rs-dim);margin-right:.3em;white-space:nowrap}
+.tag.top{color:var(--rs-warm);border-color:rgba(255,176,32,.5)}
+.tag.ok{color:var(--rs-ok);border-color:rgba(56,211,159,.5)}
+pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7;color:var(--rs-ink)}
+@media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
+@media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
+.rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="demo/">← Intro</a>
+<a href="demo/play/">Play</a>
+<a href="slides/">RSI slides</a>
+</div>
+</nav>
+<div class="rs-toc">
+<a href="#talk">Share</a>
+<a href="#ideas">Key concepts</a>
+<a href="#faq">FAQ</a>
+<a href="#videos">Video</a>
+<a href="#china">Results from China</a>
+<a href="#trend">Trends</a>
+</div>
+<main class="rs-wrap">
+<section class="head">
+<h1>RSI Resource Pack · Recursive Self-Improvement</h1>
+<p class="dim">The whole talk on one page: slides, script, demo, key concepts, recommended videos, and research progress in China. Compiled 2026-10-18.</p>
+<div class="lead"><b>Key takeaway:</b>Letting AI improve itself is already doable on AWS, but both the cost and the hard part are in evaluation. Whoever gets "verification" right is who can really make RSI work.</div>
+</section>
+<section id="talk">
+<h2>① This talk</h2>
+<p>7 slides, about 10 minutes, for Solutions Architects. Storyline:<b>Definition → Darwin Gödel Machine → Domain map → Harness-level RSI → Running it on AWS → Where the money goes → Demo</b>.</p>
+<div class="rs-cards">
+<a class="rs-card" href="slides/"><div class="k">Slides</div><div class="t">RSI · for SAs</div><div class="d">7 slides, use arrow keys to navigate</div></a>
+<a class="rs-card" href="demo/play/"><div class="k">demo</div><div class="t">Harness self-evolution replay</div><div class="d">Frozen weights, only the search code changes: 0.42 → 0.94 → 0.93</div></a>
+<a class="rs-card" href="demo/papers/"><div class="k">Paper</div><div class="t">The paper behind the demo</div><div class="d">Close readings of AlphaEvolve, DGM, Shinka, and more (in Chinese)</div></a>
+</div>
+</section>
+<section id="ideas">
+<h2>② Core concepts, in one sentence</h2>
+<ul>
+<li><b>RSI (Recursive Self-Improvement)</b>: AI improves itself, then uses the improved version to keep improving itself. The test: is the thing being improved the system itself?</li>
+<li><b>Gödel Machine vs Darwin Gödel Machine</b>: The former "proves a change is beneficial before making it" (like a lawyer); the latter "tries first, then selects" (like a farmer breeding crops).</li>
+<li><b>harness</b>: The layer wrapped around the model: prompts, code, tools, retrieval logic. This session only changes the harness; model weights stay frozen (model = chef, harness = recipe and kitchen).</li>
+<li><b>One evolution round</b>: Select parent → mutate → evaluate → promotion gate → store back in the archive. Both good and bad versions are kept; a weak version may be a "stepping stone".</li>
+<li><b>Where the money goes</b>: About $856 per run, of which <b>97.7% is evaluation</b>. Changing the recipe takes 5 minutes, but every new recipe needs 200 guests to taste-test it.</li>
+<li><b>Conclusion</b>: Being able to self-improve ≠ being able to self-verify. An athlete can train on their own, but can't be their own referee.</li>
+</ul>
+</section>
+<section id="faq">
+<h2>③ FAQ</h2>
+<details class="rs-q"><summary>What are "candidate agent runs the eval" and "LLM judge", respectively?</summary><div>
+<p><b>Candidate agent runs the evaluation = the exam.</b>Each round's new harness version is a "candidate", and it has to actually work through every problem in the test set: read the problem, call tools, think, retry, with every step calling the LLM. Estimated per round: 72 runs × 3.77M tokens ≈ 270 million tokens, about $836 at Sonnet 5 pricing on Bedrock.</p>
+<p><b>LLM judge = grading the exam.</b>For problems without a reference answer, a separate LLM reads the agent's final answer and scores it. It only reads the final answer and only outputs a score, so it's cheap (about $12). Problems with a reference answer (like NDCG@5 in the demo) can skip the judge.</p>
+</div></details>
+<details class="rs-q"><summary>What is NDCG@5?</summary><div>
+<p>Scores how well search results are ranked, from 0 to 1, where 1 is perfect. Three points: more relevant results score higher; higher positions are worth more (discounted by log₂(rank+1)); finally, divide by the score of the "perfect ranking".<b>@5</b> = only the top 5 count.</p>
+<p>One-line version:<b>Check whether the right items rank at the top of the first 5 results.</b>In the demo, BM25 0.42 → LLM reranking 0.94, which means the correct products almost always end up at the top.</p>
+</div></details>
+<details class="rs-q"><summary>How is the promotion gate's "composite score" calculated?</summary><div>
+<p>Demo code (<code>evolution/evaluate.py</code>)'s actual formula:</p>
+<pre class="rs-f">Blended score = 0.7 × public-set score
+        + 0.2 × hidden-set NDCG      ← never shown to the model, prevents memorizing answers
+        + 0.1 × typo-set NDCG    ← retest with rephrased queries, prevents rote memorization
+        − 0.005 × estimated tokens (millions) ← cost penalty, prevents gaming the score by spending more
+
+Public-set score = 0.3 × easy + 0.4 × medium + 0.3 × hard × (whether easy and medium pass)
+Leakage audit finds answers written into code → straight −1, invalidated</pre>
+<p>Like a final grade: homework 70% + closed-book exam 20% + retest with new questions 10% − late penalty; plagiarism is an automatic zero. The cost penalty coefficient is tiny and barely affects the result in the demo.</p>
+</div></details>
+<details class="rs-q"><summary>What company is UBC?</summary><div>
+<p>Not a company, it's Canada's<b>University of British Columbia</b>(University of British Columbia, Vancouver). DGM comes from the Tokyo-based AI company <b>Sakana AI</b> and UBC <b>Jeff Clune</b> 's lab.</p>
+</div></details>
+<details class="rs-q"><summary>Why not just change the model weights?</summary><div>
+<p>Changing weights requires training (the SageMaker side): expensive, slow, harder to verify, and hard to roll back. Changing the harness only runs inference (Bedrock): cheap, and you can switch back anytime. In chef terms: you can always switch back to an old recipe, but you can't un-send a chef to culinary school.</p>
+</div></details>
+</section>
+<section id="videos">
+<h2>④ Recommended videos</h2>
+<p class="note">The assessment below is based on the video's channel, title, description, and opening captions,<b>Haven't watched the full video</b>. All YouTube links have been checked and open; Bilibili links wouldn't open on the machine used to compile this, so only the title, uploader and date were checked.</p>
+<h3>If you only look at three</h3>
+<ol>
+<li><a href="https://www.youtube.com/watch?v=voczu4I3_xQ" rel="noopener" target="_blank">Gödel Machine — Jürgen Schmidhuber</a> <span class="dim small">· Serious Science · 12 min</span> —— the inventor himself on the theoretical roots</li>
+<li><a href="https://www.youtube.com/watch?v=a1L0frpDE4k" rel="noopener" target="_blank">Darwin Gödel Machine (DGM) Explained Intuitively</a> <span class="dim small">· neuralkian · 24 min</span> —— corresponds to p2</li>
+<li><a href="https://www.youtube.com/watch?v=dAOIer_1INo" rel="noopener" target="_blank">ShinkaEvolve(Robert Lange)</a> <span class="dim small">· AutoML Seminars</span> —— The demo uses the Shinka engine</li>
+</ol>
+<h3>Chinese (Bilibili)</h3>
+<table class="rs-t">
+<tr><th>Video</th><th>Notes</th></tr>
+<tr><td><span class="tag top">Top pick</span><a href="https://www.bilibili.com/video/BV1YRVy6nEzT/" rel="noopener" target="_blank">Recursive Self-Improvement: Review and Outlook · ICLR 2026 · Louis Kirsch</a><div class="dim small">Supreme machine intelligence · 2026-06</div></td><td>Covers everything from meta-learning to LLM scientist agents, and proposes "Fitness Monotonic Execution" to address unsupervised self-improvement's<b>Validation and safety</b>question — most relevant to this session's conclusion</td></tr>
+<tr><td><span class="tag">Opening story</span><a href="https://www.bilibili.com/video/BV1DY7C6nEWM/" rel="noopener" target="_blank">Revisiting Tian Yuandong: RSI at a $4.65 billion valuation, and AI self-evolution</a><div class="dim small">Silicon Valley 101 · 2026-06</div></td><td>Yuandong Tian's new lab is called Recursive Superintelligence (RSI for short). Focuses on industry, direction, and careers; not very technical</td></tr>
+<tr><td><a href="https://www.bilibili.com/video/BV1kUcMz1E81/" rel="noopener" target="_blank">Agent self-evolution ≠ grinding through problems on its own; is the breakthrough "building its own environments"?</a><div class="dim small">ModelScope official · 2026-02 · Roundtable with 6 researchers</div></td><td>Hosted by Zhai Yunpeng, with the first authors of 5 self-evolution papers discussing 7 topics: how to define self-evolution, feedback signals, how to evaluate it, how industry can deploy it, and more</td></tr>
+<tr><td><a href="https://www.bilibili.com/video/BV1wgqDBuE4b/" rel="noopener" target="_blank">Alibaba AgentEvolver: self-questioning / self-navigating / self-attributing</a><div class="dim small">Tang Guoliang (Tommy) · 2025-12</div></td><td>Paper walkthrough. It's about training models with reinforcement learning, which counts as "changing weights" and is outside the scope of this talk</td></tr>
+</table>
+<h3>English (YouTube)</h3>
+<table class="rs-t">
+<tr><th>Topic</th><th>Video</th></tr>
+<tr><td>Systematic course</td><td><a href="https://www.youtube.com/watch?v=6YnLB0XbTnI" rel="noopener" target="_blank">Stanford CS329A Self-Improving AI Agents · Part 1</a> <span class="dim small">· Stanford Online, a full course</span></td></tr>
+<tr><td>Gödel Machine</td><td><a href="https://www.youtube.com/watch?v=voczu4I3_xQ" rel="noopener" target="_blank">Gödel Machine — Schmidhuber</a> <span class="dim small">· 12 min</span>;<a href="https://www.youtube.com/watch?v=3FIo6evmweo" rel="noopener" target="_blank">Lex Fridman #11 · Schmidhuber</a> <span class="dim small">· Long-form interview</span></td></tr>
+<tr><td>DGM / Jeff Clune</td><td><a href="https://www.youtube.com/watch?v=a1L0frpDE4k" rel="noopener" target="_blank">DGM Explained Intuitively</a>;<a href="https://www.youtube.com/watch?v=mw5WIDGRLnA" rel="noopener" target="_blank">Don't invent faster horses — Prof. Jeff Clune</a> <span class="dim small">· MLST, 2 hours</span></td></tr>
+<tr><td>Change code / harness</td><td><a href="https://www.youtube.com/watch?v=RovcBFlfXpQ" rel="noopener" target="_blank">Adam Kalai — STOP</a> <span class="dim small">· by the author, 27 min</span>;<a href="https://www.youtube.com/watch?v=C5EyZAYlW7E" rel="noopener" target="_blank">ADAS with Shengran Hu</a> <span class="dim small">· TWIML, 59 min</span>;<a href="https://www.youtube.com/watch?v=T6HLeCiUyI0" rel="noopener" target="_blank">The Future of AI (From Harness to RSI)</a> <span class="dim small">· Discover AI</span></td></tr>
+<tr><td>AlphaEvolve</td><td><a href="https://www.youtube.com/watch?v=vC9nAosXrJw" rel="noopener" target="_blank">MLST exclusive interview</a> <span class="dim small">· On the day the paper was released</span>;<a href="https://www.youtube.com/watch?v=Z4uF6cVly8o" rel="noopener" target="_blank">AI Coffee Break explainer</a></td></tr>
+<tr><td>Sakana engine</td><td><a href="https://www.youtube.com/watch?v=dAOIer_1INo" rel="noopener" target="_blank">ShinkaEvolve</a>;<a href="https://www.youtube.com/watch?v=CFewReJ1Eyo" rel="noopener" target="_blank">The AI Scientist</a> <span class="dim small">· All presented by Robert Lange</span></td></tr>
+<tr><td>Big picture / risks</td><td><a href="https://www.youtube.com/watch?v=rlIDnS5ddQI" rel="noopener" target="_blank">Anthropic &amp; recursive self-improvement</a> <span class="dim small">· MIT Technology Review</span>;<a href="https://www.youtube.com/watch?v=-RXD4bTuFTo" rel="noopener" target="_blank">Ryan Greenblatt — What happens once AI can automate AI research?</a> <span class="dim small">· Dwarkesh Patel</span></td></tr>
+</table>
+</section>
+<section id="china">
+<h2>⑤ Research from China</h2>
+<p class="note">The paper's affiliations and abstract were checked against the first page of the original on arXiv. Items marked <span class="tag">Second-hand</span> figures come from news, project pages, or WeChat posts; I haven't read the original experiment tables.</p>
+<h3>1. Harness / agent self-evolution <span class="tag top">Closest to this session</span></h3>
+<ul>
+<li><b>Shanghai AI Lab · Self-Harness</b> <a href="https://arxiv.org/abs/2606.09498" rel="noopener" target="_blank">2606.09498</a> <span class="dim small">2026-06</span><br/>Find weaknesses → propose changes → accept only if regression tests pass. Terminal-Bench 2.0 hidden tasks: MiniMax M2.5 40.5% → 61.9%, Qwen3.5-35B-A3B 23.8% → 38.1%, GLM-5 42.9% → 57.1%.</li>
+<li><b>ByteDance Seed et al. · HarnessDev</b> <a href="https://arxiv.org/abs/2609.01437" rel="noopener" target="_blank">2609.01437</a> <span class="dim small">2026-09</span><br/>Tests whether a model can build its own harness and then evolve it. The conclusion is sober: there are gains, but they're unstable, and transfer to new tasks is limited. Same project <a href="https://self-developing-agents.github.io/" rel="noopener" target="_blank">Self-Developing Agents</a> It also found that self-assessment barely predicts the next round's improvement, and only 2/9 of the claimed final versions were actually best on the hidden problems <span class="tag">Second-hand</span></li>
+<li><b>Huawei · HarnessEvolve</b> <a href="https://arxiv.org/abs/2609.00829" rel="noopener" target="_blank">2609.00829</a> <span class="dim small">2026-09</span><br/>Use reference trajectories to find the causes of errors; quality gate (anti-leakage, anti-prompt-bloat) + performance gate; finally pick the version on held-out data — almost identical to this session's "promotion gate".</li>
+<li><b>Alibaba Tongyi · AgentEvolver</b> <a href="https://arxiv.org/abs/2511.10395" rel="noopener" target="_blank">2511.10395</a> <span class="tag ok">Open source</span> Self-questioning, self-navigation, self-attribution.</li>
+<li><b>SE-Agent</b> <a href="https://arxiv.org/abs/2508.02085" rel="noopener" target="_blank">2508.02085</a>(Tsinghua, StepFun, Peking University, Chinese Academy of Sciences and others): Claude-3.7-Sonnet on SWE-bench Verified 40.6% → 61.2% <span class="tag">Second-hand</span></li>
+</ul>
+<h3>2. Algorithm and code discovery (AlphaEvolve-style)</h3>
+<ul>
+<li><b>Nanjing University + Huawei Noah's Ark · Self-evolving algorithm-design agent</b> <a href="https://arxiv.org/abs/2609.38757" rel="noopener" target="_blank">2609.38757</a>(Qian Chao's team): tackles evolutionary search getting "stuck" midway.</li>
+<li><b>Baidu · LoongFlow</b> <a href="https://github.com/baidu-baige/LoongFlow" rel="noopener" target="_blank">GitHub</a> <span class="tag ok">Open source</span> The repo claims to beat the best known results on 11 geometry/algebra problems <span class="tag">Second-hand</span></li>
+<li><b>ByteDance Seed + Tsinghua AIR · CUDA Agent</b> <span class="tag ok">Open source</span> Writes CUDA kernels automatically, with a 2.11× geometric-mean speedup over torch.compile on KernelBench <span class="tag">Second-hand</span></li>
+</ul>
+<h3>3. Math (easiest to verify, best suited for self-improvement)</h3>
+<ul>
+<li><b>DeepSeek · DeepSeekMath-V2</b> <a href="https://arxiv.org/abs/2511.22570" rel="noopener" target="_blank">2511.22570</a> <span class="tag ok">Open source</span><br/>The core is<b>Self-verification</b>: First train a reliable proof checker, then use it to reward the generator. Gold-medal level at IMO 2025 and CMO 2024; 118/120 on Putnam 2024.</li>
+<li><b>Beijing International Center for Mathematical Research, Peking University</b>: AI autonomously solved the Anderson conjecture, with about 19,000 lines of Lean formal verification, claimed as a first in China <span class="dim small">(Xinhua, 2026-04-07)</span></li>
+<li><b>MiniMax · MaxProof</b>: Proof evolution via generative verification + reinforcement learning; above the gold-medal line at IMO 2025 and USAMO 2026 <span class="tag">Second-hand</span></li>
+</ul>
+<h3>4. Chips</h3>
+<ul><li><b>CAS Institute of Computing Technology + Institute of Software · QiMeng</b> <a href="https://arxiv.org/abs/2506.05007" rel="noopener" target="_blank">2506.05007</a>: Fully automated hardware and software design of processor chips; in 2024 there was already QiMeng-1, a fully automatically designed chip.</li></ul>
+<h3>5. Scientific discovery</h3>
+<ul>
+<li><b>Shanghai AI Lab · Intern·Agent 1.5 / Intern-Discovery</b>(2026-02): generate → verify → evolve; fluorescent protein optimization cycle cut to 6 hours <span class="tag">Second-hand</span></li>
+<li><b>Huawei (with Leiden University and the University of Groningen) · SwarmRSI</b> <a href="https://arxiv.org/abs/2610.20431" rel="noopener" target="_blank">2610.20431</a> <span class="dim small">2026-10-14</span>: A population of research agents mutate and recombine with each other.</li>
+</ul>
+<h3>6. World models / games</h3>
+<ul><li><b>UCL + Huawei Noah's Ark Lab London · Memento 3</b> <a href="https://arxiv.org/abs/2610.11794" rel="noopener" target="_blank">2610.11794</a>: The LLM is frozen. Only the external "rulebook + code world model" changes, and code is accepted only after passing exact-replay verification. All 25 games on ARC-AGI-3 cleared.</li></ul>
+<h3>7. Surveys</h3>
+<ul><li><a href="https://arxiv.org/abs/2507.21046" rel="noopener" target="_blank">A Survey of Self-Evolving Agents</a>(2507.21046): co-authored by Shanghai Jiao Tong University, CUHK, HKUST (Guangzhou) and others, together with CMU, Princeton and others.</li></ul>
+</section>
+<section id="trend">
+<h2>⑥ The trend in one sentence</h2>
+<div class="lead">Major Chinese players are also <b>harness / agent layer (frozen weights)</b> and <b>Easily verifiable domains (math, code, chips)</b>. The latest papers (ByteDance HarnessDev, Huawei HarnessEvolve, DeepSeekMath-V2) all focus on <b>"How do you verify it?"</b> on — consistent with this session's point that "able to self-improve ≠ able to self-verify".</div>
+</section>
+</main>
+<a data-cur="en" data-to="zh" href="../../rsi/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M8g vs M7i — Graviton 深度指南 01</title>
-    <meta name="description" content="Amazon EC2 M8g (Graviton4 / Neoverse V2) vs M7i (Sapphire Rapids) 全景对比：架构、规格、性能、迁移">
-    <link rel="stylesheet" href="../../../ec2/assets/style.css">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M8g vs M7i — Graviton 深度指南 01</title>
+<meta content="Amazon EC2 M8g (Graviton4 / Neoverse V2) vs M7i (Sapphire Rapids) 全景对比：架构、规格、性能、迁移" name="description"/>
+<link href="../../../ec2/assets/style.css" rel="stylesheet"/>
+<style>
         /* ── shared graviton subpage styles ── */
         .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
         .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
@@ -63,139 +64,126 @@
     </style>
 </head>
 <body>
-    <nav class="nav">
-        <div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
-        <div class="links">
-            <a href="../../../ec2/">EC2</a>
-        </div>
-    </nav>
-
-    <main class="wrap">
-        <div class="gv-hero">
-            <div class="crumb"><a href="../../../ec2/graviton/">Graviton 指南</a> · 01 / 04 · 硬件对比</div>
-            <h1><span class="g">M8g</span> vs M7i — 全景对比</h1>
-            <p class="sub">Amazon Graviton4 (Neoverse V2 / Armv9.0-A) 与 Intel 4th-gen Xeon Scalable (Sapphire Rapids) 的架构、规格、性能、生态、迁移。</p>
-            <nav class="toc">
-                <a href="#tldr">TL;DR</a>
-                <a href="#arch">1 · 微架构</a>
-                <a href="#sizes">2 · 规格表</a>
-                <a href="#perf">3 · 性能</a>
-                <a href="#ecosystem">4 · 生态兼容性</a>
-                <a href="#migration">5 · 迁移 playbook</a>
-                <a href="#stay">6 · 什么情况留在 M7i</a>
-                <a href="#cost">7 · 价格</a>
-                <a href="#family">8 · Graviton 家族简史</a>
-            </nav>
-        </div>
-
-        <!-- TL;DR -->
-        <section id="tldr" class="content-section">
-            <div class="callout">
-                <div class="lead">一句话结论</div>
+<nav class="nav">
+<div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../../../ec2/">EC2</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hero">
+<div class="crumb"><a href="../../../ec2/graviton/">Graviton 指南</a> · 01 / 04 · 硬件对比</div>
+<h1><span class="g">M8g</span> vs M7i — 全景对比</h1>
+<p class="sub">Amazon Graviton4 (Neoverse V2 / Armv9.0-A) 与 Intel 4th-gen Xeon Scalable (Sapphire Rapids) 的架构、规格、性能、生态、迁移。</p>
+<nav class="toc">
+<a href="#tldr">TL;DR</a>
+<a href="#arch">1 · 微架构</a>
+<a href="#sizes">2 · 规格表</a>
+<a href="#perf">3 · 性能</a>
+<a href="#ecosystem">4 · 生态兼容性</a>
+<a href="#migration">5 · 迁移 playbook</a>
+<a href="#stay">6 · 什么情况留在 M7i</a>
+<a href="#cost">7 · 价格</a>
+<a href="#family">8 · Graviton 家族简史</a>
+</nav>
+</div>
+<!-- TL;DR -->
+<section class="content-section" id="tldr">
+<div class="callout">
+<div class="lead">一句话结论</div>
                 如果你的软件栈支持 arm64（现在绝大多数都支持），选 M8g；每 vCPU 便宜约 11%，能效高约 60%，单核延迟更好，且没有 SMT——1 vCPU = 1 物理核。仍然需要 M7i 的场景只有五类：x86-only 商业软件、AVX-512/AMX 加速的 CPU 推理、Windows Server、按 Intel core 授权的软件、要靠 Turbo Boost 冲高主频的单线程任务。
             </div>
-        </section>
-
-        <!-- 1. arch -->
-        <section id="arch" class="content-section">
-            <h2 class="section-title">1 · <span>微架构</span>差异</h2>
-
-            <h3 class="sub-h">M8g — AWS Graviton4 / Arm Neoverse V2 "Demeter"</h3>
-            <ul>
-                <li>指令集 <b>Armv9.0-A</b>，强制包含 SVE2、Pointer Authentication (PAC)、Branch Target Identification (BTI)。</li>
-                <li>流水线：6-wide 解码、8-wide rename/dispatch、320-entry ROB、15 个执行端口、1536-entry micro-op cache。</li>
-                <li>每核缓存：<b>L1 64 KB I + 64 KB D · L2 2 MB</b>（是 Graviton3 的两倍）。L3 是共享的 <b>CMN-700 mesh SLC</b>——每 die 最多 512 MB。</li>
-                <li>96 物理核 / socket，最多 2 socket 一台机器（<code>48xlarge</code> 和 <code>metal-48xl</code> 有 192 vCPU）。<b>没有 SMT</b>——1 vCPU 就是 1 物理核。</li>
-                <li>内存：M8g 是 <b>12-channel DDR5-5600</b>；M8gn / M8gb 版本升到 DDR5-6400。</li>
-                <li>主频固定：2.8 GHz（<code>48xlarge</code> 是 2.7 GHz）。<b>没有 Turbo Boost。</b></li>
-                <li>永远开启的内存加密；每 vCPU 独占 L1/L2；PAC + BTI 硬件反 ROP。<sup>[4]</sup></li>
-            </ul>
-
-            <h3 class="sub-h">M7i — Intel Xeon Scalable 4th gen "Sapphire Rapids" (AWS 定制 SKU)</h3>
-            <ul>
-                <li>指令集 x86_64，<b>AVX-512</b>（512-bit VNNI + bfloat16）+ <b>AMX</b> 矩阵 tile 加速（INT8/BF16 GEMM，M7i 全系可用）+ DSA/IAA/QAT（<b>仅 bare-metal</b>）。</li>
-                <li>主频：3.2 GHz all-core turbo，3.8 GHz max-core turbo（比 M8g 高约 14~35%）。</li>
-                <li>DDR5，TME 内存加密，48xlarge / metal-48xl 支持 EFA。</li>
-                <li><b>SMT 开启</b>——每核 2 线程；<code>m7i.4xlarge</code> 的 16 vCPU 其实是 <b>8 个物理核 + 8 个 SMT 线程</b>。这是"Graviton 快 30%"最大的错觉来源。<sup>[3]</sup></li>
-            </ul>
-
-            <h3 class="sub-h">SVE2 到底带来什么</h3>
-            <p>SVE2 是"长度无关"的向量指令：同一份二进制在 128-bit 的 V2 核心和未来 256-bit 核心上都能自动向量化，不需要重编。<b>Graviton4 上的 SVE2 是 128-bit 位宽</b>（Graviton3 的 SVE1 是 256-bit，V2 换成了两个更窄的 SVE 单元）。<sup>[2]</sup> 现实收益：memcpy / memcmp / strlen（glibc 2.35+）、zlib-ng、OpenSSL 3.2+ 的 ChaCha 与 AES-GCM、FFmpeg 的 h.264 / AV1 dsputil。</p>
-            <p><b>AVX-512 依然领先</b>的是稠密线性代数与 CPU 端 LLM 推理——大概是 4× 向量宽度差；AMX 又在 INT8 矩阵乘上进一步拉开差距。</p>
-
-            <div class="callout warn"><b>易踩的两个"没有"：</b>Graviton4 没有 Turbo Boost，也<b>不再支持 32-bit userspace</b>。任何靠冲主频的单线程 x86 代码、或者跑 32-bit ELF 的老程序，迁到 M8g 都会退化。<sup>[1]</sup></div>
-        </section>
-
-        <!-- 2. sizes -->
-        <section id="sizes" class="content-section">
-            <h2 class="section-title">2 · 全<span>规格表</span></h2>
-            <p>M8g 有四条子家族：普通、<b>M8gd</b>（带本地 NVMe）、<b>M8gn</b>（网络 600 Gbps）、<b>M8gb</b>（EBS 300 Gbps）。M7i 只有 base + m7i-flex。</p>
-
-            <table class="cmp">
-                <thead>
-                    <tr><th>规格</th><th>vCPU / RAM</th><th>Net Gbps</th><th>EBS Gbps</th><th>NUMA</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><span class="pill g">m8g.medium</span></td><td>1 / 4</td><td>up to 12.5</td><td>up to 10</td><td>1</td></tr>
-                    <tr><td><span class="pill g">m8g.xlarge</span></td><td>4 / 16</td><td>up to 12.5</td><td>up to 10</td><td>1</td></tr>
-                    <tr><td><span class="pill g">m8g.4xlarge</span></td><td>16 / 64</td><td>up to 15</td><td>up to 10</td><td>1</td></tr>
-                    <tr><td><span class="pill g">m8g.16xlarge</span></td><td>64 / 256</td><td>30</td><td>20</td><td>1</td></tr>
-                    <tr><td><span class="pill g">m8g.24xlarge</span></td><td>96 / 384</td><td>40</td><td>30</td><td><b>1</b>（单 socket 极限）</td></tr>
-                    <tr><td><span class="pill g">m8g.48xlarge</span></td><td>192 / 768</td><td>50</td><td>40</td><td><b>2</b></td></tr>
-                    <tr><td><span class="pill g">m8g.metal-48xl</span></td><td>192 / 768</td><td>50</td><td>40</td><td>2</td></tr>
-                    <tr><td colspan="5" style="padding-top:0.9rem; color:var(--text-mute); font-family:var(--mono); font-size:0.75rem;">— M7i —</td></tr>
-                    <tr><td><span class="pill i">m7i.xlarge</span></td><td>4 / 16</td><td>up to 12.5</td><td>up to 10</td><td>1</td></tr>
-                    <tr><td><span class="pill i">m7i.4xlarge</span></td><td>16 / 64</td><td>up to 12.5</td><td>up to 10</td><td>1</td></tr>
-                    <tr><td><span class="pill i">m7i.24xlarge</span></td><td>96 / 384</td><td>37.5</td><td>30</td><td>1</td></tr>
-                    <tr><td><span class="pill i">m7i.48xlarge</span></td><td>192 / 768</td><td>50</td><td>40</td><td><b>2</b></td></tr>
-                    <tr><td><span class="pill i">m7i.metal-48xl</span></td><td>192 / 768</td><td>50</td><td>40</td><td>2</td></tr>
-                </tbody>
-            </table>
-            <p><b>M8g 特殊子家族要点：</b> M8gd 最多 6×1.9 TB NVMe；<b>M8gn.48xlarge 网络峰值 600 Gbps</b>（所有非加速实例中最高）；<b>M8gb.48xlarge EBS 峰值 300 Gbps · 1.44M IOPS</b>。</p>
-            <p><b>M7i 独特优势：</b> EBS 挂载数从 M6i 的 28 卷跃升到 <b>128 卷</b>，需要海量卷的工作负载 M7i 目前有操作层面的优势。<sup>[3]</sup></p>
-        </section>
-
-        <!-- 3. perf -->
-        <section id="perf" class="content-section">
-            <h2 class="section-title">3 · <span>性能</span>——AWS 和客户自证</h2>
-            <ul>
-                <li>AWS 声称 M8g 比 M7g（Graviton3）<b>compute 快 30%</b>；vCPU / 内存上限比 M7g 高 3×。<sup>[4]</sup></li>
-                <li>Graviton 家族比同代 x86 <b>便宜约 20%，能耗低约 60%</b>。<sup>[4]</sup></li>
-                <li>M7i vs M6i：<b>15% 更好性价比</b>；M7i-flex 19%。<sup>[3]</sup></li>
-                <li><b>Salesforce</b>（M7i）：吞吐 <b>+25%</b>、响应 <b>快 11%</b>。<sup>[3]</sup></li>
-                <li><b>Tufts Medicine</b>（M7i）：性能 <b>+68%</b>、成本 <b>-64%</b>（$1.2M/年）。<sup>[3]</sup></li>
-                <li><b>Bright Data</b>（M6g → M8g）：<b>+66%</b> 性能。<sup>[4]</sup></li>
-                <li><b>IBM Instana</b>（M8g）：CPU 利用率再降 <b>30%</b>。<sup>[4]</sup></li>
-            </ul>
-
-            <div class="callout warn">
-                <div class="lead">第三方 benchmark 可信度提醒</div>
+</section>
+<!-- 1. arch -->
+<section class="content-section" id="arch">
+<h2 class="section-title">1 · <span>微架构</span>差异</h2>
+<h3 class="sub-h">M8g — AWS Graviton4 / Arm Neoverse V2 "Demeter"</h3>
+<ul>
+<li>指令集 <b>Armv9.0-A</b>，强制包含 SVE2、Pointer Authentication (PAC)、Branch Target Identification (BTI)。</li>
+<li>流水线：6-wide 解码、8-wide rename/dispatch、320-entry ROB、15 个执行端口、1536-entry micro-op cache。</li>
+<li>每核缓存：<b>L1 64 KB I + 64 KB D · L2 2 MB</b>（是 Graviton3 的两倍）。L3 是共享的 <b>CMN-700 mesh SLC</b>——每 die 最多 512 MB。</li>
+<li>96 物理核 / socket，最多 2 socket 一台机器（<code>48xlarge</code> 和 <code>metal-48xl</code> 有 192 vCPU）。<b>没有 SMT</b>——1 vCPU 就是 1 物理核。</li>
+<li>内存：M8g 是 <b>12-channel DDR5-5600</b>；M8gn / M8gb 版本升到 DDR5-6400。</li>
+<li>主频固定：2.8 GHz（<code>48xlarge</code> 是 2.7 GHz）。<b>没有 Turbo Boost。</b></li>
+<li>永远开启的内存加密；每 vCPU 独占 L1/L2；PAC + BTI 硬件反 ROP。<sup>[4]</sup></li>
+</ul>
+<h3 class="sub-h">M7i — Intel Xeon Scalable 4th gen "Sapphire Rapids" (AWS 定制 SKU)</h3>
+<ul>
+<li>指令集 x86_64，<b>AVX-512</b>（512-bit VNNI + bfloat16）+ <b>AMX</b> 矩阵 tile 加速（INT8/BF16 GEMM，M7i 全系可用）+ DSA/IAA/QAT（<b>仅 bare-metal</b>）。</li>
+<li>主频：3.2 GHz all-core turbo，3.8 GHz max-core turbo（比 M8g 高约 14~35%）。</li>
+<li>DDR5，TME 内存加密，48xlarge / metal-48xl 支持 EFA。</li>
+<li><b>SMT 开启</b>——每核 2 线程；<code>m7i.4xlarge</code> 的 16 vCPU 其实是 <b>8 个物理核 + 8 个 SMT 线程</b>。这是"Graviton 快 30%"最大的错觉来源。<sup>[3]</sup></li>
+</ul>
+<h3 class="sub-h">SVE2 到底带来什么</h3>
+<p>SVE2 是"长度无关"的向量指令：同一份二进制在 128-bit 的 V2 核心和未来 256-bit 核心上都能自动向量化，不需要重编。<b>Graviton4 上的 SVE2 是 128-bit 位宽</b>（Graviton3 的 SVE1 是 256-bit，V2 换成了两个更窄的 SVE 单元）。<sup>[2]</sup> 现实收益：memcpy / memcmp / strlen（glibc 2.35+）、zlib-ng、OpenSSL 3.2+ 的 ChaCha 与 AES-GCM、FFmpeg 的 h.264 / AV1 dsputil。</p>
+<p><b>AVX-512 依然领先</b>的是稠密线性代数与 CPU 端 LLM 推理——大概是 4× 向量宽度差；AMX 又在 INT8 矩阵乘上进一步拉开差距。</p>
+<div class="callout warn"><b>易踩的两个"没有"：</b>Graviton4 没有 Turbo Boost，也<b>不再支持 32-bit userspace</b>。任何靠冲主频的单线程 x86 代码、或者跑 32-bit ELF 的老程序，迁到 M8g 都会退化。<sup>[1]</sup></div>
+</section>
+<!-- 2. sizes -->
+<section class="content-section" id="sizes">
+<h2 class="section-title">2 · 全<span>规格表</span></h2>
+<p>M8g 有四条子家族：普通、<b>M8gd</b>（带本地 NVMe）、<b>M8gn</b>（网络 600 Gbps）、<b>M8gb</b>（EBS 300 Gbps）。M7i 只有 base + m7i-flex。</p>
+<table class="cmp">
+<thead>
+<tr><th>规格</th><th>vCPU / RAM</th><th>Net Gbps</th><th>EBS Gbps</th><th>NUMA</th></tr>
+</thead>
+<tbody>
+<tr><td><span class="pill g">m8g.medium</span></td><td>1 / 4</td><td>up to 12.5</td><td>up to 10</td><td>1</td></tr>
+<tr><td><span class="pill g">m8g.xlarge</span></td><td>4 / 16</td><td>up to 12.5</td><td>up to 10</td><td>1</td></tr>
+<tr><td><span class="pill g">m8g.4xlarge</span></td><td>16 / 64</td><td>up to 15</td><td>up to 10</td><td>1</td></tr>
+<tr><td><span class="pill g">m8g.16xlarge</span></td><td>64 / 256</td><td>30</td><td>20</td><td>1</td></tr>
+<tr><td><span class="pill g">m8g.24xlarge</span></td><td>96 / 384</td><td>40</td><td>30</td><td><b>1</b>（单 socket 极限）</td></tr>
+<tr><td><span class="pill g">m8g.48xlarge</span></td><td>192 / 768</td><td>50</td><td>40</td><td><b>2</b></td></tr>
+<tr><td><span class="pill g">m8g.metal-48xl</span></td><td>192 / 768</td><td>50</td><td>40</td><td>2</td></tr>
+<tr><td colspan="5" style="padding-top:0.9rem; color:var(--text-mute); font-family:var(--mono); font-size:0.75rem;">— M7i —</td></tr>
+<tr><td><span class="pill i">m7i.xlarge</span></td><td>4 / 16</td><td>up to 12.5</td><td>up to 10</td><td>1</td></tr>
+<tr><td><span class="pill i">m7i.4xlarge</span></td><td>16 / 64</td><td>up to 12.5</td><td>up to 10</td><td>1</td></tr>
+<tr><td><span class="pill i">m7i.24xlarge</span></td><td>96 / 384</td><td>37.5</td><td>30</td><td>1</td></tr>
+<tr><td><span class="pill i">m7i.48xlarge</span></td><td>192 / 768</td><td>50</td><td>40</td><td><b>2</b></td></tr>
+<tr><td><span class="pill i">m7i.metal-48xl</span></td><td>192 / 768</td><td>50</td><td>40</td><td>2</td></tr>
+</tbody>
+</table>
+<p><b>M8g 特殊子家族要点：</b> M8gd 最多 6×1.9 TB NVMe；<b>M8gn.48xlarge 网络峰值 600 Gbps</b>（所有非加速实例中最高）；<b>M8gb.48xlarge EBS 峰值 300 Gbps · 1.44M IOPS</b>。</p>
+<p><b>M7i 独特优势：</b> EBS 挂载数从 M6i 的 28 卷跃升到 <b>128 卷</b>，需要海量卷的工作负载 M7i 目前有操作层面的优势。<sup>[3]</sup></p>
+</section>
+<!-- 3. perf -->
+<section class="content-section" id="perf">
+<h2 class="section-title">3 · <span>性能</span>——AWS 和客户自证</h2>
+<ul>
+<li>AWS 声称 M8g 比 M7g（Graviton3）<b>compute 快 30%</b>；vCPU / 内存上限比 M7g 高 3×。<sup>[4]</sup></li>
+<li>Graviton 家族比同代 x86 <b>便宜约 20%，能耗低约 60%</b>。<sup>[4]</sup></li>
+<li>M7i vs M6i：<b>15% 更好性价比</b>；M7i-flex 19%。<sup>[3]</sup></li>
+<li><b>Salesforce</b>（M7i）：吞吐 <b>+25%</b>、响应 <b>快 11%</b>。<sup>[3]</sup></li>
+<li><b>Tufts Medicine</b>（M7i）：性能 <b>+68%</b>、成本 <b>-64%</b>（$1.2M/年）。<sup>[3]</sup></li>
+<li><b>Bright Data</b>（M6g → M8g）：<b>+66%</b> 性能。<sup>[4]</sup></li>
+<li><b>IBM Instana</b>（M8g）：CPU 利用率再降 <b>30%</b>。<sup>[4]</sup></li>
+</ul>
+<div class="callout warn">
+<div class="lead">第三方 benchmark 可信度提醒</div>
                 Phoronix / AnandTech / ChipsAndCheese 的 Graviton4 深度评测目前是 403 / 404（原文链接失效或站点归档）。上面数字是 AWS 官方与其客户案例，做参考请留 20% 安全余量。真实场景一定要做 A/B。
             </div>
-        </section>
-
-        <!-- 4. ecosystem -->
-        <section id="ecosystem" class="content-section">
-            <h2 class="section-title">4 · 生态<span>兼容性</span>速查</h2>
-            <table class="cmp">
-                <thead><tr><th>技术栈</th><th>arm64 状态</th><th>坑</th></tr></thead>
-                <tbody>
-                    <tr><td>Node.js</td><td>Native (≥16)</td><td>无</td></tr>
-                    <tr><td>Python</td><td>Native</td><td><b>pip 必须 ≥ 19.3</b> 才能装 manylinux2014-aarch64 wheel。<code>psycopg2-binary</code>、老版 cryptography 可能落回源码编译</td></tr>
-                    <tr><td>Java (Corretto)</td><td>一等公民</td><td>用 Corretto 11.0.20+ / 17.0.8+ / 21+；旧版本静态链接 zlib 拿不到 zlib-ng 加速。<b>异常抛出比 x86 慢 2×</b> <sup>[5]</sup></td></tr>
-                    <tr><td>Go</td><td>Native</td><td><code>GOARCH=arm64</code>。Go 1.16+ 用 Armv8.1 原子指令；容器里手动设 <code>GOMAXPROCS</code>——CFS quota 不会缩小可见 CPU 数<sup>[7]</sup></td></tr>
-                    <tr><td>Rust</td><td>Native</td><td><code>aarch64-unknown-linux-gnu</code> 是默认 rustup target</td></tr>
-                    <tr><td>PostgreSQL</td><td>15+ 完美</td><td><b>Ubuntu 官方 apt 的 postgresql 没开 <code>-moutline-atomics</code></b>，LSE 用不到；换 PGDG PPA 或 RDS</td></tr>
-                    <tr><td>MySQL</td><td>8.0.23+</td><td>自编译加 <code>-moutline-atomics</code></td></tr>
-                    <tr><td>nginx</td><td>Native</td><td>用 <code>-mcpu=neoverse-512tvb</code> 编译峰值吞吐再高一档</td></tr>
-                    <tr><td>HAProxy</td><td>2.4+</td><td>重新用 <code>CPU=armv81</code> 编译，官方 benchmark 说 <b>~4× 加速</b></td></tr>
-                    <tr><td>Docker</td><td>Native</td><td><code>docker buildx</code> 出 multi-arch manifest</td></tr>
-                    <tr><td>K8s</td><td>Native</td><td>混合架构集群要在 image 里出 multi-arch manifest + Pod 加 <code>nodeSelector</code></td></tr>
-                </tbody>
-            </table>
-
-            <h3 class="sub-h">Graviton4 推荐编译器 flag <sup>[1]</sup></h3>
-            <pre><span class="c"># Graviton4 独占 fleet — GCC 13+ 或 Clang 16+（AL2023 的 GCC 11 已 backport）</span>
+</section>
+<!-- 4. ecosystem -->
+<section class="content-section" id="ecosystem">
+<h2 class="section-title">4 · 生态<span>兼容性</span>速查</h2>
+<table class="cmp">
+<thead><tr><th>技术栈</th><th>arm64 状态</th><th>坑</th></tr></thead>
+<tbody>
+<tr><td>Node.js</td><td>Native (≥16)</td><td>无</td></tr>
+<tr><td>Python</td><td>Native</td><td><b>pip 必须 ≥ 19.3</b> 才能装 manylinux2014-aarch64 wheel。<code>psycopg2-binary</code>、老版 cryptography 可能落回源码编译</td></tr>
+<tr><td>Java (Corretto)</td><td>一等公民</td><td>用 Corretto 11.0.20+ / 17.0.8+ / 21+；旧版本静态链接 zlib 拿不到 zlib-ng 加速。<b>异常抛出比 x86 慢 2×</b> <sup>[5]</sup></td></tr>
+<tr><td>Go</td><td>Native</td><td><code>GOARCH=arm64</code>。Go 1.16+ 用 Armv8.1 原子指令；容器里手动设 <code>GOMAXPROCS</code>——CFS quota 不会缩小可见 CPU 数<sup>[7]</sup></td></tr>
+<tr><td>Rust</td><td>Native</td><td><code>aarch64-unknown-linux-gnu</code> 是默认 rustup target</td></tr>
+<tr><td>PostgreSQL</td><td>15+ 完美</td><td><b>Ubuntu 官方 apt 的 postgresql 没开 <code>-moutline-atomics</code></b>，LSE 用不到；换 PGDG PPA 或 RDS</td></tr>
+<tr><td>MySQL</td><td>8.0.23+</td><td>自编译加 <code>-moutline-atomics</code></td></tr>
+<tr><td>nginx</td><td>Native</td><td>用 <code>-mcpu=neoverse-512tvb</code> 编译峰值吞吐再高一档</td></tr>
+<tr><td>HAProxy</td><td>2.4+</td><td>重新用 <code>CPU=armv81</code> 编译，官方 benchmark 说 <b>~4× 加速</b></td></tr>
+<tr><td>Docker</td><td>Native</td><td><code>docker buildx</code> 出 multi-arch manifest</td></tr>
+<tr><td>K8s</td><td>Native</td><td>混合架构集群要在 image 里出 multi-arch manifest + Pod 加 <code>nodeSelector</code></td></tr>
+</tbody>
+</table>
+<h3 class="sub-h">Graviton4 推荐编译器 flag <sup>[1]</sup></h3>
+<pre><span class="c"># Graviton4 独占 fleet — GCC 13+ 或 Clang 16+（AL2023 的 GCC 11 已 backport）</span>
 CFLAGS=<span class="k">"-O3 -mcpu=neoverse-v2"</span>
 
 <span class="c"># 一份二进制跑 Graviton3/4/5 —— 官方推荐的均衡值</span>
@@ -203,22 +191,20 @@ CFLAGS=<span class="k">"-O3 -mcpu=neoverse-512tvb"</span>
 
 <span class="c"># 最保守，兼容 Graviton2/3/4/5，不内联 LSE</span>
 CFLAGS=<span class="k">"-O2 -march=armv8.2-a -moutline-atomics"</span></pre>
-        </section>
-
-        <!-- 5. migration -->
-        <section id="migration" class="content-section">
-            <h2 class="section-title">5 · 迁移 <span>playbook</span>：M7i → M8g</h2>
-            <ol>
-                <li><b>清点二进制依赖</b>——用下面的扫描脚本扫典型 M7i host。</li>
-                <li><b>把镜像重编成 multi-arch</b>——<code>docker buildx build --platform linux/amd64,linux/arm64 --push ...</code>，ECR 存 multi-arch manifest。</li>
-                <li><b>混合 ASG 试跑</b>——把 M8g launch template 加进来，先给权重 0，观察健康检查通过率与错误率。</li>
-                <li><b>压测头对头</b>——比 p50/p95/p99 <b>和</b> CPU 利用率，不能只看吞吐（Graviton4 单核更强，同吞吐下 CPU 利用率往往更低）。</li>
-                <li><b>切换</b>——渐进调权重，M7i template 保留 30 天做回滚 AMI。</li>
-                <li><b>Right-sizing</b>——Graviton4 没 SMT 但单核更快，通常你需要的 vCPU 数比 M7i <b>少</b>。经验：32 vCPU M7i → 24 vCPU M8g。</li>
-            </ol>
-
-            <h3 class="sub-h">一份 x86 兼容性扫描脚本</h3>
-            <pre><span class="c">#!/bin/bash</span>
+</section>
+<!-- 5. migration -->
+<section class="content-section" id="migration">
+<h2 class="section-title">5 · 迁移 <span>playbook</span>：M7i → M8g</h2>
+<ol>
+<li><b>清点二进制依赖</b>——用下面的扫描脚本扫典型 M7i host。</li>
+<li><b>把镜像重编成 multi-arch</b>——<code>docker buildx build --platform linux/amd64,linux/arm64 --push ...</code>，ECR 存 multi-arch manifest。</li>
+<li><b>混合 ASG 试跑</b>——把 M8g launch template 加进来，先给权重 0，观察健康检查通过率与错误率。</li>
+<li><b>压测头对头</b>——比 p50/p95/p99 <b>和</b> CPU 利用率，不能只看吞吐（Graviton4 单核更强，同吞吐下 CPU 利用率往往更低）。</li>
+<li><b>切换</b>——渐进调权重，M7i template 保留 30 天做回滚 AMI。</li>
+<li><b>Right-sizing</b>——Graviton4 没 SMT 但单核更快，通常你需要的 vCPU 数比 M7i <b>少</b>。经验：32 vCPU M7i → 24 vCPU M8g。</li>
+</ol>
+<h3 class="sub-h">一份 x86 兼容性扫描脚本</h3>
+<pre><span class="c">#!/bin/bash</span>
 <span class="c"># arm64-readiness.sh — 在 M7i 上运行，找所有还是 x86-only 的东西</span>
 <span class="k">set -euo pipefail</span>
 
@@ -243,75 +229,69 @@ find / -name '*.so' 2&gt;/dev/null | xargs -I{} file {} 2&gt;/dev/null | \
 
 <span class="k">echo</span> "== Python wheel =="
 find / -name '*.whl' 2&gt;/dev/null | grep -E 'x86_64|manylinux.*x86'</pre>
-            <p>输出里的三类东西就是迁移工单：<code>x86-only:</code>、<code>no-arm64:</code>、以及 x86 版 JNI 库。</p>
-        </section>
-
-        <!-- 6. stay -->
-        <section id="stay" class="content-section">
-            <h2 class="section-title">6 · 什么情况<span>不要迁</span></h2>
-            <ol>
-                <li><b>x86-only 商业软件</b>——Oracle DB、部分 SAS/SPSS/MATLAB、老 Splunk agent、IBM MQ 的 JNI 库。<sup>[1]</sup></li>
-                <li><b>CPU 端 LLM / 传统 ML 推理</b>——AVX-512 + AMX 对 INT8/BF16 GEMM 领先 Graviton4 128-bit SVE2 一大截。除非上 GPU / Inferentia，否则留在 M7i / C7i / R7iz。</li>
-                <li><b>Windows Server</b>——Graviton 上 Windows 只是 preview。</li>
-                <li><b>按 Intel core 授权的软件</b>——某些商用数据库、老一代 ISV。</li>
-                <li><b>依赖 32-bit userspace</b>——Graviton4/5 完全放弃 32-bit。<sup>[1]</sup></li>
-                <li><b>依赖 Turbo Boost 冲主频的单线程任务</b>——M7i 3.8 GHz vs M8g 2.8 GHz 是 35% 差距。</li>
-                <li><b>Kernel &lt; 4.15</b>（没有 SVE 支持）或 AL2 4.14——先迁到 AL2023 再考虑换芯片。<sup>[5]</sup></li>
-                <li><b>监控 / 安全 agent 只有 x86 版</b>——CrowdStrike、Splunk 老版本、部分 EDR。生态债务往往吃掉那 ~11% 的实例节省。</li>
-            </ol>
-        </section>
-
-        <!-- 7. cost -->
-        <section id="cost" class="content-section">
-            <h2 class="section-title">7 · <span>价格</span>（us-east-1，Linux，on-demand）</h2>
-            <table class="cmp">
-                <thead><tr><th>规格</th><th>m8g $/h</th><th>m7i $/h</th><th>M8g 便宜</th></tr></thead>
-                <tbody>
-                    <tr><td>xlarge</td><td>~$0.180</td><td>~$0.202</td><td>~11%</td></tr>
-                    <tr><td>2xlarge</td><td>~$0.359</td><td>~$0.403</td><td>~11%</td></tr>
-                    <tr><td>4xlarge</td><td>~$0.718</td><td>~$0.806</td><td>~11%</td></tr>
-                    <tr><td>8xlarge</td><td>~$1.436</td><td>~$1.613</td><td>~11%</td></tr>
-                </tbody>
-            </table>
-            <p>数字来自 instances.vantage.sh，为参考。Tokyo（ap-northeast-1）比 us-east-1 通常贵 10–15%。</p>
-            <div class="callout"><b>经验法则：</b>纸面便宜 ~11% + 每 vCPU 快 ~30% + 无 SMT 税 = scale-out web/app 层实际省下 <b>30–40%</b>。</div>
-        </section>
-
-        <!-- 8. family -->
-        <section id="family" class="content-section">
-            <h2 class="section-title">8 · Graviton <span>家族</span>简史</h2>
-            <p>Graviton1（2018，EC2 A1）是 16 核 Cortex-A72 的试水，性能一般。Graviton2（2019，M6g/C6g/R6g）跳到 64 核 Neoverse N1、7nm DDR4，让 Arm on AWS 走向主流。Graviton3（2022，M7g/C7g）换 Neoverse V1、Armv8.4、SVE1、DDR5。</p>
-            <p><b>Graviton4（2024，R8g / M8g / C8g）</b>——Neoverse V2、Armv9.0、SVE2、96 核、12-channel DDR5。<b>Graviton5（Neoverse V3，192 核，PCIe Gen 6，3 nm）在 2026 年 6 月 GA</b>，出在 M9g / M9gd 上，AWS 声称比 M8g 再快 ~25%。这意味着 <b>M8g 现在是"中生代"</b>——不是前沿，但生态最成熟。</p>
-        </section>
-
-        <!-- refs -->
-        <div class="refs">
-            <h4>Sources</h4>
-            <ol>
-                <li>[1] <a href="https://github.com/aws/aws-graviton-getting-started">github.com/aws/aws-graviton-getting-started</a> — README + c-c++.md</li>
-                <li>[2] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/perfrunbook/debug_hw_perf.md">perfrunbook/debug_hw_perf.md</a></li>
-                <li>[3] <a href="https://aws.amazon.com/ec2/instance-types/m7i/">aws.amazon.com/ec2/instance-types/m7i/</a></li>
-                <li>[4] <a href="https://aws.amazon.com/ec2/instance-types/m8g/">aws.amazon.com/ec2/instance-types/m8g/</a></li>
-                <li>[5] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/java.md">graviton-getting-started/java.md</a></li>
-                <li>[6] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/python.md">python.md</a></li>
-                <li>[7] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/golang.md">golang.md</a></li>
-                <li>[8] <a href="https://en.wikipedia.org/wiki/AWS_Graviton">Wikipedia: AWS Graviton</a></li>
-                <li>[9] <a href="https://en.wikipedia.org/wiki/Neoverse">Wikipedia: Arm Neoverse</a></li>
-            </ol>
-        </div>
-
-        <!-- next -->
-        <div class="next">
-            <div class="left">下一站</div>
-            <div class="right">
-                <a href="../../../ec2/graviton/monitor/">02 / 04</a>
-                <a class="big" href="../../../ec2/graviton/monitor/">EC2 三层监控体系 →</a>
-            </div>
-        </div>
-    </main>
-
-    <footer class="footer">
-        <p>&copy; 2026 liucao.me &middot; <a href="../../../">Home</a> &middot; <a href="../../../ec2/graviton/">Graviton 指南</a></p>
-    </footer>
-</body>
+<p>输出里的三类东西就是迁移工单：<code>x86-only:</code>、<code>no-arm64:</code>、以及 x86 版 JNI 库。</p>
+</section>
+<!-- 6. stay -->
+<section class="content-section" id="stay">
+<h2 class="section-title">6 · 什么情况<span>不要迁</span></h2>
+<ol>
+<li><b>x86-only 商业软件</b>——Oracle DB、部分 SAS/SPSS/MATLAB、老 Splunk agent、IBM MQ 的 JNI 库。<sup>[1]</sup></li>
+<li><b>CPU 端 LLM / 传统 ML 推理</b>——AVX-512 + AMX 对 INT8/BF16 GEMM 领先 Graviton4 128-bit SVE2 一大截。除非上 GPU / Inferentia，否则留在 M7i / C7i / R7iz。</li>
+<li><b>Windows Server</b>——Graviton 上 Windows 只是 preview。</li>
+<li><b>按 Intel core 授权的软件</b>——某些商用数据库、老一代 ISV。</li>
+<li><b>依赖 32-bit userspace</b>——Graviton4/5 完全放弃 32-bit。<sup>[1]</sup></li>
+<li><b>依赖 Turbo Boost 冲主频的单线程任务</b>——M7i 3.8 GHz vs M8g 2.8 GHz 是 35% 差距。</li>
+<li><b>Kernel &lt; 4.15</b>（没有 SVE 支持）或 AL2 4.14——先迁到 AL2023 再考虑换芯片。<sup>[5]</sup></li>
+<li><b>监控 / 安全 agent 只有 x86 版</b>——CrowdStrike、Splunk 老版本、部分 EDR。生态债务往往吃掉那 ~11% 的实例节省。</li>
+</ol>
+</section>
+<!-- 7. cost -->
+<section class="content-section" id="cost">
+<h2 class="section-title">7 · <span>价格</span>（us-east-1，Linux，on-demand）</h2>
+<table class="cmp">
+<thead><tr><th>规格</th><th>m8g $/h</th><th>m7i $/h</th><th>M8g 便宜</th></tr></thead>
+<tbody>
+<tr><td>xlarge</td><td>~$0.180</td><td>~$0.202</td><td>~11%</td></tr>
+<tr><td>2xlarge</td><td>~$0.359</td><td>~$0.403</td><td>~11%</td></tr>
+<tr><td>4xlarge</td><td>~$0.718</td><td>~$0.806</td><td>~11%</td></tr>
+<tr><td>8xlarge</td><td>~$1.436</td><td>~$1.613</td><td>~11%</td></tr>
+</tbody>
+</table>
+<p>数字来自 instances.vantage.sh，为参考。Tokyo（ap-northeast-1）比 us-east-1 通常贵 10–15%。</p>
+<div class="callout"><b>经验法则：</b>纸面便宜 ~11% + 每 vCPU 快 ~30% + 无 SMT 税 = scale-out web/app 层实际省下 <b>30–40%</b>。</div>
+</section>
+<!-- 8. family -->
+<section class="content-section" id="family">
+<h2 class="section-title">8 · Graviton <span>家族</span>简史</h2>
+<p>Graviton1（2018，EC2 A1）是 16 核 Cortex-A72 的试水，性能一般。Graviton2（2019，M6g/C6g/R6g）跳到 64 核 Neoverse N1、7nm DDR4，让 Arm on AWS 走向主流。Graviton3（2022，M7g/C7g）换 Neoverse V1、Armv8.4、SVE1、DDR5。</p>
+<p><b>Graviton4（2024，R8g / M8g / C8g）</b>——Neoverse V2、Armv9.0、SVE2、96 核、12-channel DDR5。<b>Graviton5（Neoverse V3，192 核，PCIe Gen 6，3 nm）在 2026 年 6 月 GA</b>，出在 M9g / M9gd 上，AWS 声称比 M8g 再快 ~25%。这意味着 <b>M8g 现在是"中生代"</b>——不是前沿，但生态最成熟。</p>
+</section>
+<!-- refs -->
+<div class="refs">
+<h4>Sources</h4>
+<ol>
+<li>[1] <a href="https://github.com/aws/aws-graviton-getting-started">github.com/aws/aws-graviton-getting-started</a> — README + c-c++.md</li>
+<li>[2] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/perfrunbook/debug_hw_perf.md">perfrunbook/debug_hw_perf.md</a></li>
+<li>[3] <a href="https://aws.amazon.com/ec2/instance-types/m7i/">aws.amazon.com/ec2/instance-types/m7i/</a></li>
+<li>[4] <a href="https://aws.amazon.com/ec2/instance-types/m8g/">aws.amazon.com/ec2/instance-types/m8g/</a></li>
+<li>[5] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/java.md">graviton-getting-started/java.md</a></li>
+<li>[6] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/python.md">python.md</a></li>
+<li>[7] <a href="https://github.com/aws/aws-graviton-getting-started/blob/main/golang.md">golang.md</a></li>
+<li>[8] <a href="https://en.wikipedia.org/wiki/AWS_Graviton">Wikipedia: AWS Graviton</a></li>
+<li>[9] <a href="https://en.wikipedia.org/wiki/Neoverse">Wikipedia: Arm Neoverse</a></li>
+</ol>
+</div>
+<!-- next -->
+<div class="next">
+<div class="left">下一站</div>
+<div class="right">
+<a href="../../../ec2/graviton/monitor/">02 / 04</a>
+<a class="big" href="../../../ec2/graviton/monitor/">EC2 三层监控体系 →</a>
+</div>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../../">Home</a> · <a href="../../../ec2/graviton/">Graviton 指南</a></p>
+</footer>
+<a data-cur="zh" data-to="en" href="../../../en/ec2/graviton/compare/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>

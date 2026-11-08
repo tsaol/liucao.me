@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh">
+
+<html lang="zh-CN">
 <head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RSI 资料包 · 递归自我改进 · Harness Self-Evolution</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RSI 资料包 · 递归自我改进 · Harness Self-Evolution</title>
+<link href="assets/style.css" rel="stylesheet"/>
+<style>
 :root{--rs-bg:#0B0D12;--rs-bg2:#12151d;--rs-ink:#E6EAF2;--rs-dim:#8A94A6;--rs-cold:#4CC2FF;--rs-warm:#FFB020;--rs-ok:#38D39F;--rs-line:#232a36;
 --rs-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
 --rs-mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
@@ -55,70 +56,60 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
     </style>
 </head>
 <body>
-
 <nav class="nav">
-    <div class="brand"><a href=".." style="color:inherit;">liucao<span>.me</span></a></div>
-    <div class="links">
-        <a href="demo/">← Intro</a>
-        <a href="demo/play/">Play</a>
-        <a href="slides/">RSI 幻灯片</a>
-    </div>
-</nav>
-
-<div class="rs-toc">
-  <a href="#talk">分享</a>
-  <a href="#ideas">核心概念</a>
-  <a href="#faq">常见问题</a>
-  <a href="#videos">视频</a>
-  <a href="#china">国内成果</a>
-  <a href="#trend">趋势</a>
+<div class="brand"><a href=".." style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="demo/">← Intro</a>
+<a href="demo/play/">Play</a>
+<a href="slides/">RSI 幻灯片</a>
 </div>
-
+</nav>
+<div class="rs-toc">
+<a href="#talk">分享</a>
+<a href="#ideas">核心概念</a>
+<a href="#faq">常见问题</a>
+<a href="#videos">视频</a>
+<a href="#china">国内成果</a>
+<a href="#trend">趋势</a>
+</div>
 <main class="rs-wrap">
-
 <section class="head">
-  <h1>RSI 资料包 · 递归自我改进</h1>
-  <p class="dim">一页看完这场分享:幻灯片、演讲稿、demo、关键概念、推荐视频和国内研究进展。整理于 2026-10-18。</p>
-  <div class="lead"><b>一句话收获:</b>让 AI 自己改自己,在 AWS 上已经能做了;但钱和难点都在评测上 —— 谁能把「验证」做好,谁才真的能用好 RSI。</div>
+<h1>RSI 资料包 · 递归自我改进</h1>
+<p class="dim">一页看完这场分享:幻灯片、演讲稿、demo、关键概念、推荐视频和国内研究进展。整理于 2026-10-18。</p>
+<div class="lead"><b>一句话收获:</b>让 AI 自己改自己,在 AWS 上已经能做了;但钱和难点都在评测上 —— 谁能把「验证」做好,谁才真的能用好 RSI。</div>
 </section>
-
 <section id="talk">
-  <h2>① 这场分享</h2>
-  <p>7 页幻灯片,约 10 分钟,面向 Solutions Architects。主线:<b>定义 → 达尔文哥德尔机 → 领域地图 → harness 级 RSI → AWS 上怎么跑 → 钱花在哪 → demo</b>。</p>
-  <div class="rs-cards">
-    <a class="rs-card" href="slides/"><div class="k">幻灯片</div><div class="t">RSI · for SAs</div><div class="d">7 页,方向键翻页</div></a>
-    <a class="rs-card" href="demo/play/"><div class="k">demo</div><div class="t">harness 自进化回放</div><div class="d">冻结权重,只改搜索代码:0.42 → 0.94 → 0.93</div></a>
-    <a class="rs-card" href="demo/papers/"><div class="k">论文</div><div class="t">demo 背后的论文</div><div class="d">AlphaEvolve、DGM、Shinka 等中文精读</div></a>
-  </div>
+<h2>① 这场分享</h2>
+<p>7 页幻灯片,约 10 分钟,面向 Solutions Architects。主线:<b>定义 → 达尔文哥德尔机 → 领域地图 → harness 级 RSI → AWS 上怎么跑 → 钱花在哪 → demo</b>。</p>
+<div class="rs-cards">
+<a class="rs-card" href="slides/"><div class="k">幻灯片</div><div class="t">RSI · for SAs</div><div class="d">7 页,方向键翻页</div></a>
+<a class="rs-card" href="demo/play/"><div class="k">demo</div><div class="t">harness 自进化回放</div><div class="d">冻结权重,只改搜索代码:0.42 → 0.94 → 0.93</div></a>
+<a class="rs-card" href="demo/papers/"><div class="k">论文</div><div class="t">demo 背后的论文</div><div class="d">AlphaEvolve、DGM、Shinka 等中文精读</div></a>
+</div>
 </section>
-
 <section id="ideas">
-  <h2>② 核心概念,一句话版</h2>
-  <ul>
-    <li><b>RSI(递归自我改进)</b>:AI 改进它自己,再用改好的版本继续改自己。判断标准:改进的对象是不是系统自己。</li>
-    <li><b>哥德尔机 vs 达尔文哥德尔机</b>:前者「先证明有益才改」(像律师),后者「先试再选」(像育种的农民)。</li>
-    <li><b>harness</b>:包在模型外面的那一层 —— prompt、代码、工具、检索逻辑。本场只改 harness,模型权重冻结(模型 = 厨师,harness = 菜谱和厨房)。</li>
-    <li><b>一轮进化</b>:选亲本 → 变异 → 评测 → 晋升门 → 存回档案库。好的坏的都存,差的版本可能是「踏脚石」。</li>
-    <li><b>钱花在哪</b>:一轮约 $856,其中 <b>97.7% 是评测</b>。改菜谱 5 分钟,但每个新菜谱都要请 200 个客人试吃。</li>
-    <li><b>结论</b>:能自我改进 ≠ 能自我验证。运动员可以自己练,不能自己当裁判。</li>
-  </ul>
+<h2>② 核心概念,一句话版</h2>
+<ul>
+<li><b>RSI(递归自我改进)</b>:AI 改进它自己,再用改好的版本继续改自己。判断标准:改进的对象是不是系统自己。</li>
+<li><b>哥德尔机 vs 达尔文哥德尔机</b>:前者「先证明有益才改」(像律师),后者「先试再选」(像育种的农民)。</li>
+<li><b>harness</b>:包在模型外面的那一层 —— prompt、代码、工具、检索逻辑。本场只改 harness,模型权重冻结(模型 = 厨师,harness = 菜谱和厨房)。</li>
+<li><b>一轮进化</b>:选亲本 → 变异 → 评测 → 晋升门 → 存回档案库。好的坏的都存,差的版本可能是「踏脚石」。</li>
+<li><b>钱花在哪</b>:一轮约 $856,其中 <b>97.7% 是评测</b>。改菜谱 5 分钟,但每个新菜谱都要请 200 个客人试吃。</li>
+<li><b>结论</b>:能自我改进 ≠ 能自我验证。运动员可以自己练,不能自己当裁判。</li>
+</ul>
 </section>
-
 <section id="faq">
-  <h2>③ 常见问题</h2>
-
-  <details class="rs-q"><summary>「候选 agent 跑评测」和「LLM 评审 judge」分别是什么?</summary><div>
-    <p><b>候选 agent 跑评测 = 考试。</b>每轮改出来的新版本 harness 就是「候选」,它要把测试集里的每道题真的做一遍:读题、调工具、思考、重试,每一步都调大模型。估算一轮 72 次 run × 3.77M token ≈ 2.7 亿 token,按 Bedrock 上 Sonnet 5 的价格约 $836。</p>
-    <p><b>LLM 评审 judge = 改卷。</b>没有标准答案的题,另请一个大模型读 agent 的最终答案并打分。它只读最终答案、只写一个分数,所以便宜(约 $12)。有标准答案的题(比如 demo 里的 NDCG@5)可以不用 judge。</p>
-  </div></details>
-
-  <details class="rs-q"><summary>NDCG@5 是什么?</summary><div>
-    <p>给「搜索结果排得好不好」打分,0 到 1,1 是完美。三点:结果越相关得分越高;排得越靠前越值钱(按 log₂(名次+1) 打折);最后除以「完美排法」的得分。<b>@5</b> = 只看前 5 条。</p>
-    <p>一句话版:<b>看前 5 条结果里,对的东西是不是排在最前面。</b>demo 里 BM25 0.42 → LLM 重排 0.94,就是对的商品基本都被排到了最前面。</p>
-  </div></details>
-
-  <details class="rs-q"><summary>晋升门的「综合得分」怎么算?</summary><div>
-    <p>demo 代码(<code>evolution/evaluate.py</code>)里的实际公式:</p>
+<h2>③ 常见问题</h2>
+<details class="rs-q"><summary>「候选 agent 跑评测」和「LLM 评审 judge」分别是什么?</summary><div>
+<p><b>候选 agent 跑评测 = 考试。</b>每轮改出来的新版本 harness 就是「候选」,它要把测试集里的每道题真的做一遍:读题、调工具、思考、重试,每一步都调大模型。估算一轮 72 次 run × 3.77M token ≈ 2.7 亿 token,按 Bedrock 上 Sonnet 5 的价格约 $836。</p>
+<p><b>LLM 评审 judge = 改卷。</b>没有标准答案的题,另请一个大模型读 agent 的最终答案并打分。它只读最终答案、只写一个分数,所以便宜(约 $12)。有标准答案的题(比如 demo 里的 NDCG@5)可以不用 judge。</p>
+</div></details>
+<details class="rs-q"><summary>NDCG@5 是什么?</summary><div>
+<p>给「搜索结果排得好不好」打分,0 到 1,1 是完美。三点:结果越相关得分越高;排得越靠前越值钱(按 log₂(名次+1) 打折);最后除以「完美排法」的得分。<b>@5</b> = 只看前 5 条。</p>
+<p>一句话版:<b>看前 5 条结果里,对的东西是不是排在最前面。</b>demo 里 BM25 0.42 → LLM 重排 0.94,就是对的商品基本都被排到了最前面。</p>
+</div></details>
+<details class="rs-q"><summary>晋升门的「综合得分」怎么算?</summary><div>
+<p>demo 代码(<code>evolution/evaluate.py</code>)里的实际公式:</p>
 <pre class="rs-f">综合得分 = 0.7 × 公开题得分
         + 0.2 × 隐藏题 NDCG      ← 从不给模型看,防背答案
         + 0.1 × 错别字题 NDCG    ← 换个说法再考,防死记
@@ -126,99 +117,83 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 
 公开题得分 = 0.3 × 简单 + 0.4 × 中等 + 0.3 × 难 × (简单、中等是否达标)
 泄漏审计发现偷写答案 → 直接 −1,作废</pre>
-    <p>像期末总评:平时作业 70% + 闭卷考试 20% + 换题重考 10% − 迟到扣分;抄袭直接零分。成本罚系数很小,demo 里几乎不影响结果。</p>
-  </div></details>
-
-  <details class="rs-q"><summary>UBC 是什么公司?</summary><div>
-    <p>不是公司,是加拿大<b>不列颠哥伦比亚大学</b>(University of British Columbia,温哥华)。DGM 由东京的 AI 公司 <b>Sakana AI</b> 和 UBC <b>Jeff Clune</b> 的实验室合作完成。</p>
-  </div></details>
-
-  <details class="rs-q"><summary>为什么不直接改模型权重?</summary><div>
-    <p>改权重要训练(SageMaker 那一侧),贵、慢,验证更难,也很难回滚;改 harness 只跑推理(Bedrock),便宜,随时能换回来。用厨师的话说:换菜谱随时能换回来,送厨师去进修可退不回来。</p>
-  </div></details>
+<p>像期末总评:平时作业 70% + 闭卷考试 20% + 换题重考 10% − 迟到扣分;抄袭直接零分。成本罚系数很小,demo 里几乎不影响结果。</p>
+</div></details>
+<details class="rs-q"><summary>UBC 是什么公司?</summary><div>
+<p>不是公司,是加拿大<b>不列颠哥伦比亚大学</b>(University of British Columbia,温哥华)。DGM 由东京的 AI 公司 <b>Sakana AI</b> 和 UBC <b>Jeff Clune</b> 的实验室合作完成。</p>
+</div></details>
+<details class="rs-q"><summary>为什么不直接改模型权重?</summary><div>
+<p>改权重要训练(SageMaker 那一侧),贵、慢,验证更难,也很难回滚;改 harness 只跑推理(Bedrock),便宜,随时能换回来。用厨师的话说:换菜谱随时能换回来,送厨师去进修可退不回来。</p>
+</div></details>
 </section>
-
 <section id="videos">
-  <h2>④ 推荐视频</h2>
-  <p class="note">下面的判断来自视频的频道、标题、简介和开头字幕,<b>视频本身没有完整看过</b>。YouTube 链接都已核对能打开;B 站在整理用的机器上打不开,只核对了标题、UP 主和日期。</p>
-
-  <h3>如果只看三个</h3>
-  <ol>
-    <li><a href="https://www.youtube.com/watch?v=voczu4I3_xQ" target="_blank" rel="noopener">Gödel Machine — Jürgen Schmidhuber</a> <span class="dim small">· Serious Science · 12 分钟</span> —— 发明者本人讲理论根</li>
-    <li><a href="https://www.youtube.com/watch?v=a1L0frpDE4k" target="_blank" rel="noopener">Darwin Gödel Machine (DGM) Explained Intuitively</a> <span class="dim small">· neuralkian · 24 分钟</span> —— 对应 p2</li>
-    <li><a href="https://www.youtube.com/watch?v=dAOIer_1INo" target="_blank" rel="noopener">ShinkaEvolve(Robert Lange)</a> <span class="dim small">· AutoML Seminars</span> —— demo 用的就是 Shinka 引擎</li>
-  </ol>
-
-  <h3>中文(B 站)</h3>
-  <table class="rs-t">
-    <tr><th>视频</th><th>说明</th></tr>
-    <tr><td><span class="tag top">首推</span><a href="https://www.bilibili.com/video/BV1YRVy6nEzT/" target="_blank" rel="noopener">递归式自我提升:回顾和展望 · ICLR 2026 · Louis Kirsch</a><div class="dim small">至高机器智能 · 2026-06</div></td><td>从元学习讲到 LLM 科学家 agent,提出「Fitness Monotonic Execution」来解决无人监督时自我改进的<b>验证和安全</b>问题 —— 和本场结论最贴</td></tr>
-    <tr><td><span class="tag">开场故事</span><a href="https://www.bilibili.com/video/BV1DY7C6nEWM/" target="_blank" rel="noopener">再访田渊栋:46.5 亿美金估值的 RSI,与 AI 自进化</a><div class="dim small">硅谷101 · 2026-06</div></td><td>田渊栋的新实验室就叫 Recursive Superintelligence(也简称 RSI)。偏行业、路线和职业,技术不深</td></tr>
-    <tr><td><a href="https://www.bilibili.com/video/BV1kUcMz1E81/" target="_blank" rel="noopener">Agent 自进化≠自我刷题,突破口是「自己造环境」?</a><div class="dim small">ModelScope 官方 · 2026-02 · 6 位学者圆桌</div></td><td>翟云鹏主持,5 位自进化方向论文的一作,讨论 7 个议题:怎么定义自进化、反馈信号、怎么评估、工业怎么落地等</td></tr>
-    <tr><td><a href="https://www.bilibili.com/video/BV1wgqDBuE4b/" target="_blank" rel="noopener">阿里 AgentEvolver:自提问-自导航-自归因</a><div class="dim small">唐国梁Tommy · 2025-12</div></td><td>论文讲解。讲的是用强化学习训练模型,属于「改权重」,不在本场范围</td></tr>
-  </table>
-
-  <h3>英文(YouTube)</h3>
-  <table class="rs-t">
-    <tr><th>主题</th><th>视频</th></tr>
-    <tr><td>系统课程</td><td><a href="https://www.youtube.com/watch?v=6YnLB0XbTnI" target="_blank" rel="noopener">Stanford CS329A Self-Improving AI Agents · Part 1</a> <span class="dim small">· Stanford Online,一整门课</span></td></tr>
-    <tr><td>哥德尔机</td><td><a href="https://www.youtube.com/watch?v=voczu4I3_xQ" target="_blank" rel="noopener">Gödel Machine — Schmidhuber</a> <span class="dim small">· 12 分钟</span>;<a href="https://www.youtube.com/watch?v=3FIo6evmweo" target="_blank" rel="noopener">Lex Fridman #11 · Schmidhuber</a> <span class="dim small">· 长访谈</span></td></tr>
-    <tr><td>DGM / Jeff Clune</td><td><a href="https://www.youtube.com/watch?v=a1L0frpDE4k" target="_blank" rel="noopener">DGM Explained Intuitively</a>;<a href="https://www.youtube.com/watch?v=mw5WIDGRLnA" target="_blank" rel="noopener">Don't invent faster horses — Prof. Jeff Clune</a> <span class="dim small">· MLST,2 小时</span></td></tr>
-    <tr><td>改代码 / harness</td><td><a href="https://www.youtube.com/watch?v=RovcBFlfXpQ" target="_blank" rel="noopener">Adam Kalai — STOP</a> <span class="dim small">· 作者本人,27 分钟</span>;<a href="https://www.youtube.com/watch?v=C5EyZAYlW7E" target="_blank" rel="noopener">ADAS with Shengran Hu</a> <span class="dim small">· TWIML,59 分钟</span>;<a href="https://www.youtube.com/watch?v=T6HLeCiUyI0" target="_blank" rel="noopener">The Future of AI (From Harness to RSI)</a> <span class="dim small">· Discover AI</span></td></tr>
-    <tr><td>AlphaEvolve</td><td><a href="https://www.youtube.com/watch?v=vC9nAosXrJw" target="_blank" rel="noopener">MLST 独家访谈</a> <span class="dim small">· 论文发布当天</span>;<a href="https://www.youtube.com/watch?v=Z4uF6cVly8o" target="_blank" rel="noopener">AI Coffee Break 讲解</a></td></tr>
-    <tr><td>Sakana 引擎</td><td><a href="https://www.youtube.com/watch?v=dAOIer_1INo" target="_blank" rel="noopener">ShinkaEvolve</a>;<a href="https://www.youtube.com/watch?v=CFewReJ1Eyo" target="_blank" rel="noopener">The AI Scientist</a> <span class="dim small">· 都是 Robert Lange 主讲</span></td></tr>
-    <tr><td>大图景 / 风险</td><td><a href="https://www.youtube.com/watch?v=rlIDnS5ddQI" target="_blank" rel="noopener">Anthropic &amp; recursive self-improvement</a> <span class="dim small">· MIT Technology Review</span>;<a href="https://www.youtube.com/watch?v=-RXD4bTuFTo" target="_blank" rel="noopener">Ryan Greenblatt — What happens once AI can automate AI research?</a> <span class="dim small">· Dwarkesh Patel</span></td></tr>
-  </table>
+<h2>④ 推荐视频</h2>
+<p class="note">下面的判断来自视频的频道、标题、简介和开头字幕,<b>视频本身没有完整看过</b>。YouTube 链接都已核对能打开;B 站在整理用的机器上打不开,只核对了标题、UP 主和日期。</p>
+<h3>如果只看三个</h3>
+<ol>
+<li><a href="https://www.youtube.com/watch?v=voczu4I3_xQ" rel="noopener" target="_blank">Gödel Machine — Jürgen Schmidhuber</a> <span class="dim small">· Serious Science · 12 分钟</span> —— 发明者本人讲理论根</li>
+<li><a href="https://www.youtube.com/watch?v=a1L0frpDE4k" rel="noopener" target="_blank">Darwin Gödel Machine (DGM) Explained Intuitively</a> <span class="dim small">· neuralkian · 24 分钟</span> —— 对应 p2</li>
+<li><a href="https://www.youtube.com/watch?v=dAOIer_1INo" rel="noopener" target="_blank">ShinkaEvolve(Robert Lange)</a> <span class="dim small">· AutoML Seminars</span> —— demo 用的就是 Shinka 引擎</li>
+</ol>
+<h3>中文(B 站)</h3>
+<table class="rs-t">
+<tr><th>视频</th><th>说明</th></tr>
+<tr><td><span class="tag top">首推</span><a href="https://www.bilibili.com/video/BV1YRVy6nEzT/" rel="noopener" target="_blank">递归式自我提升:回顾和展望 · ICLR 2026 · Louis Kirsch</a><div class="dim small">至高机器智能 · 2026-06</div></td><td>从元学习讲到 LLM 科学家 agent,提出「Fitness Monotonic Execution」来解决无人监督时自我改进的<b>验证和安全</b>问题 —— 和本场结论最贴</td></tr>
+<tr><td><span class="tag">开场故事</span><a href="https://www.bilibili.com/video/BV1DY7C6nEWM/" rel="noopener" target="_blank">再访田渊栋:46.5 亿美金估值的 RSI,与 AI 自进化</a><div class="dim small">硅谷101 · 2026-06</div></td><td>田渊栋的新实验室就叫 Recursive Superintelligence(也简称 RSI)。偏行业、路线和职业,技术不深</td></tr>
+<tr><td><a href="https://www.bilibili.com/video/BV1kUcMz1E81/" rel="noopener" target="_blank">Agent 自进化≠自我刷题,突破口是「自己造环境」?</a><div class="dim small">ModelScope 官方 · 2026-02 · 6 位学者圆桌</div></td><td>翟云鹏主持,5 位自进化方向论文的一作,讨论 7 个议题:怎么定义自进化、反馈信号、怎么评估、工业怎么落地等</td></tr>
+<tr><td><a href="https://www.bilibili.com/video/BV1wgqDBuE4b/" rel="noopener" target="_blank">阿里 AgentEvolver:自提问-自导航-自归因</a><div class="dim small">唐国梁Tommy · 2025-12</div></td><td>论文讲解。讲的是用强化学习训练模型,属于「改权重」,不在本场范围</td></tr>
+</table>
+<h3>英文(YouTube)</h3>
+<table class="rs-t">
+<tr><th>主题</th><th>视频</th></tr>
+<tr><td>系统课程</td><td><a href="https://www.youtube.com/watch?v=6YnLB0XbTnI" rel="noopener" target="_blank">Stanford CS329A Self-Improving AI Agents · Part 1</a> <span class="dim small">· Stanford Online,一整门课</span></td></tr>
+<tr><td>哥德尔机</td><td><a href="https://www.youtube.com/watch?v=voczu4I3_xQ" rel="noopener" target="_blank">Gödel Machine — Schmidhuber</a> <span class="dim small">· 12 分钟</span>;<a href="https://www.youtube.com/watch?v=3FIo6evmweo" rel="noopener" target="_blank">Lex Fridman #11 · Schmidhuber</a> <span class="dim small">· 长访谈</span></td></tr>
+<tr><td>DGM / Jeff Clune</td><td><a href="https://www.youtube.com/watch?v=a1L0frpDE4k" rel="noopener" target="_blank">DGM Explained Intuitively</a>;<a href="https://www.youtube.com/watch?v=mw5WIDGRLnA" rel="noopener" target="_blank">Don't invent faster horses — Prof. Jeff Clune</a> <span class="dim small">· MLST,2 小时</span></td></tr>
+<tr><td>改代码 / harness</td><td><a href="https://www.youtube.com/watch?v=RovcBFlfXpQ" rel="noopener" target="_blank">Adam Kalai — STOP</a> <span class="dim small">· 作者本人,27 分钟</span>;<a href="https://www.youtube.com/watch?v=C5EyZAYlW7E" rel="noopener" target="_blank">ADAS with Shengran Hu</a> <span class="dim small">· TWIML,59 分钟</span>;<a href="https://www.youtube.com/watch?v=T6HLeCiUyI0" rel="noopener" target="_blank">The Future of AI (From Harness to RSI)</a> <span class="dim small">· Discover AI</span></td></tr>
+<tr><td>AlphaEvolve</td><td><a href="https://www.youtube.com/watch?v=vC9nAosXrJw" rel="noopener" target="_blank">MLST 独家访谈</a> <span class="dim small">· 论文发布当天</span>;<a href="https://www.youtube.com/watch?v=Z4uF6cVly8o" rel="noopener" target="_blank">AI Coffee Break 讲解</a></td></tr>
+<tr><td>Sakana 引擎</td><td><a href="https://www.youtube.com/watch?v=dAOIer_1INo" rel="noopener" target="_blank">ShinkaEvolve</a>;<a href="https://www.youtube.com/watch?v=CFewReJ1Eyo" rel="noopener" target="_blank">The AI Scientist</a> <span class="dim small">· 都是 Robert Lange 主讲</span></td></tr>
+<tr><td>大图景 / 风险</td><td><a href="https://www.youtube.com/watch?v=rlIDnS5ddQI" rel="noopener" target="_blank">Anthropic &amp; recursive self-improvement</a> <span class="dim small">· MIT Technology Review</span>;<a href="https://www.youtube.com/watch?v=-RXD4bTuFTo" rel="noopener" target="_blank">Ryan Greenblatt — What happens once AI can automate AI research?</a> <span class="dim small">· Dwarkesh Patel</span></td></tr>
+</table>
 </section>
-
 <section id="china">
-  <h2>⑤ 国内研究成果</h2>
-  <p class="note">论文的单位和摘要已在 arXiv 原文第一页核对。标 <span class="tag">二手</span> 的数字来自新闻、项目页或公众号,没有读到原文实验表。</p>
-
-  <h3>1. Harness / agent 自进化 <span class="tag top">和本场最接近</span></h3>
-  <ul>
-    <li><b>上海 AI Lab · Self-Harness</b> <a href="https://arxiv.org/abs/2606.09498" target="_blank" rel="noopener">2606.09498</a> <span class="dim small">2026-06</span><br>弱点挖掘 → 提出改动 → 回归测试通过才接受。Terminal-Bench 2.0 隐藏题:MiniMax M2.5 40.5% → 61.9%,Qwen3.5-35B-A3B 23.8% → 38.1%,GLM-5 42.9% → 57.1%。</li>
-    <li><b>字节 Seed 等 · HarnessDev</b> <a href="https://arxiv.org/abs/2609.01437" target="_blank" rel="noopener">2609.01437</a> <span class="dim small">2026-09</span><br>测模型能不能自己搭 harness、再自己进化。结论偏冷静:有提升但不稳定,迁移到新任务有限。同项目 <a href="https://self-developing-agents.github.io/" target="_blank" rel="noopener">Self-Developing Agents</a> 还说:自我评判几乎预测不了下一轮提升,宣称的最终版本只有 2/9 在隐藏题上真的最好 <span class="tag">二手</span></li>
-    <li><b>华为 · HarnessEvolve</b> <a href="https://arxiv.org/abs/2609.00829" target="_blank" rel="noopener">2609.00829</a> <span class="dim small">2026-09</span><br>参考轨迹找错因;质量门(防泄露、防提示词膨胀)+ 性能门;最后用 held-out 选版本 —— 和本场的「晋升门」几乎一样。</li>
-    <li><b>阿里通义 · AgentEvolver</b> <a href="https://arxiv.org/abs/2511.10395" target="_blank" rel="noopener">2511.10395</a> <span class="tag ok">开源</span> 自提问、自导航、自归因。</li>
-    <li><b>SE-Agent</b> <a href="https://arxiv.org/abs/2508.02085" target="_blank" rel="noopener">2508.02085</a>(清华、阶跃星辰、北大、中科院等):SWE-bench Verified 上 Claude-3.7-Sonnet 40.6% → 61.2% <span class="tag">二手</span></li>
-  </ul>
-
-  <h3>2. 算法与代码发现(AlphaEvolve 一类)</h3>
-  <ul>
-    <li><b>南京大学 + 华为诺亚 · 自进化算法设计 agent</b> <a href="https://arxiv.org/abs/2609.38757" target="_blank" rel="noopener">2609.38757</a>(钱超团队):解决进化搜索中途「卡住不动」。</li>
-    <li><b>百度 · LoongFlow</b> <a href="https://github.com/baidu-baige/LoongFlow" target="_blank" rel="noopener">GitHub</a> <span class="tag ok">开源</span> 仓库自称 11 个几何/代数题超过已知最佳 <span class="tag">二手</span></li>
-    <li><b>字节 Seed + 清华 AIR · CUDA Agent</b> <span class="tag ok">开源</span> 自动写 CUDA 内核,KernelBench 上比 torch.compile 几何平均快 2.11 倍 <span class="tag">二手</span></li>
-  </ul>
-
-  <h3>3. 数学(最好验证,最适合自我改进)</h3>
-  <ul>
-    <li><b>DeepSeek · DeepSeekMath-V2</b> <a href="https://arxiv.org/abs/2511.22570" target="_blank" rel="noopener">2511.22570</a> <span class="tag ok">开源</span><br>核心就是<b>自我验证</b>:先训可靠的证明检查器,再用它奖励生成器。IMO 2025、CMO 2024 金牌级,Putnam 2024 118/120。</li>
-    <li><b>北大北京国际数学研究中心</b>:AI 自主解决安德森猜想,约 1.9 万行 Lean 形式化验证,号称国内首次 <span class="dim small">(新华网 2026-04-07)</span></li>
-    <li><b>MiniMax · MaxProof</b>:生成式验证 + 强化学习做证明进化,IMO 2025、USAMO 2026 超金牌线 <span class="tag">二手</span></li>
-  </ul>
-
-  <h3>4. 芯片</h3>
-  <ul><li><b>中科院计算所 + 软件所 · 启蒙 QiMeng</b> <a href="https://arxiv.org/abs/2506.05007" target="_blank" rel="noopener">2506.05007</a>:处理器芯片软硬件全自动设计;2024 年已有全自动设计的「启蒙 1 号」。</li></ul>
-
-  <h3>5. 科学发现</h3>
-  <ul>
-    <li><b>上海 AI Lab · Intern·Agent 1.5 / 书生 Intern-Discovery</b>(2026-02):生成 → 验证 → 进化;荧光蛋白优化周期缩短到 6 小时 <span class="tag">二手</span></li>
-    <li><b>华为(与莱顿、格罗宁根大学)· SwarmRSI</b> <a href="https://arxiv.org/abs/2610.20431" target="_blank" rel="noopener">2610.20431</a> <span class="dim small">2026-10-14</span>:一群科研 agent 互相变异、重组。</li>
-  </ul>
-
-  <h3>6. 世界模型 / 游戏</h3>
-  <ul><li><b>UCL + 华为诺亚伦敦 · Memento 3</b> <a href="https://arxiv.org/abs/2610.11794" target="_blank" rel="noopener">2610.11794</a>:LLM 冻结,只改外部「规则手册 + 代码世界模型」,代码要通过精确回放验证才收;ARC-AGI-3 上 25 个游戏全部通关。</li></ul>
-
-  <h3>7. 综述</h3>
-  <ul><li><a href="https://arxiv.org/abs/2507.21046" target="_blank" rel="noopener">A Survey of Self-Evolving Agents</a>(2507.21046):上海交大、港中文、港科大(广州)等与 CMU、普林斯顿等合写。</li></ul>
+<h2>⑤ 国内研究成果</h2>
+<p class="note">论文的单位和摘要已在 arXiv 原文第一页核对。标 <span class="tag">二手</span> 的数字来自新闻、项目页或公众号,没有读到原文实验表。</p>
+<h3>1. Harness / agent 自进化 <span class="tag top">和本场最接近</span></h3>
+<ul>
+<li><b>上海 AI Lab · Self-Harness</b> <a href="https://arxiv.org/abs/2606.09498" rel="noopener" target="_blank">2606.09498</a> <span class="dim small">2026-06</span><br/>弱点挖掘 → 提出改动 → 回归测试通过才接受。Terminal-Bench 2.0 隐藏题:MiniMax M2.5 40.5% → 61.9%,Qwen3.5-35B-A3B 23.8% → 38.1%,GLM-5 42.9% → 57.1%。</li>
+<li><b>字节 Seed 等 · HarnessDev</b> <a href="https://arxiv.org/abs/2609.01437" rel="noopener" target="_blank">2609.01437</a> <span class="dim small">2026-09</span><br/>测模型能不能自己搭 harness、再自己进化。结论偏冷静:有提升但不稳定,迁移到新任务有限。同项目 <a href="https://self-developing-agents.github.io/" rel="noopener" target="_blank">Self-Developing Agents</a> 还说:自我评判几乎预测不了下一轮提升,宣称的最终版本只有 2/9 在隐藏题上真的最好 <span class="tag">二手</span></li>
+<li><b>华为 · HarnessEvolve</b> <a href="https://arxiv.org/abs/2609.00829" rel="noopener" target="_blank">2609.00829</a> <span class="dim small">2026-09</span><br/>参考轨迹找错因;质量门(防泄露、防提示词膨胀)+ 性能门;最后用 held-out 选版本 —— 和本场的「晋升门」几乎一样。</li>
+<li><b>阿里通义 · AgentEvolver</b> <a href="https://arxiv.org/abs/2511.10395" rel="noopener" target="_blank">2511.10395</a> <span class="tag ok">开源</span> 自提问、自导航、自归因。</li>
+<li><b>SE-Agent</b> <a href="https://arxiv.org/abs/2508.02085" rel="noopener" target="_blank">2508.02085</a>(清华、阶跃星辰、北大、中科院等):SWE-bench Verified 上 Claude-3.7-Sonnet 40.6% → 61.2% <span class="tag">二手</span></li>
+</ul>
+<h3>2. 算法与代码发现(AlphaEvolve 一类)</h3>
+<ul>
+<li><b>南京大学 + 华为诺亚 · 自进化算法设计 agent</b> <a href="https://arxiv.org/abs/2609.38757" rel="noopener" target="_blank">2609.38757</a>(钱超团队):解决进化搜索中途「卡住不动」。</li>
+<li><b>百度 · LoongFlow</b> <a href="https://github.com/baidu-baige/LoongFlow" rel="noopener" target="_blank">GitHub</a> <span class="tag ok">开源</span> 仓库自称 11 个几何/代数题超过已知最佳 <span class="tag">二手</span></li>
+<li><b>字节 Seed + 清华 AIR · CUDA Agent</b> <span class="tag ok">开源</span> 自动写 CUDA 内核,KernelBench 上比 torch.compile 几何平均快 2.11 倍 <span class="tag">二手</span></li>
+</ul>
+<h3>3. 数学(最好验证,最适合自我改进)</h3>
+<ul>
+<li><b>DeepSeek · DeepSeekMath-V2</b> <a href="https://arxiv.org/abs/2511.22570" rel="noopener" target="_blank">2511.22570</a> <span class="tag ok">开源</span><br/>核心就是<b>自我验证</b>:先训可靠的证明检查器,再用它奖励生成器。IMO 2025、CMO 2024 金牌级,Putnam 2024 118/120。</li>
+<li><b>北大北京国际数学研究中心</b>:AI 自主解决安德森猜想,约 1.9 万行 Lean 形式化验证,号称国内首次 <span class="dim small">(新华网 2026-04-07)</span></li>
+<li><b>MiniMax · MaxProof</b>:生成式验证 + 强化学习做证明进化,IMO 2025、USAMO 2026 超金牌线 <span class="tag">二手</span></li>
+</ul>
+<h3>4. 芯片</h3>
+<ul><li><b>中科院计算所 + 软件所 · 启蒙 QiMeng</b> <a href="https://arxiv.org/abs/2506.05007" rel="noopener" target="_blank">2506.05007</a>:处理器芯片软硬件全自动设计;2024 年已有全自动设计的「启蒙 1 号」。</li></ul>
+<h3>5. 科学发现</h3>
+<ul>
+<li><b>上海 AI Lab · Intern·Agent 1.5 / 书生 Intern-Discovery</b>(2026-02):生成 → 验证 → 进化;荧光蛋白优化周期缩短到 6 小时 <span class="tag">二手</span></li>
+<li><b>华为(与莱顿、格罗宁根大学)· SwarmRSI</b> <a href="https://arxiv.org/abs/2610.20431" rel="noopener" target="_blank">2610.20431</a> <span class="dim small">2026-10-14</span>:一群科研 agent 互相变异、重组。</li>
+</ul>
+<h3>6. 世界模型 / 游戏</h3>
+<ul><li><b>UCL + 华为诺亚伦敦 · Memento 3</b> <a href="https://arxiv.org/abs/2610.11794" rel="noopener" target="_blank">2610.11794</a>:LLM 冻结,只改外部「规则手册 + 代码世界模型」,代码要通过精确回放验证才收;ARC-AGI-3 上 25 个游戏全部通关。</li></ul>
+<h3>7. 综述</h3>
+<ul><li><a href="https://arxiv.org/abs/2507.21046" rel="noopener" target="_blank">A Survey of Self-Evolving Agents</a>(2507.21046):上海交大、港中文、港科大(广州)等与 CMU、普林斯顿等合写。</li></ul>
 </section>
-
 <section id="trend">
-  <h2>⑥ 一句话趋势</h2>
-  <div class="lead">国内主力也在 <b>harness / agent 层(冻结权重)</b> 和 <b>好验证的领域(数学、代码、芯片)</b>。最新几篇(字节 HarnessDev、华为 HarnessEvolve、DeepSeekMath-V2)都把重点放在 <b>「怎么验证」</b> 上 —— 和本场「能自我改进 ≠ 能自我验证」一致。</div>
+<h2>⑥ 一句话趋势</h2>
+<div class="lead">国内主力也在 <b>harness / agent 层(冻结权重)</b> 和 <b>好验证的领域(数学、代码、芯片)</b>。最新几篇(字节 HarnessDev、华为 HarnessEvolve、DeepSeekMath-V2)都把重点放在 <b>「怎么验证」</b> 上 —— 和本场「能自我改进 ≠ 能自我验证」一致。</div>
 </section>
-
 </main>
-</body>
+<a data-cur="zh" data-to="en" href="../en/rsi/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>

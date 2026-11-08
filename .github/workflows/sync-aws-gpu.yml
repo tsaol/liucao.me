@@ -37,12 +37,18 @@ jobs:
             echo "file too large:"; find aws-gpu -type f -size +90M; exit 1
           fi
 
+      - name: Put the EN / 中文 switch back on the synced page
+        # the copy above overwrites aws-gpu/index.html; --toggles makes no model calls
+        run: |
+          pip install --quiet beautifulsoup4
+          python3 tools/i18n/build.py --toggles
+
       - name: Commit and push
         id: commit
         env:
           RULES_B64: ${{ secrets.GITLEAKS_PRIVATE_RULES }}
         run: |
-          git add -A aws-gpu
+          git add -A aws-gpu index.html ec2 rsi network en zh
           if git diff --cached --quiet; then
             echo "no change"; echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0
           fi

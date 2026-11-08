@@ -1,41 +1,39 @@
-<!doctype html>
-<html lang="zh">
+<!DOCTYPE html>
+
+<html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>EC2 · liucao.me</title>
-<link rel="stylesheet" href="../assets/site.css">
+<link href="../assets/site.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="wrap">
-  <div class="top">
-    <a class="brand" href="../">liucao<b>.me</b></a>
-    <span class="status"><span class="dot"></span>ec2</span>
-  </div>
-
-  <section class="hero" style="padding:8vh 0 5vh">
-    <div class="kicker">liucao.me / ec2<span class="cursor"></span></div>
-    <h1><span class="grad">EC2</span></h1>
-    <p class="tag">Graviton4 和大机型的实战指南。</p>
-  </section>
-
-  <div class="label">guides</div>
-  <div class="grid">
-    <a class="card" href="graviton/">
-      <div class="k">GRAVITON · ARM64</div>
-      <h2>Graviton 深度指南</h2>
-      <p>M8g vs M7i、EC2 三层监控、ARM 上判断资源用满、On-Call playbook。</p>
-      <div class="go">阅读</div>
-    </a>
-    <a class="card cy" href="numa/">
-      <div class="k">NUMA · LINUX PERF</div>
-      <h2>NUMA 深度指南</h2>
-      <p>大机型的隐形税：拓扑、内存策略、numastat、MySQL swap insanity、M8/M9 拓扑和 K8s。</p>
-      <div class="go">阅读</div>
-    </a>
-  </div>
-
-  <footer><a href="../">← liucao.me</a></footer>
+<div class="top">
+<a class="brand" href="../">liucao<b>.me</b></a>
+<span class="status"><span class="dot"></span>ec2</span>
 </div>
-</body>
+<section class="hero" style="padding:8vh 0 5vh">
+<div class="kicker">liucao.me / ec2<span class="cursor"></span></div>
+<h1><span class="grad">EC2</span></h1>
+<p class="tag">Graviton4 和大机型的实战指南。</p>
+</section>
+<div class="label">guides</div>
+<div class="grid">
+<a class="card" href="graviton/">
+<div class="k">GRAVITON · ARM64</div>
+<h2>Graviton 深度指南</h2>
+<p>M8g vs M7i、EC2 三层监控、ARM 上判断资源用满、On-Call playbook。</p>
+<div class="go">阅读</div>
+</a>
+<a class="card cy" href="numa/">
+<div class="k">NUMA · LINUX PERF</div>
+<h2>NUMA 深度指南</h2>
+<p>大机型的隐形税：拓扑、内存策略、numastat、MySQL swap insanity、M8/M9 拓扑和 K8s。</p>
+<div class="go">阅读</div>
+</a>
+</div>
+<footer><a href="../">← liucao.me</a></footer>
+</div>
+<a data-cur="zh" data-to="en" href="../en/ec2/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>

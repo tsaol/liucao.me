@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Amazon Web Services GPU</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Fira+Code:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<style>
+        :root {
+            --primary-bg: #f0f4f8;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.12);
+            --header-gradient: linear-gradient(135deg, #232f3e 0%, #37475a 50%, #232f3e 100%);
+            --accent-gradient: linear-gradient(135deg, #ff9900 0%, #ffb84d 100%);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent-orange: #ff9900;
+            --accent-blue: #0073bb;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-hover: rgba(255, 255, 255, 1);
+            --border-color: rgba(0, 0, 0, 0.06);
+            --training-bg: #f3e5f5;
+            --training-text: #7b1fa2;
+            --inference-bg: #e8f5e9;
+            --inference-text: #2e7d32;
+            --global-bg: #e3f2fd;
+            --global-text: #1565c0;
+            --china-bg: #fff3e0;
+            --china-text: #e65100;
+
+        }
+
+        [data-theme="dark"] {
+            --primary-bg: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --header-gradient: linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --card-bg: rgba(30, 41, 59, 0.9);
+            --card-hover: rgba(51, 65, 85, 1);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --training-bg: rgba(123, 31, 162, 0.2);
+            --inference-bg: rgba(46, 125, 50, 0.2);
+            --global-bg: rgba(21, 101, 192, 0.2);
+            --china-bg: rgba(230, 81, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 15%, rgba(255, 153, 0, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(0, 115, 187, 0.08) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background: var(--header-gradient);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--glass-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 60%;
+            height: 200%;
+            background: linear-gradient(135deg, rgba(255,153,0,0.15) 0%, transparent 60%);
+            transform: rotate(-15deg);
+            pointer-events: none;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        h1 span {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px 24px;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.18);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-value.highlight {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Search and Filter Bar */
+        .toolbar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 25px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .toolbar-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.15);
+        }
+
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+        }
+
+        .clear-btn {
+            padding: 10px 18px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .clear-btn:hover {
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .result-count {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-left: auto;
+        }
+
+        /* Quick Nav */
+        .quick-nav {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .quick-nav-btn {
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-nav-btn:hover {
+            background: var(--accent-orange);
+            color: white;
+            border-color: var(--accent-orange);
+        }
+
+        /* Section */
+        .section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--glass-shadow);
+            overflow: hidden;
+        }
+
+        .section-title {
+            padding: 24px 30px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: var(--accent-gradient);
+            border-radius: 2px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 16px 14px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s ease;
+        }
+
+        th:hover {
+            background: var(--card-hover);
+        }
+
+        th.sortable::after {
+            content: ' ↕';
+            opacity: 0.4;
+            font-size: 0.8em;
+        }
+
+        /* 当前排序列显示实际方向，而不是永远的 ↕ */
+        th.sortable[data-order="asc"]::after {
+            content: ' ↑';
+            opacity: 1;
+        }
+
+        th.sortable[data-order="desc"]::after {
+            content: ' ↓';
+            opacity: 1;
+        }
+
+        th.sort-asc::after {
+            content: ' ↑';
+            opacity: 1;
+            color: var(--accent-orange);
+        }
+
+        th.sort-desc::after {
+            content: ' ↓';
+            opacity: 1;
+            color: var(--accent-orange);
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            background: transparent;
+            transition: all 0.25s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--card-hover);
+        }
+
+
+
+        tbody tr.hidden {
+            display: none;
+        }
+
+        .instance-name {
+            font-family: 'Fira Code', monospace;
+            font-weight: 600;
+            padding-left: 8px;
+        }
+
+        .instance-name a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .instance-name a:hover {
+            color: var(--accent-orange);
+            background: rgba(255, 153, 0, 0.1);
+        }
+
+        .gpu-name {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            margin: 2px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .tag:hover {
+            transform: scale(1.05);
+        }
+
+        .tag-training {
+            background: var(--training-bg);
+            color: var(--training-text);
+        }
+
+        .tag-inference {
+            background: var(--inference-bg);
+            color: var(--inference-text);
+        }
+
+        .tag-global {
+            background: var(--global-bg);
+            color: var(--global-text);
+        }
+
+        .tag-china {
+            background: var(--china-bg);
+            color: var(--china-text);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            header {
+                padding: 20px;
+                border-radius: 16px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .toolbar-row {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .filter-select {
+                flex: 1;
+            }
+
+            .quick-nav {
+                flex-wrap: wrap;
+            }
+
+            table {
+                font-size: 0.82rem;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+                padding: 18px 20px;
+            }
+        }
+
+        /* Print */
+        @media print {
+            body::before {
+                display: none;
+            }
+
+            .toolbar, .theme-toggle, .quick-nav {
+                display: none;
+            }
+
+            .section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        /* ===== Neon theme (dark is the default since 2026-11-08) ===== */
+        [data-theme="dark"] {
+            --primary-bg: #05070d;
+            --glass-bg: rgba(13, 18, 30, 0.72);
+            --glass-border: rgba(118, 185, 0, 0.18);
+            --glass-shadow: 0 0 0 1px rgba(118,185,0,0.06), 0 20px 60px rgba(0,0,0,0.55);
+            --header-gradient: radial-gradient(120% 140% at 0% 0%, #0d1f12 0%, #070a12 45%, #0a0f1f 100%);
+            --accent-gradient: linear-gradient(90deg, #76b900 0%, #3ee8b5 35%, #22d3ee 65%, #ff9900 100%);
+            --text-primary: #e8f0ff;
+            --text-secondary: #8a97b1;
+            --accent-blue: #22d3ee;
+            --card-bg: rgba(10, 14, 24, 0.96);
+            --card-hover: rgba(118, 185, 0, 0.07);
+            --border-color: rgba(148, 163, 184, 0.10);
+            --training-bg: rgba(168, 85, 247, 0.12);
+            --training-text: #d8b4fe;
+            --inference-bg: rgba(118, 185, 0, 0.12);
+            --inference-text: #a3e635;
+            --global-bg: rgba(34, 211, 238, 0.10);
+            --global-text: #67e8f9;
+            --china-bg: rgba(255, 153, 0, 0.12);
+            --china-text: #fdba74;
+        }
+        [data-theme="dark"] body, body[data-theme="dark"] { background: var(--primary-bg); }
+
+        /* moving perspective grid + glow orbs */
+        body[data-theme="dark"]::before {
+            background:
+                radial-gradient(600px 400px at 12% 8%, rgba(118,185,0,0.16), transparent 60%),
+                radial-gradient(700px 500px at 90% 20%, rgba(34,211,238,0.12), transparent 60%),
+                radial-gradient(600px 500px at 70% 95%, rgba(255,153,0,0.10), transparent 60%);
+            animation: orbs 18s ease-in-out infinite alternate;
+        }
+        body[data-theme="dark"]::after {
+            content: ''; position: fixed; inset: -50% -50% 0 -50%; z-index: -1; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(118,185,0,0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118,185,0,0.07) 1px, transparent 1px);
+            background-size: 56px 56px;
+            transform: perspective(700px) rotateX(62deg) translateY(30%);
+            mask-image: linear-gradient(to top, rgba(0,0,0,0.9), transparent 75%);
+            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.9), transparent 75%);
+            animation: gridmove 6s linear infinite;
+        }
+        @keyframes gridmove { to { background-position: 0 56px, 0 0; } }
+        @keyframes orbs { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-3%, 2%, 0) scale(1.08); } }
+
+        /* hero */
+        [data-theme="dark"] header {
+            padding: 46px 48px 40px;
+            border: 1px solid rgba(118,185,0,0.25);
+            box-shadow: 0 0 40px rgba(118,185,0,0.12), inset 0 0 80px rgba(34,211,238,0.05);
+        }
+        [data-theme="dark"] header::before {
+            top: 0; left: -40%; right: auto; width: 40%; height: 100%; transform: skewX(-20deg);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+            animation: sweep 5.5s ease-in-out infinite;
+        }
+        @keyframes sweep { 0% { left: -40%; } 60%, 100% { left: 120%; } }
+        [data-theme="dark"] header::after {
+            content: ''; position: absolute; inset: 0; pointer-events: none;
+            background: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 3px);
+        }
+        [data-theme="dark"] h1 { font-size: clamp(2.2rem, 4.6vw, 3.6rem); letter-spacing: -1.5px; line-height: 1.05; }
+        h1 span {
+            background-size: 300% 100%;
+            animation: hue 7s linear infinite;
+        }
+        [data-theme="dark"] h1 span { filter: drop-shadow(0 0 18px rgba(118,185,0,0.45)); }
+        @keyframes hue { to { background-position: 300% 0; } }
+        .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; position: relative; z-index: 1; }
+        .chip {
+            font-family: 'Fira Code', monospace; font-size: 0.78rem; padding: 4px 12px; border-radius: 999px;
+            color: #d9f99d; border: 1px solid rgba(118,185,0,0.45); background: rgba(118,185,0,0.08);
+        }
+        .chip.c2 { color: #a5f3fc; border-color: rgba(34,211,238,0.45); background: rgba(34,211,238,0.08); }
+        .chip.c3 { color: #fed7aa; border-color: rgba(255,153,0,0.45); background: rgba(255,153,0,0.08); }
+        .chip .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; margin-right: 7px; vertical-align: 1px; box-shadow: 0 0 8px currentColor; animation: blink 1.6s ease-in-out infinite; }
+        @keyframes blink { 50% { opacity: 0.25; } }
+        [data-theme="dark"] .theme-toggle { border: 1px solid rgba(118,185,0,0.35); background: rgba(118,185,0,0.08); }
+
+        /* stat cards: neon border on hover, mono numbers */
+        [data-theme="dark"] .stat-card { position: relative; overflow: hidden; }
+        [data-theme="dark"] .stat-card::before {
+            content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+            background: linear-gradient(120deg, rgba(118,185,0,0.7), rgba(34,211,238,0.5), rgba(255,153,0,0.6));
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0.35; transition: opacity .3s;
+        }
+        [data-theme="dark"] .stat-card:hover::before { opacity: 1; }
+        [data-theme="dark"] .stat-card:hover { box-shadow: 0 0 30px rgba(118,185,0,0.22); }
+        [data-theme="dark"] .stat-label { text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.74rem; font-family: 'Fira Code', monospace; }
+        [data-theme="dark"] .stat-value { font-family: 'Fira Code', 'Inter', monospace; letter-spacing: -0.5px; }
+        [data-theme="dark"] .stat-value.highlight { font-size: 2.6rem; line-height: 1.1; background-size: 300% 100%; animation: hue 7s linear infinite; filter: drop-shadow(0 0 14px rgba(118,185,0,0.35)); }
+
+        /* toolbar */
+        [data-theme="dark"] .search-box input:focus, [data-theme="dark"] .filter-select:focus {
+            border-color: #76b900; box-shadow: 0 0 0 3px rgba(118,185,0,0.18), 0 0 24px rgba(118,185,0,0.18);
+        }
+        [data-theme="dark"] .quick-nav-btn:hover { border-color: #76b900; color: #d9f99d; box-shadow: 0 0 18px rgba(118,185,0,0.25); }
+
+        /* sections + tables */
+        [data-theme="dark"] .section-title::before { box-shadow: 0 0 14px rgba(118,185,0,0.8); background-size: 100% 300%; }
+        [data-theme="dark"] th { background: rgba(8, 12, 20, 0.98); font-family: 'Fira Code', monospace; font-size: 0.8rem; letter-spacing: 0.5px; color: #b7c4dc; }
+        [data-theme="dark"] tbody tr { box-shadow: inset 0 0 0 transparent; }
+        [data-theme="dark"] tbody tr:hover { box-shadow: inset 3px 0 0 #76b900, inset 0 0 40px rgba(118,185,0,0.06); }
+        [data-theme="dark"] tbody tr:hover .instance-name a { color: #a3e635; text-shadow: 0 0 12px rgba(163,230,53,0.55); }
+        [data-theme="dark"] .instance-name a { color: #67e8f9; }
+        [data-theme="dark"] .instance-name a:hover { background: transparent; }
+        [data-theme="dark"] .gpu-name { color: #cbd5e1; }
+        [data-theme="dark"] .tag { border: 1px solid currentColor; background-clip: padding-box; }
+
+        /* reveal on scroll */
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+        .reveal.in { opacity: 1; transform: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+            .reveal { opacity: 1; transform: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<header>
+<div class="header-content">
+<div>
+<h1>Amazon Web Services <span>GPU</span></h1>
+<p class="subtitle">Complete list of AWS GPU and AI accelerator instances · Last updated: <span id="last-updated">2026-11-08</span></p>
+<div class="chip-row">
+<span class="chip"><span class="dot"></span>Blackwell Ultra · GB300 NVL72</span>
+<span class="chip"><span class="dot"></span>RTX PRO Blackwell · G7 / G7e</span>
+<span class="chip c2"><span class="dot"></span>Trainium3 · 3nm</span>
+<span class="chip c3"><span class="dot"></span>Global + China</span>
+</div>
+</div>
+<div class="header-actions">
+<button class="theme-toggle" onclick="toggleTheme()">
+<span id="theme-icon">🌙</span>
+<span id="theme-text">Dark mode</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Stats Cards -->
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-label">Total GPU instances</div>
+<div class="stat-value highlight" id="total-instances">99</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">Latest release</div>
+<div class="stat-value">G7 series</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">Price range</div>
+<div class="stat-value">$0.37-142/h</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">Supported regions</div>
+<div class="stat-value">Global + China</div>
+</div>
+</div>
+<!-- Toolbar -->
+<div class="toolbar">
+<div class="toolbar-row">
+<div class="search-box">
+<input id="search-input" oninput="filterTable()" placeholder="Search instance names, GPU models..." type="text"/>
+</div>
+<div class="filter-group">
+<select class="filter-select" id="filter-workload" onchange="filterTable()">
+<option value="">All types</option>
+<option value="训练">Training</option>
+<option value="推理">Inference</option>
+</select>
+<select class="filter-select" id="filter-region" onchange="filterTable()">
+<option value="">All regions</option>
+<option value="Global">Global</option>
+<option value="China">China</option>
+</select>
+<select class="filter-select" id="filter-gpu-count" onchange="filterTable()">
+<option value="">GPU count</option>
+<option value="1">1 GPU</option>
+<option value="4">4 GPU</option>
+<option value="8">8+ GPU</option>
+</select>
+<button class="clear-btn" onclick="clearFilters()">Clear filters</button>
+</div>
+<span class="result-count" id="result-count"></span>
+</div>
+<div class="quick-nav">
+<button class="quick-nav-btn" onclick="scrollToSection('nvidia-section')">NVIDIA GPU</button>
+<button class="quick-nav-btn" onclick="scrollToSection('aws-section')">AWS custom silicon</button>
+<button class="quick-nav-btn" onclick="scrollToSection('case-section')">Customer case studies</button>
+</div>
+</div>
+<!-- NVIDIA GPU Section -->
+<section class="section" id="nvidia-section">
+<h2 class="section-title">NVIDIA GPU</h2>
+<div class="table-container">
+<table id="nvidia-table">
+<thead>
+<tr>
+<th class="sortable" data-sort="name">Instance family</th>
+<th>Workload type</th>
+<th>Region</th>
+<th class="sortable" data-sort="gpu">GPU count</th>
+<th>GPU model</th>
+<th>GPU memory</th>
+<th>Use cases</th>
+<th>vCPU</th>
+<th>System memory</th>
+<th class="sortable" data-sort="price">Price (On-Demand)</th>
+<th class="sortable" data-sort="year">Published</th>
+</tr>
+</thead>
+<tbody>
+<tr data-gpu="72" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-p6e-gb300-ultraservers-nvidia-gb300-nvl72-generally-available/" rel="noopener" target="_blank">P6e (GB300)</a></td>
+<td><span class="tag tag-training">Training</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>72 (UltraServer)</td>
+<td class="gpu-name">GB300 NVL72 Blackwell Ultra</td>
+<td>~279GB (1.5× GB200; nearly 20TB per system)</td>
+<td>Trillion-parameter training and inference (UltraServers)</td>
+<td>—</td>
+<td>—</td>
+<td>Released (GA)</td>
+<td>2025</td>
+</tr>
+<tr data-gpu="72" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="../../aws-gpu/instances/p6e-gb200.html">P6e (GB200)</a></td>
+<td><span class="tag tag-training">Training</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>4/36/72</td>
+<td class="gpu-name">GB200 Grace Blackwell</td>
+<td>185GB</td>
+<td>Ultra-scale AI training (UltraServers)</td>
+<td>144</td>
+<td>960 GiB</td>
+<td>Released (GA)</td>
+<td>2025</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="../../aws-gpu/instances/p6-b300.html">P6 (B300)</a></td>
+<td><span class="tag tag-training">Training</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">B300 Blackwell Ultra</td>
+<td>262GB</td>
+<td>Top-tier training performance, trillion-parameter models</td>
+<td>192</td>
+<td>4 TB</td>
+<td>~$142.42/hour</td>
+<td>2025</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="../../aws-gpu/instances/p6-b200.html">P6 (B200)</a></td>
+<td><span class="tag tag-training">Training</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">B200 Blackwell</td>
+<td>180GB</td>
+<td>Top-tier training performance, very large model inference</td>
+<td>192</td>
+<td>2,048 GB</td>
+<td>~$113.93/hour</td>
+<td>2025</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/p5en.html">P5en</a></td>
+<td><span class="tag tag-training">Training</span><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">H200</td>
+<td>141GB</td>
+<td>Large-scale training, enhanced memory (12 regions)</td>
+<td>192</td>
+<td>2,048 GB</td>
+<td>~$63/hour</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/p5e.html">P5e</a></td>
+<td><span class="tag tag-training">Training</span><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">H200</td>
+<td>141GB</td>
+<td>High-performance training</td>
+<td>192</td>
+<td>2,048 GB</td>
+<td>~$70/hour</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/p5.html">P5</a></td>
+<td><span class="tag tag-training">Training</span><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/8</td>
+<td class="gpu-name">H100</td>
+<td>80GB</td>
+<td>Large model training, generative AI</td>
+<td>192</td>
+<td>2,048 GB</td>
+<td>~$58-72/hour</td>
+<td>2023-2024</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/p4de.html">P4de</a></td>
+<td><span class="tag tag-training">Training</span><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">A100</td>
+<td>80GB</td>
+<td>General training, 20B-70B model inference</td>
+<td>96</td>
+<td>1,152 GB</td>
+<td>~$40.97/hour</td>
+<td>2020</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/p4d.html">P4d</a></td>
+<td><span class="tag tag-training">Training</span><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">A100</td>
+<td>40GB</td>
+<td>Budget-constrained training, small-to-medium models</td>
+<td>96</td>
+<td>1,152 GB</td>
+<td>~$32.77/hour</td>
+<td>2020</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/p3dn.html">P3dn</a></td>
+<td><span class="tag tag-training">Training</span><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">V100</td>
+<td>32GB</td>
+<td>Traditional deep learning, teaching</td>
+<td>96</td>
+<td>768 GB</td>
+<td>~$31.21/hour</td>
+<td>2018</td>
+</tr>
+<tr data-gpu="8" data-region="Global,China" data-workload="训练,推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/p3.html">P3</a></td>
+<td><span class="tag tag-training">Training</span><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
+<td>1/4/8</td>
+<td class="gpu-name">V100</td>
+<td>16GB</td>
+<td>Traditional deep learning, teaching</td>
+<td>8-64</td>
+<td>61-488 GB</td>
+<td>~$3.06-24.48/hour</td>
+<td>2017</td>
+</tr>
+<tr data-gpu="16" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/p2.html">P2</a></td>
+<td><span class="tag tag-training">Training</span><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/8/16</td>
+<td class="gpu-name">K80</td>
+<td>12GB</td>
+<td>Older-generation GPUs, limited-budget scenarios</td>
+<td>4-64</td>
+<td>61-732 GB</td>
+<td>~$0.90-14.40/hour</td>
+<td>2016</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/g7e.html">G7e</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/2/4/8</td>
+<td class="gpu-name">RTX PRO 6000 Blackwell</td>
+<td>96GB</td>
+<td>LLM inference deployment, AI image and video generation, robotics simulation, 3D rendering</td>
+<td>8-192</td>
+<td>64-2048 GB</td>
+<td>~$3.36-33.14/hour</td>
+<td>2026</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/g7.html">G7</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/2/4/8</td>
+<td class="gpu-name">RTX PRO 4500 Blackwell</td>
+<td>32GB</td>
+<td>AI inference, graphics rendering, GPU-accelerated analytics, AR/VR and CAD</td>
+<td>8-192</td>
+<td>32-768 GB</td>
+<td>~$2.52-28.51/hour</td>
+<td>2026</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/g6e.html">G6e</a></td>
+<td><span class="tag tag-training">Training</span><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/4/8</td>
+<td class="gpu-name">L40S</td>
+<td>48GB</td>
+<td>Inference for models under 20B, AI image and video generation models</td>
+<td>4-192</td>
+<td>32-1536 GB</td>
+<td>~$1.86-30.13/hour</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/g6.html">G6</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/4/8</td>
+<td class="gpu-name">L4</td>
+<td>24GB</td>
+<td>AI video generation, real-time inference</td>
+<td>4-192</td>
+<td>16-768 GB</td>
+<td>~$1.16-9.28/hour</td>
+<td>2023</td>
+</tr>
+<tr data-gpu="8" data-region="Global,China" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/g5.html">G5</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
+<td>1/4/8</td>
+<td class="gpu-name">A10G</td>
+<td>24GB</td>
+<td>Small-model real-time inference (&lt;20B)</td>
+<td>4-192</td>
+<td>16-768 GB</td>
+<td>~$1.01-16.29/hour</td>
+<td>2021</td>
+</tr>
+<tr data-gpu="2" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/g5g.html">G5g</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/2</td>
+<td class="gpu-name">T4G</td>
+<td>16GB</td>
+<td>Android game streaming, ARM-native apps</td>
+<td>4-64</td>
+<td>8-128 GB</td>
+<td>~$0.42-2.74/hour</td>
+<td>2021</td>
+</tr>
+<tr data-gpu="8" data-region="Global,China" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/g4dn.html">G4dn</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
+<td>1/4/8</td>
+<td class="gpu-name">T4</td>
+<td>16GB</td>
+<td>Cost-efficient inference, small-model deployment</td>
+<td>4-48</td>
+<td>16-192 GB</td>
+<td>~$0.53-3.91/hour</td>
+<td>2019</td>
+</tr>
+<tr data-gpu="4" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/g4ad.html">G4ad</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/2/4</td>
+<td class="gpu-name">AMD Radeon Pro V520</td>
+<td>8GB</td>
+<td>Graphics workstations, remote desktops</td>
+<td>4-64</td>
+<td>16-256 GB</td>
+<td>~$0.38-2.18/hour</td>
+<td>2020</td>
+</tr>
+<tr data-gpu="4" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/g6f.html">G6f</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1</td>
+<td class="gpu-name">L40 (Fractional)</td>
+<td>48GB</td>
+<td>Lightweight AI inference, small-model deployment</td>
+<td>2-16</td>
+<td>8-64 GB</td>
+<td>~$0.65-2.56/hour</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="2" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/gr6.html">GR6</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/2</td>
+<td class="gpu-name">L4</td>
+<td>24GB</td>
+<td>Ray tracing, graphics rendering</td>
+<td>16-64</td>
+<td>128-256 GB</td>
+<td>~$1.56-3.12/hour</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="1" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/gr6f.html">GR6f</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1</td>
+<td class="gpu-name">L40 (Fractional)</td>
+<td>48GB</td>
+<td>Ray tracing, light graphics</td>
+<td>16</td>
+<td>64 GB</td>
+<td>~$1.62/hour</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="4" data-region="Global,China" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/g3.html">G3</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
+<td>1/2/4</td>
+<td class="gpu-name">M60</td>
+<td>8GB</td>
+<td>Graphics workstation (previous gen)</td>
+<td>4-64</td>
+<td>30.5-488 GB</td>
+<td>~$0.75-4.56/hour</td>
+<td>2017</td>
+</tr>
+<tr data-gpu="1" data-region="Global,China" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/g3s.html">G3s</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
+<td>1</td>
+<td class="gpu-name">M60</td>
+<td>8GB</td>
+<td>Graphics workstation (previous gen)</td>
+<td>4</td>
+<td>30.5 GB</td>
+<td>~$0.75/hour</td>
+<td>2017</td>
+</tr>
+<tr data-gpu="4" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/g2.html">G2</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/4</td>
+<td class="gpu-name">GRID K520</td>
+<td>4GB</td>
+<td>Graphics (previous gen)</td>
+<td>8-32</td>
+<td>15-60 GB</td>
+<td>~$0.65-2.60/hour</td>
+<td>2013</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- AWS Custom Chips Section -->
+<section class="section" id="aws-section">
+<h2 class="section-title">AWS custom silicon</h2>
+<div class="table-container">
+<table id="aws-table">
+<thead>
+<tr>
+<th class="sortable" data-sort="name">Instance family</th>
+<th>Workload type</th>
+<th>Region</th>
+<th class="sortable" data-sort="chip">Chip count</th>
+<th>Chip model</th>
+<th>Use cases</th>
+<th>vCPU</th>
+<th>System memory</th>
+<th class="sortable" data-sort="price">Price (On-Demand)</th>
+<th class="sortable" data-sort="year">Published</th>
+</tr>
+</thead>
+<tbody>
+<tr data-gpu="144" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="https://aws.amazon.com/ec2/instance-types/trn3/" rel="noopener" target="_blank">Trn3</a></td>
+<td><span class="tag tag-training">Training</span><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>Up to 144 (UltraServer)</td>
+<td class="gpu-name">AWS Trainium3 (3nm, 144GB HBM3e per chip)</td>
+<td>Frontier LLM training and inference, Agents / reasoning / video generation</td>
+<td>—</td>
+<td>—</td>
+<td>Released (GA)</td>
+<td>2025</td>
+</tr>
+<tr data-gpu="16" data-region="Global" data-workload="训练,推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/trn2.html">Trn2</a></td>
+<td><span class="tag tag-training">Training</span><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>16</td>
+<td class="gpu-name">AWS Trainium2</td>
+<td>Trillion-parameter model training</td>
+<td>192</td>
+<td>2TB</td>
+<td>~$35.76/hour</td>
+<td>2024</td>
+</tr>
+<tr data-gpu="12" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/inf2.html">Inf2</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/6/12</td>
+<td class="gpu-name">AWS Inferentia2</td>
+<td>Small-model batch inference (&lt;20B)</td>
+<td>4-192</td>
+<td>16-384 GB</td>
+<td>~$0.76-12.98/hour</td>
+<td>2022</td>
+</tr>
+<tr data-gpu="16" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="../../aws-gpu/instances/trn1.html">Trn1</a></td>
+<td><span class="tag tag-training">Training</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>1/16</td>
+<td class="gpu-name">AWS Trainium</td>
+<td>Medium-to-large model training, NLP models</td>
+<td>8-128</td>
+<td>32-512 GB</td>
+<td>~$1.34-24.78/hour</td>
+<td>2022</td>
+</tr>
+<tr data-gpu="16" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="../../aws-gpu/instances/trn1n.html">Trn1n</a></td>
+<td><span class="tag tag-training">Training</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>16</td>
+<td class="gpu-name">AWS Trainium (network-optimized)</td>
+<td>Distributed deep learning training</td>
+<td>128</td>
+<td>512 GB</td>
+<td>~$24.78/hour</td>
+<td>2023</td>
+</tr>
+<tr data-gpu="1" data-region="Global,China" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/inf1.html">Inf1</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span><span class="tag tag-china">China</span></td>
+<td>1</td>
+<td class="gpu-name">AWS Inferentia</td>
+<td>Traditional reasoning models, cost optimization</td>
+<td>4-8</td>
+<td>8-16 GB</td>
+<td>~$0.37-0.58/hour</td>
+<td>2019</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="训练">
+<td class="instance-name"><a href="../../aws-gpu/instances/dl1.html">DL1</a></td>
+<td><span class="tag tag-training">Training</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">Habana Gaudi</td>
+<td>Deep learning training</td>
+<td>96</td>
+<td>768 GB</td>
+<td>~$13.11/hour</td>
+<td>2021</td>
+</tr>
+<tr data-gpu="8" data-region="Global" data-workload="推理">
+<td class="instance-name"><a href="../../aws-gpu/instances/dl2q.html">DL2q</a></td>
+<td><span class="tag tag-inference">Inference</span></td>
+<td><span class="tag tag-global">Global</span></td>
+<td>8</td>
+<td class="gpu-name">Qualcomm AI 100</td>
+<td>ML inference (Qualcomm)</td>
+<td>96</td>
+<td>768 GB</td>
+<td>~$10.59/hour</td>
+<td>2023</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Customer Cases Section -->
+<section class="section" id="case-section">
+<h2 class="section-title">Customer case studies</h2>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Customer</th>
+<th>Scenario</th>
+<th>Services used</th>
+<th>Base model</th>
+<th>Performance gain</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="instance-name">Smanson</td>
+<td>Industry models, legal consultation</td>
+<td>Amazon Nova Pro + SageMaker</td>
+<td class="gpu-name">Qwen1.5 7B</td>
+<td>99% case identification, +30% satisfaction</td>
+<td><a href="https://aws.amazon.com/cn/blogs/china/smartions-use-amazon-nova-to-create-a-big-model-of-chinese-laws/" style="color: var(--accent-blue);" target="_blank">View →</a></td>
+</tr>
+<tr>
+<td class="instance-name">Cloud Academy</td>
+<td>Intelligent code generation and completion</td>
+<td>Amazon SageMaker</td>
+<td class="gpu-name">DeepSeek Coder 6.7B</td>
+<td>Business code generation +44%, significant gains in business FIM</td>
+<td><a href="https://aws.amazon.com/cn/blogs/china/yxt-innovative-practice-of-fine-tuning-large-models-and-enabling-code-generation-based-on-amazon-sagemaker/" style="color: var(--accent-blue);" target="_blank">View →</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<footer>
+<p>Data source: <a href="https://aws.amazon.com" target="_blank">Amazon Web Services official website</a></p>
+</footer>
+</div>
+<script src="../../aws-gpu/data/meta.js"></script>
+<script>
+        // 从 data/meta.js 填充更新日期与实例总数。
+        // HTML 里的值只是兜底，真实值以 data/ 为准（由 convert_data.py 生成）。
+        (function() {
+            if (typeof gpuDataMeta === 'undefined') return;
+            const d = document.getElementById('last-updated');
+            const n = document.getElementById('total-instances');
+            if (d && gpuDataMeta.lastUpdated) d.textContent = gpuDataMeta.lastUpdated;
+            if (n && gpuDataMeta.totalInstances) n.textContent = gpuDataMeta.totalInstances;
+        })();
+
+        // 数字从 0 跳到真实值；页面元素滚动进来时淡入。prefers-reduced-motion 时都不做。
+        (function() {
+            const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const n = document.getElementById('total-instances');
+            const target = n ? parseInt(n.textContent, 10) : NaN;
+            if (!still && n && target > 0) {
+                const t0 = performance.now(), dur = 1200;
+                (function step(t) {
+                    const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+                    n.textContent = Math.round(target * e);
+                    if (k < 1) requestAnimationFrame(step);
+                })(t0);
+            }
+            if (still || !('IntersectionObserver' in window)) return;
+            const els = document.querySelectorAll('.stat-card, .toolbar, .section');
+            const io = new IntersectionObserver(es => es.forEach(x => {
+                if (x.isIntersecting) { x.target.classList.add('in'); io.unobserve(x.target); }
+            }), { threshold: 0.05 });
+            els.forEach((el, i) => { el.classList.add('reveal'); el.style.transitionDelay = (Math.min(i, 6) * 60) + 'ms'; io.observe(el); });
+        })();
+
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                icon.textContent = '🌙';
+                text.textContent = 'Dark mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                text.textContent = 'Light mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Load saved theme
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme !== 'light') {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+                document.getElementById('theme-text').textContent = 'Light mode';
+            }
+        })();
+
+        // Filter Table
+        function filterTable() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const workloadFilter = document.getElementById('filter-workload').value;
+            const regionFilter = document.getElementById('filter-region').value;
+            const gpuCountFilter = document.getElementById('filter-gpu-count').value;
+            
+            const tables = document.querySelectorAll('#nvidia-table tbody, #aws-table tbody');
+            let visibleCount = 0;
+            
+            tables.forEach(tbody => {
+                const rows = tbody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    const workload = row.getAttribute('data-workload') || '';
+                    const region = row.getAttribute('data-region') || '';
+                    const gpuCount = parseInt(row.getAttribute('data-gpu')) || 0;
+                    
+                    let show = true;
+                    
+                    // Search filter
+                    if (searchTerm && !text.includes(searchTerm)) {
+                        show = false;
+                    }
+                    
+                    // Workload filter
+                    if (workloadFilter && !workload.includes(workloadFilter)) {
+                        show = false;
+                    }
+                    
+                    // Region filter
+                    if (regionFilter && !region.includes(regionFilter)) {
+                        show = false;
+                    }
+                    
+                    // GPU count filter
+                    if (gpuCountFilter) {
+                        const filterNum = parseInt(gpuCountFilter);
+                        if (filterNum === 8) {
+                            if (gpuCount < 8) show = false;
+                        } else {
+                            if (gpuCount !== filterNum) show = false;
+                        }
+                    }
+                    
+                    if (show) {
+                        row.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        row.classList.add('hidden');
+                    }
+                });
+            });
+            
+            document.getElementById('result-count').textContent = `Showing ${visibleCount} instances`;
+        }
+
+        // Table Sorting
+        // 四个表头带 class="sortable" + data-sort，CSS 也画了 ↕ 箭头，
+        // 但此前没有任何 JS 绑定它们，点击毫无反应。以下补上真实排序。
+        //
+        // 取值都要从展示文本里解析，格式不规整，已知这些情况：
+        //   GPU 数量  "8" / "1/2/4/8" / "4/36/72"      -> 取最大值
+        //   价格      "~$2.52-28.51/小时" / "已发布 (GA)" -> 取第一个数字；无数字排最后
+        //   发布时间  "2025" / "2023-2024"             -> 取第一个数字
+        const SORT_COLUMN = {
+            'nvidia-table': { name: 0, gpu: 3, price: 9, year: 10 },
+            'aws-table':    { name: 0, chip: 3, price: 8, year: 9 },
+        };
+
+        function cellText(row, idx) {
+            const td = row.children[idx];
+            return td ? td.textContent.trim() : '';
+        }
+
+        // 无数字时返回 null，排序时统一沉到末尾，避免把「已发布 (GA)」当成 0 排到最前
+        function firstNumber(text) {
+            const m = text.replace(/,/g, '').match(/\d+(\.\d+)?/);
+            return m ? parseFloat(m[0]) : null;
+        }
+
+        function maxNumber(text) {
+            const nums = (text.replace(/,/g, '').match(/\d+(\.\d+)?/g) || []).map(parseFloat);
+            return nums.length ? Math.max(...nums) : null;
+        }
+
+        function sortValue(row, key, idx) {
+            const text = cellText(row, idx);
+            if (key === 'name') return text.toLowerCase();
+            if (key === 'gpu' || key === 'chip') return maxNumber(text);
+            return firstNumber(text);   // price / year
+        }
+
+        function sortTable(tableId, key, asc) {
+            const idx = (SORT_COLUMN[tableId] || {})[key];
+            if (idx === undefined) return;
+
+            const tbody = document.querySelector(`#${tableId} tbody`);
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            rows.sort((a, b) => {
+                const va = sortValue(a, key, idx);
+                const vb = sortValue(b, key, idx);
+                // 缺值恒排末尾，无论升降序
+                if (va === null && vb === null) return 0;
+                if (va === null) return 1;
+                if (vb === null) return -1;
+                if (va < vb) return asc ? -1 : 1;
+                if (va > vb) return asc ? 1 : -1;
+                return 0;
+            });
+            rows.forEach(r => tbody.appendChild(r));
+        }
+
+        (function initSorting() {
+            document.querySelectorAll('th.sortable').forEach(th => {
+                th.style.cursor = 'pointer';
+                th.addEventListener('click', () => {
+                    const table = th.closest('table');
+                    if (!table || !table.id) return;
+                    const key = th.dataset.sort;
+                    const asc = th.dataset.order !== 'asc';
+
+                    sortTable(table.id, key, asc);
+
+                    // 只在本表内重置箭头，另一个表的排序状态保持不变
+                    table.querySelectorAll('th.sortable').forEach(o => {
+                        if (o !== th) { delete o.dataset.order; o.removeAttribute('aria-sort'); }
+                    });
+                    th.dataset.order = asc ? 'asc' : 'desc';
+                    th.setAttribute('aria-sort', asc ? 'ascending' : 'descending');
+                });
+            });
+        })();
+
+        // Clear Filters
+        function clearFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('filter-workload').value = '';
+            document.getElementById('filter-region').value = '';
+            document.getElementById('filter-gpu-count').value = '';
+            filterTable();
+        }
+
+        // Quick Nav
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Initialize
+        filterTable();
+    </script>
+<a data-cur="en" data-to="zh" href="../../aws-gpu/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>liucao.me</title>
+<meta content="AWS GPU, EC2, Graviton, NUMA, Network" name="description"/>
+<link href="../assets/site.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="wrap">
+<div class="top">
+<a class="brand" href="./">liucao<b>.me</b></a>
+<span class="status"><span class="dot"></span>online</span>
+</div>
+<section class="hero">
+<div class="kicker">cloud compute notes<span class="cursor"></span></div>
+<h1>liucao<span class="grad">.me</span></h1>
+<p class="tag">In-depth guides to AWS GPU instances, EC2, and Graviton, plus AI recursive self-improvement (RSI).</p>
+<div class="chips">
+<span class="chip">Blackwell Ultra</span>
+<span class="chip c">Trainium3</span>
+<span class="chip">Graviton4</span>
+<span class="chip o">NUMA</span>
+<span class="chip c">RSI</span>
+</div>
+</section>
+<div class="label">explore</div>
+<div class="grid">
+<a class="card" href="aws-gpu/">
+<div class="k">01 · GPU</div>
+<h2>AWS GPU</h2>
+<p>All AWS GPU and AI accelerator instances: models, GPU memory, pricing, and regions, refreshed automatically every week.</p>
+<div class="stats">
+<div><b id="gpu-total">99</b><span>INSTANCES</span></div>
+<div><b id="gpu-families">34</b><span>FAMILIES</span></div>
+<div><b id="gpu-date">2026-11-08</b><span>UPDATED</span></div>
+</div>
+<div class="go">Open</div>
+</a>
+<div class="card cy">
+<div class="k">02 · EC2</div>
+<h2><a href="ec2/">EC2</a></h2>
+<p>Graviton4 migration, monitoring, saturation detection, and on-call playbooks; NUMA on large instances.</p>
+<div class="sub">
+<a href="ec2/graviton/">Graviton Deep Dive Guide</a>
+<a href="ec2/numa/">NUMA deep-dive guide</a>
+</div>
+<a class="go" href="ec2/">Enter EC2</a>
+</div>
+<div class="card or">
+<div class="k">03 · AI</div>
+<h2><a href="rsi/">RSI · Recursive Self-Improvement</a></h2>
+<p>How AI improves itself: talk slides, script, resource pack, and a replayable agent self-improvement demo.</p>
+<div class="sub">
+<a href="rsi/slides/">Slides</a>
+<a href="rsi/demo/play/">Demo replay</a>
+<a href="rsi/demo/">Harness Self-Evolution</a>
+</div>
+<a class="go" href="rsi/">Enter RSI</a>
+</div>
+<div class="card">
+<div class="k">04 · Network</div>
+<h2><a href="../network/">Network</a></h2>
+<p>AWS networking notes and measurements: inter-region latency matrix, cross-region latency, S3 download acceleration, S3 + CloudFront CORS.</p>
+<div class="sub">
+<a href="../network/matrix/">Region latency matrix</a>
+<a href="../network/s3bench/">S3 download acceleration</a>
+<a href="../network/cors/">CORS configuration</a>
+</div>
+<a class="go" href="../network/">Enter Network</a>
+</div>
+</div>
+<footer>© 2026 liucao.me</footer>
+</div>
+<script src="../aws-gpu/data/meta.js"></script>
+<script>
+  // GPU 卡片上的数字直接读 aws-gpu/data/meta.js，跟着每次数据刷新走。
+  (function () {
+    if (typeof gpuDataMeta === 'undefined') return;
+    var m = gpuDataMeta, set = function (id, v) { var e = document.getElementById(id); if (e && v) e.textContent = v; };
+    set('gpu-date', m.lastUpdated); set('gpu-families', m.totalFamilies);
+    var el = document.getElementById('gpu-total'), n = m.totalInstances;
+    if (!el || !n) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = n; return; }
+    var t0 = performance.now();
+    (function step(t) { var k = Math.min(1, (t - t0) / 1200); el.textContent = Math.round(n * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); })(t0);
+  })();
+</script>
+<a data-cur="en" data-to="zh" href="../" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

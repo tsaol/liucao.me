@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html lang="zh-CN">
 <head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harness Self-Evolution Demo — liucao.me</title>
-    <link rel="stylesheet" href="../../assets/style.css">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Harness Self-Evolution Demo — liucao.me</title>
+<link href="../../assets/style.css" rel="stylesheet"/>
+<style>
       /* Single-column layout — tighter reading width for beginners. */
       main.wrap { max-width: 960px; }
     </style>
-    <style>
+<style>
       .hd-lead { text-align: center; margin-bottom: 1.4rem; }
       .hd-lead h1 {
         font-size: 2.4rem; font-weight: 800; letter-spacing: -0.02em;
@@ -1625,408 +1626,384 @@
     </style>
 </head>
 <body>
-    <nav class="nav">
-        <div class="brand"><a href="../../.." style="color:inherit;">liucao<span>.me</span></a></div>
-        <div class="links">
-            <a href="../">← Intro</a>
-            <a href="../talk/">Talk</a>
-            <a href="../papers/">Papers</a>
-            <a href="../play/">Play</a>
-            <a href="../">Demos</a>
-        </div>
-    </nav>
-
-    <main class="wrap section">
-        <div class="hd-lead">
-            <h1>Harness <span>Self-Evolution</span> Demo</h1>
-            <p>冻结权重，进化外围 · 评估先行，门控接受 · <a href="../" style="color:var(--accent);text-decoration:none;">← 没看懂？先读 Intro</a></p>
-        </div>
-
-        <!-- Finance tab removed — only ecommerce is real end-to-end.
+<nav class="nav">
+<div class="brand"><a href="../../.." style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← Intro</a>
+<a href="../talk/">Talk</a>
+<a href="../papers/">Papers</a>
+<a href="../play/">Play</a>
+<a href="../">Demos</a>
+</div>
+</nav>
+<main class="wrap section">
+<div class="hd-lead">
+<h1>Harness <span>Self-Evolution</span> Demo</h1>
+<p>冻结权重，进化外围 · 评估先行，门控接受 · <a href="../" style="color:var(--accent);text-decoration:none;">← 没看懂？先读 Intro</a></p>
+</div>
+<!-- Finance tab removed — only ecommerce is real end-to-end.
              Finance would be scripted-mock and undermines the "everything
              here really invokes Bedrock" claim. -->
-        <div class="hd-tabs">
-            <button class="hd-tab active" data-domain="ecommerce">电商搜索 · 详细演示</button>
-        </div>
-
-        <div class="hd-panel">
-            <!-- Subject-Under-Evolution · make it obvious what we are actually
+<div class="hd-tabs">
+<button class="hd-tab active" data-domain="ecommerce">电商搜索 · 详细演示</button>
+</div>
+<div class="hd-panel">
+<!-- Subject-Under-Evolution · make it obvious what we are actually
                  optimizing, so viewers don't confuse "harness" with "agent" or
                  the model itself. -->
-            <div class="hd-subject">
-                <div class="hd-subject-h">🎯 被改进的 agent · 电商商品搜索 Agent</div>
-                <div class="hd-subject-grid">
-                    <div class="hd-subject-row">
-                        <span class="hd-subject-k">输入</span>
-                        <span class="hd-subject-v">自然语言 query · 如 <code>apple 128gb latest</code> · <code>给坐长途飞机的人的安静礼物</code></span>
-                    </div>
-                    <div class="hd-subject-row">
-                        <span class="hd-subject-k">输出</span>
-                        <span class="hd-subject-v">top-5 SKU 排序 · <code>[sku_id, ...]</code></span>
-                    </div>
-                    <div class="hd-subject-row">
-                        <span class="hd-subject-k">起点</span>
-                        <span class="hd-subject-v">Python <code>search(query)</code> 函数 · BM25 baseline · 约 <b>30% 命中率</b></span>
-                    </div>
-                    <div class="hd-subject-row">
-                        <span class="hd-subject-k">目标</span>
-                        <span class="hd-subject-v">NDCG@5 <b>≥ 90%</b> · 3 轮进化 · 60~120 秒 · $0.10/次</span>
-                    </div>
-                    <div class="hd-subject-row" style="border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 6px;">
-                        <span class="hd-subject-k">方法</span>
-                        <span class="hd-subject-v"><b>Harness Self-Evolution</b> · 冻结 LLM 权重 · 让 AI 一代一代重写 <code>search()</code> 函数</span>
-                    </div>
-                    <div class="hd-subject-row">
-                        <span class="hd-subject-k">引擎</span>
-                        <span class="hd-subject-v"><a href="https://github.com/SakanaAI/ShinkaEvolve" target="_blank" rel="noopener">ShinkaEvolve</a> (Sakana AI) · Proposer: Claude via AWS Bedrock</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Ecommerce-only wrappers — everything shown here calls Bedrock. -->
-            <div class="hd-hero" id="hd-hero" style="display:none;">
-                <div class="hd-evolve" id="hd-evolve">
-                    <div class="hd-evolve-header">
-                        <div>
-                            <div class="hd-evolve-title">AI 自动进化 harness</div>
-                            <div class="hd-evolve-sub">
+<div class="hd-subject">
+<div class="hd-subject-h">🎯 被改进的 agent · 电商商品搜索 Agent</div>
+<div class="hd-subject-grid">
+<div class="hd-subject-row">
+<span class="hd-subject-k">输入</span>
+<span class="hd-subject-v">自然语言 query · 如 <code>apple 128gb latest</code> · <code>给坐长途飞机的人的安静礼物</code></span>
+</div>
+<div class="hd-subject-row">
+<span class="hd-subject-k">输出</span>
+<span class="hd-subject-v">top-5 SKU 排序 · <code>[sku_id, ...]</code></span>
+</div>
+<div class="hd-subject-row">
+<span class="hd-subject-k">起点</span>
+<span class="hd-subject-v">Python <code>search(query)</code> 函数 · BM25 baseline · 约 <b>30% 命中率</b></span>
+</div>
+<div class="hd-subject-row">
+<span class="hd-subject-k">目标</span>
+<span class="hd-subject-v">NDCG@5 <b>≥ 90%</b> · 3 轮进化 · 60~120 秒 · $0.10/次</span>
+</div>
+<div class="hd-subject-row" style="border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 6px;">
+<span class="hd-subject-k">方法</span>
+<span class="hd-subject-v"><b>Harness Self-Evolution</b> · 冻结 LLM 权重 · 让 AI 一代一代重写 <code>search()</code> 函数</span>
+</div>
+<div class="hd-subject-row">
+<span class="hd-subject-k">引擎</span>
+<span class="hd-subject-v"><a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" target="_blank">ShinkaEvolve</a> (Sakana AI) · Proposer: Claude via AWS Bedrock</span>
+</div>
+</div>
+</div>
+<!-- Ecommerce-only wrappers — everything shown here calls Bedrock. -->
+<div class="hd-hero" id="hd-hero" style="display:none;">
+<div class="hd-evolve" id="hd-evolve">
+<div class="hd-evolve-header">
+<div>
+<div class="hd-evolve-title">AI 自动进化 harness</div>
+<div class="hd-evolve-sub">
                                 AI <b>读上一轮的错题清单 → 写一份新代码 → 跑 31 道题打分 → 决定要不要"晋升"</b>。3 轮约 60~120 秒，代码每次都是 AI 现场生成的、每次不同。
                             </div>
-                        </div>
-                        <div style="display:flex;gap:8px;align-items:center;">
-                            <select id="hd-evolve-model" class="hd-evolve-model">
-                                <option value="sonnet45">Sonnet 4.5 · 快 · $0.03/次</option>
-                                <option value="opus47">Opus 4.7 · 强 · $0.08/次</option>
-                                <option value="opus48" selected>Opus 4.8 · 最强 · $0.10/次</option>
-                            </select>
-                            <button class="hd-btn" id="hd-evolve-go">开始进化 (3 轮)</button>
-                        </div>
-                    </div>
-                    <details class="hd-glossary">
-                        <summary>📖 名词解释（点击展开）· 第一次看这个 demo 建议先读</summary>
-                        <div class="hd-glossary-body">
-                            <div class="hd-glossary-block">
-                                <div class="hd-glossary-h">Gen 0 / Gen 1 / Gen 2 是什么</div>
-                                <div class="hd-glossary-p">
+</div>
+<div style="display:flex;gap:8px;align-items:center;">
+<select class="hd-evolve-model" id="hd-evolve-model">
+<option value="sonnet45">Sonnet 4.5 · 快 · $0.03/次</option>
+<option value="opus47">Opus 4.7 · 强 · $0.08/次</option>
+<option selected="" value="opus48">Opus 4.8 · 最强 · $0.10/次</option>
+</select>
+<button class="hd-btn" id="hd-evolve-go">开始进化 (3 轮)</button>
+</div>
+</div>
+<details class="hd-glossary">
+<summary>📖 名词解释（点击展开）· 第一次看这个 demo 建议先读</summary>
+<div class="hd-glossary-body">
+<div class="hd-glossary-block">
+<div class="hd-glossary-h">Gen 0 / Gen 1 / Gen 2 是什么</div>
+<div class="hd-glossary-p">
                                     Gen = <b>Generation</b> = "第几代 AI 写的代码"。
-                                    <br>· <b>Gen 0 起点</b>：谁都没改过的原始 BM25 代码（一个词一个词匹配），大概 30-45% 命中。
-                                    <br>· <b>Gen 1</b>：AI 读了 Gen 0 的错题清单，写出的第一版改进代码。
-                                    <br>· <b>Gen 2</b>：AI 读了 Gen 1 的错题，再改一版。
-                                    <br>每一代都是 AI 现场生成的新 Python 代码 — 不是模板套的。
+                                    <br/>· <b>Gen 0 起点</b>：谁都没改过的原始 BM25 代码（一个词一个词匹配），大概 30-45% 命中。
+                                    <br/>· <b>Gen 1</b>：AI 读了 Gen 0 的错题清单，写出的第一版改进代码。
+                                    <br/>· <b>Gen 2</b>：AI 读了 Gen 1 的错题，再改一版。
+                                    <br/>每一代都是 AI 现场生成的新 Python 代码 — 不是模板套的。
                                 </div>
-                            </div>
-                            <div class="hd-glossary-block">
-                                <div class="hd-glossary-h">31 道题分成 3 档难度（+ 5 题 hold-out）</div>
-                                <div class="hd-glossary-p">
-                                    <b><span class="tier tE">E · 简单</span> · 8 题</b>：BM25 加权就搞定的（<code>apple 128gb latest → iPhone 15 128GB</code>、<code>usbc charger 65w</code>）。
-                                    <br><b><span class="tier tM">M · 中等</span> · 8 题</b>：带排除词或中英混合的（<code>queen 床单 不要涤纶 → 纯棉款</code>、<code>iphone 15 但不要 pro</code>）。
-                                    <br><b><span class="tier tH">H · 最难</span> · 15 题</b>：功能意图，句子里一个产品词都没有（<code>给坐长途飞机的人的安静礼物 → 降噪耳机</code>、<code>冬天爬山保暖 → 羽绒服</code>、<code>海边跟朋友一起听歌 → 蓝牙音箱</code>）。
-                                    <br>另有 <b>5 题 hold-out</b>：AI 从头到尾都看不到这 5 题的内容，用来偷偷验证它是不是真泛化。
-                                    <br><span style="color:var(--text-mute);font-size:0.72rem;">⚠️ 玩具规模概念演示 · 不是生产 benchmark · 真上线用 N ≥ 200 每档</span>
-                                </div>
-                            </div>
-                            <div class="hd-glossary-block">
-                                <div class="hd-glossary-h">NDCG 是什么（评分方式）</div>
-                                <div class="hd-glossary-p">
+</div>
+<div class="hd-glossary-block">
+<div class="hd-glossary-h">31 道题分成 3 档难度（+ 5 题 hold-out）</div>
+<div class="hd-glossary-p">
+<b><span class="tier tE">E · 简单</span> · 8 题</b>：BM25 加权就搞定的（<code>apple 128gb latest → iPhone 15 128GB</code>、<code>usbc charger 65w</code>）。
+                                    <br/><b><span class="tier tM">M · 中等</span> · 8 题</b>：带排除词或中英混合的（<code>queen 床单 不要涤纶 → 纯棉款</code>、<code>iphone 15 但不要 pro</code>）。
+                                    <br/><b><span class="tier tH">H · 最难</span> · 15 题</b>：功能意图，句子里一个产品词都没有（<code>给坐长途飞机的人的安静礼物 → 降噪耳机</code>、<code>冬天爬山保暖 → 羽绒服</code>、<code>海边跟朋友一起听歌 → 蓝牙音箱</code>）。
+                                    <br/>另有 <b>5 题 hold-out</b>：AI 从头到尾都看不到这 5 题的内容，用来偷偷验证它是不是真泛化。
+                                    <br/><span style="color:var(--text-mute);font-size:0.72rem;">⚠️ 玩具规模概念演示 · 不是生产 benchmark · 真上线用 N ≥ 200 每档</span>
+</div>
+</div>
+<div class="hd-glossary-block">
+<div class="hd-glossary-h">NDCG 是什么（评分方式）</div>
+<div class="hd-glossary-p">
                                     不是"答对没"（对/错二元），而是"排名多好"（0~1 连续值）。AI 每题返回前 5 位候选：
-                                    <br>· 正确答案排 <b>第 1 位 → 1.00</b>
-                                    <br>· 排第 2 位 → 0.63　·　排第 3 位 → 0.50　·　排第 5 位 → 0.39
-                                    <br>· 前 5 位都是错的 → 0.00
-                                    <br>用连续分是为了让每次微小改进都能看到 — 不然 Sonnet 慢慢改进也是 0/1 跳，像卡住了。
+                                    <br/>· 正确答案排 <b>第 1 位 → 1.00</b>
+<br/>· 排第 2 位 → 0.63　·　排第 3 位 → 0.50　·　排第 5 位 → 0.39
+                                    <br/>· 前 5 位都是错的 → 0.00
+                                    <br/>用连续分是为了让每次微小改进都能看到 — 不然 Sonnet 慢慢改进也是 0/1 跳，像卡住了。
                                 </div>
-                            </div>
-                            <div class="hd-glossary-block">
-                                <div class="hd-glossary-h">verdict 这一行的 6 个数字</div>
-                                <div class="hd-glossary-p" style="font-family:var(--mono);font-size:0.73rem;">
-                                    <b>NDCG</b> — 31 题平均排名分。<br>
-                                    <b>E / M / H</b> — 3 档题的平均 NDCG（越难的档分越低说明模型越弱）。<br>
-                                    <b>heldout</b> — 5 道 AI 没见过的题的 NDCG。<b>过拟合的模型这里会崩</b>。<br>
-                                    <b>perturbed</b> — 31 题加了 typo 后再跑一遍（<code>apple → aplpe</code>）。查表作弊的会被打回原形。<br>
-                                    <b>combined</b> — 最终 fitness 分，&gt; 0 就晋升。公式含 E/M/H 加权 + hold-out 20% + perturbed 10%。
+</div>
+<div class="hd-glossary-block">
+<div class="hd-glossary-h">verdict 这一行的 6 个数字</div>
+<div class="hd-glossary-p" style="font-family:var(--mono);font-size:0.73rem;">
+<b>NDCG</b> — 31 题平均排名分。<br/>
+<b>E / M / H</b> — 3 档题的平均 NDCG（越难的档分越低说明模型越弱）。<br/>
+<b>heldout</b> — 5 道 AI 没见过的题的 NDCG。<b>过拟合的模型这里会崩</b>。<br/>
+<b>perturbed</b> — 31 题加了 typo 后再跑一遍（<code>apple → aplpe</code>）。查表作弊的会被打回原形。<br/>
+<b>combined</b> — 最终 fitness 分，&gt; 0 就晋升。公式含 E/M/H 加权 + hold-out 20% + perturbed 10%。
                                 </div>
-                            </div>
-                        </div>
-                    </details>
-                    <div class="hd-evolve-progress" id="hd-evolve-progress">
-                        <div class="hd-progress-track">
-                            <div class="hd-progress-fill" id="hd-progress-fill"></div>
-                        </div>
-                        <div class="hd-progress-caption">
-                            <span id="hd-progress-label">准备中…</span>
-                            <span id="hd-progress-percent">0%</span>
-                        </div>
-                        <div class="hd-progress-explain" id="hd-progress-explain">点击「开始进化」查看每个阶段 AI 在做什么</div>
-                        <div class="hd-stages" id="hd-stages">
-                            <span class="hd-stage" data-s="启动">Run</span>
-                            <span class="hd-stage" data-s="sampling">Observe</span>
-                            <span class="hd-stage" data-s="querying">Propose</span>
-                            <span class="hd-stage" data-s="evaluating">Verify</span>
-                            <span class="hd-stage" data-s="scoring">Commit</span>
-                        </div>
-
-                        <!-- ── 5-Verb Methodology Framework ─────────────
+</div>
+</div>
+</details>
+<div class="hd-evolve-progress" id="hd-evolve-progress">
+<div class="hd-progress-track">
+<div class="hd-progress-fill" id="hd-progress-fill"></div>
+</div>
+<div class="hd-progress-caption">
+<span id="hd-progress-label">准备中…</span>
+<span id="hd-progress-percent">0%</span>
+</div>
+<div class="hd-progress-explain" id="hd-progress-explain">点击「开始进化」查看每个阶段 AI 在做什么</div>
+<div class="hd-stages" id="hd-stages">
+<span class="hd-stage" data-s="启动">Run</span>
+<span class="hd-stage" data-s="sampling">Observe</span>
+<span class="hd-stage" data-s="querying">Propose</span>
+<span class="hd-stage" data-s="evaluating">Verify</span>
+<span class="hd-stage" data-s="scoring">Commit</span>
+</div>
+<!-- ── 5-Verb Methodology Framework ─────────────
                              Frame the entire evolution loop as 5 verbs · every
                              harness-evolution paper reduces to this canonical
                              loop. Colors match the per-node badges below.
                         -->
-                        <div class="hd-verbs">
-                          <div class="hd-verbs-h">方法论 · 5 个动词 · <span style="color:var(--text-mute);font-weight:400;">整个 field 压成这 5 步 · 每代循环</span></div>
-                          <div class="hd-verbs-row">
-                            <span class="hd-verb v-run">Run</span><span class="hd-verb-arrow">→</span>
-                            <span class="hd-verb v-observe">Observe</span><span class="hd-verb-arrow">→</span>
-                            <span class="hd-verb v-propose">Propose</span><span class="hd-verb-arrow">→</span>
-                            <span class="hd-verb v-verify">Verify</span><span class="hd-verb-arrow">→</span>
-                            <span class="hd-verb v-commit">Commit</span>
-                            <span class="hd-verb-loop">↺ Commit 后回到 Run</span>
-                          </div>
-                        </div>
-
-                        <!-- Vertical workflow visualization — each node shows
+<div class="hd-verbs">
+<div class="hd-verbs-h">方法论 · 5 个动词 · <span style="color:var(--text-mute);font-weight:400;">整个 field 压成这 5 步 · 每代循环</span></div>
+<div class="hd-verbs-row">
+<span class="hd-verb v-run">Run</span><span class="hd-verb-arrow">→</span>
+<span class="hd-verb v-observe">Observe</span><span class="hd-verb-arrow">→</span>
+<span class="hd-verb v-propose">Propose</span><span class="hd-verb-arrow">→</span>
+<span class="hd-verb v-verify">Verify</span><span class="hd-verb-arrow">→</span>
+<span class="hd-verb v-commit">Commit</span>
+<span class="hd-verb-loop">↺ Commit 后回到 Run</span>
+</div>
+</div>
+<!-- Vertical workflow visualization — each node shows
                              real-time data as the current stage runs.
                              Populated dynamically, resets per generation. -->
-                        <div class="hd-workflow" id="hd-workflow" aria-label="Evolution workflow steps">
-                          <div class="hd-wf-header">
-                            <span class="hd-wf-title">工作流 · Gen <span id="hd-wf-gen">0</span></span>
-                            <span class="hd-wf-timer" id="hd-wf-timer">00:00</span>
-                          </div>
-                          <ol class="hd-wf-list">
-                            <!-- Node 1 · RUN · 跑上一代/父代代码 · 收集 traces -->
-                            <li class="hd-wf-node" data-s="启动">
-                              <div class="hd-wf-dot"><span class="hd-wf-num">1</span></div>
-                              <div class="hd-wf-body">
-                                <div class="hd-wf-name">跑父代代码 · 收集轨迹 <span class="hd-wf-verb v-run">Run</span></div>
-                                <div class="hd-wf-data" data-role="启动">
-                                  <b>系统在做什么</b>：启动进化引擎 · 让父代代码在 31 道题上真跑一遍 · 收集执行轨迹（谁对谁错）。<br>
-                                  <b>Gen 0 特殊</b>：档案是空的 · 直接跑 BM25 baseline · 拿到起点分数。<br>
-                                  <span style="color:var(--text-mute);">这是循环的起点 · 后续 Observe 才有东西可看</span>
-                                </div>
-                              </div>
-                            </li>
-
-                            <!-- Node 2 · OBSERVE · 选亲本 + 看错题清单 -->
-                            <li class="hd-wf-node" data-s="sampling">
-                              <div class="hd-wf-dot"><span class="hd-wf-num">2</span></div>
-                              <div class="hd-wf-body">
-                                <div class="hd-wf-name">选亲本 + 看它的成绩单 <span class="hd-wf-verb v-observe">Observe</span></div>
-                                <div class="hd-wf-data" data-role="sampling">
-                                  <b>动作 A · 选亲本</b>（从档案里的候选中加权采样挑一版）：
+<div aria-label="Evolution workflow steps" class="hd-workflow" id="hd-workflow">
+<div class="hd-wf-header">
+<span class="hd-wf-title">工作流 · Gen <span id="hd-wf-gen">0</span></span>
+<span class="hd-wf-timer" id="hd-wf-timer">00:00</span>
+</div>
+<ol class="hd-wf-list">
+<!-- Node 1 · RUN · 跑上一代/父代代码 · 收集 traces -->
+<li class="hd-wf-node" data-s="启动">
+<div class="hd-wf-dot"><span class="hd-wf-num">1</span></div>
+<div class="hd-wf-body">
+<div class="hd-wf-name">跑父代代码 · 收集轨迹 <span class="hd-wf-verb v-run">Run</span></div>
+<div class="hd-wf-data" data-role="启动">
+<b>系统在做什么</b>：启动进化引擎 · 让父代代码在 31 道题上真跑一遍 · 收集执行轨迹（谁对谁错）。<br/>
+<b>Gen 0 特殊</b>：档案是空的 · 直接跑 BM25 baseline · 拿到起点分数。<br/>
+<span style="color:var(--text-mute);">这是循环的起点 · 后续 Observe 才有东西可看</span>
+</div>
+</div>
+</li>
+<!-- Node 2 · OBSERVE · 选亲本 + 看错题清单 -->
+<li class="hd-wf-node" data-s="sampling">
+<div class="hd-wf-dot"><span class="hd-wf-num">2</span></div>
+<div class="hd-wf-body">
+<div class="hd-wf-name">选亲本 + 看它的成绩单 <span class="hd-wf-verb v-observe">Observe</span></div>
+<div class="hd-wf-data" data-role="sampling">
+<b>动作 A · 选亲本</b>（从档案里的候选中加权采样挑一版）：
                                   <div class="hd-archive">
-                                    <div class="hd-archive-h">
+<div class="hd-archive-h">
                                       档案 · <b>Archive</b>（最多 8 版 · 2 islands）· 加权采样
                                     </div>
-                                    <div class="hd-archive-slots" id="hd-archive-slots">
-                                      <div class="hd-archive-slot empty">待 Gen 0 生成</div>
-                                    </div>
-                                    <div class="hd-archive-legend">
+<div class="hd-archive-slots" id="hd-archive-slots">
+<div class="hd-archive-slot empty">待 Gen 0 生成</div>
+</div>
+<div class="hd-archive-legend">
                                       分越高越可能被选中 · <b>但不独占</b>（留探索空间）· 策略：<code>weighted</code> (power-law)
                                     </div>
-                                  </div>
-                                  <b>动作 B · 拉成绩单</b>：附上这版代码在 <b>31 道题里做错的那几题</b> · AI 会针对性改。<br>
-                                  <b>为什么合成一步</b>：选完必须紧接着看它的错 · AI 不能瞎改 —— 这就是<b>评估先行</b>。
+</div>
+<b>动作 B · 拉成绩单</b>：附上这版代码在 <b>31 道题里做错的那几题</b> · AI 会针对性改。<br/>
+<b>为什么合成一步</b>：选完必须紧接着看它的错 · AI 不能瞎改 —— 这就是<b>评估先行</b>。
                                 </div>
-                              </div>
-                            </li>
-
-                            <!-- Node 3 · PROPOSE · AI 思考 + 生成 diff + 落硬盘（含原 Apply 步骤）-->
-                            <li class="hd-wf-node" data-s="querying">
-                              <div class="hd-wf-dot"><span class="hd-wf-num">3</span></div>
-                              <div class="hd-wf-body">
-                                <div class="hd-wf-name">
+</div>
+</li>
+<!-- Node 3 · PROPOSE · AI 思考 + 生成 diff + 落硬盘（含原 Apply 步骤）-->
+<li class="hd-wf-node" data-s="querying">
+<div class="hd-wf-dot"><span class="hd-wf-num">3</span></div>
+<div class="hd-wf-body">
+<div class="hd-wf-name">
                                   AI 提出候选方案 · 落到硬盘
                                   <span class="hd-wf-verb v-propose">Propose</span>
-                                  <span class="hd-wf-pending" id="hd-wf-pending">⏳ 提议中 · 待验证</span>
-                                </div>
-                                <div class="hd-wf-data" data-role="querying">
-                                  <div class="hd-wf-datarow">
-                                    <span class="k">谁在写</span>
-                                    <span class="v" id="hd-wf-model">—</span>
-                                    <span class="k" style="margin-left:12px;">Thinking</span>
-                                    <span class="v">high · 允许 reasoning mode</span>
+<span class="hd-wf-pending" id="hd-wf-pending">⏳ 提议中 · 待验证</span>
+</div>
+<div class="hd-wf-data" data-role="querying">
+<div class="hd-wf-datarow">
+<span class="k">谁在写</span>
+<span class="v" id="hd-wf-model">—</span>
+<span class="k" style="margin-left:12px;">Thinking</span>
+<span class="v">high · 允许 reasoning mode</span>
+</div>
+<div class="hd-wf-datarow">
+<span class="k">阶段</span>
+<span class="v" id="hd-wf-phase">🧠 思考中</span>
+<span class="k" style="margin-left:12px;">已生成</span>
+<span class="v"><span id="hd-wf-bytes">0</span> bytes</span>
+<span class="hd-wf-spinner" id="hd-wf-spinner"></span>
+</div>
+<div style="margin-top:4px;">
+<b>三个子动作</b>：<b>a</b> Opus 先<b>推理</b>（10-20 秒） · <b>b</b> 输出 diff · <b>c</b> 系统把 diff 贴到父代文件生成新 Python。<br/>
+<b>关键</b>：这一步只是<b>提议</b> —— 后面 Verify + Commit 决定采不采纳。
                                   </div>
-                                  <div class="hd-wf-datarow">
-                                    <span class="k">阶段</span>
-                                    <span class="v" id="hd-wf-phase">🧠 思考中</span>
-                                    <span class="k" style="margin-left:12px;">已生成</span>
-                                    <span class="v"><span id="hd-wf-bytes">0</span> bytes</span>
-                                    <span class="hd-wf-spinner" id="hd-wf-spinner"></span>
-                                  </div>
-                                  <div style="margin-top:4px;">
-                                    <b>三个子动作</b>：<b>a</b> Opus 先<b>推理</b>（10-20 秒） · <b>b</b> 输出 diff · <b>c</b> 系统把 diff 贴到父代文件生成新 Python。<br>
-                                    <b>关键</b>：这一步只是<b>提议</b> —— 后面 Verify + Commit 决定采不采纳。
-                                  </div>
-
-                                  <!-- AI Reasoning · surfaces WHY the AI proposed the change -->
-                                  <div class="hd-reasoning" id="hd-reasoning-panel" style="display:none;">
-                                    <div class="hd-reasoning-h">
+<!-- AI Reasoning · surfaces WHY the AI proposed the change -->
+<div class="hd-reasoning" id="hd-reasoning-panel" style="display:none;">
+<div class="hd-reasoning-h">
                                       🧠 <b>AI 的思路</b>
-                                      <span class="hd-reasoning-name" id="hd-reasoning-name"></span>
-                                    </div>
-                                    <div class="hd-reasoning-analysis" id="hd-reasoning-analysis"></div>
-                                    <div class="hd-reasoning-desc" id="hd-reasoning-desc"></div>
-                                  </div>
-
-                                  <!-- Diff panel · appears after code is generated -->
-                                  <div class="hd-diff" id="hd-diff-panel" style="display:none;">
-                                    <div class="hd-diff-h">
+<span class="hd-reasoning-name" id="hd-reasoning-name"></span>
+</div>
+<div class="hd-reasoning-analysis" id="hd-reasoning-analysis"></div>
+<div class="hd-reasoning-desc" id="hd-reasoning-desc"></div>
+</div>
+<!-- Diff panel · appears after code is generated -->
+<div class="hd-diff" id="hd-diff-panel" style="display:none;">
+<div class="hd-diff-h">
                                       💡 <b>AI 提议的改动</b>
-                                      <span class="hd-diff-summary" id="hd-diff-summary">—</span>
-                                    </div>
-                                    <details class="hd-diff-details">
-                                      <summary>展开完整 diff（点击查看 raw patch）</summary>
-                                      <pre class="hd-diff-body" id="hd-diff-body">（等 AI 提议完成后填充）</pre>
-                                    </details>
+<span class="hd-diff-summary" id="hd-diff-summary">—</span>
+</div>
+<details class="hd-diff-details">
+<summary>展开完整 diff（点击查看 raw patch）</summary>
+<pre class="hd-diff-body" id="hd-diff-body">（等 AI 提议完成后填充）</pre>
+</details>
+</div>
+</div>
+</div>
+</li>
+<!-- Node 4 · VERIFY · 跑三套测试打分 -->
+<li class="hd-wf-node" data-s="evaluating">
+<div class="hd-wf-dot"><span class="hd-wf-num">4</span></div>
+<div class="hd-wf-body">
+<div class="hd-wf-name">给新代码打分 <span class="hd-wf-verb v-verify">Verify</span></div>
+<div class="hd-wf-data" data-role="evaluating">
+<div class="hd-wf-datarow">
+<span class="k">进度</span>
+<div class="hd-wf-mini-track"><div class="hd-wf-mini-fill" id="hd-wf-eval-fill" style="width:0%"></div></div>
+<span class="v"><span id="hd-wf-eval-elapsed">0</span>s</span>
+</div>
+<div style="margin-top:4px;">
+<b>系统在做什么</b>：新代码跑<b>三套测试</b> —— 31 道公开题 · 5 道 AI 没见过的题 · 31 道加了 typo 的题。<br/>
+<b>为什么</b>：防作弊。硬记答案的代码会在后两套<b>崩盘</b>。
                                   </div>
-                                </div>
-                              </div>
-                            </li>
-
-                            <!-- Node 4 · VERIFY · 跑三套测试打分 -->
-                            <li class="hd-wf-node" data-s="evaluating">
-                              <div class="hd-wf-dot"><span class="hd-wf-num">4</span></div>
-                              <div class="hd-wf-body">
-                                <div class="hd-wf-name">给新代码打分 <span class="hd-wf-verb v-verify">Verify</span></div>
-                                <div class="hd-wf-data" data-role="evaluating">
-                                  <div class="hd-wf-datarow">
-                                    <span class="k">进度</span>
-                                    <div class="hd-wf-mini-track"><div class="hd-wf-mini-fill" id="hd-wf-eval-fill" style="width:0%"></div></div>
-                                    <span class="v"><span id="hd-wf-eval-elapsed">0</span>s</span>
-                                  </div>
-                                  <div style="margin-top:4px;">
-                                    <b>系统在做什么</b>：新代码跑<b>三套测试</b> —— 31 道公开题 · 5 道 AI 没见过的题 · 31 道加了 typo 的题。<br>
-                                    <b>为什么</b>：防作弊。硬记答案的代码会在后两套<b>崩盘</b>。
-                                  </div>
-
-                                  <!-- Per-question grid · shows all 31 public queries with hit/miss + score -->
-                                  <div class="hd-perq" id="hd-perq-panel" style="display:none;">
-                                    <div class="hd-perq-h">
+<!-- Per-question grid · shows all 31 public queries with hit/miss + score -->
+<div class="hd-perq" id="hd-perq-panel" style="display:none;">
+<div class="hd-perq-h">
                                       📊 <b>31 题逐题打分</b>
-                                      <span class="hd-perq-summary" id="hd-perq-summary"></span>
-                                    </div>
-                                    <details class="hd-perq-details">
-                                      <summary>展开逐题结果 · 每题一格 · 悬停看细节</summary>
-                                      <div class="hd-perq-tier-groups" id="hd-perq-grid"></div>
-                                    </details>
-                                  </div>
-                                </div>
-                              </div>
-                            </li>
-
-                            <!-- Node 5 · COMMIT · 决定晋升 · 回到 Run -->
-                            <li class="hd-wf-node" data-s="scoring">
-                              <div class="hd-wf-dot"><span class="hd-wf-num">5</span></div>
-                              <div class="hd-wf-body">
-                                <div class="hd-wf-name">决定要不要"晋升" · 循环下一代 <span class="hd-wf-verb v-commit">Commit</span></div>
-                                <div class="hd-wf-data" data-role="scoring">
-                                  <div class="hd-wf-datarow">
-                                    <span class="k">评分</span>
-                                    <span class="v" id="hd-wf-ndcg">—</span>
-                                    <span class="k" style="margin-left:12px;">综合分</span>
-                                    <span class="v" id="hd-wf-combined">—</span>
-                                    <span class="hd-wf-verdict" id="hd-wf-verdict"></span>
-                                  </div>
-                                  <div style="margin-top:4px;">
-                                    <b>系统在做什么</b>：把四项分数（公开·抽查·抗干扰·代码简洁度）加权算综合分 · <b>&gt; 0 才晋升</b>入档案。<br>
-                                    <b>循环</b>：Commit 完成后回到步骤 1 (Run) · 用新晋升的候选作为下一代的父代。<br>
-                                    <span style="color:var(--text-mute);">被拒的直接丢弃 · git reset 的语义</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </li>
-                          </ol>
-                        </div>
-                    </div>
-                    <div class="hd-evolve-status" id="hd-evolve-status"></div>
-                    <div class="hd-evolve-gens" id="hd-evolve-gens"></div>
-
-                    <!-- A + C + D: evolution comparison, populated after complete -->
-                    <div class="hd-compare" id="hd-compare">
-                        <div class="hd-compare-h"><span class="num">C</span> · 分数对比</div>
-                        <div class="hd-cmp-chart" id="hd-cmp-chart"></div>
-
-                        <div class="hd-compare-h"><span class="num">A</span> · 同一 query，前后返回什么</div>
-                        <div class="hd-cmp-flips" id="hd-cmp-flips"></div>
-
-                        <details class="hd-cmp-matrix">
-                            <summary><span class="hd-compare-h" style="display:inline;"><span class="num">D</span> · 全部 31 道题的每一 Gen 结果（tier 标记）</span></summary>
-                            <div class="hd-matrix-scroll">
-                                <table class="hd-matrix" id="hd-matrix"></table>
-                            </div>
-                        </details>
-                    </div>
-                </div>
-
-                <!-- ② live-search card removed — merged into ① AI 自动进化 above.
+<span class="hd-perq-summary" id="hd-perq-summary"></span>
+</div>
+<details class="hd-perq-details">
+<summary>展开逐题结果 · 每题一格 · 悬停看细节</summary>
+<div class="hd-perq-tier-groups" id="hd-perq-grid"></div>
+</details>
+</div>
+</div>
+</div>
+</li>
+<!-- Node 5 · COMMIT · 决定晋升 · 回到 Run -->
+<li class="hd-wf-node" data-s="scoring">
+<div class="hd-wf-dot"><span class="hd-wf-num">5</span></div>
+<div class="hd-wf-body">
+<div class="hd-wf-name">决定要不要"晋升" · 循环下一代 <span class="hd-wf-verb v-commit">Commit</span></div>
+<div class="hd-wf-data" data-role="scoring">
+<div class="hd-wf-datarow">
+<span class="k">评分</span>
+<span class="v" id="hd-wf-ndcg">—</span>
+<span class="k" style="margin-left:12px;">综合分</span>
+<span class="v" id="hd-wf-combined">—</span>
+<span class="hd-wf-verdict" id="hd-wf-verdict"></span>
+</div>
+<div style="margin-top:4px;">
+<b>系统在做什么</b>：把四项分数（公开·抽查·抗干扰·代码简洁度）加权算综合分 · <b>&gt; 0 才晋升</b>入档案。<br/>
+<b>循环</b>：Commit 完成后回到步骤 1 (Run) · 用新晋升的候选作为下一代的父代。<br/>
+<span style="color:var(--text-mute);">被拒的直接丢弃 · git reset 的语义</span>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="hd-evolve-status" id="hd-evolve-status"></div>
+<div class="hd-evolve-gens" id="hd-evolve-gens"></div>
+<!-- A + C + D: evolution comparison, populated after complete -->
+<div class="hd-compare" id="hd-compare">
+<div class="hd-compare-h"><span class="num">C</span> · 分数对比</div>
+<div class="hd-cmp-chart" id="hd-cmp-chart"></div>
+<div class="hd-compare-h"><span class="num">A</span> · 同一 query，前后返回什么</div>
+<div class="hd-cmp-flips" id="hd-cmp-flips"></div>
+<details class="hd-cmp-matrix">
+<summary><span class="hd-compare-h" style="display:inline;"><span class="num">D</span> · 全部 31 道题的每一 Gen 结果（tier 标记）</span></summary>
+<div class="hd-matrix-scroll">
+<table class="hd-matrix" id="hd-matrix"></table>
+</div>
+</details>
+</div>
+</div>
+<!-- ② live-search card removed — merged into ① AI 自动进化 above.
                      The A/C/D comparison inside ① already tells the full story:
                      baseline → evolved, per-query flips, full matrix. -->
-            </div>
-
-            <!-- Finance-only: 3 signature cards (still scripted). -->
-            <div class="hd-cases" id="hd-cases">
-                <div class="hd-cases-header">
-                    <h3><span>逐题演化</span> · 三个典型案例在 4 轮迭代中的答案变化</h3>
-                    <span class="hint" id="hd-cases-hint">点击 Play 逐步展开每一轮的结果</span>
-                </div>
-                <div class="hd-controls">
-                    <button class="hd-btn" id="hd-play">Play</button>
-                    <button class="hd-btn secondary" id="hd-step">Step</button>
-                    <button class="hd-btn secondary" id="hd-reset">Reset</button>
-                    <span class="hd-caption" id="hd-caption">Round 0 / 4</span>
-                </div>
-                <div id="hd-cases-body"></div>
-            </div>
-
-            <!-- Hidden placeholders — kept only because renderHero() writes
+</div>
+<!-- Finance-only: 3 signature cards (still scripted). -->
+<div class="hd-cases" id="hd-cases">
+<div class="hd-cases-header">
+<h3><span>逐题演化</span> · 三个典型案例在 4 轮迭代中的答案变化</h3>
+<span class="hint" id="hd-cases-hint">点击 Play 逐步展开每一轮的结果</span>
+</div>
+<div class="hd-controls">
+<button class="hd-btn" id="hd-play">Play</button>
+<button class="hd-btn secondary" id="hd-step">Step</button>
+<button class="hd-btn secondary" id="hd-reset">Reset</button>
+<span class="hd-caption" id="hd-caption">Round 0 / 4</span>
+</div>
+<div id="hd-cases-body"></div>
+</div>
+<!-- Hidden placeholders — kept only because renderHero() writes
                  to these IDs. UI-visible display is via the evolution's own
                  A/C/D comparison panel above. -->
-            <div style="display:none;">
-                <div class="hd-hero-query" id="hd-hero-query"></div>
-                <div id="hd-hero-rounds"></div>
-                <div class="hd-glossary" id="hd-glossary"></div>
-                <span class="hint" id="hd-hero-hint"></span>
-            </div>
-
-            <!-- Hidden placeholders for KPI/scorecard IDs referenced by JS.
+<div style="display:none;">
+<div class="hd-hero-query" id="hd-hero-query"></div>
+<div id="hd-hero-rounds"></div>
+<div class="hd-glossary" id="hd-glossary"></div>
+<span class="hint" id="hd-hero-hint"></span>
+</div>
+<!-- Hidden placeholders for KPI/scorecard IDs referenced by JS.
                  The render code touches these but we no longer show them.  -->
-            <div style="display:none;">
-                <table><tbody id="hd-tbody"></tbody></table>
-                <div class="hd-chart" id="hd-chart"></div>
-                <div id="hd-kpis">
-                    <div class="hd-kpi" data-kpi="a"><span id="hd-kpi-acc"></span><span id="hd-kpi-acc-sub"></span></div>
-                    <div class="hd-kpi" data-kpi="t"><span id="hd-kpi-transfer"></span><span id="hd-kpi-transfer-sub"></span></div>
-                    <div class="hd-kpi" data-kpi="c"><span id="hd-kpi-cost"></span><span id="hd-kpi-cost-sub"></span></div>
-                </div>
-                <div id="hd-scorecard">
-                    <span id="hd-sc-domain"></span>
-                    <span id="hd-sc-r0-acc"></span><span id="hd-sc-r0-tok"></span>
-                    <span id="hd-sc-r3-acc"></span><span id="hd-sc-r3-tok"></span><span id="hd-sc-gain"></span>
-                    <span id="hd-sc-tgt-acc"></span><span id="hd-sc-tgt-tok"></span><span id="hd-sc-transfer"></span>
-                </div>
-                <div id="hd-transfer">
-                    <span id="hd-src-model"></span><span id="hd-src-metrics"></span>
-                    <span id="hd-tgt-model"></span><span id="hd-tgt-metrics"></span>
-                </div>
-            </div>
-
-            <div class="hd-refs">
-                <p>方法参考：ACE (arXiv:2510.04618) · Meta-Harness (arXiv:2603.28052) · DGM (arXiv:2505.22954) · <a href="https://github.com/SakanaAI/ShinkaEvolve" target="_blank" rel="noopener" style="color:var(--accent);">ShinkaEvolve</a></p>
-                <p>
+<div style="display:none;">
+<table><tbody id="hd-tbody"></tbody></table>
+<div class="hd-chart" id="hd-chart"></div>
+<div id="hd-kpis">
+<div class="hd-kpi" data-kpi="a"><span id="hd-kpi-acc"></span><span id="hd-kpi-acc-sub"></span></div>
+<div class="hd-kpi" data-kpi="t"><span id="hd-kpi-transfer"></span><span id="hd-kpi-transfer-sub"></span></div>
+<div class="hd-kpi" data-kpi="c"><span id="hd-kpi-cost"></span><span id="hd-kpi-cost-sub"></span></div>
+</div>
+<div id="hd-scorecard">
+<span id="hd-sc-domain"></span>
+<span id="hd-sc-r0-acc"></span><span id="hd-sc-r0-tok"></span>
+<span id="hd-sc-r3-acc"></span><span id="hd-sc-r3-tok"></span><span id="hd-sc-gain"></span>
+<span id="hd-sc-tgt-acc"></span><span id="hd-sc-tgt-tok"></span><span id="hd-sc-transfer"></span>
+</div>
+<div id="hd-transfer">
+<span id="hd-src-model"></span><span id="hd-src-metrics"></span>
+<span id="hd-tgt-model"></span><span id="hd-tgt-metrics"></span>
+</div>
+</div>
+<div class="hd-refs">
+<p>方法参考：ACE (arXiv:2510.04618) · Meta-Harness (arXiv:2603.28052) · DGM (arXiv:2505.22954) · <a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" style="color:var(--accent);" target="_blank">ShinkaEvolve</a></p>
+<p>
                     每次点「开始进化」都是<b>真调 Bedrock</b>（proposer: Sonnet 4.5 / Opus 4.7 / 4.8）。评测集 31 道电商搜索题（8 简单 + 8 中等 + 15 最难）加 5 道 hold-out + 31 道 typo，
                     proposer 现场生成 3 版 harness 代码，每次结果不同。运行完自动展示分数柱状图、典型 query 前后对比、全 31 题矩阵。
                 </p>
-            </div>
-        </div>
-    </main>
-
-    <!-- Product-detail modal -->
-    <div class="hd-modal" id="hd-modal">
-      <button class="hd-modal-close" id="hd-modal-close" aria-label="关闭">×</button>
-      <div class="hd-modal-card" id="hd-modal-card"></div>
-    </div>
-
-    <footer class="footer">
-        <p>© 2026 liucao.me · <a href="../../..">Home</a></p>
-    </footer>
-
+</div>
+</div>
+</main>
+<!-- Product-detail modal -->
+<div class="hd-modal" id="hd-modal">
+<button aria-label="关闭" class="hd-modal-close" id="hd-modal-close">×</button>
+<div class="hd-modal-card" id="hd-modal-card"></div>
+</div>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../..">Home</a></p>
+</footer>
 <script>
 (async function () {
   // DATA is mutable — the live-search feature swaps in real Bedrock results
@@ -3659,5 +3636,5 @@
   render();
 })();
 </script>
-</body>
+<a data-cur="zh" data-to="en" href="../../../en/rsi/demo/run/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>

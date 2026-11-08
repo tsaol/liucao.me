@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>liucao.me/network</title>
+<style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .container { max-width: 600px; width: 100%; }
+        h1 { font-size: 1.8rem; font-weight: 600; margin-bottom: 0.5rem; color: #111827; }
+        .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 2.5rem; }
+        .links { display: flex; flex-direction: column; gap: 1rem; }
+        .link-card {
+            display: block;
+            padding: 1.25rem 1.5rem;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #1a1a1a;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .link-card:hover {
+            border-color: #059669;
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.1);
+        }
+        .link-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.3rem;
+        }
+        .link-desc {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+        .link-tag {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+            background: #d1fae5;
+            color: #065f46;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<h1>liucao.me/network</h1>
+<p class="subtitle">AWS 网络笔记与基准测试</p>
+<div class="links">
+<a class="link-card" href="matrix/">
+<div class="link-title">AWS 区域间延迟矩阵 <span class="link-tag">EN</span></div>
+<div class="link-desc">每个 AWS 商业区域互相 ping — 35 × 35 = 1,225 个单元格，支持悬停查看的热力图，可切换 p50 / p99。</div>
+</a>
+<a class="link-card" href="zaz-latency/">
+<div class="link-title">ZAZ 跨区域延迟 <span class="link-tag">EN</span></div>
+<div class="link-desc">从 eu-south-2（阿拉贡）到 34 个区域的往返时间 — p10 / p50 / p99，可排序，附同步复制推荐及数据来源与方法说明。</div>
+</a>
+<a class="link-card" href="s3bench/">
+<div class="link-title">S3 下载加速基准测试 <span class="link-tag">EN</span></div>
+<div class="link-desc">并行 Range GET 与基线对比 — 从 eu-south-2、eu-central-1、eu-north-1 下载 2 GiB。最高快 13 倍。</div>
+</a>
+<a class="link-card" href="../../../../../../network/cors/">
+<div class="link-title">S3 + CloudFront CORS 配置 <span class="link-tag">CN</span></div>
+<div class="link-desc">什么时候需要 CORS、配在哪里（CF Response Headers Policy vs S3 CORS）、常见坑。</div>
+</a>
+</div>
+</div>
+<a data-cur="zh" data-to="en" href="../../network/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

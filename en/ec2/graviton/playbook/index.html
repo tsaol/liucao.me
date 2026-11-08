@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>On-Call Playbook — Graviton Guide 04</title>
+<meta content="Paged at 2 a.m.: what to do when EC2 is slow. Netflix 60-second checklist, USE table, 10 real failure signatures, coredumps, incident snapshots" name="description"/>
+<link href="../../../../ec2/assets/style.css" rel="stylesheet"/>
+<style>
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.86rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .scenario {
+            background: var(--surface); border: 1px solid var(--border);
+            border-left: 3px solid var(--accent-dim); border-radius: var(--radius-sm);
+            padding: 0.95rem 1.15rem; margin-bottom: 0.85rem;
+        }
+        .scenario h4 { font-size: 0.98rem; color: var(--text); margin-bottom: 0.4rem; }
+        .scenario h4 .n { color: var(--accent); font-family: var(--mono); font-size: 0.85rem; margin-right: 0.4rem; }
+        .scenario p { font-size: 0.86rem; color: var(--text-dim); margin-bottom: 0.35rem; line-height: 1.55; }
+        .scenario p b { color: var(--text); }
+        .scenario .diag { font-family: var(--mono); font-size: 0.78rem; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.35rem 0.55rem; margin: 0.35rem 0; display: block; }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../../">EC2</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hero">
+<div class="crumb"><a href="../">Graviton Guide</a> · 04 / 04 · On-Call</div>
+<h1>On-Call <span class="g">Playbook</span></h1>
+<p class="sub">2 a.m., the service is slow. This page assumes you've read the previous four articles and jumps straight to "what your fingers should type." References: Netflix 60s analysis, Brendan Gregg's USE method, Google SRE effective troubleshooting.</p>
+<nav class="toc">
+<a href="#60s">1 · Netflix in 60 seconds</a>
+<a href="#use">2 · Applying USE to EC2</a>
+<a href="#sre">3 · Google SRE principles</a>
+<a href="#scenarios">4 · 10 failure signatures</a>
+<a href="#coredump">5 · Coredump</a>
+<a href="#snapshot">6 · Rescue before reboot</a>
+<a href="#warstories">7 · SRE war stories</a>
+<a href="#runbook">8 · 20-command runbook</a>
+<a href="#escalate">9 · When to upgrade</a>
+</nav>
+</div>
+<!-- 1 -->
+<section class="content-section" id="60s">
+<h2 class="section-title">1 · Netflix <span>60 seconds</span> checklist</h2>
+<p>SSH in and run these 10 commands in order, ~1 second each. After 60 seconds you'll know whether it's CPU / memory / disk / network / none of these.<sup>[6]</sup></p>
+<table class="cmp">
+<thead><tr><th>#</th><th>Command</th><th>What it tells you</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><code>uptime</code></td><td>Load average 1/5/15: rising / steady / spiking</td></tr>
+<tr><td>2</td><td><code>dmesg -T | tail -20</code></td><td>Kernel messages: OOM, TCP drops, NIC resets, EBS nvme errors</td></tr>
+<tr><td>3</td><td><code>vmstat 1 5</code></td><td><code>r</code>=run queue,<code>si/so</code>=swap,<code>us/sy/wa/st</code></td></tr>
+<tr><td>4</td><td><code>mpstat -P ALL 1 5</code></td><td>Per-vCPU imbalance — one hot core = single-thread bottleneck</td></tr>
+<tr><td>5</td><td><code>pidstat 1 5</code></td><td>Rolling per-process CPU delta, better than top for catching spikes</td></tr>
+<tr><td>6</td><td><code>iostat -xz 1 5</code></td><td>Per-device %util / await / queue — this is where EBS latency lives</td></tr>
+<tr><td>7</td><td><code>free -m</code></td><td>free / buff / cache — look at <b>available</b> Don't look at free</td></tr>
+<tr><td>8</td><td><code>sar -n DEV 1 5</code></td><td>Per-NIC packets / bytes vs. instance limits</td></tr>
+<tr><td>9</td><td><code>sar -n TCP,ETCP 1 5</code></td><td><code>active/s</code>, <code>retrans/s</code>— retransmits &gt; 0.1% means network pain</td></tr>
+<tr><td>10</td><td><code>top</code></td><td>Sanity check — sort by RES to find leaks</td></tr>
+</tbody>
+</table>
+</section>
+<!-- 2 -->
+<section class="content-section" id="use">
+<h2 class="section-title">2 · <span>USE method</span>— mapped to each EC2 resource type</h2>
+<p>Brendan Gregg's USE = Utilization / Saturation / Errors, applied as a checklist to each resource.<sup>[1][2]</sup></p>
+<table class="cmp">
+<thead><tr><th>Resources</th><th>Utilization</th><th>Saturation</th><th>Errors</th></tr></thead>
+<tbody>
+<tr>
+<td>CPU</td>
+<td><code>mpstat -P ALL 1</code>(%usr+%sys+%st)</td>
+<td><code>vmstat</code> <code>r</code> &gt; vCPU;<code>perf sched latency</code></td>
+<td><code>dmesg</code> MCE;<code>perf</code> PMU error</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td><code>free -m</code>;<code>sar -r</code></td>
+<td><code>vmstat</code> si/so;<code>sar -B</code> pgscan;<code>dmesg | grep oom</code></td>
+<td>ECC; malloc failure (<code>bpftrace</code>)</td>
+</tr>
+<tr>
+<td>Disk (EBS gp3/io2)</td>
+<td><code>iostat -xz 1</code> <code>%util</code></td>
+<td><code>avgqu-sz</code> &gt; 1; high <code>await</code></td>
+<td><code>/sys/block/nvme*/device/ioerr_cnt</code>;<code>smartctl</code></td>
+</tr>
+<tr>
+<td>Network (ENA)</td>
+<td><code>sar -n DEV 1</code></td>
+<td><code>ethtool -S</code> 's <code>*_allowance_exceeded</code></td>
+<td><code>netstat -s</code> retransmits; ifconfig drop</td>
+</tr>
+<tr>
+<td>EBS ceiling</td>
+<td>CloudWatch <code>VolumeReadOps + WriteOps</code></td>
+<td><code>VolumeQueueLength</code> &gt; 1; gp2 <code>BurstBalance</code> == 0</td>
+<td><code>VolumeThroughputPercentage</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<!-- 3 -->
+<section class="content-section" id="sre">
+<h2 class="section-title">3 · Google SRE's <span>Key principles</span></h2>
+<p>The 5 most valuable pieces of advice from the SRE Book's "Effective Troubleshooting" chapter:<sup>[3]</sup></p>
+<ul>
+<li><b>Fly the airplane first</b>——stop the bleeding first (drain, roll back, shift traffic), then find the root cause. Don't debug while users are bleeding.</li>
+<li><b>Horses, not zebras</b>——the latest deploy / config push is always suspect #1. Mark deploy timestamps on the dashboard.</li>
+<li><b>Simplify, reduce, bisect</b>——inject known inputs between layers and bisect.</li>
+<li>Assuming<b>Likelihood × cost</b>sorting and verification; every step is written to a shared doc with a timestamp.</li>
+<li><b>A sudden latency jump usually means "the type of work changed," not "the traffic changed"</b>— see War Story #1.</li>
+</ul>
+</section>
+<!-- 4 -->
+<section class="content-section" id="scenarios">
+<h2 class="section-title">4 · 10 <span>Failure signature</span></h2>
+<div class="scenario">
+<h4><span class="n">01</span>ALB returns 502 but the target shows "healthy"</h4>
+<p><b>Diagnosis</b>: the app is stuck in IO wait, but the health check still passes because it's lightweight.</p>
+<span class="diag">iostat -xz 1 · CloudWatch VolumeQueueLength · jstack/py-spy to find blocked threads</span>
+<p><b>Fix</b>: Pull the slow endpoint out of the traffic pool, dump the thread stacks, and restart first.</p>
+</div>
+<div class="scenario">
+<h4><span class="n">02</span>Container gets OOMKilled, but the liveness probe passes</h4>
+<p><b>Diagnosis</b>:<code>dmesg | grep "killed process"</code> + <code>kubectl describe pod</code> Reason=OOMKilled. The liveness probe only checks HTTP, not RSS.</p>
+<span class="diag">kubectl top pod --containers · add resource limits + memory alert</span>
+</div>
+<div class="scenario">
+<h4><span class="n">03</span><code>linklocal_allowance_exceeded</code> &gt; 0</h4>
+<p><b>Diagnosis</b>: the SDK is hammering IMDS (169.254.169.254) with retries — usually a misattached IAM role or IMDSv1 hammering.</p>
+<span class="diag">ethtool -S eth0 | grep linklocal · aws sts get-caller-identity to verify the role</span>
+<p><b>Fix</b>: Have AWS SDK v2 cache the IMDSv2 token; switch to IMDSv2; set the hop limit to 2 so Pods can reach it too.</p>
+</div>
+<div class="scenario">
+<h4><span class="n">04</span><code>conntrack_allowance_exceeded</code> Climbing</h4>
+<p><b>Diagnosis</b>: A flood of short-lived connections, or the client not using keep-alive. This is<b>ENA instance-level</b>limit, not the kernel <code>nf_conntrack</code>.</p>
+<span class="diag">ethtool -S eth0 | grep conntrack</span>
+<p><b>Fix</b>: Enable HTTP keep-alive on the client; upsize (bigger instance = bigger conntrack allowance); route heavy egress traffic through a NAT Gateway rather than a NAT instance.</p>
+</div>
+<div class="scenario">
+<h4><span class="n">05</span>EBS io2 latency spikes (during cross-AZ replication)</h4>
+<p><b>Diagnosis</b>: the volume is rebuilding after an AZ event;<code>VolumeTotalWriteTime / VolumeWriteOps</code> &gt; 10 ms.</p>
+<span class="diag">Three CloudWatch EBS metrics charts aligned with the AZ event timeline</span>
+<p><b>Fix</b>: Wait for the rebuild (time uncertain), or use Multi-AZ replication to another volume and fail over to it.</p>
+</div>
+<div class="scenario">
+<h4><span class="n">06</span>Can't connect via SSM Session Manager</h4>
+<p><b>Diagnosis</b>: the user-data script is still running, and cloud-init is blocking ssm-agent from starting.</p>
+<span class="diag">Get console-output from the EC2 console · /var/log/cloud-init-output.log</span>
+<p><b>Fix</b>: run long user-data tasks in the background or move them to a startup service.</p>
+</div>
+<div class="scenario">
+<h4><span class="n">07</span>Instance keeps rebooting (boot loop)</h4>
+<p><b>Diagnosis</b>: cloud-init failed — attach a rescue volume and check <code>/var/log/cloud-init.log</code>.</p>
+<span class="diag">aws ec2 get-console-output --instance-id i-...</span>
+</div>
+<div class="scenario">
+<h4><span class="n">08</span>CPU steal on M8g <code>%st</code> &gt; 5</h4>
+<p><b>Diagnosis</b>: M8g isn't burstable, so high %st usually means contention from bare-metal neighbors — rare; open an AWS support ticket. On t3/t4g, %st is<b>Normal</b>— the credit balance is used up.</p>
+<span class="diag">mpstat 1 · aws cloudwatch get-metric CPUCreditBalance (t family only)</span>
+</div>
+<div class="scenario">
+<h4><span class="n">09</span><code>sar -n TCP</code> <code>retrans/s</code> &gt; 1% but no packet loss on the host</h4>
+<p><b>Diagnosis</b>: the Security Group / NACL conntrack table is full, or the path MTU doesn't match.</p>
+<span class="diag">tracepath &lt;dest&gt; · check SG entries + jumbo frame compatibility</span>
+</div>
+<div class="scenario">
+<h4><span class="n">10</span>Small instances <code>pps_allowance_exceeded</code> Starts to emerge</h4>
+<p><b>Diagnosis</b>: Small-packet floods (DNS queries, cache misses, heartbeats) hit the PPS limit before bandwidth fills up.</p>
+<span class="diag">ethtool -S eth0 | grep pps</span>
+<p><b>Fix</b>: Upsize; batch UDP; for DNS floods, add client-side caching.</p>
+</div>
+</section>
+<!-- 5 -->
+<section class="content-section" id="coredump">
+<h2 class="section-title">5 · Coredump on <span>Amazon Linux 2023</span></h2>
+<p>AL2023 uses <code>systemd-coredump</code>, not a traditional core file:</p>
+<pre>sudo dnf install -y systemd-coredump
+sudo sysctl -w kernel.core_pattern='|/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h'
+sudo systemctl edit user.slice   <span class="c"># DefaultLimitCORE=infinity</span>
+ulimit -c unlimited              <span class="c"># Applies to every shell</span>
+
+coredumpctl list                 <span class="c"># Inventory</span>
+coredumpctl info &lt;PID&gt;            <span class="c"># Metadata + backtrace</span>
+coredumpctl gdb  &lt;PID&gt;            <span class="c"># Attach gdb directly</span>
+coredumpctl dump &lt;PID&gt; -o /tmp/core.$PID</pre>
+<p>Dump location:<code>/var/lib/systemd/coredump/</code>. To use traditional core files:<code>kernel.core_pattern=/var/coredumps/core.%e.%p.%t</code> + <code>fs.suid_dumpable=2</code>.</p>
+</section>
+<!-- 6 -->
+<section class="content-section" id="snapshot">
+<h2 class="section-title">6 · <span>Rescue before reboot</span>——preserve the evidence</h2>
+<pre>D=/tmp/oncall-$(hostname)-$(date +%s); mkdir -p $D
+dmesg -T                       &gt; $D/dmesg.txt
+journalctl -b --no-pager       &gt; $D/journal.txt
+ps auxfww                      &gt; $D/ps.txt
+top -bn1                       &gt; $D/top.txt
+ss -tanp                       &gt; $D/ss.txt
+ss -s                          &gt; $D/ss-summary.txt
+iostat -xz 1 3                 &gt; $D/iostat.txt
+vmstat 1 3                     &gt; $D/vmstat.txt
+mpstat -P ALL 1 3              &gt; $D/mpstat.txt
+free -m                        &gt; $D/free.txt
+ethtool -S eth0                &gt; $D/ena.txt
+cp -a /proc/loadavg /proc/meminfo /proc/net /proc/pressure $D/ 2&gt;/dev/null
+cp -a /var/log/messages /var/log/cloud-init*.log /var/log/dmesg $D/ 2&gt;/dev/null
+tar czf /root/oncall-snapshot.tgz $D
+aws s3 cp /root/oncall-snapshot.tgz s3://$FORENSICS_BUCKET/</pre>
+</section>
+<!-- 7 -->
+<section class="content-section" id="warstories">
+<h2 class="section-title">7 · <span>SRE war stories</span>— there's something to learn from all of them</h2>
+<p><b>#1 · App Engine "suddenly 10x slower, with no changes"</b><sup>[3]</sup>——a security scanner wrote thousands of rows into an allowlist table; every request then did a linear scan of the in-memory cache.<b>No new RPCs, no traffic spikes</b>, just that "the shape of the work changed." Lesson: looking at RPC distributions alone isn't enough; you need in-process profiles.</p>
+<p><b>#2 · GKE CreateCluster 6h40m major outage</b><sup>[4]</sup>——a corrupted image on DockerHub blocked all new cluster creation. 41 people were online in IRC, but it took ~2 hours to designate an IC (Incident Commander). Lesson:<b>Declare an IC early</b>; pre-build generic stopgaps like "evict bad images from the mirror".</p>
+<p><b>#3 · Belgian data center struck by lightning (2015)</b><sup>[4]</sup>——four lightning strikes in two minutes, damaged UPS batteries, GCE disk errors.<b>Data loss rate for running VMs: 0.000001%</b>——because the IC was designated immediately and every role had been rehearsed.</p>
+</section>
+<!-- 8 -->
+<section class="content-section" id="runbook">
+<h2 class="section-title">8 · 20 commands <span>runbook</span>(copy-paste ready)</h2>
+<pre>D=/var/tmp/incident-$(date +%Y%m%d-%H%M%S); mkdir -p $D; cd $D
+uptime                                              &gt; 01_uptime
+w                                                   &gt; 02_who
+top -bn1                                            &gt; 03_top
+mpstat -P ALL 1 3                                   &gt; 04_mpstat
+vmstat 1 5                                          &gt; 05_vmstat
+free -h; cat /proc/meminfo                          &gt; 06_mem
+ps -eo pid,pcpu,pmem,rss,cmd --sort=-rss | head -30 &gt; 07_ps
+pidstat -d 1 3                                      &gt; 08_pidstat_io
+iostat -xz 1 3                                      &gt; 09_iostat
+df -h; df -i                                        &gt; 10_df
+ss -s; ss -tanp                                     &gt; 11_ss
+sar -n DEV 1 3                                      &gt; 12_sar_net
+ethtool -S eth0 | grep -E 'exceed|drop'             &gt; 13_ena
+conntrack -S 2&gt;/dev/null                            &gt; 14_conntrack
+numastat                                            &gt; 15_numa
+cat /proc/pressure/{cpu,memory,io}                  &gt; 16_psi
+dmesg -T | tail -100                                &gt; 17_dmesg
+journalctl -u &lt;app&gt; --since '-10min'                 &gt; 18_svc_log
+curl -s http://localhost:&lt;port&gt;/metrics             &gt; 19_app_metrics
+aws cloudwatch get-metric-statistics ...            &gt; 20_cw
+tar czf ../$(basename $D).tgz . &amp;&amp; echo done</pre>
+</section>
+<!-- 9 -->
+<section class="content-section" id="escalate">
+<h2 class="section-title">9 · <span>Upgrade</span>Trigger conditions</h2>
+<ul>
+<li><b>Page DBA</b>——replication lag &gt; 30s, more deadlocks,<code>pg_stat_activity</code> All <code>idle in transaction</code>.</li>
+<li><b>Failover</b>— node unreachable &gt; 2 min, disk read errors in dmesg,<code>EBSByteBalance%</code> Still 0 after tuning.</li>
+<li><b>Scale out</b>——all cores &gt; 80% sustained for 10 min <b>and</b> The ALB queue is still growing.<b>Don't scale up when you suspect a memory leak</b>— that's just feeding the leak.</li>
+<li><b>Roll back</b>——the p99 regression timeline lines up with a deploy. Roll back first, then find the root cause.</li>
+</ul>
+</section>
+<div class="refs">
+<h4>Sources</h4>
+<ol>
+<li>[1] <a href="https://www.brendangregg.com/usemethod.html">Brendan Gregg — The USE Method</a></li>
+<li>[2] <a href="https://www.brendangregg.com/USEmethod/use-linux.html">Brendan Gregg — USE Method: Linux Performance Checklist</a></li>
+<li>[3] <a href="https://sre.google/sre-book/effective-troubleshooting/">Google SRE Book — Effective Troubleshooting</a></li>
+<li>[4] <a href="https://sre.google/workbook/incident-response/">Google SRE Workbook — Incident Response</a></li>
+<li>[5] <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-network-performance-ena.html">AWS UserGuide — ENA network performance</a></li>
+<li>[6] <a href="https://netflixtechblog.com/linux-performance-analysis-in-60-000-milliseconds-accc10403c55">Netflix — Linux Performance Analysis in 60,000 Milliseconds</a></li>
+</ol>
+</div>
+<div class="next">
+<div class="left">Done reading</div>
+<div class="right">
+<a href="../">/</a>
+<a class="big" href="../">← Back to the Graviton Guide home</a>
+</div>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../../">Home</a> · <a href="../">Graviton Guide</a></p>
+</footer>
+<a data-cur="en" data-to="zh" href="../../../../ec2/graviton/playbook/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

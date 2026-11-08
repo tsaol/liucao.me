@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Graviton4 / EC2 Deep Dive Guide — liucao.me</title>
+<meta content="M8g vs M7i, EC2 monitoring, ARM resource saturation, on-call playbook — an in-depth EC2 guide in four parts" name="description"/>
+<link href="../../../ec2/assets/style.css" rel="stylesheet"/>
+<style>
+        .gv-hub-hero { text-align: center; padding: 3.5rem 1.5rem 2rem; }
+        .gv-hub-hero .eyebrow {
+            display: inline-block; font-family: var(--mono); font-size: 0.72rem;
+            color: var(--accent); background: var(--accent-glow);
+            border: 1px solid var(--border); padding: 0.3rem 0.85rem;
+            border-radius: 999px; margin-bottom: 1rem; letter-spacing: 0.03em;
+        }
+        .gv-hub-hero h1 {
+            font-size: clamp(2rem, 5.5vw, 3.2rem); font-weight: 700;
+            letter-spacing: -0.03em; margin-bottom: 0.8rem;
+        }
+        .gv-hub-hero h1 .g {
+            background: linear-gradient(120deg, var(--accent), #5eead4 55%, #38bdf8);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gv-hub-hero p.lede {
+            color: var(--text-dim); max-width: 620px; margin: 0 auto 1rem;
+            font-size: 1.02rem; line-height: 1.65;
+        }
+        .gv-hub-hero p.meta {
+            color: var(--text-mute); font-family: var(--mono); font-size: 0.78rem;
+            letter-spacing: 0.02em;
+        }
+        .hub-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.1rem; margin-top: 1.5rem;
+        }
+        .hub-card {
+            display: block; padding: 1.5rem 1.4rem;
+            background: linear-gradient(180deg, var(--surface), var(--bg-soft));
+            border: 1px solid var(--border); border-radius: var(--radius);
+            color: inherit; position: relative; overflow: hidden;
+            transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+        }
+        .hub-card::before {
+            content: ""; position: absolute; inset: 0 0 auto 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0; transition: opacity 0.25s;
+        }
+        .hub-card:hover { border-color: var(--accent-dim); transform: translateY(-3px); box-shadow: var(--shadow); }
+        .hub-card:hover::before { opacity: 1; }
+        .hub-card .num {
+            font-family: var(--mono); font-size: 0.72rem; color: var(--accent);
+            letter-spacing: 0.06em; margin-bottom: 0.4rem;
+        }
+        .hub-card h3 {
+            font-size: 1.15rem; color: var(--text); margin-bottom: 0.55rem;
+            letter-spacing: -0.01em;
+        }
+        .hub-card p {
+            color: var(--text-dim); font-size: 0.88rem; line-height: 1.55;
+            margin-bottom: 0.8rem;
+        }
+        .hub-card .tags {
+            display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.6rem;
+        }
+        .hub-card .tags span {
+            font-family: var(--mono); font-size: 0.68rem;
+            background: var(--bg); border: 1px solid var(--border);
+            padding: 0.15rem 0.5rem; border-radius: 999px; color: var(--text-mute);
+        }
+        .hub-card .arrow {
+            font-family: var(--mono); color: var(--accent); font-size: 0.8rem;
+            margin-top: 0.6rem;
+        }
+
+        .intro-box {
+            margin-top: 2.5rem;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 1.4rem 1.5rem;
+        }
+        .intro-box h4 { color: var(--accent); font-size: 0.95rem; margin-bottom: 0.7rem; }
+        .intro-box p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.65; margin-bottom: 0.6rem; }
+        .intro-box p:last-child { margin-bottom: 0; }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">EC2</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hub-hero">
+<span class="eyebrow">EC2 · Graviton4 · ARM64 · SRE</span>
+<h1><span class="g">Graviton4 &amp; EC2</span><br/>Four in-depth guides</h1>
+<p class="lede">From silicon to on-call: architectural differences between M8g and M7i, the three-layer EC2 monitoring stack, identifying resource saturation on ARM, and a copy-paste-ready SRE playbook.</p>
+<p class="meta">v2 · 2026-09-22 · 1500 characters per article · cites official docs &amp; kernel.org &amp; Brendan Gregg</p>
+</div>
+<section>
+<div class="hub-grid">
+<a class="hub-card" href="compare/">
+<div class="num">01 · Hardware comparison</div>
+<h3>M8g vs M7i</h3>
+<p>A complete overview of Graviton4 (Neoverse V2) vs. Intel Sapphire Rapids: architecture, specs, performance, and migration. Includes compiler flags and an x86→arm64 compatibility scan script.</p>
+<div class="tags"><span>SVE2</span><span>AVX-512</span><span>Price</span><span>Migration</span></div>
+<div class="arrow">→ Enter</div>
+</a>
+<a class="hub-card" href="monitor/">
+<div class="num">02 · Observability</div>
+<h3>Three-layer EC2 monitoring stack</h3>
+<p>CloudWatch → CloudWatch Agent → Prometheus + Node Exporter. USE vs RED vs 4 Golden Signals, 2026 CloudWatch pricing pitfalls, and a complete Alertmanager configuration.</p>
+<div class="tags"><span>Prometheus</span><span>USE</span><span>RED</span><span>Grafana</span></div>
+<div class="arrow">→ Enter</div>
+</a>
+<a class="hub-card" href="saturation/">
+<div class="num">03 · Saturation check</div>
+<h3>How to tell when resources are maxed out on ARM</h3>
+<p>99% is the same as x86; the 1% is <code>armv8_pmuv3</code> PMU, IPC metrics, PSI kernel algorithms. ENA's six <code>allowance_exceeded</code> counters, explained one by one.</p>
+<div class="tags"><span>PSI</span><span>IPC</span><span>ENA</span><span>eBPF</span></div>
+<div class="arrow">→ Enter</div>
+</a>
+<a class="hub-card" href="playbook/">
+<div class="num">04 · On-Call</div>
+<h3>Playbook — what to do when a service is slow</h3>
+<p>Netflix 60-second checklist; the USE method, resource by resource; 10 real failure signatures; coredump + incident snapshot commands; methodology from Google SRE / Brendan Gregg.</p>
+<div class="tags"><span>Netflix</span><span>Google SRE</span><span>coredump</span></div>
+<div class="arrow">→ Enter</div>
+</a>
+<a class="hub-card" href="generations/">
+<div class="num">Research · Gen 7 / 8 / 9</div>
+<h3>Graviton3 → 4 → 5: what each generation improved</h3>
+<p>Cores, cache, memory, max size, network &amp; storage, security, and official performance numbers compared item by item. Gen 9 puts 192 cores on one chip, with 5x the L3 and DDR5-8800. Includes upgrade notes.</p>
+<div class="tags"><span>M7g</span><span>M8g</span><span>M9g</span></div>
+<div class="arrow">→ Enter</div>
+</a>
+<a class="hub-card" href="../numa/">
+<div class="num">Further reading · General topics</div>
+<h3>NUMA — the hidden tax of large instances</h3>
+<p>Why two CPUs put together lead to non-uniform memory access; the five mempolicies defined by the kernel; the MySQL "swap insanity" case; ENA queue affinity and NUMA pitfalls. This applies to Intel, AMD, and Graviton alike, so it gets its own article.</p>
+<div class="tags"><span>numactl</span><span>mempolicy</span><span>MySQL case study</span></div>
+<div class="arrow">→ Enter</div>
+</a>
+</div>
+<div class="intro-box">
+<h4>Why split the four topics into subpages</h4>
+<p>At first I put all these topics on one page, and it read like a 30-screen memo. If technical content isn't organized "one topic at a time," attention drifts.</p>
+<p>After the split: each article stands alone, supports deep reading, and includes citations; the navigation bar is consistent; subpages are chained together with "Next stop" links, and you can also jump around as needed. Readers can pick what to read or read straight through.</p>
+<p>Recommended reading order for the four articles:<b>01 → 03 → 02 → 04</b>. First build intuition for hardware differences (01); then learn to read the metrics (03); then set up monitoring (02); finally turn it into a playbook (04). On large instances you also need to understand the physical architecture; see further reading <a href="../numa/">NUMA</a>——it's not just a Graviton problem.</p>
+</div>
+</section>
+<div style="text-align:center; padding:2.5rem 0 1rem;">
+<a class="back" href="../">← Back to EC2</a>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../">Home</a></p>
+</footer>
+<a data-cur="en" data-to="zh" href="../../../ec2/graviton/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

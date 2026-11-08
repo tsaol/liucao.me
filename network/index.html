@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>liucao.me/network</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>liucao.me/network</title>
+<style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
@@ -57,28 +58,27 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>liucao.me/network</h1>
-        <p class="subtitle">AWS networking notes & benchmarks</p>
-
-        <div class="links">
-            <a href="/network/matrix/" class="link-card">
-                <div class="link-title">AWS Region-to-Region Latency Matrix <span class="link-tag">EN</span></div>
-                <div class="link-desc">Every commercial AWS region pinging every other — 35 × 35 = 1,225 cells, hoverable heatmap with p50 / p99 toggles.</div>
-            </a>
-            <a href="/network/zaz-latency/" class="link-card">
-                <div class="link-title">ZAZ Cross-Region Latency <span class="link-tag">EN</span></div>
-                <div class="link-desc">Round-trip time from eu-south-2 (Aragón) to 34 regions — p10 / p50 / p99, sortable, with sync-replication picks and data-source methodology.</div>
-            </a>
-            <a href="/network/s3bench/" class="link-card">
-                <div class="link-title">S3 Download Acceleration Benchmark <span class="link-tag">EN</span></div>
-                <div class="link-desc">Parallel Range GET vs baseline — 2 GiB download from eu-south-2, eu-central-1, eu-north-1. Up to 13x faster.</div>
-            </a>
-            <a href="/network/cors/" class="link-card">
-                <div class="link-title">S3 + CloudFront CORS 配置 <span class="link-tag">CN</span></div>
-                <div class="link-desc">什么时候需要 CORS、配在哪里（CF Response Headers Policy vs S3 CORS）、常见坑。</div>
-            </a>
-        </div>
-    </div>
-</body>
+<div class="container">
+<h1>liucao.me/network</h1>
+<p class="subtitle">AWS networking notes &amp; benchmarks</p>
+<div class="links">
+<a class="link-card" href="/network/matrix/">
+<div class="link-title">AWS Region-to-Region Latency Matrix <span class="link-tag">EN</span></div>
+<div class="link-desc">Every commercial AWS region pinging every other — 35 × 35 = 1,225 cells, hoverable heatmap with p50 / p99 toggles.</div>
+</a>
+<a class="link-card" href="/network/zaz-latency/">
+<div class="link-title">ZAZ Cross-Region Latency <span class="link-tag">EN</span></div>
+<div class="link-desc">Round-trip time from eu-south-2 (Aragón) to 34 regions — p10 / p50 / p99, sortable, with sync-replication picks and data-source methodology.</div>
+</a>
+<a class="link-card" href="/network/s3bench/">
+<div class="link-title">S3 Download Acceleration Benchmark <span class="link-tag">EN</span></div>
+<div class="link-desc">Parallel Range GET vs baseline — 2 GiB download from eu-south-2, eu-central-1, eu-north-1. Up to 13x faster.</div>
+</a>
+<a class="link-card" href="/network/cors/">
+<div class="link-title">S3 + CloudFront CORS 配置 <span class="link-tag">CN</span></div>
+<div class="link-desc">什么时候需要 CORS、配在哪里（CF Response Headers Policy vs S3 CORS）、常见坑。</div>
+</a>
+</div>
+</div>
+<a data-cur="en" data-to="zh" href="../zh/network/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>S3 下载加速报告 - liucao.me</title>
+<style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f1419;
+            color: #e8e8e8;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .back {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back:hover { color: #00e5a0; }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-top: 2rem;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #00e5a0;
+        }
+        .subtitle {
+            color: #9ca3af;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            font-size: 1.3rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #e8e8e8;
+            border-bottom: 1px solid #2d3748;
+            padding-bottom: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+        th {
+            background: #1a2332;
+            color: #9ca3af;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+        tr:hover { background: #1a2332; }
+        .highlight {
+            color: #00e5a0;
+            font-weight: 600;
+        }
+        .bar-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .bar {
+            height: 20px;
+            background: #00e5a0;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        .bar-label {
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .setup {
+            background: #1a2332;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .setup code {
+            color: #00e5a0;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+        }
+        .setup p {
+            margin-bottom: 0.5rem;
+            color: #9ca3af;
+        }
+        .finding {
+            background: #1a2332;
+            border-left: 3px solid #00e5a0;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0 6px 6px 0;
+        }
+        .finding strong {
+            color: #00e5a0;
+        }
+        .tag {
+            display: inline-block;
+            background: #00e5a020;
+            color: #00e5a0;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+        }
+        .tag.winner { background: #00e5a040; }
+        .tag.neutral { background: #9ca3af20; color: #9ca3af; }
+        footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #2d3748;
+            color: #6b7280;
+            font-size: 0.8rem;
+        }
+        .method-baseline { color: #60a5fa; }
+        .method-accel { color: #a78bfa; }
+        .method-parallel { color: #00e5a0; }
+        .method-tuned { color: #f59e0b; }
+        .method-presigned { color: #f472b6; }
+        .method-cf { color: #22d3ee; }
+        .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+        .dot-baseline { background: #60a5fa; }
+        .dot-accel { background: #a78bfa; }
+        .dot-parallel { background: #00e5a0; }
+        .dot-tuned { background: #f59e0b; }
+        .dot-presigned { background: #f472b6; }
+        .dot-cf { background: #22d3ee; }
+    </style>
+</head>
+<body>
+<a class="back" href="../">首页</a>
+<div class="container">
+<h1>S3 下载加速基准测试</h1>
+<p class="subtitle">测试从欧洲 S3 存储桶下载 2 GiB 文件的速度 | 2026 年 6 月</p>
+<h2>测试环境</h2>
+<div class="setup">
+<p><strong>文件大小：</strong> <code>2 GiB</code> （随机数据）</p>
+<p><strong>源端（客户端）：</strong> AWS 中的 EC2 实例</p>
+<p><strong>存储桶 1：</strong> <code>eu-south-2</code> （西班牙，萨拉戈萨）</p>
+<p><strong>存储桶 2：</strong> <code>eu-central-1</code> （德国法兰克福）</p>
+<p><strong>存储桶 3：</strong> <code>eu-north-1</code> （瑞典斯德哥尔摩）</p>
+<p><strong>访问方式：</strong> 私有（无公开访问）</p>
+</div>
+<h2>区域地图</h2>
+<div id="map" style="height: 400px; border-radius: 8px; margin-bottom: 1.5rem;"></div>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+            var map = L.map('map', {zoomControl: true, scrollWheelZoom: false}).setView([46.5, 3.5], 5);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap &copy; CARTO',
+                maxZoom: 19
+            }).addTo(map);
+
+            var greenIcon = L.divIcon({
+                className: '',
+                html: '<div style="width:16px;height:16px;background:#00e5a0;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px #00e5a0;"></div>',
+                iconSize: [16, 16], iconAnchor: [8, 8]
+            });
+            var orangeIcon = L.divIcon({
+                className: '',
+                html: '<div style="width:16px;height:16px;background:#f59e0b;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px #f59e0b;"></div>',
+                iconSize: [16, 16], iconAnchor: [8, 8]
+            });
+
+            var blueIcon = L.divIcon({
+                className: '',
+                html: '<div style="width:16px;height:16px;background:#60a5fa;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px #60a5fa;"></div>',
+                iconSize: [16, 16], iconAnchor: [8, 8]
+            });
+
+            var frankfurt = L.marker([50.1109, 8.6821], {icon: greenIcon}).addTo(map)
+                .bindPopup('<b>Frankfurt</b><br>eu-central-1<br><span style="color:#00e5a0;font-weight:bold;">9,337 Mbps</span>');
+            var zaragoza = L.marker([41.6488, -0.8891], {icon: orangeIcon}).addTo(map)
+                .bindPopup('<b>Zaragoza</b><br>eu-south-2<br><span style="color:#f59e0b;font-weight:bold;">9,544 Mbps</span>');
+            var stockholm = L.marker([59.3293, 18.0686], {icon: blueIcon}).addTo(map)
+                .bindPopup('<b>Stockholm</b><br>eu-north-1<br><span style="color:#60a5fa;font-weight:bold;">9,090 Mbps</span>');
+
+            var line = L.polyline([[50.1109, 8.6821], [41.6488, -0.8891]], {
+                color: '#00e5a0', weight: 2, dashArray: '8, 6', opacity: 0.7
+            }).addTo(map);
+            L.polyline([[50.1109, 8.6821], [59.3293, 18.0686]], {
+                color: '#60a5fa', weight: 2, dashArray: '8, 6', opacity: 0.7
+            }).addTo(map);
+            L.polyline([[41.6488, -0.8891], [59.3293, 18.0686]], {
+                color: '#a78bfa', weight: 2, dashArray: '8, 6', opacity: 0.5
+            }).addTo(map);
+
+            var midpoint = [(50.1109+41.6488)/2, (8.6821+(-0.8891))/2];
+            L.marker(midpoint, {
+                icon: L.divIcon({
+                    className: '',
+                    html: '<div style="background:#0f1419;border:1px solid #2d3748;border-radius:4px;padding:2px 8px;white-space:nowrap;font-size:11px;color:#9ca3af;font-family:-apple-system,sans-serif;">~1,200 km</div>',
+                    iconSize: [80, 20], iconAnchor: [40, 10]
+                })
+            }).addTo(map);
+        </script>
+<h2>测试方法</h2>
+<div class="finding">
+<strong>1. 基线（aws s3 cp）</strong> — 使用 AWS CLI 进行标准单流下载。内部使用默认分段设置，但通过单个 TCP 连接从 S3 下载。
+            <pre style="background:#0f1419;padding:0.8rem;border-radius:4px;margin-top:0.5rem;overflow-x:auto;font-size:0.8rem;color:#9ca3af;"><code>aws s3 cp s3://&lt;your-bucket&gt;/file.bin ./output.bin --region eu-south-2</code></pre>
+</div>
+<div class="finding">
+<strong>2. S3 Transfer Acceleration</strong> — 通过 CloudFront 边缘站点路由数据。客户端距离 S3 存储桶所在区域较远时，可从最近的边缘站点接入 AWS 骨干网，加快传输。
+            <pre style="background:#0f1419;padding:0.8rem;border-radius:4px;margin-top:0.5rem;overflow-x:auto;font-size:0.8rem;color:#9ca3af;"><code>aws s3api put-bucket-accelerate-configuration --bucket bucket --accelerate-configuration Status=Enabled
+aws s3 cp s3://&lt;your-bucket&gt;/file.bin ./output.bin --endpoint-url https://s3-accelerate.amazonaws.com</code></pre>
+</div>
+<div class="finding">
+<strong>3. 并行 Range GET（16 个分块）</strong> — 将文件拆分为 16 个字节范围分段，并通过后台进程并发下载。每个分块使用单独的 TCP 连接访问 S3，从而占满可用带宽。
+            <pre style="background:#0f1419;padding:0.8rem;border-radius:4px;margin-top:0.5rem;overflow-x:auto;font-size:0.8rem;color:#9ca3af;"><code>for i in $(seq 0 15); do
+  aws s3api get-object --bucket bucket --key file.bin \
+    --range "bytes=${start}-${end}" chunk-${i}.bin &amp;
+done
+wait</code></pre>
+</div>
+<div class="finding">
+<strong>4. 调优分段传输（64MB 分块）</strong> — 使用 aws s3 cp 并调整分段分块大小配置，测试更大的传输单元能否比默认设置提升吞吐量。
+            <pre style="background:#0f1419;padding:0.8rem;border-radius:4px;margin-top:0.5rem;overflow-x:auto;font-size:0.8rem;color:#9ca3af;"><code>aws s3 cp s3://&lt;your-bucket&gt;/file.bin ./output.bin --region eu-south-2 \
+  --cli-read-timeout 300 --expected-size 2147483648</code></pre>
+</div>
+<h2>结果</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>区域</th>
+<th>耗时</th>
+<th>速度</th>
+<th>加速比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="dot dot-baseline"></span><span class="method-baseline">基线（aws s3 cp）</span></td>
+<td>西班牙</td>
+<td>24.56s</td>
+<td>699.5 Mbps</td>
+<td>1.0x</td>
+</tr>
+<tr>
+<td><span class="dot dot-baseline"></span><span class="method-baseline">基线（aws s3 cp）</span></td>
+<td>法兰克福</td>
+<td>23.90s</td>
+<td>718.8 Mbps</td>
+<td>1.0x</td>
+</tr>
+<tr>
+<td><span class="dot dot-accel"></span><span class="method-accel">Transfer Acceleration</span></td>
+<td>西班牙</td>
+<td colspan="3" style="color:#6b7280;">不支持</td>
+</tr>
+<tr>
+<td><span class="dot dot-accel"></span><span class="method-accel">Transfer Acceleration</span></td>
+<td>法兰克福</td>
+<td>24.78s</td>
+<td>693.3 Mbps</td>
+<td>0.97x</td>
+</tr>
+<tr>
+<td><span class="dot dot-tuned"></span><span class="method-tuned">调优分段传输 (64MB)</span></td>
+<td>西班牙</td>
+<td>24.71s</td>
+<td>695.3 Mbps</td>
+<td>0.99x</td>
+</tr>
+<tr>
+<td><span class="dot dot-tuned"></span><span class="method-tuned">调优分段传输 (64MB)</span></td>
+<td>法兰克福</td>
+<td>24.53s</td>
+<td>700.4 Mbps</td>
+<td>1.0x</td>
+</tr>
+<tr>
+<td><span class="dot dot-parallel"></span><span class="method-parallel" style="font-weight:600;">并行 Range GET（16 个分块）</span> <span class="tag winner">WINNER</span></td>
+<td>西班牙</td>
+<td>1.80s</td>
+<td class="method-parallel" style="font-weight:600;">9,544 Mbps</td>
+<td class="method-parallel" style="font-weight:600;">13.6x</td>
+</tr>
+<tr>
+<td><span class="dot dot-parallel"></span><span class="method-parallel" style="font-weight:600;">并行 Range GET（16 个分块）</span> <span class="tag winner">WINNER</span></td>
+<td>法兰克福</td>
+<td>1.84s</td>
+<td class="method-parallel" style="font-weight:600;">9,337 Mbps</td>
+<td class="method-parallel" style="font-weight:600;">13.0x</td>
+</tr>
+<tr>
+<td><span class="dot dot-baseline"></span><span class="method-baseline">基线（aws s3 cp）</span></td>
+<td>斯德哥尔摩</td>
+<td>26.69s</td>
+<td>643.7 Mbps</td>
+<td>0.9x</td>
+</tr>
+<tr>
+<td><span class="dot dot-parallel"></span><span class="method-parallel" style="font-weight:600;">并行 Range GET（16 个分块）</span> <span class="tag winner">WINNER</span></td>
+<td>斯德哥尔摩</td>
+<td>1.89s</td>
+<td class="method-parallel" style="font-weight:600;">9,090 Mbps</td>
+<td class="method-parallel" style="font-weight:600;">12.6x</td>
+</tr>
+<tr>
+<td><span class="dot dot-presigned"></span><span class="method-presigned">预签名 URL（curl）</span></td>
+<td>斯德哥尔摩</td>
+<td>161.30s</td>
+<td>106.5 Mbps</td>
+<td>0.15x</td>
+</tr>
+<tr>
+<td><span class="dot dot-presigned"></span><span class="method-presigned">预签名并行（curl，16 个分块）</span></td>
+<td>斯德哥尔摩</td>
+<td>15.99s</td>
+<td>1,074 Mbps</td>
+<td>1.5x</td>
+</tr>
+<tr>
+<td><span class="dot dot-presigned"></span><span class="method-presigned">预签名 URL（curl）</span></td>
+<td>西班牙</td>
+<td>136.32s</td>
+<td>126.0 Mbps</td>
+<td>0.18x</td>
+</tr>
+<tr>
+<td><span class="dot dot-presigned"></span><span class="method-presigned">预签名 URL（curl）</span></td>
+<td>法兰克福</td>
+<td>131.51s</td>
+<td>130.6 Mbps</td>
+<td>0.18x</td>
+</tr>
+<tr>
+<td><span class="dot dot-presigned"></span><span class="method-presigned">预签名并行（curl，16 个分块）</span></td>
+<td>西班牙</td>
+<td>22.85s</td>
+<td>751.9 Mbps</td>
+<td>1.05x</td>
+</tr>
+<tr>
+<td><span class="dot dot-presigned"></span><span class="method-presigned">预签名并行（curl，16 个分块）</span></td>
+<td>法兰克福</td>
+<td>12.54s</td>
+<td>1,370 Mbps</td>
+<td>1.9x</td>
+</tr>
+<tr>
+<td><span class="dot dot-cf"></span><span class="method-cf">CloudFront（单流）</span></td>
+<td>法兰克福</td>
+<td>127.33s</td>
+<td>134.9 Mbps</td>
+<td>0.19x</td>
+</tr>
+<tr>
+<td><span class="dot dot-cf"></span><span class="method-cf">CloudFront 并行（16 个分块）</span></td>
+<td>法兰克福</td>
+<td>6.22s</td>
+<td class="method-cf" style="font-weight:600;">2,762 Mbps</td>
+<td class="method-cf" style="font-weight:600;">3.8x</td>
+</tr>
+</tbody>
+</table>
+<h2>可视化对比</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>吞吐量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="dot dot-baseline"></span><span class="method-baseline">基线</span></td>
+<td>
+<div class="bar-container">
+<div class="bar" style="width: 7%; background: #60a5fa;"></div>
+<span class="bar-label">~700 Mbps</span>
+</div>
+</td>
+</tr>
+<tr>
+<td><span class="dot dot-accel"></span><span class="method-accel">Transfer Acceleration</span></td>
+<td>
+<div class="bar-container">
+<div class="bar" style="width: 7%; background: #a78bfa;"></div>
+<span class="bar-label">~693 Mbps</span>
+</div>
+</td>
+</tr>
+<tr>
+<td><span class="dot dot-tuned"></span><span class="method-tuned">调优分段传输</span></td>
+<td>
+<div class="bar-container">
+<div class="bar" style="width: 7%; background: #f59e0b;"></div>
+<span class="bar-label">~698 Mbps</span>
+</div>
+</td>
+</tr>
+<tr>
+<td><span class="dot dot-presigned"></span><span class="method-presigned">预签名（curl）</span></td>
+<td>
+<div class="bar-container">
+<div class="bar" style="width: 1.4%; background: #f472b6;"></div>
+<span class="bar-label">~130 Mbps</span>
+</div>
+</td>
+</tr>
+<tr>
+<td><span class="dot dot-cf"></span><span class="method-cf">CloudFront（单流）</span></td>
+<td>
+<div class="bar-container">
+<div class="bar" style="width: 1.4%; background: #22d3ee;"></div>
+<span class="bar-label">~135 Mbps</span>
+</div>
+</td>
+</tr>
+<tr>
+<td><span class="dot dot-presigned"></span><span class="method-presigned">预签名并行</span></td>
+<td>
+<div class="bar-container">
+<div class="bar" style="width: 14%; background: #f472b6;"></div>
+<span class="bar-label">~1,370 Mbps</span>
+</div>
+</td>
+</tr>
+<tr>
+<td><span class="dot dot-cf"></span><span class="method-cf">CloudFront 并行</span></td>
+<td>
+<div class="bar-container">
+<div class="bar" style="width: 29%; background: #22d3ee;"></div>
+<span class="bar-label method-cf" style="font-weight:600;">~2,762 Mbps</span>
+</div>
+</td>
+</tr>
+<tr>
+<td><span class="dot dot-parallel"></span><span class="method-parallel">S3 API 并行 GET</span></td>
+<td>
+<div class="bar-container">
+<div class="bar" style="width: 95%; background: #00e5a0;"></div>
+<span class="bar-label method-parallel" style="font-weight:600;">~9,440 Mbps</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<h2>主要发现</h2>
+<div class="finding">
+<strong>并行 Range GET 快 13 倍</strong> — 将文件拆分为 16 个并发字节范围请求，可占满网络带宽，在 2 秒内下载 2 GiB（约 9.5 Gbps）。
+        </div>
+<div class="finding">
+<strong>Transfer Acceleration 在 AWS 内部没有帮助</strong> — S3 Transfer Acceleration 面向 AWS 外部的客户端。如果源和目标都在 AWS 内，它只会因经过 CloudFront 边缘跳转而增加延迟，没有任何好处。
+        </div>
+<div class="finding">
+<strong>在欧盟内部，区域选择几乎无影响</strong> — 得益于 AWS 骨干网，同一客户端从西班牙和法兰克福获得的吞吐量几乎相同。
+        </div>
+<div class="finding">
+<strong>调整分段大小没有效果</strong> — AWS CLI 内部已使用最优分段设置。调整分块大小并不能提升单流吞吐量。
+        </div>
+<h2>推荐</h2>
+<div class="setup">
+<p>在 AWS 内部从 S3 获得最快下载速度：</p>
+<p style="margin-top:0.5rem;"><code>使用并行字节范围 GET 请求（16-32 个并发流）</code></p>
+<p style="margin-top:0.5rem; color:#6b7280;">该方法适用于私有存储桶，无需特殊配置，并能随可用带宽线性扩展。</p>
+</div>
+<footer>
+<p>测试于 2026 年 6 月在 AWS EC2 上进行 | 存储桶：eu-south-2（西班牙）、eu-central-1（法兰克福）| 文件：2 GiB 随机数据</p>
+</footer>
+</div>
+<a data-cur="zh" data-to="en" href="../../../network/s3bench/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>
