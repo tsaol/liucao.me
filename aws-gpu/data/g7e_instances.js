@@ -1,5 +1,5 @@
 // Auto-generated from instances.vantage.sh data
-// Last updated: 2026-08-26
+// Last updated: 2026-11-08
 
 var instanceData = [
   {
@@ -21,6 +21,15 @@ var instanceData = [
       },
       "ap-south-1": {
         "onDemand": 13.53377
+      },
+      "ap-southeast-3": {
+        "onDemand": 15.77426
+      },
+      "ap-southeast-5": {
+        "onDemand": 14.19555
+      },
+      "ap-southeast-7": {
+        "onDemand": 14.19555
       },
       "eu-central-1": {
         "onDemand": 14.09088
@@ -48,6 +57,9 @@ var instanceData = [
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
+      "ap-southeast-3",
+      "ap-southeast-5",
+      "ap-southeast-7",
       "eu-central-1",
       "eu-north-1",
       "eu-south-2",
@@ -79,6 +91,15 @@ var instanceData = [
       "ap-south-1": {
         "onDemand": 27.06754
       },
+      "ap-southeast-3": {
+        "onDemand": 31.54851
+      },
+      "ap-southeast-5": {
+        "onDemand": 28.39109
+      },
+      "ap-southeast-7": {
+        "onDemand": 28.39109
+      },
       "eu-central-1": {
         "onDemand": 28.18177
       },
@@ -105,6 +126,9 @@ var instanceData = [
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
+      "ap-southeast-3",
+      "ap-southeast-5",
+      "ap-southeast-7",
       "eu-central-1",
       "eu-north-1",
       "eu-south-2",
@@ -136,6 +160,15 @@ var instanceData = [
       "ap-south-1": {
         "onDemand": 5.49303
       },
+      "ap-southeast-3": {
+        "onDemand": 6.40239
+      },
+      "ap-southeast-5": {
+        "onDemand": 5.76163
+      },
+      "ap-southeast-7": {
+        "onDemand": 5.76163
+      },
       "eu-central-1": {
         "onDemand": 5.71915
       },
@@ -162,6 +195,9 @@ var instanceData = [
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
+      "ap-southeast-3",
+      "ap-southeast-5",
+      "ap-southeast-7",
       "eu-central-1",
       "eu-north-1",
       "eu-south-2",
@@ -193,6 +229,15 @@ var instanceData = [
       "ap-south-1": {
         "onDemand": 54.13507
       },
+      "ap-southeast-3": {
+        "onDemand": 63.09702
+      },
+      "ap-southeast-5": {
+        "onDemand": 56.78219
+      },
+      "ap-southeast-7": {
+        "onDemand": 56.78219
+      },
       "eu-central-1": {
         "onDemand": 56.36354
       },
@@ -219,6 +264,9 @@ var instanceData = [
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
+      "ap-southeast-3",
+      "ap-southeast-5",
+      "ap-southeast-7",
       "eu-central-1",
       "eu-north-1",
       "eu-south-2",
@@ -250,6 +298,15 @@ var instanceData = [
       "ap-south-1": {
         "onDemand": 6.53025
       },
+      "ap-southeast-3": {
+        "onDemand": 7.61132
+      },
+      "ap-southeast-5": {
+        "onDemand": 6.84957
+      },
+      "ap-southeast-7": {
+        "onDemand": 6.84957
+      },
       "eu-central-1": {
         "onDemand": 6.79907
       },
@@ -279,6 +336,9 @@ var instanceData = [
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
+      "ap-southeast-3",
+      "ap-southeast-5",
+      "ap-southeast-7",
       "eu-central-1",
       "eu-north-1",
       "eu-south-2",
@@ -311,6 +371,15 @@ var instanceData = [
       "ap-south-1": {
         "onDemand": 8.60469
       },
+      "ap-southeast-3": {
+        "onDemand": 10.02918
+      },
+      "ap-southeast-5": {
+        "onDemand": 9.02544
+      },
+      "ap-southeast-7": {
+        "onDemand": 9.02544
+      },
       "eu-central-1": {
         "onDemand": 8.9589
       },
@@ -340,6 +409,9 @@ var instanceData = [
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
+      "ap-southeast-3",
+      "ap-southeast-5",
+      "ap-southeast-7",
       "eu-central-1",
       "eu-north-1",
       "eu-south-2",

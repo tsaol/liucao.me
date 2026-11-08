@@ -1,5 +1,5 @@
 // Auto-generated from instances.vantage.sh data
-// Last updated: 2026-08-26
+// Last updated: 2026-11-08
 
 var instanceData = [
   {
@@ -15,6 +15,15 @@ var instanceData = [
     "pricing": {
       "ap-south-1": {
         "onDemand": 160.64525
+      },
+      "ap-south-2": {
+        "onDemand": 160.65
+      },
+      "eu-north-1": {
+        "onDemand": 143.24201
+      },
+      "eu-west-3": {
+        "onDemand": 174.31718
       },
       "us-east-1": {
         "onDemand": 113.9328
@@ -37,6 +46,9 @@ var instanceData = [
     },
     "availability": [
       "ap-south-1",
+      "ap-south-2",
+      "eu-north-1",
+      "eu-west-3",
       "us-east-1",
       "us-east-1-atl-1",
       "us-east-2",

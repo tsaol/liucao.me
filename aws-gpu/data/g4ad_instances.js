@@ -1,5 +1,5 @@
 // Auto-generated from instances.vantage.sh data
-// Last updated: 2026-08-26
+// Last updated: 2026-11-08
 
 var instanceData = [
   {
@@ -14,36 +14,28 @@ var instanceData = [
     "storage": "1200 GB (2 × 600 GB SSD)",
     "pricing": {
       "ap-northeast-1": {
-        "onDemand": 4.68,
-        "reserved": 3.1943
+        "onDemand": 4.68
       },
       "ca-central-1": {
-        "onDemand": 3.872,
-        "reserved": 2.44001
+        "onDemand": 3.872
       },
       "eu-central-1": {
-        "onDemand": 4.336,
-        "reserved": 2.95905
+        "onDemand": 4.336
       },
       "eu-west-1": {
-        "onDemand": 3.872,
-        "reserved": 2.63817
+        "onDemand": 3.872
       },
       "eu-west-2": {
-        "onDemand": 4.056,
-        "reserved": 2.76796
+        "onDemand": 4.056
       },
       "us-east-1": {
-        "onDemand": 3.468,
-        "reserved": 2.18484
+        "onDemand": 3.468
       },
       "us-east-2": {
-        "onDemand": 3.468,
-        "reserved": 2.18484
+        "onDemand": 3.468
       },
       "us-west-2": {
-        "onDemand": 3.468,
-        "reserved": 2.18484
+        "onDemand": 3.468
       }
     },
     "availability": [
@@ -71,36 +63,28 @@ var instanceData = [
     "storage": "300 GB SSD",
     "pricing": {
       "ap-northeast-1": {
-        "onDemand": 0.7303,
-        "reserved": 0.49846
+        "onDemand": 0.7303
       },
       "ca-central-1": {
-        "onDemand": 0.60421,
-        "reserved": 0.38075
+        "onDemand": 0.60421
       },
       "eu-central-1": {
-        "onDemand": 0.67662,
-        "reserved": 0.46175
+        "onDemand": 0.67662
       },
       "eu-west-1": {
-        "onDemand": 0.60421,
-        "reserved": 0.41168
+        "onDemand": 0.60421
       },
       "eu-west-2": {
-        "onDemand": 0.63292,
-        "reserved": 0.43193
+        "onDemand": 0.63292
       },
       "us-east-1": {
-        "onDemand": 0.54117,
-        "reserved": 0.34094
+        "onDemand": 0.54117
       },
       "us-east-2": {
-        "onDemand": 0.54117,
-        "reserved": 0.34094
+        "onDemand": 0.54117
       },
       "us-west-2": {
-        "onDemand": 0.54117,
-        "reserved": 0.34094
+        "onDemand": 0.54117
       }
     },
     "availability": [
@@ -128,36 +112,28 @@ var instanceData = [
     "storage": "600 GB SSD",
     "pricing": {
       "ap-northeast-1": {
-        "onDemand": 1.17,
-        "reserved": 0.79857
+        "onDemand": 1.17
       },
       "ca-central-1": {
-        "onDemand": 0.968,
-        "reserved": 0.61
+        "onDemand": 0.968
       },
       "eu-central-1": {
-        "onDemand": 1.084,
-        "reserved": 0.73976
+        "onDemand": 1.084
       },
       "eu-west-1": {
-        "onDemand": 0.968,
-        "reserved": 0.65954
+        "onDemand": 0.968
       },
       "eu-west-2": {
-        "onDemand": 1.014,
-        "reserved": 0.69199
+        "onDemand": 1.014
       },
       "us-east-1": {
-        "onDemand": 0.867,
-        "reserved": 0.54621
+        "onDemand": 0.867
       },
       "us-east-2": {
-        "onDemand": 0.867,
-        "reserved": 0.54621
+        "onDemand": 0.867
       },
       "us-west-2": {
-        "onDemand": 0.867,
-        "reserved": 0.54621
+        "onDemand": 0.867
       }
     },
     "availability": [
@@ -185,36 +161,28 @@ var instanceData = [
     "storage": "1200 GB SSD",
     "pricing": {
       "ap-northeast-1": {
-        "onDemand": 2.34,
-        "reserved": 1.59715
+        "onDemand": 2.34
       },
       "ca-central-1": {
-        "onDemand": 1.936,
-        "reserved": 1.22001
+        "onDemand": 1.936
       },
       "eu-central-1": {
-        "onDemand": 2.168,
-        "reserved": 1.47952
+        "onDemand": 2.168
       },
       "eu-west-1": {
-        "onDemand": 1.936,
-        "reserved": 1.31908
+        "onDemand": 1.936
       },
       "eu-west-2": {
-        "onDemand": 2.028,
-        "reserved": 1.38398
+        "onDemand": 2.028
       },
       "us-east-1": {
-        "onDemand": 1.734,
-        "reserved": 1.09242
+        "onDemand": 1.734
       },
       "us-east-2": {
-        "onDemand": 1.734,
-        "reserved": 1.09242
+        "onDemand": 1.734
       },
       "us-west-2": {
-        "onDemand": 1.734,
-        "reserved": 1.09242
+        "onDemand": 1.734
       }
     },
     "availability": [
@@ -242,36 +210,28 @@ var instanceData = [
     "storage": "150 GB SSD",
     "pricing": {
       "ap-northeast-1": {
-        "onDemand": 0.51082,
-        "reserved": 0.34866
+        "onDemand": 0.51082
       },
       "ca-central-1": {
-        "onDemand": 0.42263,
-        "reserved": 0.26633
+        "onDemand": 0.42263
       },
       "eu-central-1": {
-        "onDemand": 0.47327,
-        "reserved": 0.32298
+        "onDemand": 0.47327
       },
       "eu-west-1": {
-        "onDemand": 0.42263,
-        "reserved": 0.28795
+        "onDemand": 0.42263
       },
       "eu-west-2": {
-        "onDemand": 0.44271,
-        "reserved": 0.30212
+        "onDemand": 0.44271
       },
       "us-east-1": {
-        "onDemand": 0.37853,
-        "reserved": 0.23847
+        "onDemand": 0.37853
       },
       "us-east-2": {
-        "onDemand": 0.37853,
-        "reserved": 0.23847
+        "onDemand": 0.37853
       },
       "us-west-2": {
-        "onDemand": 0.37853,
-        "reserved": 0.23847
+        "onDemand": 0.37853
       }
     },
     "availability": [

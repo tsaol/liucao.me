@@ -1,5 +1,5 @@
 // Auto-generated P6 Family data from instances.vantage.sh
-// Last updated: 2026-08-26
+// Last updated: 2026-11-08
 // Includes: p6-b200, p6-b300, p6e-gb200
 
 var instanceData = [
@@ -16,6 +16,15 @@ var instanceData = [
     "pricing": {
       "ap-south-1": {
         "onDemand": 160.64525
+      },
+      "ap-south-2": {
+        "onDemand": 160.65
+      },
+      "eu-north-1": {
+        "onDemand": 143.24201
+      },
+      "eu-west-3": {
+        "onDemand": 174.31718
       },
       "us-east-1": {
         "onDemand": 113.9328
@@ -38,6 +47,9 @@ var instanceData = [
     },
     "availability": [
       "ap-south-1",
+      "ap-south-2",
+      "eu-north-1",
+      "eu-west-3",
       "us-east-1",
       "us-east-1-atl-1",
       "us-east-2",
@@ -68,6 +80,18 @@ var instanceData = [
       "ap-northeast-2": {
         "onDemand": 209.1735
       },
+      "ap-south-2": {
+        "onDemand": 200.80656
+      },
+      "ap-southeast-3": {
+        "onDemand": 230.93
+      },
+      "eu-west-2": {
+        "onDemand": 217.54
+      },
+      "sa-east-1": {
+        "onDemand": 281.13
+      },
       "us-east-1": {
         "onDemand": 142.416
       },
@@ -77,15 +101,23 @@ var instanceData = [
       "us-gov-east-1": {
         "onDemand": 170.9
       },
+      "us-gov-west-1": {
+        "onDemand": 170.9
+      },
       "us-west-2": {
         "onDemand": 142.416
       }
     },
     "availability": [
       "ap-northeast-2",
+      "ap-south-2",
+      "ap-southeast-3",
+      "eu-west-2",
+      "sa-east-1",
       "us-east-1",
       "us-east-1-atl-1",
       "us-gov-east-1",
+      "us-gov-west-1",
       "us-west-2"
     ],
     "generation": "current",

@@ -1,5 +1,5 @@
 // Auto-generated from instances.vantage.sh data
-// Last updated: 2026-08-26
+// Last updated: 2026-11-08
 
 var instanceData = [
   {
@@ -13,6 +13,12 @@ var instanceData = [
     "network": "175 Gigabit",
     "storage": "1900 GB SSD",
     "pricing": {
+      "eu-central-1": {
+        "onDemand": 8.91408
+      },
+      "eu-north-1": {
+        "onDemand": 7.56055
+      },
       "eu-south-2": {
         "onDemand": 7.48474
       },
@@ -27,6 +33,8 @@ var instanceData = [
       }
     },
     "availability": [
+      "eu-central-1",
+      "eu-north-1",
       "eu-south-2",
       "us-east-1",
       "us-east-2",
@@ -46,6 +54,12 @@ var instanceData = [
     "network": "350 Gigabit",
     "storage": "3800 GB SSD",
     "pricing": {
+      "eu-central-1": {
+        "onDemand": 17.82815
+      },
+      "eu-north-1": {
+        "onDemand": 15.12109
+      },
       "eu-south-2": {
         "onDemand": 14.96947
       },
@@ -60,6 +74,8 @@ var instanceData = [
       }
     },
     "availability": [
+      "eu-central-1",
+      "eu-north-1",
       "eu-south-2",
       "us-east-1",
       "us-east-2",
@@ -79,6 +95,12 @@ var instanceData = [
     "network": "Up to 60 Gigabit",
     "storage": "440 GB SSD",
     "pricing": {
+      "eu-central-1": {
+        "onDemand": 3.1513
+      },
+      "eu-north-1": {
+        "onDemand": 2.6728
+      },
       "eu-south-2": {
         "onDemand": 2.646
       },
@@ -93,6 +115,8 @@ var instanceData = [
       }
     },
     "availability": [
+      "eu-central-1",
+      "eu-north-1",
       "eu-south-2",
       "us-east-1",
       "us-east-2",
@@ -112,6 +136,12 @@ var instanceData = [
     "network": "700 Gigabit",
     "storage": "3800 GB (2 × 1900 GB SSD)",
     "pricing": {
+      "eu-central-1": {
+        "onDemand": 35.65631
+      },
+      "eu-north-1": {
+        "onDemand": 30.24218
+      },
       "eu-south-2": {
         "onDemand": 29.93894
       },
@@ -126,6 +156,8 @@ var instanceData = [
       }
     },
     "availability": [
+      "eu-central-1",
+      "eu-north-1",
       "eu-south-2",
       "us-east-1",
       "us-east-2",
@@ -145,6 +177,12 @@ var instanceData = [
     "network": "Up to 100 Gigabit",
     "storage": "875 GB SSD",
     "pricing": {
+      "eu-central-1": {
+        "onDemand": 3.80417
+      },
+      "eu-north-1": {
+        "onDemand": 3.22654
+      },
       "eu-south-2": {
         "onDemand": 3.19418
       },
@@ -159,6 +197,8 @@ var instanceData = [
       }
     },
     "availability": [
+      "eu-central-1",
+      "eu-north-1",
       "eu-south-2",
       "us-east-1",
       "us-east-2",
@@ -178,6 +218,12 @@ var instanceData = [
     "network": "100 Gigabit",
     "storage": "930 GB SSD",
     "pricing": {
+      "eu-central-1": {
+        "onDemand": 5.10991
+      },
+      "eu-north-1": {
+        "onDemand": 4.33401
+      },
       "eu-south-2": {
         "onDemand": 4.29055
       },
@@ -192,6 +238,8 @@ var instanceData = [
       }
     },
     "availability": [
+      "eu-central-1",
+      "eu-north-1",
       "eu-south-2",
       "us-east-1",
       "us-east-2",

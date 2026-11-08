@@ -1,5 +1,5 @@
 // Auto-generated from instances.vantage.sh data
-// Last updated: 2026-08-26
+// Last updated: 2026-11-08
 // Total GPU instances: 99
 
 const allGPUInstances = [
@@ -439,36 +439,28 @@ const allGPUInstances = [
     "storage": "1200 GB (2 × 600 GB SSD)",
     "pricing": {
       "ap-northeast-1": {
-        "onDemand": 4.68,
-        "reserved": 3.1943
+        "onDemand": 4.68
       },
       "ca-central-1": {
-        "onDemand": 3.872,
-        "reserved": 2.44001
+        "onDemand": 3.872
       },
       "eu-central-1": {
-        "onDemand": 4.336,
-        "reserved": 2.95905
+        "onDemand": 4.336
       },
       "eu-west-1": {
-        "onDemand": 3.872,
-        "reserved": 2.63817
+        "onDemand": 3.872
       },
       "eu-west-2": {
-        "onDemand": 4.056,
-        "reserved": 2.76796
+        "onDemand": 4.056
       },
       "us-east-1": {
-        "onDemand": 3.468,
-        "reserved": 2.18484
+        "onDemand": 3.468
       },
       "us-east-2": {
-        "onDemand": 3.468,
-        "reserved": 2.18484
+        "onDemand": 3.468
       },
       "us-west-2": {
-        "onDemand": 3.468,
-        "reserved": 2.18484
+        "onDemand": 3.468
       }
     },
     "availability": [
@@ -496,36 +488,28 @@ const allGPUInstances = [
     "storage": "300 GB SSD",
     "pricing": {
       "ap-northeast-1": {
-        "onDemand": 0.7303,
-        "reserved": 0.49846
+        "onDemand": 0.7303
       },
       "ca-central-1": {
-        "onDemand": 0.60421,
-        "reserved": 0.38075
+        "onDemand": 0.60421
       },
       "eu-central-1": {
-        "onDemand": 0.67662,
-        "reserved": 0.46175
+        "onDemand": 0.67662
       },
       "eu-west-1": {
-        "onDemand": 0.60421,
-        "reserved": 0.41168
+        "onDemand": 0.60421
       },
       "eu-west-2": {
-        "onDemand": 0.63292,
-        "reserved": 0.43193
+        "onDemand": 0.63292
       },
       "us-east-1": {
-        "onDemand": 0.54117,
-        "reserved": 0.34094
+        "onDemand": 0.54117
       },
       "us-east-2": {
-        "onDemand": 0.54117,
-        "reserved": 0.34094
+        "onDemand": 0.54117
       },
       "us-west-2": {
-        "onDemand": 0.54117,
-        "reserved": 0.34094
+        "onDemand": 0.54117
       }
     },
     "availability": [
@@ -553,36 +537,28 @@ const allGPUInstances = [
     "storage": "600 GB SSD",
     "pricing": {
       "ap-northeast-1": {
-        "onDemand": 1.17,
-        "reserved": 0.79857
+        "onDemand": 1.17
       },
       "ca-central-1": {
-        "onDemand": 0.968,
-        "reserved": 0.61
+        "onDemand": 0.968
       },
       "eu-central-1": {
-        "onDemand": 1.084,
-        "reserved": 0.73976
+        "onDemand": 1.084
       },
       "eu-west-1": {
-        "onDemand": 0.968,
-        "reserved": 0.65954
+        "onDemand": 0.968
       },
       "eu-west-2": {
-        "onDemand": 1.014,
-        "reserved": 0.69199
+        "onDemand": 1.014
       },
       "us-east-1": {
-        "onDemand": 0.867,
-        "reserved": 0.54621
+        "onDemand": 0.867
       },
       "us-east-2": {
-        "onDemand": 0.867,
-        "reserved": 0.54621
+        "onDemand": 0.867
       },
       "us-west-2": {
-        "onDemand": 0.867,
-        "reserved": 0.54621
+        "onDemand": 0.867
       }
     },
     "availability": [
@@ -610,36 +586,28 @@ const allGPUInstances = [
     "storage": "1200 GB SSD",
     "pricing": {
       "ap-northeast-1": {
-        "onDemand": 2.34,
-        "reserved": 1.59715
+        "onDemand": 2.34
       },
       "ca-central-1": {
-        "onDemand": 1.936,
-        "reserved": 1.22001
+        "onDemand": 1.936
       },
       "eu-central-1": {
-        "onDemand": 2.168,
-        "reserved": 1.47952
+        "onDemand": 2.168
       },
       "eu-west-1": {
-        "onDemand": 1.936,
-        "reserved": 1.31908
+        "onDemand": 1.936
       },
       "eu-west-2": {
-        "onDemand": 2.028,
-        "reserved": 1.38398
+        "onDemand": 2.028
       },
       "us-east-1": {
-        "onDemand": 1.734,
-        "reserved": 1.09242
+        "onDemand": 1.734
       },
       "us-east-2": {
-        "onDemand": 1.734,
-        "reserved": 1.09242
+        "onDemand": 1.734
       },
       "us-west-2": {
-        "onDemand": 1.734,
-        "reserved": 1.09242
+        "onDemand": 1.734
       }
     },
     "availability": [
@@ -667,36 +635,28 @@ const allGPUInstances = [
     "storage": "150 GB SSD",
     "pricing": {
       "ap-northeast-1": {
-        "onDemand": 0.51082,
-        "reserved": 0.34866
+        "onDemand": 0.51082
       },
       "ca-central-1": {
-        "onDemand": 0.42263,
-        "reserved": 0.26633
+        "onDemand": 0.42263
       },
       "eu-central-1": {
-        "onDemand": 0.47327,
-        "reserved": 0.32298
+        "onDemand": 0.47327
       },
       "eu-west-1": {
-        "onDemand": 0.42263,
-        "reserved": 0.28795
+        "onDemand": 0.42263
       },
       "eu-west-2": {
-        "onDemand": 0.44271,
-        "reserved": 0.30212
+        "onDemand": 0.44271
       },
       "us-east-1": {
-        "onDemand": 0.37853,
-        "reserved": 0.23847
+        "onDemand": 0.37853
       },
       "us-east-2": {
-        "onDemand": 0.37853,
-        "reserved": 0.23847
+        "onDemand": 0.37853
       },
       "us-west-2": {
-        "onDemand": 0.37853,
-        "reserved": 0.23847
+        "onDemand": 0.37853
       }
     },
     "availability": [
@@ -4997,6 +4957,12 @@ const allGPUInstances = [
     "network": "175 Gigabit",
     "storage": "1900 GB SSD",
     "pricing": {
+      "eu-central-1": {
+        "onDemand": 8.91408
+      },
+      "eu-north-1": {
+        "onDemand": 7.56055
+      },
       "eu-south-2": {
         "onDemand": 7.48474
       },
@@ -5011,6 +4977,8 @@ const allGPUInstances = [
       }
     },
     "availability": [
+      "eu-central-1",
+      "eu-north-1",
       "eu-south-2",
       "us-east-1",
       "us-east-2",
@@ -5030,6 +4998,12 @@ const allGPUInstances = [
     "network": "350 Gigabit",
     "storage": "3800 GB SSD",
     "pricing": {
+      "eu-central-1": {
+        "onDemand": 17.82815
+      },
+      "eu-north-1": {
+        "onDemand": 15.12109
+      },
       "eu-south-2": {
         "onDemand": 14.96947
       },
@@ -5044,6 +5018,8 @@ const allGPUInstances = [
       }
     },
     "availability": [
+      "eu-central-1",
+      "eu-north-1",
       "eu-south-2",
       "us-east-1",
       "us-east-2",
@@ -5063,6 +5039,12 @@ const allGPUInstances = [
     "network": "Up to 60 Gigabit",
     "storage": "440 GB SSD",
     "pricing": {
+      "eu-central-1": {
+        "onDemand": 3.1513
+      },
+      "eu-north-1": {
+        "onDemand": 2.6728
+      },
       "eu-south-2": {
         "onDemand": 2.646
       },
@@ -5077,6 +5059,8 @@ const allGPUInstances = [
       }
     },
     "availability": [
+      "eu-central-1",
+      "eu-north-1",
       "eu-south-2",
       "us-east-1",
       "us-east-2",
@@ -5096,6 +5080,12 @@ const allGPUInstances = [
     "network": "700 Gigabit",
     "storage": "3800 GB (2 × 1900 GB SSD)",
     "pricing": {
+      "eu-central-1": {
+        "onDemand": 35.65631
+      },
+      "eu-north-1": {
+        "onDemand": 30.24218
+      },
       "eu-south-2": {
         "onDemand": 29.93894
       },
@@ -5110,6 +5100,8 @@ const allGPUInstances = [
       }
     },
     "availability": [
+      "eu-central-1",
+      "eu-north-1",
       "eu-south-2",
       "us-east-1",
       "us-east-2",
@@ -5129,6 +5121,12 @@ const allGPUInstances = [
     "network": "Up to 100 Gigabit",
     "storage": "875 GB SSD",
     "pricing": {
+      "eu-central-1": {
+        "onDemand": 3.80417
+      },
+      "eu-north-1": {
+        "onDemand": 3.22654
+      },
       "eu-south-2": {
         "onDemand": 3.19418
       },
@@ -5143,6 +5141,8 @@ const allGPUInstances = [
       }
     },
     "availability": [
+      "eu-central-1",
+      "eu-north-1",
       "eu-south-2",
       "us-east-1",
       "us-east-2",
@@ -5162,6 +5162,12 @@ const allGPUInstances = [
     "network": "100 Gigabit",
     "storage": "930 GB SSD",
     "pricing": {
+      "eu-central-1": {
+        "onDemand": 5.10991
+      },
+      "eu-north-1": {
+        "onDemand": 4.33401
+      },
       "eu-south-2": {
         "onDemand": 4.29055
       },
@@ -5176,6 +5182,8 @@ const allGPUInstances = [
       }
     },
     "availability": [
+      "eu-central-1",
+      "eu-north-1",
       "eu-south-2",
       "us-east-1",
       "us-east-2",
@@ -5204,6 +5212,15 @@ const allGPUInstances = [
       "ap-south-1": {
         "onDemand": 13.53377
       },
+      "ap-southeast-3": {
+        "onDemand": 15.77426
+      },
+      "ap-southeast-5": {
+        "onDemand": 14.19555
+      },
+      "ap-southeast-7": {
+        "onDemand": 14.19555
+      },
       "eu-central-1": {
         "onDemand": 14.09088
       },
@@ -5230,6 +5247,9 @@ const allGPUInstances = [
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
+      "ap-southeast-3",
+      "ap-southeast-5",
+      "ap-southeast-7",
       "eu-central-1",
       "eu-north-1",
       "eu-south-2",
@@ -5261,6 +5281,15 @@ const allGPUInstances = [
       "ap-south-1": {
         "onDemand": 27.06754
       },
+      "ap-southeast-3": {
+        "onDemand": 31.54851
+      },
+      "ap-southeast-5": {
+        "onDemand": 28.39109
+      },
+      "ap-southeast-7": {
+        "onDemand": 28.39109
+      },
       "eu-central-1": {
         "onDemand": 28.18177
       },
@@ -5287,6 +5316,9 @@ const allGPUInstances = [
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
+      "ap-southeast-3",
+      "ap-southeast-5",
+      "ap-southeast-7",
       "eu-central-1",
       "eu-north-1",
       "eu-south-2",
@@ -5318,6 +5350,15 @@ const allGPUInstances = [
       "ap-south-1": {
         "onDemand": 5.49303
       },
+      "ap-southeast-3": {
+        "onDemand": 6.40239
+      },
+      "ap-southeast-5": {
+        "onDemand": 5.76163
+      },
+      "ap-southeast-7": {
+        "onDemand": 5.76163
+      },
       "eu-central-1": {
         "onDemand": 5.71915
       },
@@ -5344,6 +5385,9 @@ const allGPUInstances = [
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
+      "ap-southeast-3",
+      "ap-southeast-5",
+      "ap-southeast-7",
       "eu-central-1",
       "eu-north-1",
       "eu-south-2",
@@ -5375,6 +5419,15 @@ const allGPUInstances = [
       "ap-south-1": {
         "onDemand": 54.13507
       },
+      "ap-southeast-3": {
+        "onDemand": 63.09702
+      },
+      "ap-southeast-5": {
+        "onDemand": 56.78219
+      },
+      "ap-southeast-7": {
+        "onDemand": 56.78219
+      },
       "eu-central-1": {
         "onDemand": 56.36354
       },
@@ -5401,6 +5454,9 @@ const allGPUInstances = [
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
+      "ap-southeast-3",
+      "ap-southeast-5",
+      "ap-southeast-7",
       "eu-central-1",
       "eu-north-1",
       "eu-south-2",
@@ -5432,6 +5488,15 @@ const allGPUInstances = [
       "ap-south-1": {
         "onDemand": 6.53025
       },
+      "ap-southeast-3": {
+        "onDemand": 7.61132
+      },
+      "ap-southeast-5": {
+        "onDemand": 6.84957
+      },
+      "ap-southeast-7": {
+        "onDemand": 6.84957
+      },
       "eu-central-1": {
         "onDemand": 6.79907
       },
@@ -5461,6 +5526,9 @@ const allGPUInstances = [
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
+      "ap-southeast-3",
+      "ap-southeast-5",
+      "ap-southeast-7",
       "eu-central-1",
       "eu-north-1",
       "eu-south-2",
@@ -5493,6 +5561,15 @@ const allGPUInstances = [
       "ap-south-1": {
         "onDemand": 8.60469
       },
+      "ap-southeast-3": {
+        "onDemand": 10.02918
+      },
+      "ap-southeast-5": {
+        "onDemand": 9.02544
+      },
+      "ap-southeast-7": {
+        "onDemand": 9.02544
+      },
       "eu-central-1": {
         "onDemand": 8.9589
       },
@@ -5522,6 +5599,9 @@ const allGPUInstances = [
       "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-1",
+      "ap-southeast-3",
+      "ap-southeast-5",
+      "ap-southeast-7",
       "eu-central-1",
       "eu-north-1",
       "eu-south-2",
@@ -7246,6 +7326,9 @@ const allGPUInstances = [
       "ca-central-1": {
         "onDemand": 63.296
       },
+      "eu-central-1": {
+        "onDemand": 68.8
+      },
       "eu-north-1": {
         "onDemand": 58.8928
       },
@@ -7281,6 +7364,7 @@ const allGPUInstances = [
       "ap-southeast-2",
       "ap-southeast-3",
       "ca-central-1",
+      "eu-central-1",
       "eu-north-1",
       "eu-west-2",
       "sa-east-1",
@@ -7321,6 +7405,12 @@ const allGPUInstances = [
       "ap-southeast-3": {
         "onDemand": 9.4944
       },
+      "eu-central-1": {
+        "onDemand": 8.6
+      },
+      "eu-north-1": {
+        "onDemand": 7.3616
+      },
       "eu-west-2": {
         "onDemand": 8.944
       },
@@ -7345,6 +7435,8 @@ const allGPUInstances = [
       "ap-south-1",
       "ap-southeast-2",
       "ap-southeast-3",
+      "eu-central-1",
+      "eu-north-1",
       "eu-west-2",
       "sa-east-1",
       "us-east-1",
@@ -7365,9 +7457,27 @@ const allGPUInstances = [
     "memory": "2048 GiB",
     "network": "3200 Gbps EFAv2",
     "storage": "8 x 3.84 TB NVMe SSD",
-    "pricing": {},
-    "availability": [],
-    "generation": "preview",
+    "pricing": {
+      "ap-southeast-2": {
+        "onDemand": 82.2848
+      },
+      "eu-west-2": {
+        "onDemand": 82.2848
+      },
+      "us-east-2": {
+        "onDemand": 63.296
+      },
+      "us-west-2": {
+        "onDemand": 63.296
+      }
+    },
+    "availability": [
+      "ap-southeast-2",
+      "eu-west-2",
+      "us-east-2",
+      "us-west-2"
+    ],
+    "generation": "current",
     "family": "GPU instance",
     "ebsBandwidth": "80 Gbps",
     "gpuInterconnect": "900 GB/s NVSwitch",
@@ -7461,6 +7571,15 @@ const allGPUInstances = [
       "ap-south-1": {
         "onDemand": 160.64525
       },
+      "ap-south-2": {
+        "onDemand": 160.65
+      },
+      "eu-north-1": {
+        "onDemand": 143.24201
+      },
+      "eu-west-3": {
+        "onDemand": 174.31718
+      },
       "us-east-1": {
         "onDemand": 113.9328
       },
@@ -7482,6 +7601,9 @@ const allGPUInstances = [
     },
     "availability": [
       "ap-south-1",
+      "ap-south-2",
+      "eu-north-1",
+      "eu-west-3",
       "us-east-1",
       "us-east-1-atl-1",
       "us-east-2",
@@ -7510,6 +7632,18 @@ const allGPUInstances = [
       "ap-northeast-2": {
         "onDemand": 209.1735
       },
+      "ap-south-2": {
+        "onDemand": 200.80656
+      },
+      "ap-southeast-3": {
+        "onDemand": 230.93
+      },
+      "eu-west-2": {
+        "onDemand": 217.54
+      },
+      "sa-east-1": {
+        "onDemand": 281.13
+      },
       "us-east-1": {
         "onDemand": 142.416
       },
@@ -7519,15 +7653,23 @@ const allGPUInstances = [
       "us-gov-east-1": {
         "onDemand": 170.9
       },
+      "us-gov-west-1": {
+        "onDemand": 170.9
+      },
       "us-west-2": {
         "onDemand": 142.416
       }
     },
     "availability": [
       "ap-northeast-2",
+      "ap-south-2",
+      "ap-southeast-3",
+      "eu-west-2",
+      "sa-east-1",
       "us-east-1",
       "us-east-1-atl-1",
       "us-gov-east-1",
+      "us-gov-west-1",
       "us-west-2"
     ],
     "generation": "current",
@@ -7658,9 +7800,15 @@ const allGPUInstances = [
     "memory": "2048 GB",
     "network": "16x 200 Gigabit",
     "storage": "1900 GB (4 × 475 GB SSD)",
-    "pricing": {},
-    "availability": [],
-    "generation": "preview",
+    "pricing": {
+      "ap-south-2": {
+        "onDemand": 103.157
+      }
+    },
+    "availability": [
+      "ap-south-2"
+    ],
+    "generation": "current",
     "family": "Machine Learning ASIC Instances"
   },
   {

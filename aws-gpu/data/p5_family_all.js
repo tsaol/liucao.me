@@ -1,5 +1,5 @@
 // Auto-generated P5 Family data from instances.vantage.sh
-// Last updated: 2026-08-26
+// Last updated: 2026-11-08
 // Includes: p5, p5e, p5en
 
 var instanceData = [
@@ -31,6 +31,9 @@ var instanceData = [
       },
       "ca-central-1": {
         "onDemand": 63.296
+      },
+      "eu-central-1": {
+        "onDemand": 68.8
       },
       "eu-north-1": {
         "onDemand": 58.8928
@@ -67,6 +70,7 @@ var instanceData = [
       "ap-southeast-2",
       "ap-southeast-3",
       "ca-central-1",
+      "eu-central-1",
       "eu-north-1",
       "eu-west-2",
       "sa-east-1",
@@ -109,6 +113,12 @@ var instanceData = [
       "ap-southeast-3": {
         "onDemand": 9.4944
       },
+      "eu-central-1": {
+        "onDemand": 8.6
+      },
+      "eu-north-1": {
+        "onDemand": 7.3616
+      },
       "eu-west-2": {
         "onDemand": 8.944
       },
@@ -133,6 +143,8 @@ var instanceData = [
       "ap-south-1",
       "ap-southeast-2",
       "ap-southeast-3",
+      "eu-central-1",
+      "eu-north-1",
       "eu-west-2",
       "sa-east-1",
       "us-east-1",
@@ -155,9 +167,27 @@ var instanceData = [
     "memory": "2048 GiB",
     "network": "3200 Gbps EFAv2",
     "storage": "8 x 3.84 TB NVMe SSD",
-    "pricing": {},
-    "availability": [],
-    "generation": "preview",
+    "pricing": {
+      "ap-southeast-2": {
+        "onDemand": 82.2848
+      },
+      "eu-west-2": {
+        "onDemand": 82.2848
+      },
+      "us-east-2": {
+        "onDemand": 63.296
+      },
+      "us-west-2": {
+        "onDemand": 63.296
+      }
+    },
+    "availability": [
+      "ap-southeast-2",
+      "eu-west-2",
+      "us-east-2",
+      "us-west-2"
+    ],
+    "generation": "current",
     "family": "GPU instance",
     "ebsBandwidth": "80 Gbps",
     "gpuInterconnect": "900 GB/s NVSwitch",

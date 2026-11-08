@@ -1,5 +1,5 @@
 // Auto-generated from instances.vantage.sh data
-// Last updated: 2026-08-26
+// Last updated: 2026-11-08
 
 var instanceData = [
   {
@@ -30,6 +30,9 @@ var instanceData = [
       },
       "ca-central-1": {
         "onDemand": 63.296
+      },
+      "eu-central-1": {
+        "onDemand": 68.8
       },
       "eu-north-1": {
         "onDemand": 58.8928
@@ -66,6 +69,7 @@ var instanceData = [
       "ap-southeast-2",
       "ap-southeast-3",
       "ca-central-1",
+      "eu-central-1",
       "eu-north-1",
       "eu-west-2",
       "sa-east-1",
@@ -106,6 +110,12 @@ var instanceData = [
       "ap-southeast-3": {
         "onDemand": 9.4944
       },
+      "eu-central-1": {
+        "onDemand": 8.6
+      },
+      "eu-north-1": {
+        "onDemand": 7.3616
+      },
       "eu-west-2": {
         "onDemand": 8.944
       },
@@ -130,6 +140,8 @@ var instanceData = [
       "ap-south-1",
       "ap-southeast-2",
       "ap-southeast-3",
+      "eu-central-1",
+      "eu-north-1",
       "eu-west-2",
       "sa-east-1",
       "us-east-1",
