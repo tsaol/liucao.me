@@ -1,0 +1,49 @@
+# Extra rules for this repo, used by the pre-commit hook and CI next to the built-in
+# gitleaks rules (run separately: with useDefault the default allowlist hides some of
+# these). The built-in rules catch real keys/tokens; the rules below also block things
+# that are not "secrets" but must not be public: cloud resource ids, AWS service hosts,
+# credential env var names, dev paths. Names that are themselves private (buckets,
+# customers, machines) live in a private rule file that is NOT in this repo:
+# ~/.config/gitleaks/private.toml locally, the GITLEAKS_PRIVATE_RULES secret in CI.
+title = "liucao gate"
+
+[[rules]]
+id = "aws-credential-env-var-name"
+description = "AWS credential environment variable names"
+regex = '''AWS_(?:SECRET_ACCESS_KEY|ACCESS_KEY_ID|SESSION_TOKEN|BEARER_TOKEN[A-Z_]*)'''
+keywords = ["aws_"]
+
+[[rules]]
+id = "aws-resource-id"
+description = "EC2 / VPC / EBS / AMI resource ids"
+regex = '''\b(?:i|ami|vpc|subnet|sg|eni|vol|snap|tgw|rtb|igw|nat|eipalloc|lt)-0[0-9a-f]{8,17}\b'''
+keywords = ["i-0", "ami-0", "vpc-0", "subnet-0", "sg-0", "eni-0", "vol-0", "snap-0", "tgw-0", "rtb-0", "igw-0", "nat-0", "eipalloc-0", "lt-0"]
+
+[[rules]]
+id = "aws-account-arn"
+description = "ARN with an account id"
+regex = '''arn:aws[a-z-]*:[a-z0-9-]+:[a-z0-9-]*:\d{12}:'''
+keywords = ["arn:aws"]
+
+[[rules]]
+id = "aws-service-host"
+description = "ALB / API Gateway / Lambda URL / CloudFront / S3 hosts and s3:// buckets"
+regex = '''[a-z0-9-]+\.(?:elb|execute-api|lambda-url)\.[a-z0-9.-]*amazonaws\.com|\b[a-z0-9]{12,14}\.cloudfront\.net|[a-z0-9.-]+\.s3[.-][a-z0-9.-]*amazonaws\.com|s3://[a-z0-9][a-z0-9.-]+'''
+keywords = ["amazonaws.com", "cloudfront.net", "s3://"]
+
+[[rules]]
+id = "internal-amazon"
+description = "Amazon internal tools and hosts"
+regex = '''(?i)\b(?:w\.amazon\.com|quip-amazon|isengard|midway-auth|corp\.amazon|phonetool)\b'''
+keywords = ["amazon", "isengard", "midway", "phonetool"]
+
+[[rules]]
+id = "dev-box-path"
+description = "paths from the dev box"
+regex = '''/home/ec2-user\b'''
+keywords = ["/home/ec2-user"]
+
+[allowlist]
+description = "known safe"
+regexes = ['''169\.254\.169\.254''']
+paths = ['''(^|/)\.gitleaks-rules\.toml$''']
