@@ -888,7 +888,7 @@
 <main class="mk-wrap">
 <div class="mk-hero">
 <h1>Harness <span class="grad">Self-Evolution</span> · Play</h1>
-<p class="mk-hero-sub">Harness self-evolution for an e-commerce search Agent · 3-generation loop · every generation passes<b>Eval gating</b></p>
+<p class="mk-hero-sub">Harness self-evolution for an e-commerce search Agent · 3-generation loop · every generation passes<b> Eval gating</b></p>
 </div>
 <!-- About-this-demo briefing (before controls) -->
 <section aria-labelledby="mk-brief-title" class="mk-brief">
@@ -919,7 +919,7 @@
 <div class="mk-brief-headline">Let AI <span class="mk-brief-em">Rewrite code</span></div>
 <div class="mk-brief-meta">Weights untouched · only the harness changes</div>
 <div class="mk-brief-metric">
-<span class="mk-brief-num">3<span class="pct">Generation</span></span>
+<span class="mk-brief-num">3<span class="pct"> Generation</span></span>
 <span class="mk-brief-num-lbl">Loop · 31-task gate per generation</span>
 </div>
 </div>
@@ -976,7 +976,7 @@
 </div>
 </div>
 <div class="mk-wf-header">
-<span class="mk-gen-title"><span class="mk-gen-label">Workflow · Step</span><span id="mk-gen-num">0</span><span class="mk-gen-label">Generation</span></span>
+<span class="mk-gen-title"><span class="mk-gen-label">Workflow · Step</span><span id="mk-gen-num">0</span><span class="mk-gen-label"> Generation</span></span>
 <span id="mk-elapsed" title="Total duration of this run">00:00</span>
 </div>
 <ol class="mk-wf-list">
@@ -1026,7 +1026,7 @@
 <div class="mk-wf-body">
 <div class="mk-wf-name">AI proposes candidates <span class="mk-verb v-propose">Propose</span></div>
 <div class="mk-wf-data">
-<b>What the system is doing</b>: Give the parent + failed problems to Opus 4.8 · it first<b>Inference</b>Then<b>Generate diff</b> · The system pastes the code back.
+<b>What the system is doing</b>: Give the parent + failed problems to Opus 4.8 · it first<b> Inference</b> Then<b> Generate diff</b> · The system pastes the code back.
             <div class="mk-reasoning" id="mk-reasoning-panel" style="display:none;">
 <div class="mk-reasoning-h">🧠 <b>AI's reasoning</b> <span class="mk-reasoning-name" id="mk-reasoning-name"></span></div>
 <div class="mk-reasoning-analysis" id="mk-reasoning-analysis"></div>
@@ -1044,7 +1044,7 @@
 <div class="mk-wf-body">
 <div class="mk-wf-name">Score the new code <span class="mk-verb v-verify">Verify</span></div>
 <div class="mk-wf-data">
-<b>What the system is doing</b>: Run the new code<b>Three test suites</b> —— 31 public + 5 hold-out + 31 typo.<br/>
+<b>What the system is doing</b>: Run the new code<b> Three test suites</b> —— 31 public + 5 hold-out + 31 typo.<br/>
 <b>Why</b>: Anti-cheating · memorized answers will, on the last two sets,<b>Collapse</b>.
             <div class="mk-perq" id="mk-perq-panel" style="display:none;">
 <div class="mk-perq-h">📊 <b>Per-question scores for all 31</b> <span class="mk-perq-summary" id="mk-perq-summary"></span></div>
@@ -1100,7 +1100,7 @@
 <div class="mk-wf-body">
 <div class="mk-wf-name">Decide whether to "promote" · loop to the next generation <span class="mk-verb v-commit">Commit</span></div>
 <div class="mk-wf-data">
-<b>What the system is doing</b>: Weight the four scores into a composite score · <b>&gt; 0 required for promotion</b>Archived · rejected ones are discarded outright.
+<b>What the system is doing</b>: Weight the four scores into a composite score · <b>&gt; 0 required for promotion</b> Archived · rejected ones are discarded outright.
             <div class="mk-score-final" id="mk-score-final" style="display:none;">
 <span class="k">NDCG@5<button aria-label="What is NDCG" class="mk-info" data-info="ndcg" type="button"><span class="mk-info-body">
 <b>NDCG@5</b> · Normalized Discounted Cumulative Gain at 5<br/>
@@ -1130,9 +1130,9 @@
 <a href="https://arxiv.org/abs/2509.19349" rel="noopener" target="_blank">ShinkaEvolve <span>arXiv:2509.19349</span></a>
 </div>
 <p class="mk-footer-body">
-      Every time you click "Start Evolution" it's<b>Actually calls Bedrock</b>(proposer: Sonnet 4.5 / Opus 4.7 / 4.8).
+      Every time you click "Start Evolution" it's<b> Actually calls Bedrock</b>(proposer: Sonnet 4.5 / Opus 4.7 / 4.8).
       Eval set <b>31 e-commerce search questions</b>(8 easy + 8 medium + 15 hardest) · plus <b>5 hold-out problems</b> Anti-memorization · add <b>31 typo questions</b> Prevents brittleness.
-      Proposer generates on the fly <b>3 versions of the harness code</b>, and the results differ every run. When it finishes, it automatically shows<b>Score bar chart</b>, <b>Typical query before/after comparison</b>, <b>Full 31-question matrix</b>.
+      Proposer generates on the fly <b>3 versions of the harness code</b>, and the results differ every run. When it finishes, it automatically shows<b> Score bar chart</b>, <b>Typical query before/after comparison</b>, <b>Full 31-question matrix</b>.
     </p>
 </footer>
 <!-- Inline "next generation" prompt · replaces the modal so the presenter
@@ -1465,7 +1465,7 @@
         const pt = (q.pred_title || q.pred || "None").replace(/"/g, "'");
         const q_ = (q.q || "").replace(/"/g, "'");
         const ndcg = q.ndcg || 0;
-        return `<div class="mk-perq-cell pending" data-idx="${q.idx}" data-hit="${q.hit ? 1 : 0}" data-ndcg="${ndcg.toFixed(3)}" title="${q_}\nExpected: ${gt}\nGot: ${pt}\nNDCG: ${ndcg.toFixed(3)}">…</div>`;
+        return `<div class="mk-perq-cell pending" data-idx="${q.idx}" data-hit="${q.hit ? 1 : 0}" data-ndcg="${ndcg.toFixed(3)}" title="${q_}\n应答: ${gt}\n实答: ${pt}\nNDCG: ${ndcg.toFixed(3)}">…</div>`;
       }).join("");
       html += `
         <div class="mk-perq-tier" data-tier="${t}">
@@ -1564,7 +1564,7 @@
         <span class="rec-tier ${q.tier}">${q.tier}</span>
         <span class="rec-q">${esc(q.q)}</span>
         <span class="rec-gold">${esc(q.gold_title || q.gold)}</span>
-        <span class="rec-pred">${esc(q.pred_title || q.pred || "无")}</span>
+        <span class="rec-pred">${esc(q.pred_title || q.pred || "None")}</span>
         <span class="rec-ndcg">${(q.ndcg || 0).toFixed(2)}</span>
       </div>`).join("");
     container.innerHTML = head + rows;
@@ -1713,8 +1713,8 @@
     card.className = "mk-gen-card " + (promoted ? "win" : "");
     card.innerHTML = `
       <div class="mk-gen-card-head">
-        <span class="mk-gen-title ${promoted && g.n > 0 ? 'win' : ''}">Gen ${g.n}${g.n === 0 ? ' · 起点' : ''}</span>
-        <span class="mk-gen-score">NDCG ${(p.ndcg*100).toFixed(1)}% · 综合 ${g.score.toFixed(3)}</span>
+        <span class="mk-gen-title ${promoted && g.n > 0 ? 'win' : ''}">Gen ${g.n}${g.n === 0 ? ' · Start' : ''}</span>
+        <span class="mk-gen-score">NDCG ${(p.ndcg*100).toFixed(1)}% · Overall ${g.score.toFixed(3)}</span>
       </div>
       <div class="mk-gen-tiers">
         <span class="t">E · ${(p.tier_E*100).toFixed(0)}%</span>

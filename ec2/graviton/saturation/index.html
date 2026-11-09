@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>ARM 上判定资源饱和 — Graviton 指南 03</title>
 <meta content="Graviton (ARM64) EC2 上如何判断 CPU / 内存 / 磁盘 / 网络 是否被打满：PMU、PSI、ENA、eBPF 全套" name="description"/>
-<link href="../../../ec2/assets/style.css" rel="stylesheet"/>
+<link href="../../assets/style.css" rel="stylesheet"/>
 <style>
         .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
         .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
@@ -72,12 +72,12 @@
 <nav class="nav">
 <div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
 <div class="links">
-<a href="../../../ec2/">EC2</a>
+<a href="../../">EC2</a>
 </div>
 </nav>
 <main class="wrap">
 <div class="gv-hero">
-<div class="crumb"><a href="../../../ec2/graviton/">Graviton 指南</a> · 03 / 04 · 饱和判定</div>
+<div class="crumb"><a href="../">Graviton 指南</a> · 03 / 04 · 饱和判定</div>
 <h1>ARM 上判定<span class="g">资源饱和</span></h1>
 <p class="sub">99% 和 x86 一样——Linux 抽象层做得好。1% 是 <code>armv8_pmuv3</code> PMU、Intel-only 工具替代、以及 ENA 特有的 6 个"限流"计数器。</p>
 <nav class="toc">
@@ -241,8 +241,8 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
             实测是 2026-09-22，AL2023 kernel 6.12。硬件计数器数量是 Neoverse V2 芯片固定属性，不会变；SPE / CMN 的开放策略是 AWS 决定的，理论上可能在未来 kernel/hypervisor 版本上放宽——所以本页会随时间失效，重要决定前请自己复现上面的复现步骤。</p>
 <p style="margin-top:0.8rem; font-size:0.83rem; color:var(--text-mute);">
                 测试环境：Tokyo（ap-northeast-1a）· AL2023 kernel 6.12· 2026-09-22 ·
-                <a href="../../../ec2/graviton/saturation/data/pmu-result-m8g.medium.txt" style="color:var(--text-dim); border-bottom:1px dashed var(--border-hi);">m8g.medium 原始输出</a> ·
-                <a href="../../../ec2/graviton/saturation/data/pmu-result-m8g.24xlarge.txt" style="color:var(--text-dim); border-bottom:1px dashed var(--border-hi);">m8g.24xlarge 原始输出</a>
+                <a href="data/pmu-result-m8g.medium.txt" style="color:var(--text-dim); border-bottom:1px dashed var(--border-hi);">m8g.medium 原始输出</a> ·
+                <a href="data/pmu-result-m8g.24xlarge.txt" style="color:var(--text-dim); border-bottom:1px dashed var(--border-hi);">m8g.24xlarge 原始输出</a>
 </p>
 </section>
 <!-- 3 -->
@@ -447,13 +447,13 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
 <div class="next">
 <div class="left">下一站</div>
 <div class="right">
-<a href="../../../ec2/graviton/playbook/">04 / 04</a>
-<a class="big" href="../../../ec2/graviton/playbook/">On-Call Playbook →</a>
+<a href="../playbook/">04 / 04</a>
+<a class="big" href="../playbook/">On-Call Playbook →</a>
 </div>
 </div>
 </main>
 <footer class="footer">
-<p>© 2026 liucao.me · <a href="../../../">Home</a> · <a href="../../../ec2/graviton/">Graviton 指南</a></p>
+<p>© 2026 liucao.me · <a href="../../../">Home</a> · <a href="../">Graviton 指南</a></p>
 </footer>
 <a data-cur="zh" data-to="en" href="../../../en/ec2/graviton/saturation/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>

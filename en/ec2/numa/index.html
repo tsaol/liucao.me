@@ -103,7 +103,7 @@
 <div class="lead">NUMA in three sentences</div>
 <ol>
 <li>A large server has several CPUs,<b>Each CPU manages its own set of memory</b>. A CPU plus its memory is called a NUMA node.</li>
-<li>Reading your own node's memory is fast; reading another node's memory<b>About twice as slow</b>.</li>
+<li>Reading your own node's memory is fast; reading another node's memory<b> About twice as slow</b>.</li>
 <li>So on large machines, besides looking at "how much memory is used", you also need to look at<b>"Which node the memory is placed on"</b>. Small instances (single node) don't need to worry about this at all.</li>
 </ol>
 </div>
@@ -113,7 +113,7 @@
 <p>Let's start with an analogy. A company rents two buildings, and each building has its own file room. Employees who need a file from their own building's file room just walk a few steps. To get a file from the other building, they have to cross the skybridge between the two. The route is longer, the skybridge is only so wide, and when it gets crowded they have to queue.</p>
 <p>This is exactly how memory is laid out in a server:</p>
 <ol>
-<li><b>Building = CPU socket</b>(a CPU socket holds one CPU; it can also be a CCD / tile within a chip, i.e. a group of cores inside the chip). Each socket has its own<b>Memory controller</b>(the circuitry that reads and writes the memory DIMMs).</li>
+<li><b>Building = CPU socket</b>(a CPU socket holds one CPU; it can also be a CCD / tile within a chip, i.e. a group of cores inside the chip). Each socket has its own<b> Memory controller</b>(the circuitry that reads and writes the memory DIMMs).</li>
 <li><b>Records room = DIMM memory module</b>. Each DIMM connects to a specific memory controller, so it "belongs" to a particular socket.</li>
 <li><b>Corridor = interconnect between sockets</b>. Intel calls it UPI (formerly QPI), AMD calls it Infinity Fabric, and Arm Neoverse platforms use a CMN mesh (on-chip mesh network) plus inter-chip coherent links. Bandwidth is limited, and there's extra latency.</li>
 </ol>
@@ -142,14 +142,14 @@
 <rect fill="#151c26" height="142" rx="10" stroke="#26313f" width="230" x="20" y="100"></rect>
 <rect fill="#11171f" height="34" rx="6" stroke="#0bbd87" width="170" x="50" y="124"></rect>
 <text fill="#e8edf2" font-size="12" text-anchor="middle" x="140" y="146">Memory controller</text>
-<rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="42" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="61" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="90" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="109" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="138" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="157" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="186" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="205" y="209">Core</text>
+<rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="42" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="61" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="90" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="109" y="209"> Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="138" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="157" y="209"> Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="186" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="205" y="209"> Core</text>
 <text fill="#64717f" font-size="10" text-anchor="middle" x="135" y="236">CPU socket 0</text>
 <text fill="#e8edf2" font-size="13" font-weight="600" text-anchor="middle" x="585" y="18">NUMA node 1</text>
 <rect fill="#11171f" height="46" rx="4" stroke="#34455a" width="40" x="488" y="30"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="508" y="58">DIMM</text><rect fill="#11171f" height="46" rx="4" stroke="#34455a" width="40" x="540" y="30"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="560" y="58">DIMM</text><rect fill="#11171f" height="46" rx="4" stroke="#34455a" width="40" x="592" y="30"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="612" y="58">DIMM</text><rect fill="#11171f" height="46" rx="4" stroke="#34455a" width="40" x="644" y="30"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="664" y="58">DIMM</text>
 <rect fill="#151c26" height="142" rx="10" stroke="#26313f" width="230" x="470" y="100"></rect>
 <rect fill="#11171f" height="34" rx="6" stroke="#0bbd87" width="170" x="500" y="124"></rect>
 <text fill="#e8edf2" font-size="12" text-anchor="middle" x="590" y="146">Memory controller</text>
-<rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="492" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="511" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="540" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="559" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="588" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="607" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="636" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="655" y="209">Core</text>
+<rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="492" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="511" y="209">Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="540" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="559" y="209"> Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="588" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="607" y="209"> Core</text><rect fill="#0b0f14" height="30" rx="4" stroke="#34455a" width="38" x="636" y="190"></rect><text fill="#9aa7b4" font-size="11" text-anchor="middle" x="655" y="209"> Core</text>
 <text fill="#64717f" font-size="10" text-anchor="middle" x="585" y="236">CPU socket 1</text>
 <rect fill="#11171f" height="22" rx="11" stroke="#f59e0b" stroke-dasharray="5 4" width="220" x="250" y="130"></rect>
 <text fill="#f59e0b" font-size="11" text-anchor="middle" x="360" y="176">socket interconnect: UPI / Infinity Fabric / CMN</text>
@@ -162,7 +162,7 @@
 </figure>
 <p>How much slower exactly? Here are typical latencies:</p>
 <table class="cmp">
-<thead><tr><th>Where the data lives</th><th>Latency</th></tr></thead>
+<thead><tr><th>Where the data lives</th><th> Latency</th></tr></thead>
 <tbody>
 <tr><td>L1 cache (the fastest cache inside the CPU)</td><td>~1 ns</td></tr>
 <tr><td>L2 cache</td><td>~4 ns</td></tr>
@@ -171,7 +171,7 @@
 <tr><td>Remote DRAM (cross-socket)</td><td>~150–200 ns</td></tr>
 </tbody>
 </table>
-<p>Compared with local, cross-socket is roughly<b>2x slower</b>. In other words, for the same memory read, if the data is on the wrong node, you wait twice as long. Multiply that by billions of memory accesses per second and you get a performance gap you can actually feel.</p>
+<p>Compared with local, cross-socket is roughly<b> 2x slower</b>. In other words, for the same memory read, if the data is on the wrong node, you wait twice as long. Multiply that by billions of memory accesses per second and you get a performance gap you can actually feel.</p>
 </section>
 <!-- 2 -->
 <section class="content-section" id="name">
@@ -220,7 +220,7 @@
 </section>
 <!-- 3 -->
 <section class="content-section" id="inspect">
-<h2 class="section-title">3 · Look at<span>Topology</span></h2>
+<h2 class="section-title">3 · Look at<span> Topology</span></h2>
 <p>Before tuning, look at the "floor plan": how many buildings this machine has, and which CPUs and how much memory each building holds. The most common command is <code>numactl -H</code>. Below is a dual-socket x86 machine (<code>m7i.48xlarge</code>, 192 vCPU, 768 GiB) output:</p>
 <pre><span class="c">$ numactl -H</span>
 available: 2 nodes (0-1)
@@ -240,7 +240,7 @@ node   0   1
 <li><b>node distances</b>:<code>10</code> means local,<code>21</code> means one hop away. The ratio is about 2.1, which matches the latency table in the previous section.</li>
 </ul>
 <h3 class="sub-h">Where do numbers like node 0 and node 1 come from</h3>
-<p>It's not Linux guessing on its own; it's<b>What the firmware tells it</b>. At boot, the BIOS / UEFI places two tables in ACPI:</p>
+<p>It's not Linux guessing on its own; it's<b> What the firmware tells it</b>. At boot, the BIOS / UEFI places two tables in ACPI:</p>
 <ul>
 <li><b>SRAT</b>(System Resource Affinity Table): lists which CPUs and which ranges of physical memory belong to the same proximity domain.</li>
 <li><b>SLIT</b>(System Locality Information Table): lists the relative distances between these domains, i.e. the 10 / 21 table above.</li>
@@ -283,7 +283,7 @@ node   0   1
 </figure>
 <div class="callout warn">
 <div class="lead">A node is a logical concept and doesn't necessarily map to a socket</div>
-                A single CPU can also be split into several nodes: AMD EPYC can set NPS (Nodes Per Socket) = 1 / 2 / 4 in BIOS; Intel has SNC (Sub-NUMA Clustering). Conversely, CXL-expanded memory often shows up as a<b>CPU-less node</b>. So always go by <code>numactl -H</code> output as the source of truth; don't just count CPUs.
+                A single CPU can also be split into several nodes: AMD EPYC can set NPS (Nodes Per Socket) = 1 / 2 / 4 in BIOS; Intel has SNC (Sub-NUMA Clustering). Conversely, CXL-expanded memory often shows up as a<b> CPU-less node</b>. So always go by <code>numactl -H</code> output as the source of truth; don't just count CPUs.
             </div>
 <h3 class="sub-h">See other details</h3>
 <pre><span class="c">$ lscpu | grep NUMA</span>
@@ -315,7 +315,7 @@ Private          14200    22103   36303</pre>
 <!-- 4 -->
 <section class="content-section" id="policy">
 <h2 class="section-title">4 · Where to put memory:<span>mempolicy</span></h2>
-<p>Let's start with the most important default behavior:<b>first-touch</b>. The program <code>malloc</code> a large chunk of memory, the kernel doesn't actually allocate it right away; it waits until some thread<b>First write</b>a page (the smallest unit of memory allocation, usually 4 KB) is that page actually allocated, and it is placed on<b>the node that thread was on at the time</b>.</p>
+<p>Let's start with the most important default behavior:<b>first-touch</b>. The program <code>malloc</code> a large chunk of memory, the kernel doesn't actually allocate it right away; it waits until some thread<b> First write</b> a page (the smallest unit of memory allocation, usually 4 KB) is that page actually allocated, and it is placed on<b> the node that thread was on at the time</b>.</p>
 <p>It's like parking: spaces aren't assigned in advance. Whoever drives in first parks in the lot closest to them. Many problems later on happen because "the first one to drive in" isn't the one who actually uses that memory most afterward.</p>
 <p>If you don't want the default behavior, you can set a policy (mempolicy) on a process or a memory range. The most commonly used ones in the kernel docs are <sup>[1]</sup>:</p>
 <figure class="fig">
@@ -427,8 +427,8 @@ Private          14200    22103   36303</pre>
 <ul>
 <li><b>MPOL_DEFAULT</b>: not set separately; it inherits the policy from the level above and ultimately falls back to the system default, which is local.</li>
 <li><b>MPOL_LOCAL</b>: Place it on the node of the CPU doing the allocation. This is first-touch.</li>
-<li><b>MPOL_BIND</b>: Allocate only from the specified set of nodes. If the set has multiple nodes, pick the one closest to the allocating point that has enough free memory. If all are full, you get<b>Fails outright</b>, and won't borrow from elsewhere.</li>
-<li><b>MPOL_PREFERRED</b>: prefer allocating from the specified<b>One node</b> allocation; if that fails, try other nodes from nearest to farthest.</li>
+<li><b>MPOL_BIND</b>: Allocate only from the specified set of nodes. If the set has multiple nodes, pick the one closest to the allocating point that has enough free memory. If all are full, you get<b> Fails outright</b>, and won't borrow from elsewhere.</li>
+<li><b>MPOL_PREFERRED</b>: prefer allocating from the specified<b> One node</b> allocation; if that fails, try other nodes from nearest to farthest.</li>
 <li><b>MPOL_INTERLEAVE</b>: Interleave allocation page by page across the specified nodes. Good for large shared memory regions that "everyone reads", such as database caches.</li>
 </ul>
 <p>Newer kernels add two more:<code>MPOL_PREFERRED_MANY</code>(since 5.15, can prefer a set of nodes) and <code>MPOL_WEIGHTED_INTERLEAVE</code>(since 6.9, interleaves pages by weight, often used with CXL memory).</p>
@@ -441,7 +441,7 @@ numactl --interleave=all ./mysqld
 numactl --preferred=1 ./batch-job</pre>
 <div class="callout warn">
 <div class="lead">The sentence people trip over most</div>
-                The kernel docs say it verbatim: "pages already faulted in ... remain where they were allocated based on the policy at the time." In other words, changing the policy<b>No</b>move memory that has already been allocated, unless you explicitly call <code>mbind()</code> or <code>migrate_pages()</code>. So changing the policy after the service has already warmed up does little; set it at startup.<sup>[1]</sup>
+                The kernel docs say it verbatim: "pages already faulted in ... remain where they were allocated based on the policy at the time." In other words, changing the policy<b> No</b> move memory that has already been allocated, unless you explicitly call <code>mbind()</code> or <code>migrate_pages()</code>. So changing the policy after the service has already warmed up does little; set it at startup.<sup>[1]</sup>
 </div>
 </section>
 <!-- 5 -->
@@ -449,14 +449,14 @@ numactl --preferred=1 ./batch-job</pre>
 <h2 class="section-title">5 · Interpreting the results <span>numastat counters</span></h2>
 <p>Type directly <code>numastat</code>, you'll see a column of counters for each node. Think of it like hotel booking records: you wanted to stay at Hotel A, but A was full, so you were put in Hotel B. In that case, A records a "guest who didn't get in" and B records a "guest who wasn't meant for us."</p>
 <table class="cmp">
-<thead><tr><th>counters</th><th>Meaning (man 8 numastat)<sup>[5]</sup></th></tr></thead>
+<thead><tr><th>counters</th><th> Meaning (man 8 numastat)<sup>[5]</sup></th></tr></thead>
 <tbody>
-<tr><td><code>numa_hit</code></td><td>Meant to land on this node, and it did land on this node.</td></tr>
-<tr><td><code>numa_miss</code></td><td>The process wanted another node but ended up on this node.</td></tr>
-<tr><td><code>numa_foreign</code></td><td>Meant to go on this node, but ended up on another node.<b>Every miss on one node corresponds to a foreign on another node.</b></td></tr>
-<tr><td><code>interleave_hit</code></td><td>Placed on this node as planned under the interleave policy.</td></tr>
-<tr><td><code>local_node</code></td><td>The process runs on this node, and its memory is also allocated on this node.</td></tr>
-<tr><td><code>other_node</code></td><td>The process runs on another node, but its memory is allocated on this node.</td></tr>
+<tr><td><code>numa_hit</code></td><td> Meant to land on this node, and it did land on this node.</td></tr>
+<tr><td><code>numa_miss</code></td><td> The process wanted another node but ended up on this node.</td></tr>
+<tr><td><code>numa_foreign</code></td><td> Meant to go on this node, but ended up on another node.<b>Every miss on one node corresponds to a foreign on another node.</b></td></tr>
+<tr><td><code>interleave_hit</code></td><td> Placed on this node as planned under the interleave policy.</td></tr>
+<tr><td><code>local_node</code></td><td> The process runs on this node, and its memory is also allocated on this node.</td></tr>
+<tr><td><code>other_node</code></td><td> The process runs on another node, but its memory is allocated on this node.</td></tr>
 </tbody>
 </table>
 <figure class="fig">
@@ -525,7 +525,7 @@ numactl --preferred=1 ./batch-job</pre>
 </svg>
 <figcaption>Figure 7: The NUMA balancing loop. It doesn't move everything at once; it keeps sampling, tracking, and migrating.</figcaption>
 </figure>
-<p>The kernel docs put it bluntly: these unmappings and faults add overhead, in the hope of earning it back through better locality, but<b>Profit not guaranteed</b>; if the workload is already manually pinned to a node, turn it off.<sup>[2]</sup></p>
+<p>The kernel docs put it bluntly: these unmappings and faults add overhead, in the hope of earning it back through better locality, but<b> Profit not guaranteed</b>; if the workload is already manually pinned to a node, turn it off.<sup>[2]</sup></p>
 <p>To tell whether it's helping, look at <code>/proc/vmstat</code>:</p>
 <pre>numa_pte_updates          <span class="c">← pages sampled</span>
 numa_hint_faults          <span class="c">← hint faults triggered</span>
@@ -585,7 +585,7 @@ pgmigrate_success/fail    <span class="c">← migration succeeded / failed</span
 <p>Why does this happen? It's the first-touch behavior described earlier: most of the buffer pool was first written by threads running on node 0, so it all landed on node 0. On top of that, when local node memory ran short, the kernel at the time tended to reclaim local memory first (including swapping) rather than immediately allocating on a remote node.</p>
 <p>The fix is just one line, in <code>mysqld_safe</code> add:</p>
 <pre>cmd=<span class="k">"/usr/bin/numactl --interleave all $cmd"</span></pre>
-<p>After that, the buffer pool on the two nodes<b>26.00 GB each</b>, and swap disappeared.</p>
+<p>After that, the buffer pool on the two nodes<b> 26.00 GB each</b>, and swap disappeared.</p>
 <p>MySQL 5.7 later simply added <code>innodb_numa_interleave</code> parameters to do this <sup>[9]</sup>; another related switch <code>vm.zone_reclaim_mode</code>, and for databases the common advice is to set it to 0 (the default since Linux 3.16).</p>
 </section>
 <!-- 8 -->
@@ -633,7 +633,7 @@ pgmigrate_success/fail    <span class="c">← migration succeeded / failed</span
 <p><code>Pool(64)</code> It forks a batch of workers, and the scheduler spreads them across nodes; but large arrays built in the parent process before the fork live only on the parent's node. As a result, half the workers keep reading remote memory.</p>
 <p>Fix: bind both the parent process and the workers to the same node, or have each worker load its own data after fork.</p>
 <h3 class="sub-h">Docker container</h3>
-<p>Not set <code>--cpuset-cpus</code> and <code>--cpuset-mems</code> containers, every scheduling decision is a gamble. Setting only CPU without memory only counts as<b>Half fixed</b>: the CPU is on node 0, but the memory may be entirely on node 1.</p>
+<p>Not set <code>--cpuset-cpus</code> and <code>--cpuset-mems</code> containers, every scheduling decision is a gamble. Setting only CPU without memory only counts as<b> Half fixed</b>: the CPU is on node 0, but the memory may be entirely on node 1.</p>
 <h3 class="sub-h">NIC queues (ENA)</h3>
 <p>The NIC also belongs to a node. ENA has multiple TX/RX queues, and each queue has an interrupt (an MSI-X IRQ, the signal the NIC uses to "wake up" a CPU). Packets are processed on whichever CPU the interrupt is pinned to.</p>
 <p>If your application runs on node 1 but the receive interrupts land on node 0, every packet has to cross the socket interconnect. AWS's ENA best practices recommend placing the application and the queues it uses on the same node <sup>[7]</sup>.</p>
@@ -740,7 +740,7 @@ cat /sys/class/net/eth0/device/numa_node</pre>
 </ul>
 <p>Supporting evidence: when you customize the core count via CPU options, m8i.48xlarge only allows multiples of 3, and 96xlarge only multiples of 6, matching exactly 3 and 6 nodes.</p>
 <h3 class="sub-h">m9g (Graviton5): one chip, two halves</h3>
-<p>Graviton5 packs 192 cores into a single package, with no hyperthreading and 2 × 96 MB of L3 cache. Judging from the measured topology, the chip looks like<b>Two 96-core halves</b>joined together; each half is one node.<sup>[12]</sup><sup>[14]</sup></p>
+<p>Graviton5 packs 192 cores into a single package, with no hyperthreading and 2 × 96 MB of L3 cache. Judging from the measured topology, the chip looks like<b> Two 96-core halves</b> joined together; each half is one node.<sup>[12]</sup><sup>[14]</sup></p>
 <ul>
 <li><b>medium to 12xlarge</b>(up to 48 vCPU):<b>1 node</b>.</li>
 <li><b>16xlarge</b>(64 vCPU):<b>2 nodes</b>, each side with 32 cores and about 124 GiB. AWS's Graviton docs also state that "16xlarge and 48xlarge have 2 nodes".</li>
@@ -750,11 +750,11 @@ cat /sys/class/net/eth0/device/numa_node</pre>
 <p>In other words, <b>On m9g, the intuition that "larger instances have more nodes" doesn't hold</b>. The 16xlarge is smaller than the 24xlarge, yet it spans two nodes. If your service is latency-sensitive and needs around 64 cores, m9g.24xlarge is actually less hassle than 16xlarge.</p>
 <h3 class="sub-h">vs. previous generation</h3>
 <table class="cmp">
-<thead><tr><th>Family</th><th>Single-node sizes</th><th>Multi-node sizes</th></tr></thead>
+<thead><tr><th>Family</th><th> Single-node sizes</th><th> Multi-node sizes</th></tr></thead>
 <tbody>
-<tr><td>m7g (Graviton3, 64 cores)</td><td>All, up to 16xlarge / metal</td><td>None</td></tr>
-<tr><td>m7i (Sapphire Rapids, 48 cores per CPU)</td><td>24xlarge and below</td><td>48xlarge / metal-48xl: 2 nodes</td></tr>
-<tr><td>m7a (EPYC Genoa)</td><td>24xlarge and below</td><td>32xlarge (2 × 64 cores), 48xlarge: 2 nodes</td></tr>
+<tr><td>m7g (Graviton3, 64 cores)</td><td>All, up to 16xlarge / metal</td><td> None</td></tr>
+<tr><td>m7i (Sapphire Rapids, 48 cores per CPU)</td><td>24xlarge and below</td><td> 48xlarge / metal-48xl: 2 nodes</td></tr>
+<tr><td>m7a (EPYC Genoa)</td><td>24xlarge and below</td><td> 32xlarge (2 × 64 cores), 48xlarge: 2 nodes</td></tr>
 </tbody>
 </table>
 <div class="callout warn">
@@ -765,15 +765,15 @@ cat /sys/class/net/eth0/device/numa_node</pre>
 <!-- 10 -->
 <section class="content-section" id="k8s">
 <h2 class="section-title">10 · <span>Kubernetes</span> 's NUMA trio</h2>
-<p>In Kubernetes, the kubelet handles this. Think of it like arranging seats at a banquet: the CPU, memory, NIC, or GPU a Pod uses should ideally be seated at<b>Same hall</b>, not split across two buildings. Inside kubelet there are three components working together <sup>[6]</sup>:</p>
+<p>In Kubernetes, the kubelet handles this. Think of it like arranging seats at a banquet: the CPU, memory, NIC, or GPU a Pod uses should ideally be seated at<b> Same hall</b>, not split across two buildings. Inside kubelet there are three components working together <sup>[6]</sup>:</p>
 <ul>
-<li><b>CPU Manager</b>(<code>static</code> policy): for Pods with Guaranteed QoS (requests equal to limits) and integer CPU requests <b>Exclusive</b>a group of cores.</li>
+<li><b>CPU Manager</b>(<code>static</code> policy): for Pods with Guaranteed QoS (requests equal to limits) and integer CPU requests <b>Exclusive</b> a group of cores.</li>
 <li><b>Memory Manager</b>(<code>Static</code> policy): reserves memory for these Pods on the specified NUMA node.</li>
 <li><b>Topology Manager</b>: Coordinates by combining the hints from the first two and the device plugins, deciding "which hall to sit in". It has four policies:
                     <ul>
 <li><code>none</code>: the default; alignment is ignored.</li>
 <li><code>best-effort</code>: Align if possible; if not, still let the Pod start.</li>
-<li><code>restricted</code>: Align if possible; if not,<b>Reject</b>this Pod.</li>
+<li><code>restricted</code>: Align if possible; if not,<b>Reject</b> this Pod.</li>
 <li><code>single-numa-node</code>: CPU, memory, and devices must all be on the same node, or the request is rejected.</li>
 </ul>
 </li>
@@ -815,7 +815,7 @@ cat /sys/class/net/eth0/device/numa_node</pre>
 </section>
 <!-- 11 -->
 <section class="content-section" id="skip">
-<h2 class="section-title">11 · When<span>No need to worry about it</span></h2>
+<h2 class="section-title">11 · When<span> No need to worry about it</span></h2>
 <ul>
 <li><b>Single-node instances</b>: For example <code>m8g</code> / <code>m8a</code> 's 24xlarge and below, <code>m8i</code> 's 16xlarge and below, <code>m9g</code> 's 12xlarge and below (plus m9g.24xlarge).<code>numactl -H</code> shows only one node, this article doesn't apply to you.</li>
 <li><b>Stateless, horizontally scalable services</b>: Running several small instances or small Pods is simpler than using one huge instance.</li>

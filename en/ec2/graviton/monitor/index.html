@@ -69,7 +69,7 @@
 <main class="wrap">
 <div class="gv-hero">
 <div class="crumb"><a href="../">Graviton Guide</a> · 02 / 04 · Observability</div>
-<h1><span class="g">Three-layer EC2</span>Monitoring stack</h1>
+<h1><span class="g">Three-layer EC2</span> Monitoring stack</h1>
 <p class="sub">CloudWatch → CloudWatch Agent → Prometheus + Node Exporter, paired with three methodologies: USE / RED / Four Golden Signals.</p>
 <nav class="toc">
 <a href="#methodology">1 · Choose one of three methodologies</a>
@@ -87,7 +87,7 @@
 <section class="content-section" id="methodology">
 <h2 class="section-title">1 · <span>Methodology</span>——USE / RED / Golden Signals</h2>
 <table class="cmp">
-<thead><tr><th>Method</th><th>Perspective</th><th>Three metrics</th><th>Good for</th></tr></thead>
+<thead><tr><th>Method</th><th> Perspective</th><th> Three metrics</th><th> Good for</th></tr></thead>
 <tbody>
 <tr>
 <td><b>USE</b><br/>(Brendan Gregg)</td>
@@ -110,13 +110,13 @@
 </tbody>
 </table>
 <p><b>The three don't conflict:</b>On EC2, host-level USE (Node Exporter) plus application-level Golden Signals (custom exporter / OpenTelemetry) is enough. In Gregg's words: "solves about 80% of server issues with 5% of the effort."<sup>[1]</sup></p>
-<p>The Google SRE Book has a special warning about latency:<b>Latency of successful requests</b>needs to be paired with<b>Latency of failed requests</b>Count them separately. "a slow error is even worse than a fast error": a 500 that returns slowly is much worse than a fast failure.<sup>[2]</sup></p>
+<p>The Google SRE Book has a special warning about latency:<b>Latency of successful requests</b> needs to be paired with<b> Latency of failed requests</b> Count them separately. "a slow error is even worse than a fast error": a 500 that returns slowly is much worse than a fast failure.<sup>[2]</sup></p>
 </section>
 <!-- 2 -->
 <section class="content-section" id="layers">
-<h2 class="section-title">2 · <span>Three layers</span>Data sources: the further down, the more accurate and the more expensive</h2>
+<h2 class="section-title">2 · <span>Three layers</span> Data sources: the further down, the more accurate and the more expensive</h2>
 <table class="cmp">
-<thead><tr><th>Layer</th><th>Can see</th><th>Not visible</th><th>Cost</th></tr></thead>
+<thead><tr><th>Layer</th><th> Can see</th><th> Not visible</th><th> Cost</th></tr></thead>
 <tbody>
 <tr>
 <td><b>1</b> · CloudWatch built-in</td>
@@ -264,12 +264,12 @@ remote_write:
 <section class="content-section" id="logs">
 <h2 class="section-title">6 · <span>Logs</span> Cost comparison at 100 GB/month</h2>
 <table class="cmp">
-<thead><tr><th>Backend</th><th>Ingest</th><th>Storage</th><th>Query</th><th>Notes</th></tr></thead>
+<thead><tr><th>Backend</th><th>Ingest</th><th>Storage</th><th>Query</th><th> Notes</th></tr></thead>
 <tbody>
-<tr><td>CloudWatch Logs (Standard)</td><td>$0.50/GB × 100 = <b>$50</b></td><td>$0.03/GB/month ≈ $3</td><td>Insights $0.005/GB scan</td><td>IA class drops to $0.25/GB ingest</td></tr>
-<tr><td>OpenSearch (self-managed)</td><td>included</td><td>$100+ compute/EBS</td><td>Built into the UI</td><td>Run the cluster yourself</td></tr>
-<tr><td>Loki + S3</td><td>~$5</td><td>~$2.30/month</td><td>Free</td><td>You operate it; tag index</td></tr>
-<tr><td>Grafana Cloud Loki</td><td>included</td><td>included</td><td>included</td><td>Managed; the free tier is enough for small projects</td></tr>
+<tr><td>CloudWatch Logs (Standard)</td><td>$0.50/GB × 100 = <b>$50</b></td><td>$0.03/GB/month ≈ $3</td><td>Insights $0.005/GB scan</td><td> IA class drops to $0.25/GB ingest</td></tr>
+<tr><td>OpenSearch (self-managed)</td><td>included</td><td>$100+ compute/EBS</td><td> Built into the UI</td><td> Run the cluster yourself</td></tr>
+<tr><td>Loki + S3</td><td>~$5</td><td>~$2.30/month</td><td> Free</td><td> You operate it; tag index</td></tr>
+<tr><td>Grafana Cloud Loki</td><td>included</td><td>included</td><td>included</td><td> Managed; the free tier is enough for small projects</td></tr>
 </tbody>
 </table>
 <div class="callout warn"><b>The three places where CloudWatch bills most often blow up:</b>(1) Pushing all 500 Node Exporter metrics as custom metrics: $150/month per machine; (2) embedding high-cardinality JSON such as request-id in logs, sending ingest GB through the roof; (3) Log Insights running full scans on unpartitioned log groups.<sup>[3]</sup></div>
@@ -344,13 +344,13 @@ inhibit_rules:
 <section class="content-section" id="decision">
 <h2 class="section-title">9 · <span>Decision table</span></h2>
 <table class="cmp">
-<thead><tr><th>Scale</th><th>Monthly budget</th><th>Recommended stack</th></tr></thead>
+<thead><tr><th>Scale</th><th> Monthly budget</th><th> Recommended stack</th></tr></thead>
 <tbody>
-<tr><td>1–3 instances</td><td>$0</td><td>Node Exporter → Grafana Cloud (free)</td></tr>
+<tr><td>1–3 instances</td><td>$0</td><td> Node Exporter → Grafana Cloud (free)</td></tr>
 <tr><td>4–20 instances</td><td>&lt;$100</td><td>CloudWatch Agent + built-in dashboards + CW Alarms</td></tr>
-<tr><td>20–100 instances</td><td>$100–500</td><td>Self-hosted Prometheus + Grafana + Loki (running on a <code>t4g.medium</code>)</td></tr>
+<tr><td>20–100 instances</td><td>$100–500</td><td> Self-hosted Prometheus + Grafana + Loki (running on a <code>t4g.medium</code>)</td></tr>
 <tr><td>100+ machines</td><td>$500+</td><td>Amazon Managed Prometheus + Managed Grafana + Loki or OpenSearch</td></tr>
-<tr><td>Compliance / long retention</td><td>Any</td><td>AMP (≥150 days) + OpenSearch logs</td></tr>
+<tr><td>Compliance / long retention</td><td> Any</td><td> AMP (≥150 days) + OpenSearch logs</td></tr>
 </tbody>
 </table>
 </section>

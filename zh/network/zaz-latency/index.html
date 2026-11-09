@@ -144,7 +144,7 @@
 <p class="subtitle">往返时间，起点为 AWS <code style="font-family: ui-monospace, monospace;">eu-south-2</code> （西班牙 / 阿拉贡）到其他所有 AWS 商业区域。</p>
 <div class="meta">
 <div><strong>源：</strong> eu-south-2（西班牙阿拉贡）</div>
-<div><strong>目标：</strong> 34 regions</div>
+<div><strong>目标：</strong> 34 个区域</div>
 <div><strong>时间窗口：</strong> 滚动 1 周</div>
 <div><strong>来源：</strong> <a href="https://www.cloudping.co/" rel="noopener" style="color:inherit; text-decoration: underline;" target="_blank">cloudping.co</a> · <a href="https://www.cloudping.co/api/latencies?percentile=p_50&amp;timeframe=1W" rel="noopener" style="color:inherit; text-decoration: underline;" target="_blank">API</a></div>
 <div id="fetchedAt"></div>
@@ -161,7 +161,7 @@
 <div class="segmented" id="grp">
 <button class="on" data-g="all">All</button>
 <button data-g="Europe">欧洲</button>
-<button data-g="North America">N.America</button>
+<button data-g="North America">北美</button>
 <button data-g="Asia Pacific">APAC</button>
 <button data-g="other">其他</button>
 </div>
@@ -225,7 +225,7 @@
 <tr style="border-bottom: 1px solid var(--gray-100);">
 <td style="padding: 0.4rem 0.5rem 0.4rem 0;"><a href="https://www.cloudping.co/" rel="noopener" target="_blank">CloudPing.co</a></td>
 <td style="padding: 0.4rem 0.5rem;">EC2 → EC2 TCP，全部 35 个区域</td>
-<td style="padding: 0.4rem 0.5rem;"><strong style="color: var(--green);">有，JSON</strong></td>
+<td style="padding: 0.4rem 0.5rem;"><strong style="color: var(--green);">Yes, JSON</strong></td>
 <td style="padding: 0.4rem 0.5rem;"><strong>本文采用。</strong> 唯一提供 p10/p50/p99、1D/1W/1M/1Y 时间窗口以及完整 N×N 覆盖的公开来源。</td>
 </tr>
 <tr style="border-bottom: 1px solid var(--gray-100);">
@@ -282,7 +282,7 @@
 </div>
 </div>
 <script>
-const DATA = [{"code": "eu-west-3", "city": "Paris", "flag": "\ud83c\uddeb\ud83c\uddf7", "group": "Europe", "iata": "CDG", "p10": 16.4162, "p50": 18.028999999999996, "p99": 28.040000000000003}, {"code": "eu-west-2", "city": "London", "flag": "\ud83c\uddec\ud83c\udde7", "group": "Europe", "iata": "LHR", "p10": 20.743, "p50": 22.753999999999998, "p99": 44.27848}, {"code": "eu-central-2", "city": "Zurich", "flag": "\ud83c\udde8\ud83c\udded", "group": "Europe", "iata": "ZRH", "p10": 25.3414, "p50": 27.104999999999997, "p99": 42.298399999999994}, {"code": "eu-south-1", "city": "Milan", "flag": "\ud83c\uddee\ud83c\uddf9", "group": "Europe", "iata": "MXP", "p10": 21.5242, "p50": 27.188000000000002, "p99": 56.31}, {"code": "eu-central-1", "city": "Frankfurt", "flag": "\ud83c\udde9\ud83c\uddea", "group": "Europe", "iata": "FRA", "p10": 24.159, "p50": 31.45, "p99": 42.00422}, {"code": "eu-west-1", "city": "Dublin", "flag": "\ud83c\uddee\ud83c\uddea", "group": "Europe", "iata": "DUB", "p10": 31.3742, "p50": 32.043, "p99": 38.45646000000001}, {"code": "eu-north-1", "city": "Stockholm", "flag": "\ud83c\uddf8\ud83c\uddea", "group": "Europe", "iata": "ARN", "p10": 55.39359999999999, "p50": 57.453, "p99": 66.91669999999999}, {"code": "il-central-1", "city": "Tel Aviv", "flag": "\ud83c\uddee\ud83c\uddf1", "group": "Middle East", "iata": "TLV", "p10": 59.909, "p50": 63.73, "p99": 67.8853}, {"code": "me-south-1", "city": "Bahrain", "flag": "\ud83c\udde7\ud83c\udded", "group": "Middle East", "iata": "BAH", "p10": 96.67, "p50": 96.67, "p99": 96.67}, {"code": "us-east-1", "city": "N. Virginia", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "North America", "iata": "IAD", "p10": 96.3956, "p50": 97.33600000000001, "p99": 104.71834000000001}, {"code": "eusc-de-east-1", "city": "Brandenburg (Sovereign)", "flag": "\ud83c\uddea\ud83c\uddfa", "group": "Europe", "iata": "BER", "p10": 91.2514, "p50": 104.93, "p99": 128.42484}, {"code": "ca-central-1", "city": "Montreal", "flag": "\ud83c\udde8\ud83c\udde6", "group": "North America", "iata": "YUL", "p10": 107.2266, "p50": 110.152, "p99": 120.81267999999999}, {"code": "us-east-2", "city": "Ohio", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "North America", "iata": "CMH", "p10": 108.4694, "p50": 110.921, "p99": 122.15466000000002}, {"code": "ap-south-1", "city": "Mumbai", "flag": "\ud83c\uddee\ud83c\uddf3", "group": "Asia Pacific", "iata": "BOM", "p10": 117.10579999999999, "p50": 119.42699999999999, "p99": 123.60090000000001}, {"code": "me-central-1", "city": "UAE", "flag": "\ud83c\udde6\ud83c\uddea", "group": "Middle East", "iata": "DXB", "p10": 122.089, "p50": 125.07199999999999, "p99": 132.89884}, {"code": "af-south-1", "city": "Cape Town", "flag": "\ud83c\uddff\ud83c\udde6", "group": "Africa", "iata": "CPT", "p10": 133.2682, "p50": 135.728, "p99": 140.51142000000002}, {"code": "ap-south-2", "city": "Hyderabad", "flag": "\ud83c\uddee\ud83c\uddf3", "group": "Asia Pacific", "iata": "HYD", "p10": 132.6072, "p50": 135.784, "p99": 140.7686}, {"code": "us-west-2", "city": "Oregon", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "North America", "iata": "PDX", "p10": 153.2036, "p50": 160.48900000000003, "p99": 168.08408000000003}, {"code": "mx-central-1", "city": "Mexico City", "flag": "\ud83c\uddf2\ud83c\uddfd", "group": "North America", "iata": "MEX", "p10": 160.961, "p50": 167.107, "p99": 178.2309}, {"code": "ap-southeast-1", "city": "Singapore", "flag": "\ud83c\uddf8\ud83c\uddec", "group": "Asia Pacific", "iata": "SIN", "p10": 167.219, "p50": 172.08499999999998, "p99": 175.6038}, {"code": "ca-west-1", "city": "Calgary", "flag": "\ud83c\udde8\ud83c\udde6", "group": "North America", "iata": "YYC", "p10": 168.7774, "p50": 172.713, "p99": 186.76092}, {"code": "us-west-1", "city": "N. California", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "North America", "iata": "SFO", "p10": 167.75639999999999, "p50": 172.76099999999997, "p99": 180.86896000000002}, {"code": "ap-southeast-5", "city": "Malaysia", "flag": "\ud83c\uddf2\ud83c\uddfe", "group": "Asia Pacific", "iata": "KUL", "p10": 172.2606, "p50": 176.14, "p99": 188.48006}, {"code": "ap-southeast-3", "city": "Jakarta", "flag": "\ud83c\uddee\ud83c\udde9", "group": "Asia Pacific", "iata": "CGK", "p10": 183.32899999999998, "p50": 187.986, "p99": 197.47505999999998}, {"code": "ap-southeast-7", "city": "Thailand", "flag": "\ud83c\uddf9\ud83c\udded", "group": "Asia Pacific", "iata": "BKK", "p10": 195.24120000000002, "p50": 199.332, "p99": 208.14058}, {"code": "ap-east-1", "city": "Hong Kong", "flag": "\ud83c\udded\ud83c\uddf0", "group": "Asia Pacific", "iata": "HKG", "p10": 200.11839999999998, "p50": 203.88, "p99": 218.69136}, {"code": "ap-east-2", "city": "Taipei", "flag": "\ud83c\uddf9\ud83c\uddfc", "group": "Asia Pacific", "iata": "TPE", "p10": 203.786, "p50": 204.43200000000002, "p99": 208.98919999999998}, {"code": "sa-east-1", "city": "S\u00e3o Paulo", "flag": "\ud83c\udde7\ud83c\uddf7", "group": "South America", "iata": "GRU", "p10": 220.5858, "p50": 224.644, "p99": 233.61068}, {"code": "ap-northeast-1", "city": "Tokyo", "flag": "\ud83c\uddef\ud83c\uddf5", "group": "Asia Pacific", "iata": "NRT", "p10": 232.63920000000002, "p50": 235.56699999999998, "p99": 244.44790000000003}, {"code": "ap-northeast-3", "city": "Osaka", "flag": "\ud83c\uddef\ud83c\uddf5", "group": "Asia Pacific", "iata": "KIX", "p10": 243.9042, "p50": 246.476, "p99": 256.85751999999997}, {"code": "ap-northeast-2", "city": "Seoul", "flag": "\ud83c\uddf0\ud83c\uddf7", "group": "Asia Pacific", "iata": "ICN", "p10": 246.6538, "p50": 251.81800000000004, "p99": 265.88148}, {"code": "ap-southeast-2", "city": "Sydney", "flag": "\ud83c\udde6\ud83c\uddfa", "group": "Asia Pacific", "iata": "SYD", "p10": 306.2356, "p50": 310.116, "p99": 319.71332}, {"code": "ap-southeast-4", "city": "Melbourne", "flag": "\ud83c\udde6\ud83c\uddfa", "group": "Asia Pacific", "iata": "MEL", "p10": 312.3782, "p50": 315.568, "p99": 323.61938}, {"code": "ap-southeast-6", "city": "Auckland", "flag": "\ud83c\uddf3\ud83c\uddff", "group": "Asia Pacific", "iata": "AKL", "p10": 327.41880000000003, "p50": 330.915, "p99": 340.72488}];
+const DATA = [{"code": "eu-west-3", "city": "巴黎", "flag": "\ud83c\uddeb\ud83c\uddf7", "group": "欧洲", "iata": "CDG", "p10": 16.4162, "p50": 18.028999999999996, "p99": 28.040000000000003}, {"code": "eu-west-2", "city": "伦敦", "flag": "\ud83c\uddec\ud83c\udde7", "group": "欧洲", "iata": "LHR", "p10": 20.743, "p50": 22.753999999999998, "p99": 44.27848}, {"code": "eu-central-2", "city": "苏黎世", "flag": "\ud83c\udde8\ud83c\udded", "group": "欧洲", "iata": "ZRH", "p10": 25.3414, "p50": 27.104999999999997, "p99": 42.298399999999994}, {"code": "eu-south-1", "city": "米兰", "flag": "\ud83c\uddee\ud83c\uddf9", "group": "欧洲", "iata": "MXP", "p10": 21.5242, "p50": 27.188000000000002, "p99": 56.31}, {"code": "eu-central-1", "city": "法兰克福", "flag": "\ud83c\udde9\ud83c\uddea", "group": "欧洲", "iata": "FRA", "p10": 24.159, "p50": 31.45, "p99": 42.00422}, {"code": "eu-west-1", "city": "都柏林", "flag": "\ud83c\uddee\ud83c\uddea", "group": "欧洲", "iata": "DUB", "p10": 31.3742, "p50": 32.043, "p99": 38.45646000000001}, {"code": "eu-north-1", "city": "斯德哥尔摩", "flag": "\ud83c\uddf8\ud83c\uddea", "group": "欧洲", "iata": "ARN", "p10": 55.39359999999999, "p50": 57.453, "p99": 66.91669999999999}, {"code": "il-central-1", "city": "特拉维夫", "flag": "\ud83c\uddee\ud83c\uddf1", "group": "中东", "iata": "TLV", "p10": 59.909, "p50": 63.73, "p99": 67.8853}, {"code": "me-south-1", "city": "巴林", "flag": "\ud83c\udde7\ud83c\udded", "group": "中东", "iata": "BAH", "p10": 96.67, "p50": 96.67, "p99": 96.67}, {"code": "us-east-1", "city": "弗吉尼亚北部", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "北美", "iata": "IAD", "p10": 96.3956, "p50": 97.33600000000001, "p99": 104.71834000000001}, {"code": "eusc-de-east-1", "city": "勃兰登堡（主权云）", "flag": "\ud83c\uddea\ud83c\uddfa", "group": "欧洲", "iata": "BER", "p10": 91.2514, "p50": 104.93, "p99": 128.42484}, {"code": "ca-central-1", "city": "蒙特利尔", "flag": "\ud83c\udde8\ud83c\udde6", "group": "北美", "iata": "YUL", "p10": 107.2266, "p50": 110.152, "p99": 120.81267999999999}, {"code": "us-east-2", "city": "俄亥俄", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "北美", "iata": "CMH", "p10": 108.4694, "p50": 110.921, "p99": 122.15466000000002}, {"code": "ap-south-1", "city": "孟买", "flag": "\ud83c\uddee\ud83c\uddf3", "group": "亚太地区", "iata": "BOM", "p10": 117.10579999999999, "p50": 119.42699999999999, "p99": 123.60090000000001}, {"code": "me-central-1", "city": "阿联酋", "flag": "\ud83c\udde6\ud83c\uddea", "group": "中东", "iata": "DXB", "p10": 122.089, "p50": 125.07199999999999, "p99": 132.89884}, {"code": "af-south-1", "city": "开普敦", "flag": "\ud83c\uddff\ud83c\udde6", "group": "非洲", "iata": "CPT", "p10": 133.2682, "p50": 135.728, "p99": 140.51142000000002}, {"code": "ap-south-2", "city": "海得拉巴", "flag": "\ud83c\uddee\ud83c\uddf3", "group": "亚太地区", "iata": "HYD", "p10": 132.6072, "p50": 135.784, "p99": 140.7686}, {"code": "us-west-2", "city": "俄勒冈", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "北美", "iata": "PDX", "p10": 153.2036, "p50": 160.48900000000003, "p99": 168.08408000000003}, {"code": "mx-central-1", "city": "墨西哥城", "flag": "\ud83c\uddf2\ud83c\uddfd", "group": "北美", "iata": "MEX", "p10": 160.961, "p50": 167.107, "p99": 178.2309}, {"code": "ap-southeast-1", "city": "新加坡", "flag": "\ud83c\uddf8\ud83c\uddec", "group": "亚太地区", "iata": "SIN", "p10": 167.219, "p50": 172.08499999999998, "p99": 175.6038}, {"code": "ca-west-1", "city": "卡尔加里", "flag": "\ud83c\udde8\ud83c\udde6", "group": "北美", "iata": "YYC", "p10": 168.7774, "p50": 172.713, "p99": 186.76092}, {"code": "us-west-1", "city": "加利福尼亚北部", "flag": "\ud83c\uddfa\ud83c\uddf8", "group": "北美", "iata": "SFO", "p10": 167.75639999999999, "p50": 172.76099999999997, "p99": 180.86896000000002}, {"code": "ap-southeast-5", "city": "马来西亚", "flag": "\ud83c\uddf2\ud83c\uddfe", "group": "亚太地区", "iata": "KUL", "p10": 172.2606, "p50": 176.14, "p99": 188.48006}, {"code": "ap-southeast-3", "city": "雅加达", "flag": "\ud83c\uddee\ud83c\udde9", "group": "亚太地区", "iata": "CGK", "p10": 183.32899999999998, "p50": 187.986, "p99": 197.47505999999998}, {"code": "ap-southeast-7", "city": "泰国", "flag": "\ud83c\uddf9\ud83c\udded", "group": "亚太地区", "iata": "BKK", "p10": 195.24120000000002, "p50": 199.332, "p99": 208.14058}, {"code": "ap-east-1", "city": "香港", "flag": "\ud83c\udded\ud83c\uddf0", "group": "亚太地区", "iata": "HKG", "p10": 200.11839999999998, "p50": 203.88, "p99": 218.69136}, {"code": "ap-east-2", "city": "台北", "flag": "\ud83c\uddf9\ud83c\uddfc", "group": "亚太地区", "iata": "TPE", "p10": 203.786, "p50": 204.43200000000002, "p99": 208.98919999999998}, {"code": "sa-east-1", "city": "圣保罗", "flag": "\ud83c\udde7\ud83c\uddf7", "group": "南美洲", "iata": "GRU", "p10": 220.5858, "p50": 224.644, "p99": 233.61068}, {"code": "ap-northeast-1", "city": "东京", "flag": "\ud83c\uddef\ud83c\uddf5", "group": "亚太地区", "iata": "NRT", "p10": 232.63920000000002, "p50": 235.56699999999998, "p99": 244.44790000000003}, {"code": "ap-northeast-3", "city": "大阪", "flag": "\ud83c\uddef\ud83c\uddf5", "group": "亚太地区", "iata": "KIX", "p10": 243.9042, "p50": 246.476, "p99": 256.85751999999997}, {"code": "ap-northeast-2", "city": "首尔", "flag": "\ud83c\uddf0\ud83c\uddf7", "group": "亚太地区", "iata": "ICN", "p10": 246.6538, "p50": 251.81800000000004, "p99": 265.88148}, {"code": "ap-southeast-2", "city": "悉尼", "flag": "\ud83c\udde6\ud83c\uddfa", "group": "亚太地区", "iata": "SYD", "p10": 306.2356, "p50": 310.116, "p99": 319.71332}, {"code": "ap-southeast-4", "city": "墨尔本", "flag": "\ud83c\udde6\ud83c\uddfa", "group": "亚太地区", "iata": "MEL", "p10": 312.3782, "p50": 315.568, "p99": 323.61938}, {"code": "ap-southeast-6", "city": "奥克兰", "flag": "\ud83c\uddf3\ud83c\uddff", "group": "亚太地区", "iata": "AKL", "p10": 327.41880000000003, "p50": 330.915, "p99": 340.72488}];
 const state = { p: 'p50', g: 'all', filter: '', sortKey: 'p50', sortDir: 'asc' };
 
 function band(v){
@@ -298,7 +298,7 @@ function render(){
   let rows = DATA.filter(r => {
     if (state.g !== 'all') {
       if (state.g === 'other') {
-        if (['Europe','North America','Asia Pacific'].includes(r.group)) return false;
+        if (['欧洲','北美','亚太地区'].includes(r.group)) return false;
       } else if (r.group !== state.g) return false;
     }
     if (q && ![r.code, r.city, r.iata, r.group].some(x => x.toLowerCase().includes(q))) return false;
@@ -362,24 +362,24 @@ function renderSummary(){
   const under60 = vals.filter(v => v <= 60).length;
   document.getElementById('summary').innerHTML = `
     <div class="card">
-      <div class="card-label">Fastest</div>
+      <div class="card-label">最快</div>
       <div class="card-value">${minR.city} <span class="unit">${minR[state.p].toFixed(1)} ms</span></div>
       <div class="card-sub">${minR.code}</div>
     </div>
     <div class="card">
-      <div class="card-label">Slowest</div>
+      <div class="card-label">最慢</div>
       <div class="card-value">${maxR.city} <span class="unit">${maxR[state.p].toFixed(0)} ms</span></div>
       <div class="card-sub">${maxR.code}</div>
     </div>
     <div class="card">
-      <div class="card-label">Median across regions</div>
+      <div class="card-label">各区域中位数</div>
       <div class="card-value">${median.toFixed(0)}<span class="unit"> ms</span></div>
-      <div class="card-sub">across 34 destinations</div>
+      <div class="card-sub">共 34 个目标区域</div>
     </div>
     <div class="card">
-      <div class="card-label">≤ 60 ms partners</div>
-      <div class="card-value">${under60}<span class="unit"> regions</span></div>
-      <div class="card-sub">sync-replication candidates</div>
+      <div class="card-label">≤ 60 ms 的配对区域</div>
+      <div class="card-value">${under60}<span class="unit"> 个区域</span></div>
+      <div class="card-sub">同步复制候选</div>
     </div>
   `;
 }
@@ -413,7 +413,7 @@ document.querySelectorAll('th[data-sort]').forEach(th => {
   });
 });
 
-document.getElementById('fetchedAt').innerHTML = '<strong>Fetched:</strong> 2026-09-12';
+document.getElementById('fetchedAt').innerHTML = '<strong>获取时间：</strong> 2026-09-12';
 renderSummary();
 render();
 </script>

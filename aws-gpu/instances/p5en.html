@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P5en Instance Family - AWS GPU Instance Comparison</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>P5en Instance Family - AWS GPU Instance Comparison</title>
+<style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #1a202c; line-height: 1.6; }
         .container { max-width: 1800px; margin: 0 auto; background: white; }
@@ -87,74 +88,74 @@
     </style>
 </head>
 <body>
-    <script>try { if (localStorage.getItem('theme') !== 'light') document.body.setAttribute('data-theme', 'dark'); } catch (e) {}</script>
-    <div class="container">
-        <header>
-            <h1>P5en Instance Family</h1>
-            <div class="breadcrumb">
-                <a href="../index.html">← Back to Overview</a> / NVIDIA GPU / P Series / P5EN
+<script>try { if (localStorage.getItem('theme') !== 'light') document.body.setAttribute('data-theme', 'dark'); } catch (e) {}</script>
+<div class="container">
+<header>
+<h1>P5en Instance Family</h1>
+<div class="breadcrumb">
+<a href="../../en/aws-gpu/">← Back to Overview</a> / NVIDIA GPU / P Series / P5EN
             </div>
-        </header>
-        <div class="info-bar">
-            <div class="info-item"><span class="info-label">GPU/Accelerator</span><span class="info-value">NVIDIA H200 Tensor Core</span></div>
-            <div class="info-item"><span class="info-label">Instance Count</span><span class="info-value" id="instanceCount">1 Variants</span></div>
-            <div class="info-item"><span class="info-label">Release Year</span><span class="info-value">2024</span></div>
-            <div class="info-item"><span class="info-label">Use Case</span><span class="info-value">Large-scale Training with Enhanced Memory</span></div>
-            <div class="info-item"><span class="info-label">Current Region</span><span class="info-value" id="currentRegionLabel">US East (N. Virginia)</span></div>
-        </div>
-        <div class="controls">
-            <div class="control-group">
-                <input type="text" id="filterInput" class="filter-input" placeholder="🔍 Filter instances...">
-                <select id="regionSelect" class="region-select" onchange="changeRegion(this.value)">
-                    <optgroup label="Main Regions">
-                        <option value="us-east-1">US East (N. Virginia)</option>
-                        <option value="us-east-2">US East (Ohio)</option>
-                        <option value="us-west-1">US West (N. California)</option>
-                        <option value="us-west-2">US West (Oregon)</option>
-                        <option value="eu-west-1">Europe (Ireland)</option>
-                        <option value="eu-central-1">Europe (Frankfurt)</option>
-                        <option value="ap-southeast-1">Asia Pacific (Singapore)</option>
-                        <option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
-                    </optgroup>
-                    <optgroup label="China Regions">
-                        <option value="cn-north-1">China (Beijing)</option>
-                        <option value="cn-northwest-1">China (Ningxia)</option>
-                    </optgroup>
-                </select>
-            </div>
-            <div class="control-group">
-                <button class="btn btn-secondary" onclick="clearFilter()">Clear Filter</button>
-                <button class="btn btn-primary" onclick="window.location.href='../index.html'">← Back</button>
-            </div>
-        </div>
-        <div class="table-container">
-            <table id="instanceTable">
-                <thead><tr>
-                    <th class="sortable" onclick="sortTable(0)">Instance Type</th>
-                    <th class="sortable" onclick="sortTable(1)">GPU/Accelerator</th>
-                    <th class="sortable" onclick="sortTable(2)">Count</th>
-                    <th class="sortable" onclick="sortTable(3)">vCPUs</th>
-                    <th class="sortable" onclick="sortTable(4)">System Memory</th>
-                    <th class="sortable" onclick="sortTable(5)">Network</th>
-                    <th class="sortable" onclick="sortTable(6)">Storage</th>
-                    <th>Pricing (<span id="regionCode">us-east-1</span>)</th>
-                    <th>Availability</th>
-                </tr></thead>
-                <tbody id="instanceTableBody"></tbody>
-            </table>
-        </div>
-        <div class="stats">
+</header>
+<div class="info-bar">
+<div class="info-item"><span class="info-label">GPU/Accelerator</span><span class="info-value">NVIDIA H200 Tensor Core</span></div>
+<div class="info-item"><span class="info-label">Instance Count</span><span class="info-value" id="instanceCount">1 Variants</span></div>
+<div class="info-item"><span class="info-label">Release Year</span><span class="info-value">2024</span></div>
+<div class="info-item"><span class="info-label">Use Case</span><span class="info-value">Large-scale Training with Enhanced Memory</span></div>
+<div class="info-item"><span class="info-label">Current Region</span><span class="info-value" id="currentRegionLabel">US East (N. Virginia)</span></div>
+</div>
+<div class="controls">
+<div class="control-group">
+<input class="filter-input" id="filterInput" placeholder="🔍 Filter instances..." type="text"/>
+<select class="region-select" id="regionSelect" onchange="changeRegion(this.value)">
+<optgroup label="Main Regions">
+<option value="us-east-1">US East (N. Virginia)</option>
+<option value="us-east-2">US East (Ohio)</option>
+<option value="us-west-1">US West (N. California)</option>
+<option value="us-west-2">US West (Oregon)</option>
+<option value="eu-west-1">Europe (Ireland)</option>
+<option value="eu-central-1">Europe (Frankfurt)</option>
+<option value="ap-southeast-1">Asia Pacific (Singapore)</option>
+<option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
+</optgroup>
+<optgroup label="China Regions">
+<option value="cn-north-1">China (Beijing)</option>
+<option value="cn-northwest-1">China (Ningxia)</option>
+</optgroup>
+</select>
+</div>
+<div class="control-group">
+<button class="btn btn-secondary" onclick="clearFilter()">Clear Filter</button>
+<button class="btn btn-primary" onclick="window.location.href='../index.html'">← Back</button>
+</div>
+</div>
+<div class="table-container">
+<table id="instanceTable">
+<thead><tr>
+<th class="sortable" onclick="sortTable(0)">Instance Type</th>
+<th class="sortable" onclick="sortTable(1)">GPU/Accelerator</th>
+<th class="sortable" onclick="sortTable(2)">Count</th>
+<th class="sortable" onclick="sortTable(3)">vCPUs</th>
+<th class="sortable" onclick="sortTable(4)">System Memory</th>
+<th class="sortable" onclick="sortTable(5)">Network</th>
+<th class="sortable" onclick="sortTable(6)">Storage</th>
+<th>Pricing (<span id="regionCode">us-east-1</span>)</th>
+<th>Availability</th>
+</tr></thead>
+<tbody id="instanceTableBody"></tbody>
+</table>
+</div>
+<div class="stats">
             Showing <strong id="visibleCount">0</strong> of <strong id="totalCount">0</strong> instances |
             Pricing for <strong id="statsRegion">us-east-1</strong> region |
             Real pricing data from <strong>instances.vantage.sh</strong> (AWS Pricing API)
         </div>
-        <footer>
-            <p>AWS GPU Instance Comparison | <a href="../index.html">Back to Overview</a></p>
-            <p style="margin-top: 8px; font-size: 0.9em; opacity: 0.8;">Data updated: 2026-11-08. Prices subject to change.</p>
-        </footer>
-    </div>
-    <script src="../data/p5en_instances.js"></script>
-    <script>
+<footer>
+<p>AWS GPU Instance Comparison | <a href="../../en/aws-gpu/">Back to Overview</a></p>
+<p style="margin-top: 8px; font-size: 0.9em; opacity: 0.8;">Data updated: 2026-11-08. Prices subject to change.</p>
+</footer>
+</div>
+<script src="../data/p5en_instances.js"></script>
+<script>
         let currentRegion = "us-east-1";
         const regionNames = {"us-east-1": "US East (N. Virginia)", "us-east-2": "US East (Ohio)", "us-west-1": "US West (N. California)", "us-west-2": "US West (Oregon)", "eu-west-1": "Europe (Ireland)", "eu-central-1": "Europe (Frankfurt)", "ap-southeast-1": "Asia Pacific (Singapore)", "ap-northeast-1": "Asia Pacific (Tokyo)", "cn-north-1": "China (Beijing)", "cn-northwest-1": "China (Ningxia)"};
         function renderTable() {
@@ -179,5 +180,5 @@
         function sortTable(columnIndex) { const tbody = document.getElementById('instanceTableBody'); const rows = Array.from(tbody.querySelectorAll('tr')); const isAscending = currentSort.column === columnIndex ? !currentSort.ascending : true; document.querySelectorAll('th').forEach((h, i) => { h.classList.remove('sort-asc', 'sort-desc'); if (i === columnIndex) h.classList.add(isAscending ? 'sort-asc' : 'sort-desc'); }); rows.sort((a, b) => { const aVal = a.cells[columnIndex].textContent.trim(), bVal = b.cells[columnIndex].textContent.trim(); const aNum = parseFloat(aVal.replace(/[^0-9.-]/g, '')), bNum = parseFloat(bVal.replace(/[^0-9.-]/g, '')); if (!isNaN(aNum) && !isNaN(bNum)) return isAscending ? aNum - bNum : bNum - aNum; return isAscending ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal); }); rows.forEach(row => tbody.appendChild(row)); currentSort = { column: columnIndex, ascending: isAscending }; }
         renderTable();
     </script>
-</body>
+<a data-cur="en" data-to="zh" href="../../zh/aws-gpu/instances/p5en.html" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>

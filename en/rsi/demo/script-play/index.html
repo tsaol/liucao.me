@@ -379,8 +379,8 @@
 <div class="sk-data-h">Numbers used in this section</div>
 <div class="sk-data-rows">
 <span class="sk-data-row"><span class="k">Baseline hit rate</span><span class="v cold">30%</span></span>
-<span class="sk-data-row"><span class="k">Generations</span><span class="v">3 generations</span></span>
-<span class="sk-data-row"><span class="k">Eval set</span><span class="v">31 questions (8+8+15)</span></span>
+<span class="sk-data-row"><span class="k">Generations</span><span class="v"> 3 generations</span></span>
+<span class="sk-data-row"><span class="k">Eval set</span><span class="v"> 31 questions (8+8+15)</span></span>
 </div>
 </div>
 </section>
@@ -394,7 +394,7 @@
 <span class="sk-title">Click Start · <span class="sk-title-cn">Set the pace</span></span>
 </div>
 <div class="sk-mainline">
-      Now I'll click<em>Start</em>. The whole process runs over 3 generations · I'll pause between each one · so everyone can see a generation's verdict before deciding whether to run the next.
+      Now I'll click<em> Start</em>. The whole process runs over 3 generations · I'll pause between each one · so everyone can see a generation's verdict before deciding whether to run the next.
     </div>
 <div class="sk-click">
       In the control bar, press <b>▶ Start</b> · Or just press <kbd>Space</kbd> · The timer on the right will start running.
@@ -430,7 +430,7 @@
 <span class="sk-title">Gen 0 · <span class="sk-title-cn">Per-question scoring · card currently being scored</span></span>
 </div>
 <div class="sk-mainline">
-      Now the main act makes its first appearance · Watch<em>Currently scoring</em>This big card: each time a cell lights up, the card switches to that question. The top shows the tier label, the original query, and the expected answer · if the answer is wrong, the actual answer is shown too. This is the evaluation system's<em>Transparency</em>: it doesn't just hand you a score of 30 and call it done · it lets you see for yourself where it went wrong.
+      Now the main act makes its first appearance · Watch<em> Currently scoring</em> This big card: each time a cell lights up, the card switches to that question. The top shows the tier label, the original query, and the expected answer · if the answer is wrong, the actual answer is shown too. This is the evaluation system's<em> Transparency</em>: it doesn't just hand you a score of 30 and call it done · it lets you see for yourself where it went wrong.
     </div>
 <div class="sk-point">
       Point to two places:<b>Currently scoring</b> Large card (above the grid) · and <b>The i icon next to NDCG</b>(hover to explain what each metric means). These two spots are where the audience most easily gets lost · the presenter should actively guide their attention.
@@ -458,10 +458,10 @@
 <span class="sk-title">Gen 0 · <span class="sk-title-cn">Missed-question review table + overall score</span></span>
 </div>
 <div class="sk-mainline">
-      All 31 questions done · results appear below automatically<em>Missed-question review</em>table — 18 misses · by tier: E 1 · M 3 · H 14. This isn't decoration · this is<em>The list of wrong answers the next-generation AI will learn from</em>: what the query is, what's expected, what actually came back — the AI uses this table to make targeted code changes. Next, look at node 5: composite score <em>0.420</em> · Greater than 0 · Gen 0 baseline archived.
+      All 31 questions done · results appear below automatically<em> Missed-question review</em> table — 18 misses · by tier: E 1 · M 3 · H 14. This isn't decoration · this is<em> The list of wrong answers the next-generation AI will learn from</em>: what the query is, what's expected, what actually came back — the AI uses this table to make targeted code changes. Next, look at node 5: composite score <em>0.420</em> · Greater than 0 · Gen 0 baseline archived.
     </div>
 <div class="sk-point">
-      Point out two things:<b>Missed-question review</b>The "18/31 · E 1 · M 3 · H 14" summary line next to the title · and <b>Commit</b> in the node <b>NDCG 30.2%</b> + <b>Blended score 0.420</b>.
+      Point out two things:<b>Missed-question review</b> The "18/31 · E 1 · M 3 · H 14" summary line next to the title · and <b>Commit</b> in the node <b>NDCG 30.2%</b> + <b>Blended score 0.420</b>.
     </div>
 <div class="sk-click">
       Hover over <b>Blended score</b> i icon next to it · shows the formula <code>0.7·public + 0.2·hold-out + 0.1·typo − 0.005·code penalty</code> · Explain that "the overall score isn't just the main score · there's also an anti-cheating layer".
@@ -487,7 +487,7 @@
 <span class="sk-title">Gate 1 · <span class="sk-title-cn">Whether to enter Gen 1</span></span>
 </div>
 <div class="sk-mainline">
-      Below the workflow appears a<em>Bottom tip card</em> —— Lists Gen 0's six scores: NDCG@5 30.2% · Tier E/M/H · Hold-out 60% · composite score 0.420. This card doesn't cover the page — I can keep scrolling, hover over tooltips, chat a bit — it just waits for me.
+      Below the workflow appears a<em> Bottom tip card</em> —— Lists Gen 0's six scores: NDCG@5 30.2% · Tier E/M/H · Hold-out 60% · composite score 0.420. This card doesn't cover the page — I can keep scrolling, hover over tooltips, chat a bit — it just waits for me.
     </div>
 <div class="sk-click">
       When you're ready to continue · press <kbd>Enter</kbd> or just click<b>▶ Next generation</b>. You can drop in a Q&amp;A too — the card won't disappear.
@@ -505,15 +505,15 @@
 <span class="sk-title">Gen 1 · <span class="sk-title-cn">How parents are selected · Weight bar visualization</span></span>
 </div>
 <div class="sk-mainline">
-      Gen 1 starts · enters the second node first <em>Select parent + view its report card</em>. Look at this part: the archive has only one candidate, Gen 0, for now · but below it appears<em>How it was selected</em>panel — use <code>softmax(score / 0.15)</code> Turns scores into sampling probabilities · higher scores are more likely to be picked · but never exclusively. This logic gets more interesting after 4-5 real generations · for now it just makes the "hidden logic explicit" so you can take a look.
+      Gen 1 starts · enters the second node first <em>Select parent + view its report card</em>. Look at this part: the archive has only one candidate, Gen 0, for now · but below it appears<em> How it was selected</em> panel — use <code>softmax(score / 0.15)</code> Turns scores into sampling probabilities · higher scores are more likely to be picked · but never exclusively. This logic gets more interesting after 4-5 real generations · for now it just makes the "hidden logic explicit" so you can take a look.
     </div>
 <div class="sk-point">
       Point to <b>Archive</b>(only 1 slot) · then point to <b>How it was selected</b> weighted sampling bars in it · the green 100% bar = Gen 0 selected this round.
     </div>
 <div class="sk-mainline">
-      Now look below — <em>Problems the parent got wrong</em>The panel appears · it's a condensed version of the 18 missed questions from the previous segment · Tier H first · sorted by NDCG, low to high.<em>This is the strongest evidence for evaluation-first</em>: Before the AI writes any code · the system has already packaged up the problems it needs to solve and handed them to it.
+      Now look below — <em>Problems the parent got wrong</em> The panel appears · it's a condensed version of the 18 missed questions from the previous segment · Tier H first · sorted by NDCG, low to high.<em>This is the strongest evidence for evaluation-first</em>: Before the AI writes any code · the system has already packaged up the problems it needs to solve and handed them to it.
     </div>
-<div class="sk-punch">Evals first · not process decoration · they're what you feed the AI<b>Structured input</b>.</div>
+<div class="sk-punch">Evals first · not process decoration · they're what you feed the AI<b> Structured input</b>.</div>
 </section>
 <!-- ═══════════════════════════════════════════════════════════
        P7 · Gen 1 · Propose · 思路 + diff
@@ -532,14 +532,14 @@
       The two streaming panels should be read together:<b>AI's reasoning</b>(purple border · typewriter effect) · below is <b>AI-proposed changes</b>(diff view · red for deletions, green for additions · also streams in line by line). Wait until both panels have filled before moving on to the section below.
     </div>
 <div class="sk-mainline">
-      Look at the diff: it's not adding a line to tweak parameters · it's<em>Full rewrite</em> —— <em>500+ lines of code</em> Changed the retrieval strategy. BM25 is demoted from primary ranking to fallback · the main path goes through the LLM. This is the essential difference between harness evolution and fine-tuning — what changes is<em>Code</em> · not<em>Weights</em>.
+      Look at the diff: it's not adding a line to tweak parameters · it's<em> Full rewrite</em> —— <em>500+ lines of code</em> Changed the retrieval strategy. BM25 is demoted from primary ranking to fallback · the main path goes through the LLM. This is the essential difference between harness evolution and fine-tuning — what changes is<em> Code</em> · not<em> Weights</em>.
     </div>
 <div class="sk-data">
 <div class="sk-data-h">Gen 1 · llm_reranker_full_catalog</div>
 <div class="sk-data-rows">
 <span class="sk-data-row"><span class="k">diff size</span><span class="v">≈ 5673 bytes · +65 / −? lines</span></span>
-<span class="sk-data-row"><span class="k">Key changes</span><span class="v">BM25 → LLM full-catalog reranking</span></span>
-<span class="sk-data-row"><span class="k">Key ideas</span><span class="v">Cross-lingual · semantic · negation</span></span>
+<span class="sk-data-row"><span class="k">Key changes</span><span class="v"> BM25 → LLM full-catalog reranking</span></span>
+<span class="sk-data-row"><span class="k">Key ideas</span><span class="v"> Cross-lingual · semantic · negation</span></span>
 </div>
 </div>
 <div class="sk-punch">Can't change its own brain · so it changes the code it works with.</div>
@@ -556,7 +556,7 @@
 <span class="sk-title">Gen 1 · <span class="sk-title-cn">All green, full marks · 30 to 91</span></span>
 </div>
 <div class="sk-mainline">
-      Node 4 · score each task and run again. This time, watch the cell colors. The Tier H row was almost entirely red before · now<em>All green</em>. All 31 questions hit · Tier H jumps from 2% to <em>85%</em> · hold-out jumps from 0.60 to <em>1.0</em>.<em>The hold-out is 5 problems the AI never sees</em> —— it went up · so it's not memorizing answers · it's real generalization.
+      Node 4 · score each task and run again. This time, watch the cell colors. The Tier H row was almost entirely red before · now<em> All green</em>. All 31 questions hit · Tier H jumps from 2% to <em>85%</em> · hold-out jumps from 0.60 to <em>1.0</em>.<em>The hold-out is 5 problems the AI never sees</em> —— it went up · so it's not memorizing answers · it's real generalization.
     </div>
 <div class="sk-point">
       Point to the two "scarce pieces of evidence":<b>Tier H · 15/15 hits</b>(the H row goes from all red to all green) · and <b>Hold-out 100%</b>. Don't just praise the 91.2% — the hold-out score is the punch.
@@ -602,10 +602,10 @@
 <span class="sk-title">Gen 2 · <span class="sk-title-cn">CoT attempts · diminishing returns</span></span>
 </div>
 <div class="sk-mainline">
-      Gen 2 · this time the AI proposes calling it <code>enable_cot_reasoning</code> · Have the LLM, before answering, first<em>Short reasoning</em> · added <code>FINAL:</code> separator. Its motivation: Gen 1 is already decent · the remaining weak spots are concentrated in the most implicit-intent questions (<em>Reading on a kindle late at night and wanting some ambiance → Retro ambient lamp</em>) · makes the model think one more step.
+      Gen 2 · this time the AI proposes calling it <code>enable_cot_reasoning</code> · Have the LLM, before answering, first<em> Short reasoning</em> · added <code>FINAL:</code> separator. Its motivation: Gen 1 is already decent · the remaining weak spots are concentrated in the most implicit-intent questions (<em>Reading on a kindle late at night and wanting some ambiance → Retro ambient lamp</em>) · makes the model think one more step.
     </div>
 <div class="sk-mainline">
-      Look at node 5: NDCG is still <em>91.2%</em> · but the overall score <em>0.936 → 0.929</em> —— <em>dropped</em>. Tier H rose from 85 to 89 · but Tier M dropped from 94 to 87. This is<em>Diminishing returns</em>: The model has a ceiling · 3 generations of evolution captured everything available.
+      Look at node 5: NDCG is still <em>91.2%</em> · but the overall score <em>0.936 → 0.929</em> —— <em>dropped</em>. Tier H rose from 85 to 89 · but Tier M dropped from 94 to 87. This is<em> Diminishing returns</em>: The model has a ceiling · 3 generations of evolution captured everything available.
     </div>
 <div class="sk-point">
       Compare the two generations' gen cards (stacked at the bottom in order): Gen 1 "Overall 0.936" · Gen 2 "Overall 0.929". Gen 2's <b>Tier H 89%</b> is a new high · but <b>Tier M dropped</b>—— this is what a real run looks like · not a monotone increase.
@@ -631,7 +631,7 @@
 <span class="sk-title">Wrap-up · <span class="sk-title-cn">Eval is the asset</span></span>
 </div>
 <div class="sk-mainline">
-      Three generations done · three Gen cards stacked at the bottom · further down is<em>Method references</em>: ACE · Meta-Harness · DGM · ShinkaEvolve · each one is a clickable arxiv link. You've now seen the whole path — but what's really scarce<em>Not these papers · not the Claude weights either · it's those 31 + 5 + 31 questions</em>. Models change every quarter · Opus will be outdated next year too · but your eval system · no one can take that from you.
+      Three generations done · three Gen cards stacked at the bottom · further down is<em> Method references</em>: ACE · Meta-Harness · DGM · ShinkaEvolve · each one is a clickable arxiv link. You've now seen the whole path — but what's really scarce<em> Not these papers · not the Claude weights either · it's those 31 + 5 + 31 questions</em>. Models change every quarter · Opus will be outdated next year too · but your eval system · no one can take that from you.
     </div>
 <div class="sk-point">
       Scroll all the way down to the <b>Method references</b> · All 4 pills are clickable — when the audience asks about a paper, just click it · no need to switch to the browser.

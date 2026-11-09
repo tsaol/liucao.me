@@ -99,18 +99,18 @@
 <h2 class="section-title">1 · Netflix <span>60 seconds</span> checklist</h2>
 <p>SSH in and run these 10 commands in order, ~1 second each. After 60 seconds you'll know whether it's CPU / memory / disk / network / none of these.<sup>[6]</sup></p>
 <table class="cmp">
-<thead><tr><th>#</th><th>Command</th><th>What it tells you</th></tr></thead>
+<thead><tr><th>#</th><th>Command</th><th> What it tells you</th></tr></thead>
 <tbody>
-<tr><td>1</td><td><code>uptime</code></td><td>Load average 1/5/15: rising / steady / spiking</td></tr>
-<tr><td>2</td><td><code>dmesg -T | tail -20</code></td><td>Kernel messages: OOM, TCP drops, NIC resets, EBS nvme errors</td></tr>
+<tr><td>1</td><td><code>uptime</code></td><td> Load average 1/5/15: rising / steady / spiking</td></tr>
+<tr><td>2</td><td><code>dmesg -T | tail -20</code></td><td> Kernel messages: OOM, TCP drops, NIC resets, EBS nvme errors</td></tr>
 <tr><td>3</td><td><code>vmstat 1 5</code></td><td><code>r</code>=run queue,<code>si/so</code>=swap,<code>us/sy/wa/st</code></td></tr>
-<tr><td>4</td><td><code>mpstat -P ALL 1 5</code></td><td>Per-vCPU imbalance — one hot core = single-thread bottleneck</td></tr>
-<tr><td>5</td><td><code>pidstat 1 5</code></td><td>Rolling per-process CPU delta, better than top for catching spikes</td></tr>
-<tr><td>6</td><td><code>iostat -xz 1 5</code></td><td>Per-device %util / await / queue — this is where EBS latency lives</td></tr>
-<tr><td>7</td><td><code>free -m</code></td><td>free / buff / cache — look at <b>available</b> Don't look at free</td></tr>
-<tr><td>8</td><td><code>sar -n DEV 1 5</code></td><td>Per-NIC packets / bytes vs. instance limits</td></tr>
+<tr><td>4</td><td><code>mpstat -P ALL 1 5</code></td><td> Per-vCPU imbalance — one hot core = single-thread bottleneck</td></tr>
+<tr><td>5</td><td><code>pidstat 1 5</code></td><td> Rolling per-process CPU delta, better than top for catching spikes</td></tr>
+<tr><td>6</td><td><code>iostat -xz 1 5</code></td><td> Per-device %util / await / queue — this is where EBS latency lives</td></tr>
+<tr><td>7</td><td><code>free -m</code></td><td> free / buff / cache — look at <b>available</b> Don't look at free</td></tr>
+<tr><td>8</td><td><code>sar -n DEV 1 5</code></td><td> Per-NIC packets / bytes vs. instance limits</td></tr>
 <tr><td>9</td><td><code>sar -n TCP,ETCP 1 5</code></td><td><code>active/s</code>, <code>retrans/s</code>— retransmits &gt; 0.1% means network pain</td></tr>
-<tr><td>10</td><td><code>top</code></td><td>Sanity check — sort by RES to find leaks</td></tr>
+<tr><td>10</td><td><code>top</code></td><td> Sanity check — sort by RES to find leaks</td></tr>
 </tbody>
 </table>
 </section>
@@ -162,7 +162,7 @@
 <li><b>Fly the airplane first</b>——stop the bleeding first (drain, roll back, shift traffic), then find the root cause. Don't debug while users are bleeding.</li>
 <li><b>Horses, not zebras</b>——the latest deploy / config push is always suspect #1. Mark deploy timestamps on the dashboard.</li>
 <li><b>Simplify, reduce, bisect</b>——inject known inputs between layers and bisect.</li>
-<li>Assuming<b>Likelihood × cost</b>sorting and verification; every step is written to a shared doc with a timestamp.</li>
+<li>Assuming<b> Likelihood × cost</b> sorting and verification; every step is written to a shared doc with a timestamp.</li>
 <li><b>A sudden latency jump usually means "the type of work changed," not "the traffic changed"</b>— see War Story #1.</li>
 </ul>
 </section>
@@ -170,13 +170,13 @@
 <section class="content-section" id="scenarios">
 <h2 class="section-title">4 · 10 <span>Failure signature</span></h2>
 <div class="scenario">
-<h4><span class="n">01</span>ALB returns 502 but the target shows "healthy"</h4>
+<h4><span class="n">01</span> ALB returns 502 but the target shows "healthy"</h4>
 <p><b>Diagnosis</b>: the app is stuck in IO wait, but the health check still passes because it's lightweight.</p>
 <span class="diag">iostat -xz 1 · CloudWatch VolumeQueueLength · jstack/py-spy to find blocked threads</span>
 <p><b>Fix</b>: Pull the slow endpoint out of the traffic pool, dump the thread stacks, and restart first.</p>
 </div>
 <div class="scenario">
-<h4><span class="n">02</span>Container gets OOMKilled, but the liveness probe passes</h4>
+<h4><span class="n">02</span> Container gets OOMKilled, but the liveness probe passes</h4>
 <p><b>Diagnosis</b>:<code>dmesg | grep "killed process"</code> + <code>kubectl describe pod</code> Reason=OOMKilled. The liveness probe only checks HTTP, not RSS.</p>
 <span class="diag">kubectl top pod --containers · add resource limits + memory alert</span>
 </div>
@@ -188,30 +188,30 @@
 </div>
 <div class="scenario">
 <h4><span class="n">04</span><code>conntrack_allowance_exceeded</code> Climbing</h4>
-<p><b>Diagnosis</b>: A flood of short-lived connections, or the client not using keep-alive. This is<b>ENA instance-level</b>limit, not the kernel <code>nf_conntrack</code>.</p>
+<p><b>Diagnosis</b>: A flood of short-lived connections, or the client not using keep-alive. This is<b> ENA instance-level</b> limit, not the kernel <code>nf_conntrack</code>.</p>
 <span class="diag">ethtool -S eth0 | grep conntrack</span>
 <p><b>Fix</b>: Enable HTTP keep-alive on the client; upsize (bigger instance = bigger conntrack allowance); route heavy egress traffic through a NAT Gateway rather than a NAT instance.</p>
 </div>
 <div class="scenario">
-<h4><span class="n">05</span>EBS io2 latency spikes (during cross-AZ replication)</h4>
+<h4><span class="n">05</span> EBS io2 latency spikes (during cross-AZ replication)</h4>
 <p><b>Diagnosis</b>: the volume is rebuilding after an AZ event;<code>VolumeTotalWriteTime / VolumeWriteOps</code> &gt; 10 ms.</p>
 <span class="diag">Three CloudWatch EBS metrics charts aligned with the AZ event timeline</span>
 <p><b>Fix</b>: Wait for the rebuild (time uncertain), or use Multi-AZ replication to another volume and fail over to it.</p>
 </div>
 <div class="scenario">
-<h4><span class="n">06</span>Can't connect via SSM Session Manager</h4>
+<h4><span class="n">06</span> Can't connect via SSM Session Manager</h4>
 <p><b>Diagnosis</b>: the user-data script is still running, and cloud-init is blocking ssm-agent from starting.</p>
 <span class="diag">Get console-output from the EC2 console · /var/log/cloud-init-output.log</span>
 <p><b>Fix</b>: run long user-data tasks in the background or move them to a startup service.</p>
 </div>
 <div class="scenario">
-<h4><span class="n">07</span>Instance keeps rebooting (boot loop)</h4>
+<h4><span class="n">07</span> Instance keeps rebooting (boot loop)</h4>
 <p><b>Diagnosis</b>: cloud-init failed — attach a rescue volume and check <code>/var/log/cloud-init.log</code>.</p>
 <span class="diag">aws ec2 get-console-output --instance-id i-...</span>
 </div>
 <div class="scenario">
-<h4><span class="n">08</span>CPU steal on M8g <code>%st</code> &gt; 5</h4>
-<p><b>Diagnosis</b>: M8g isn't burstable, so high %st usually means contention from bare-metal neighbors — rare; open an AWS support ticket. On t3/t4g, %st is<b>Normal</b>— the credit balance is used up.</p>
+<h4><span class="n">08</span> CPU steal on M8g <code>%st</code> &gt; 5</h4>
+<p><b>Diagnosis</b>: M8g isn't burstable, so high %st usually means contention from bare-metal neighbors — rare; open an AWS support ticket. On t3/t4g, %st is<b> Normal</b>— the credit balance is used up.</p>
 <span class="diag">mpstat 1 · aws cloudwatch get-metric CPUCreditBalance (t family only)</span>
 </div>
 <div class="scenario">
@@ -220,7 +220,7 @@
 <span class="diag">tracepath &lt;dest&gt; · check SG entries + jumbo frame compatibility</span>
 </div>
 <div class="scenario">
-<h4><span class="n">10</span>Small instances <code>pps_allowance_exceeded</code> Starts to emerge</h4>
+<h4><span class="n">10</span> Small instances <code>pps_allowance_exceeded</code> Starts to emerge</h4>
 <p><b>Diagnosis</b>: Small-packet floods (DNS queries, cache misses, heartbeats) hit the PPS limit before bandwidth fills up.</p>
 <span class="diag">ethtool -S eth0 | grep pps</span>
 <p><b>Fix</b>: Upsize; batch UDP; for DNS floods, add client-side caching.</p>
@@ -296,7 +296,7 @@ tar czf ../$(basename $D).tgz . &amp;&amp; echo done</pre>
 </section>
 <!-- 9 -->
 <section class="content-section" id="escalate">
-<h2 class="section-title">9 · <span>Upgrade</span>Trigger conditions</h2>
+<h2 class="section-title">9 · <span>Upgrade</span> Trigger conditions</h2>
 <ul>
 <li><b>Page DBA</b>——replication lag &gt; 30s, more deadlocks,<code>pg_stat_activity</code> All <code>idle in transaction</code>.</li>
 <li><b>Failover</b>— node unreachable &gt; 2 min, disk read errors in dmesg,<code>EBSByteBalance%</code> Still 0 after tuning.</li>

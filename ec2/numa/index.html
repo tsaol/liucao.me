@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>NUMA 深度指南：大机型的隐形税 · liucao.me</title>
 <meta content="Non-Uniform Memory Access 完全指南：物理起源、kernel 语义、五种 mempolicy、MySQL 真实故障案例、EC2 上的 NUMA 布局" name="description"/>
-<link href="../../ec2/assets/style.css" rel="stylesheet"/>
+<link href="../assets/style.css" rel="stylesheet"/>
 <style>
         .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
         .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
@@ -77,12 +77,12 @@
 <nav class="nav">
 <div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
 <div class="links">
-<a href="../../ec2/">EC2</a>
+<a href="../">EC2</a>
 </div>
 </nav>
 <main class="wrap">
 <div class="gv-hero">
-<div class="crumb"><a href="../../ec2/">EC2</a> · 概念 · Intel / AMD / Graviton 通用</div>
+<div class="crumb"><a href="../">EC2</a> · 概念 · Intel / AMD / Graviton 通用</div>
 <h1><span class="g">NUMA</span>：大机型的隐形税</h1>
 <p class="sub">你租了一台 192 核的大机器，跑分却只有预期的 60%。CPU 图看着正常，内存也没满。问题往往不在"用了多少"，而在"数据放在哪"。这篇从一块真实的主板讲起，讲到 kernel、数据库和 Kubernetes。</p>
 <nav class="toc">
@@ -120,7 +120,7 @@
 <p>光说不够直观，直接看一块真实的双路主板：</p>
 <figure class="fig">
 <div class="photo">
-<img alt="Intel S2600CP4 双路服务器主板，两个 CPU 散热器各自被 8 条内存插槽围着" height="993" loading="lazy" src="../../ec2/numa/img/intel-s2600cp4.jpg" width="1100"/>
+<img alt="Intel S2600CP4 双路服务器主板，两个 CPU 散热器各自被 8 条内存插槽围着" height="993" loading="lazy" src="img/intel-s2600cp4.jpg" width="1100"/>
 <span class="pin" style="left:26%;top:64%">CPU（node 0）</span>
 <span class="pin" style="left:23%;top:41.5%">node 0 的内存插槽</span>
 <span class="pin" style="left:23%;top:85.5%">node 0 的内存插槽</span>
@@ -649,7 +649,7 @@ cat /sys/class/net/eth0/device/numa_node</pre>
 <p>在 EC2 上，你不会直接看到主板，但它还在那里。一台实例有几个 NUMA node，取决于它背后用了几颗 CPU，以及那颗 CPU 内部怎么切。</p>
 <figure class="fig">
 <div class="photo">
-<img alt="装着两颗 AMD EPYC 9754 的双路服务器，每颗 CPU 两侧插满内存条" height="619" loading="lazy" src="../../ec2/numa/img/amd-epyc-9754-dual.jpg" width="1100"/>
+<img alt="装着两颗 AMD EPYC 9754 的双路服务器，每颗 CPU 两侧插满内存条" height="619" loading="lazy" src="img/amd-epyc-9754-dual.jpg" width="1100"/>
 </div>
 <figcaption>图 10：今天的大机型长得还是这样。这台服务器装了两颗 AMD EPYC 9754（每颗 128 核），每颗 CPU 旁边插着自己的一排 DDR5 内存条。云上最大号的实例，背后往往就是这种两路机器。照片：<a href="https://commons.wikimedia.org/wiki/File:AMD_Epyc_9754_in_Dual-CPU-Socket-Serversystem_(%E6%9E%81%E5%AE%A2%E6%B9%BEGeekerwan)_07.png" rel="noopener" target="_blank">极客湾 Geekerwan / Wikimedia Commons</a>，<a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener" target="_blank">CC BY 3.0</a>。</figcaption>
 </figure>
@@ -846,13 +846,13 @@ cat /sys/class/net/eth0/device/numa_node</pre>
 <div class="next">
 <div class="left">相关阅读</div>
 <div class="right">
-<a href="../../ec2/graviton/">Graviton4 &amp; EC2</a>
-<a class="big" href="../../ec2/graviton/">Graviton4 &amp; EC2 深度指南 →</a>
+<a href="../graviton/">Graviton4 &amp; EC2</a>
+<a class="big" href="../graviton/">Graviton4 &amp; EC2 深度指南 →</a>
 </div>
 </div>
 </main>
 <footer class="footer">
-<p>© 2026 liucao.me · <a href="../../">Home</a> · <a href="../../ec2/">EC2</a></p>
+<p>© 2026 liucao.me · <a href="../../">Home</a> · <a href="../">EC2</a></p>
 </footer>
 <a data-cur="zh" data-to="en" href="../../en/ec2/numa/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>

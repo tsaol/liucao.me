@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>G5g 实例系列 - AWS GPU 实例对比</title>
+<style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #1a202c; line-height: 1.6; }
+        .container { max-width: 1800px; margin: 0 auto; background: white; }
+        header { background: linear-gradient(135deg, #232f3e 0%, #2c3e50 100%); color: white; padding: 24px 32px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { font-size: 2em; font-weight: 600; margin-bottom: 8px; }
+        .breadcrumb { color: #cbd5e0; font-size: 0.9em; margin-top: 8px; }
+        .breadcrumb a { color: #ff9900; text-decoration: none; transition: color 0.2s; }
+        .breadcrumb a:hover { color: #ffb84d; text-decoration: underline; }
+        .info-bar { padding: 20px 32px; background: #f7fafc; border-bottom: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; gap: 24px; }
+        .info-item { display: flex; flex-direction: column; }
+        .info-label { font-size: 0.75em; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .info-value { font-size: 1.1em; font-weight: 600; color: #2d3748; }
+        .controls { padding: 20px 32px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .control-group { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .filter-input { flex: 1; min-width: 250px; padding: 10px 16px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 0.95em; transition: all 0.2s; }
+        .filter-input:focus { outline: none; border-color: #ff9900; box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.1); }
+        .region-select { padding: 10px 16px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 0.95em; background: white; cursor: pointer; transition: all 0.2s; min-width: 200px; }
+        .region-select:focus { outline: none; border-color: #ff9900; box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.1); }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 0.9em; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: #ff9900; color: white; }
+        .btn-primary:hover { background: #e88b00; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-secondary { background: #e2e8f0; color: #4a5568; }
+        .btn-secondary:hover { background: #cbd5e0; }
+        .table-container { overflow-x: auto; padding: 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+        thead { background: #2d3748; color: white; position: sticky; top: 0; z-index: 10; }
+        th { padding: 14px 12px; text-align: left; font-weight: 600; white-space: nowrap; cursor: pointer; user-select: none; transition: background 0.2s; }
+        th:hover { background: #1a202c; }
+        th.sortable::after { content: " ⇅"; opacity: 0.3; font-size: 0.8em; }
+        th.sort-asc::after { content: " ↑"; opacity: 1; color: #ff9900; }
+        th.sort-desc::after { content: " ↓"; opacity: 1; color: #ff9900; }
+        td { padding: 16px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+        tbody tr { transition: background 0.15s; }
+        tbody tr:hover { background: #f7fafc; }
+        .instance-name { font-family: 'SF Mono', 'Monaco', 'Courier New', monospace; font-weight: 700; color: #2d3748; font-size: 1.05em; }
+        .api-name { font-family: 'SF Mono', 'Monaco', monospace; color: #718096; font-size: 0.85em; margin-top: 2px; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-new { background: #c6f6d5; color: #22543d; }
+        .badge-region { background: #e6f7ff; color: #0066cc; font-size: 0.7em; padding: 2px 8px; }
+        .price-grid { display: flex; flex-direction: column; gap: 4px; }
+        .price-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.9em; }
+        .price-label { color: #718096; font-size: 0.85em; }
+        .price-value { font-weight: 600; color: #2d3748; }
+        .spec-value { font-weight: 600; color: #2d3748; }
+        .spec-unit { color: #a0aec0; font-size: 0.85em; margin-left: 2px; }
+        .stats { padding: 24px 32px; background: #edf2f7; text-align: center; font-size: 0.9em; color: #4a5568; }
+        footer { background: #2d3748; color: #cbd5e0; text-align: center; padding: 20px; font-size: 0.85em; }
+        footer a { color: #ff9900; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        /* neon dark theme — same as index.html; follows localStorage.theme (dark unless 'light') */
+        body[data-theme="dark"] { background: #05070d; color: #e8f0ff; }
+        body[data-theme="dark"]::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background: radial-gradient(600px 400px at 10% 0%, rgba(118,185,0,0.14), transparent 60%), radial-gradient(700px 500px at 95% 30%, rgba(34,211,238,0.10), transparent 60%); }
+        body[data-theme="dark"] .container { background: rgba(10,14,24,0.85); border-left: 1px solid rgba(118,185,0,0.15); border-right: 1px solid rgba(118,185,0,0.15); }
+        body[data-theme="dark"] header { background: radial-gradient(120% 160% at 0% 0%, #0d1f12 0%, #070a12 50%, #0a0f1f 100%); border-bottom: 1px solid rgba(118,185,0,0.3); box-shadow: 0 0 40px rgba(118,185,0,0.10); }
+        body[data-theme="dark"] h1 { background: linear-gradient(90deg, #e8f0ff 0%, #a3e635 45%, #22d3ee 75%, #ff9900 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; }
+        body[data-theme="dark"] .breadcrumb { color: #8a97b1; }
+        body[data-theme="dark"] .breadcrumb a { color: #a3e635; }
+        body[data-theme="dark"] .info-bar, body[data-theme="dark"] .controls { background: transparent; border-bottom: 1px solid rgba(148,163,184,0.10); }
+        body[data-theme="dark"] .info-label { color: #8a97b1; font-family: 'SF Mono', Monaco, monospace; letter-spacing: 1.2px; }
+        body[data-theme="dark"] .info-value, body[data-theme="dark"] .spec-value, body[data-theme="dark"] .price-value, body[data-theme="dark"] .instance-name { color: #e8f0ff; }
+        body[data-theme="dark"] .filter-input, body[data-theme="dark"] .region-select { background: rgba(5,7,13,0.8); color: #e8f0ff; border-color: rgba(148,163,184,0.2); }
+        body[data-theme="dark"] .filter-input:focus, body[data-theme="dark"] .region-select:focus { border-color: #76b900; box-shadow: 0 0 0 3px rgba(118,185,0,0.18), 0 0 24px rgba(118,185,0,0.18); }
+        body[data-theme="dark"] .btn-primary { background: linear-gradient(90deg, #76b900, #22d3ee); color: #05070d; }
+        body[data-theme="dark"] .btn-secondary { background: rgba(148,163,184,0.12); color: #cbd5e1; }
+        body[data-theme="dark"] thead { background: rgba(8,12,20,0.98); }
+        body[data-theme="dark"] th { color: #b7c4dc; font-family: 'SF Mono', Monaco, monospace; font-size: 0.85em; }
+        body[data-theme="dark"] th:hover { background: rgba(118,185,0,0.08); }
+        body[data-theme="dark"] td { border-bottom: 1px solid rgba(148,163,184,0.08); }
+        body[data-theme="dark"] tbody tr:hover { background: rgba(118,185,0,0.06); box-shadow: inset 3px 0 0 #76b900; }
+        body[data-theme="dark"] tbody tr:hover .instance-name { color: #a3e635; text-shadow: 0 0 12px rgba(163,230,53,0.5); }
+        body[data-theme="dark"] .api-name, body[data-theme="dark"] .spec-unit, body[data-theme="dark"] .price-label { color: #8a97b1; }
+        body[data-theme="dark"] .badge-new { background: rgba(118,185,0,0.15); color: #a3e635; border: 1px solid rgba(118,185,0,0.5); }
+        body[data-theme="dark"] .badge-region { background: rgba(34,211,238,0.10); color: #67e8f9; border: 1px solid rgba(34,211,238,0.4); }
+        body[data-theme="dark"] .stats { background: rgba(118,185,0,0.05); color: #8a97b1; }
+        body[data-theme="dark"] footer { background: #05070d; color: #8a97b1; border-top: 1px solid rgba(118,185,0,0.2); }
+        body[data-theme="dark"] footer a { color: #a3e635; }
+        body[data-theme="dark"] tbody tr[style*="opacity"] { opacity: 0.82 !important; }
+        @media (max-width: 768px) { .info-bar { padding: 16px 20px; } .controls { padding: 16px 20px; } .control-group { width: 100%; } .filter-input, .region-select { width: 100%; } th, td { padding: 10px 8px; font-size: 0.85em; } }
+    </style>
+</head>
+<body>
+<script>try { if (localStorage.getItem('theme') !== 'light') document.body.setAttribute('data-theme', 'dark'); } catch (e) {}</script>
+<div class="container">
+<header>
+<h1>G5g 实例系列</h1>
+<div class="breadcrumb">
+<a href="../../../aws-gpu/">← 返回概览</a> / NVIDIA GPU / G 系列 / G5G
+            </div>
+</header>
+<div class="info-bar">
+<div class="info-item"><span class="info-label">GPU/加速器</span><span class="info-value">ARM Mali-G78MP12 GPU</span></div>
+<div class="info-item"><span class="info-label">实例数量</span><span class="info-value" id="instanceCount">6 个变体</span></div>
+<div class="info-item"><span class="info-label">发布年份</span><span class="info-value">2021</span></div>
+<div class="info-item"><span class="info-label">使用场景</span><span class="info-value">Android 游戏串流</span></div>
+<div class="info-item"><span class="info-label">当前区域</span><span class="info-value" id="currentRegionLabel">美国东部（弗吉尼亚北部）</span></div>
+</div>
+<div class="controls">
+<div class="control-group">
+<input class="filter-input" id="filterInput" placeholder="🔍 筛选实例..." type="text"/>
+<select class="region-select" id="regionSelect" onchange="changeRegion(this.value)">
+<optgroup label="Main Regions">
+<option value="us-east-1">美国东部（弗吉尼亚北部）</option>
+<option value="us-east-2">美国东部（俄亥俄）</option>
+<option value="us-west-1">美国西部（加利福尼亚北部）</option>
+<option value="us-west-2">美国西部（俄勒冈）</option>
+<option value="eu-west-1">欧洲（爱尔兰）</option>
+<option value="eu-central-1">欧洲（法兰克福）</option>
+<option value="ap-southeast-1">亚太地区（新加坡）</option>
+<option value="ap-northeast-1">亚太地区（东京）</option>
+</optgroup>
+<optgroup label="China Regions">
+<option value="cn-north-1">中国（北京）</option>
+<option value="cn-northwest-1">中国（宁夏）</option>
+</optgroup>
+</select>
+</div>
+<div class="control-group">
+<button class="btn btn-secondary" onclick="clearFilter()">清除筛选</button>
+<button class="btn btn-primary" onclick="window.location.href='../index.html'">← 返回</button>
+</div>
+</div>
+<div class="table-container">
+<table id="instanceTable">
+<thead><tr>
+<th class="sortable" onclick="sortTable(0)">实例类型</th>
+<th class="sortable" onclick="sortTable(1)">GPU/加速器</th>
+<th class="sortable" onclick="sortTable(2)">数量</th>
+<th class="sortable" onclick="sortTable(3)">vCPUs</th>
+<th class="sortable" onclick="sortTable(4)">系统内存</th>
+<th class="sortable" onclick="sortTable(5)">网络</th>
+<th class="sortable" onclick="sortTable(6)">存储</th>
+<th>定价 (<span id="regionCode">us-east-1</span>)</th>
+<th>可用性</th>
+</tr></thead>
+<tbody id="instanceTableBody"></tbody>
+</table>
+</div>
+<div class="stats">
+            显示 <strong id="visibleCount">0</strong> of <strong id="totalCount">0</strong> 个实例 |
+            定价： <strong id="statsRegion">us-east-1</strong> 区域 |
+            真实价格数据来源： <strong>instances.vantage.sh</strong> (AWS Pricing API)
+        </div>
+<footer>
+<p>AWS GPU 实例对比 | <a href="../../../aws-gpu/">返回概览</a></p>
+<p style="margin-top: 8px; font-size: 0.9em; opacity: 0.8;">数据更新日期：2026-11-08。价格可能会有变动。</p>
+</footer>
+</div>
+<script src="../../../aws-gpu/data/g5g_instances.js"></script>
+<script>
+        let currentRegion = "us-east-1";
+        const regionNames = {"us-east-1": "美国东部（弗吉尼亚北部）", "us-east-2": "美国东部（俄亥俄）", "us-west-1": "美国西部（加利福尼亚北部）", "us-west-2": "美国西部（俄勒冈）", "eu-west-1": "欧洲（爱尔兰）", "eu-central-1": "欧洲（法兰克福）", "ap-southeast-1": "亚太地区（新加坡）", "ap-northeast-1": "亚太地区（东京）", "cn-north-1": "中国（北京）", "cn-northwest-1": "中国（宁夏）"};
+        function renderTable() {
+            const tbody = document.getElementById('instanceTableBody');
+            tbody.innerHTML = '';
+            instanceData.forEach(instance => {
+                const pricing = instance.pricing[currentRegion];
+                const isAvailable = instance.availability.includes(currentRegion);
+                const row = document.createElement('tr');
+                if (!isAvailable) row.style.opacity = '0.5';
+                row.innerHTML = `<td><div class="instance-name">${instance.name}</div><div class="api-name">${instance.apiName || instance.name}</div>${instance.isNew ? '<span class="badge badge-new">新</span>' : ''}</td><td><div class="spec-value">${instance.gpu}</div></td><td><span class="spec-value">${instance.gpuCount || 0}</span><span class="spec-unit">×</span></td><td><span class="spec-value">${instance.vcpu}</span><span class="spec-unit">vCPUs</span></td><td><span class="spec-value">${instance.memory.replace(' GB', '')}</span><span class="spec-unit">GB</span></td><td><span class="spec-unit">${instance.network}</span></td><td><span class="spec-unit">${instance.storage}</span></td><td>${isAvailable && pricing ? `<div class="price-grid"><div class="price-item"><span class="price-label">按需：</span><span class="price-value">$${pricing.onDemand.toFixed(2)}/小时</span></div></div>` : '<span style="color: #999;">不可用</span>'}</td><td>${isAvailable ? '<span class="badge badge-region">可用</span>' : '<span style="color: #999;">不可用</span>'}</td>`;
+                tbody.appendChild(row);
+            });
+            updateVisibleCount();
+        }
+        function changeRegion(region) { currentRegion = region; document.getElementById('regionCode').textContent = region; document.getElementById('statsRegion').textContent = region; document.getElementById('currentRegionLabel').textContent = regionNames[region] || region; renderTable(); }
+        const filterInput = document.getElementById('filterInput');
+        filterInput.addEventListener('input', function() { const filterValue = this.value.toLowerCase(); document.querySelectorAll('#instanceTableBody tr').forEach(row => { row.style.display = row.textContent.toLowerCase().includes(filterValue) ? '' : 'none'; }); updateVisibleCount(); });
+        function clearFilter() { filterInput.value = ''; document.querySelectorAll('#instanceTableBody tr').forEach(row => row.style.display = ''); updateVisibleCount(); }
+        function updateVisibleCount() { const rows = document.querySelectorAll('#instanceTableBody tr'); document.getElementById('visibleCount').textContent = Array.from(rows).filter(row => row.style.display !== 'none').length; document.getElementById('totalCount').textContent = instanceData.length; }
+        let currentSort = { column: -1, ascending: true };
+        function sortTable(columnIndex) { const tbody = document.getElementById('instanceTableBody'); const rows = Array.from(tbody.querySelectorAll('tr')); const isAscending = currentSort.column === columnIndex ? !currentSort.ascending : true; document.querySelectorAll('th').forEach((h, i) => { h.classList.remove('sort-asc', 'sort-desc'); if (i === columnIndex) h.classList.add(isAscending ? 'sort-asc' : 'sort-desc'); }); rows.sort((a, b) => { const aVal = a.cells[columnIndex].textContent.trim(), bVal = b.cells[columnIndex].textContent.trim(); const aNum = parseFloat(aVal.replace(/[^0-9.-]/g, '')), bNum = parseFloat(bVal.replace(/[^0-9.-]/g, '')); if (!isNaN(aNum) && !isNaN(bNum)) return isAscending ? aNum - bNum : bNum - aNum; return isAscending ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal); }); rows.forEach(row => tbody.appendChild(row)); currentSort = { column: columnIndex, ascending: isAscending }; }
+        renderTable();
+    </script>
+<a data-cur="zh" data-to="en" href="../../../aws-gpu/instances/g5g.html" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

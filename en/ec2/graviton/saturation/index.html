@@ -78,7 +78,7 @@
 <main class="wrap">
 <div class="gv-hero">
 <div class="crumb"><a href="../">Graviton Guide</a> · 03 / 04 · Saturation check</div>
-<h1>Detecting on ARM<span class="g">Resource saturation</span></h1>
+<h1>Detecting on ARM<span class="g"> Resource saturation</span></h1>
 <p class="sub">99% is the same as x86, thanks to a good Linux abstraction layer. The 1% is <code>armv8_pmuv3</code> PMU, alternatives to Intel-only tools, and ENA's 6 unique "throttling" counters.</p>
 <nav class="toc">
 <a href="#same">1 · 99% the same</a>
@@ -123,7 +123,7 @@
 <li><code>m8g.medium</code>(1 vCPU):<b>3 hardware counters</b>, exposing 43 <code>armv8_pmuv3</code> Event</li>
 <li><code>m8g.24xlarge</code>(96 vCPU):<b>6 hardware counters</b>, exposing 68 events</li>
 <li>Observing more events than there are counters at once → the kernel automatically <b>event multiplexing</b>(perf output will show <code>(50.09%)</code> and similar sampling shares), the values are still statistically valid but less precise</li>
-<li><b>ARM SPE</b>(Statistical Profiling Extension, per-instruction sampling) and <code>arm_cmn</code> mesh events<b>Not exposed on either size</b>— requires <code>metal</code> Specs</li>
+<li><b>ARM SPE</b>(Statistical Profiling Extension, per-instruction sampling) and <code>arm_cmn</code> mesh events<b> Not exposed on either size</b>— requires <code>metal</code> Specs</li>
 <li>Basic <code>cycles</code> + <code>instructions</code> IPC measured on the smallest <code>m8g.medium</code> works right away on</li>
 </ul>
                 So for IPC checks any size works; only deep top-down microarchitecture analysis (many events at once, SPE, mesh bandwidth) requires a large size or metal.<sup>[6]</sup>
@@ -151,7 +151,7 @@
 <thead><tr><th>Dimension</th><th>m8g.medium (1 vCPU)</th><th>m8g.24xlarge (96 vCPU)</th></tr></thead>
 <tbody>
 <tr><td>Number of hardware counters</td><td><b>3</b></td><td><b>6</b></td></tr>
-<tr><td><code>armv8_pmuv3</code> Event</td><td>43</td><td>68</td></tr>
+<tr><td><code>armv8_pmuv3</code> Event</td><td> 43</td><td> 68</td></tr>
 <tr><td>Basic IPC (cycles+instructions)</td><td>✅ Measure directly</td><td>✅ Measure directly</td></tr>
 <tr><td>6 hw events at once</td><td>⚠️ Automatic multiplexing (~50% sampling)</td><td>✅ Run everything at once</td></tr>
 <tr><td>10 events at once</td><td>⚠️ Each drops to ~20–30%</td><td>⚠️ Each drops to ~60%</td></tr>
@@ -222,7 +222,7 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
 <div class="callout"><b>Practical rules (verified by testing):</b>
 <ul style="margin:0.4rem 0 0 0; padding-left:1.1rem;">
 <li>Only does <b>Interpreting IPC</b>(two events: cycles + instructions) — the smallest <code>m8g.medium</code> is also enough.</li>
-<li>Do <b>Top-down analysis with 4–6 events</b>(front-end stall, back-end stall, L1/L2 miss, branch miss) —<b>24xlarge and above</b>No multiplexing, optimal.</li>
+<li>Do <b>Top-down analysis with 4–6 events</b>(front-end stall, back-end stall, L1/L2 miss, branch miss) —<b>24xlarge and above</b> No multiplexing, optimal.</li>
 <li>Do <b>Per-instruction sampling (SPE)</b>or <b>DRAM/mesh bandwidth</b>——must <code>*.metal</code> specs.</li>
 </ul>
 </div>
@@ -230,11 +230,11 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
 <p><b>1️⃣ "Counters are hidden on small sizes" is wrong, but "small sizes are weaker" is right.</b><br/>
             What I originally said was "on small sizes the PMU is hidden by the hypervisor,<code>perf stat</code> can't get complete data". Testing shows a more precise way to put it is:<b>PMU always exposed</b>(on AL2023 kernel 6.12,<code>m8g.medium</code> 's dmesg also shows it <code>armv8_pmuv3_0 PMU driver, 3 counters available</code>), just <b>Only 3 hardware counters</b>, while <code>m8g.24xlarge</code> has 6. The number of hardware counters = the number of physical registers fixed inside the ARM Neoverse V2 core, not something cut down by the virtualization layer.</p>
 <p><b>2️⃣ Multiplexing is "time-sharing", not "dropping data".</b><br/>
-            When you ask the kernel to monitor 10 events at once but there are only 3 physical counters, the kernel takes those 10 events and<b>Take turns</b>squeezed into those 3 slots, switching every few milliseconds. The fraction of time each event is enabled is the number on the right <code>(30.05%)</code>. perf uses this ratio to extrapolate "what the count would be if it were enabled for the whole window" — so <b>The numbers are still credible estimates</b>, but variance increases, and short spikes (bursts of tens of microseconds) may fall right between sampling windows.</p>
+            When you ask the kernel to monitor 10 events at once but there are only 3 physical counters, the kernel takes those 10 events and<b> Take turns</b> squeezed into those 3 slots, switching every few milliseconds. The fraction of time each event is enabled is the number on the right <code>(30.05%)</code>. perf uses this ratio to extrapolate "what the count would be if it were enabled for the whole window" — so <b>The numbers are still credible estimates</b>, but variance increases, and short spikes (bursts of tens of microseconds) may fall right between sampling windows.</p>
 <p><b>3️⃣ IPC is the single most useful metric on Graviton.</b><br/>
-            Run on two machines <code>dd if=/dev/urandom of=/dev/null</code>, and IPC is <b>4.05</b>— that's a high number for Neoverse V2's 6-wide front end. Conversely, if your service's IPC &lt; 1.0, it's bottlenecked on memory latency (cache misses, TLB misses, cross-NUMA memory access), and adding CPU cores or moving to a bigger machine<b>No</b>Making it faster requires fixing the algorithm or changing data structures. This diagnosis applies in <code>m8g.medium</code> can be done on it — no need to wait for a big machine.</p>
+            Run on two machines <code>dd if=/dev/urandom of=/dev/null</code>, and IPC is <b>4.05</b>— that's a high number for Neoverse V2's 6-wide front end. Conversely, if your service's IPC &lt; 1.0, it's bottlenecked on memory latency (cache misses, TLB misses, cross-NUMA memory access), and adding CPU cores or moving to a bigger machine<b> No</b> Making it faster requires fixing the algorithm or changing data structures. This diagnosis applies in <code>m8g.medium</code> can be done on it — no need to wait for a big machine.</p>
 <p><b>4️⃣ What the absence of SPE and arm_cmn means.</b><br/>
-<b>SPE (Statistical Profiling Extension)</b>is a feature introduced in ARM v8.2: unlike traditional <code>perf record</code> only captures the IP at sample points; SPE can<b>For every sampled instruction</b>Records memory addresses, cache hits/misses, and latency. Essentially an ARM version of Intel PEBS.<b>arm_cmn</b> is the Coherent Mesh Network event, which shows DRAM bandwidth utilization across the whole die. Neither is available inside a VM, because the information they expose could leak details about neighboring workloads on the physical host. AWS only provides them on <code>*.metal</code> launched on. For this kind of deep analysis, rent one hour of <code>m8g.metal-24xl</code>(about $5.7/hr in Tokyo) is enough.</p>
+<b>SPE (Statistical Profiling Extension)</b>is a feature introduced in ARM v8.2: unlike traditional <code>perf record</code> only captures the IP at sample points; SPE can<b> For every sampled instruction</b> Records memory addresses, cache hits/misses, and latency. Essentially an ARM version of Intel PEBS.<b>arm_cmn</b> is the Coherent Mesh Network event, which shows DRAM bandwidth utilization across the whole die. Neither is available inside a VM, because the information they expose could leak details about neighboring workloads on the physical host. AWS only provides them on <code>*.metal</code> launched on. For this kind of deep analysis, rent one hour of <code>m8g.metal-24xl</code>(about $5.7/hr in Tokyo) is enough.</p>
 <p><b>5️⃣ Direct guidance for readers of this page.</b><br/>
             If you just want to know whether a service is "actually busy" vs "just waiting on IO / memory", any M8g size will do. Run one line <code>perf stat -a -e cycles,instructions -- sleep 10</code> you get IPC.<b>Don't give up on profiling small machines just because of the assumption that "only big machines have a PMU".</b>You only need at least <code>24xlarge</code> those 6 counters; you only need metal for instruction-level attribution or measuring memory bandwidth.</p>
 <p><b>6️⃣ How current these results are.</b><br/>
@@ -248,8 +248,8 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
 <!-- 3 -->
 <section class="content-section" id="loadavg">
 <h2 class="section-title">3 · <span>Load average</span> The truth</h2>
-<p>Linux load average <b>No</b>Pure CPU load. Since Matthias Urlichs's 1993 patch, it has also counted<b>Runnable</b>threads and those in <code>TASK_UNINTERRUPTIBLE</code>(D-state tasks, usually waiting on disk IO or certain kernel locks). Urlichs's original words: "the load average goes down when you replace your fast swap disk with a slow swap disk" — this counterintuitive behavior was his motivation for the change. Other Unixes still use a CPU-only version.<sup>[3]</sup></p>
-<p>The three numbers (1 / 5 / 15 min) are<b>Exponentially decaying moving average</b>— watch the trend, not the absolute value, and always compare it against the vCPU count.</p>
+<p>Linux load average <b>No</b> Pure CPU load. Since Matthias Urlichs's 1993 patch, it has also counted<b> Runnable</b> threads and those in <code>TASK_UNINTERRUPTIBLE</code>(D-state tasks, usually waiting on disk IO or certain kernel locks). Urlichs's original words: "the load average goes down when you replace your fast swap disk with a slow swap disk" — this counterintuitive behavior was his motivation for the change. Other Unixes still use a CPU-only version.<sup>[3]</sup></p>
+<p>The three numbers (1 / 5 / 15 min) are<b> Exponentially decaying moving average</b>— watch the trend, not the absolute value, and always compare it against the vCPU count.</p>
 <p>A more accurate saturation signal:</p>
 <ul>
 <li><code>runqlat</code>(bcc) — run-queue wait time histogram.</li>
@@ -260,7 +260,7 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
 <!-- 4 -->
 <section class="content-section" id="ipc">
 <h2 class="section-title">4 · <span>CPU utilization ≠ busy</span></h2>
-<p><code>%CPU</code> = "non-idle time". It<b>Not telling you</b>whether those cycles are executing instructions or waiting on DRAM. DRAM latency hasn't kept up with core-count growth over the years, so many hot loops, even if <code>%CPU</code> 100% too<b>Waiting on memory</b>.<sup>[4]</sup></p>
+<p><code>%CPU</code> = "non-idle time". It<b> Not telling you</b> whether those cycles are executing instructions or waiting on DRAM. DRAM latency hasn't kept up with core-count growth over the years, so many hot loops, even if <code>%CPU</code> 100% too<b> Waiting on memory</b>.<sup>[4]</sup></p>
 <p>Use <code>perf stat</code> Volume <b>IPC (Instructions Per Cycle)</b>:</p>
 <pre>sudo perf stat -a -- sleep 10
 <span class="c"># Focus on the insns per cycle line</span></pre>
@@ -273,7 +273,7 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
 <div class="sat">
 <h4>Load Average</h4>
 <p>Use <code>top</code>, <code>uptime</code>, or <code>cat /proc/loadavg</code>.</p>
-<p class="thr"><b>load &gt; 0.8 × vCPU</b> = warning<br/>load &gt; vCPU and trending up = saturated</p>
+<p class="thr"><b>load &gt; 0.8 × vCPU</b> = warning<br/> load &gt; vCPU and trending up = saturated</p>
 </div>
 <div class="sat">
 <h4>Per-Core distribution</h4>
@@ -289,7 +289,7 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
 </section>
 <!-- 6 -->
 <section class="content-section" id="mem">
-<h2 class="section-title">6 · <span>Memory</span>Saturation criteria</h2>
+<h2 class="section-title">6 · <span>Memory</span> Saturation criteria</h2>
 <div class="sat-grid">
 <div class="sat">
 <h4>free -h</h4>
@@ -316,15 +316,15 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
 </section>
 <!-- 7 -->
 <section class="content-section" id="disk">
-<h2 class="section-title">7 · <span>Disk</span>Saturation criteria</h2>
+<h2 class="section-title">7 · <span>Disk</span> Saturation criteria</h2>
 <h3 class="sub-h">iostat -xz 1 key columns</h3>
 <table class="cmp">
-<thead><tr><th>column</th><th>Meaning</th><th>Threshold</th></tr></thead>
+<thead><tr><th>column</th><th> Meaning</th><th> Threshold</th></tr></thead>
 <tbody>
-<tr><td><code>%util</code></td><td>busy time</td><td>Close to 100% (false positives on NVMe multi-queue; see below)</td></tr>
-<tr><td><code>await</code></td><td>Average latency per IO (ms)</td><td>gp3 &gt; 10 · io2 &gt; 2</td></tr>
-<tr><td><code>r/s + w/s</code></td><td>IOPS</td><td>Compare volume limits</td></tr>
-<tr><td><code>rareq-sz + wareq-sz</code></td><td>Average request size (KB)</td><td>Small + high IOPS = random</td></tr>
+<tr><td><code>%util</code></td><td>busy time</td><td> Close to 100% (false positives on NVMe multi-queue; see below)</td></tr>
+<tr><td><code>await</code></td><td> Average latency per IO (ms)</td><td>gp3 &gt; 10 · io2 &gt; 2</td></tr>
+<tr><td><code>r/s + w/s</code></td><td>IOPS</td><td> Compare volume limits</td></tr>
+<tr><td><code>rareq-sz + wareq-sz</code></td><td> Average request size (KB)</td><td>Small + high IOPS = random</td></tr>
 </tbody>
 </table>
 <div class="callout warn"><b>EBS has two ceilings:</b><br/>1️⃣ <b>Per-volume</b>: gp3 defaults to 3000 IOPS / 125 MB/s; buy more as needed.<br/>2️⃣ <b>Per-instance</b>: e.g. <code>m8g.large</code> All EBS volumes combined max out at ~10K IOPS / ~700 MB/s.<br/>Requires CloudWatch <code>VolumeThroughputPercentage</code>, <code>EBSIOBalance%</code>, <code>EBSByteBalance%</code> together.</div>
@@ -332,24 +332,24 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
 </section>
 <!-- 8 -->
 <section class="content-section" id="net">
-<h2 class="section-title">8 · <span>Network</span>Saturation &amp; ENA counters explained</h2>
+<h2 class="section-title">8 · <span>Network</span> Saturation &amp; ENA counters explained</h2>
 <p>Basic tools (<code>sar -n DEV 1</code>, <code>ip -s link</code>, <code>nstat -a</code>) is the same as on x86.<b>The one key command</b>——ENA driver throttling counters:</p>
 <pre>ethtool -S ens5 | grep -E 'exceeded|conntrack|linklocal'</pre>
 <h3 class="sub-h">Six <code>*_allowance_exceeded</code>(verbatim from the AWS UserGuide)<sup>[8]</sup></h3>
 <table class="cmp">
-<thead><tr><th>counters</th><th>Meaning (original AWS wording)</th></tr></thead>
+<thead><tr><th>counters</th><th> Meaning (original AWS wording)</th></tr></thead>
 <tbody>
-<tr><td><code>bw_in_allowance_exceeded</code></td><td>Inbound bandwidth exceeds the instance limit, so packets are queued or dropped</td></tr>
-<tr><td><code>bw_out_allowance_exceeded</code></td><td>Egress bandwidth exceeds the instance limit</td></tr>
-<tr><td><code>pps_allowance_exceeded</code></td><td>Bidirectional PPS exceeds the instance limit — small instances hit this first</td></tr>
-<tr><td><code>conntrack_allowance_exceeded</code></td><td>Connection tracking entries exceed the limit,<b>New connections fail to establish</b>——silent killer</td></tr>
-<tr><td><code>linklocal_allowance_exceeded</code></td><td>PPS to link-local services (DNS / IMDS / Time Sync) exceeds the limit — SDK metadata retry loop</td></tr>
-<tr><td><code>conntrack_allowance_available</code></td><td>How many more connections can be established (Nitro-only, requires driver ≥ 2.8.1)</td></tr>
+<tr><td><code>bw_in_allowance_exceeded</code></td><td> Inbound bandwidth exceeds the instance limit, so packets are queued or dropped</td></tr>
+<tr><td><code>bw_out_allowance_exceeded</code></td><td> Egress bandwidth exceeds the instance limit</td></tr>
+<tr><td><code>pps_allowance_exceeded</code></td><td> Bidirectional PPS exceeds the instance limit — small instances hit this first</td></tr>
+<tr><td><code>conntrack_allowance_exceeded</code></td><td> Connection tracking entries exceed the limit,<b>New connections fail to establish</b>——silent killer</td></tr>
+<tr><td><code>linklocal_allowance_exceeded</code></td><td> PPS to link-local services (DNS / IMDS / Time Sync) exceeds the limit — SDK metadata retry loop</td></tr>
+<tr><td><code>conntrack_allowance_available</code></td><td> How many more connections can be established (Nitro-only, requires driver ≥ 2.8.1)</td></tr>
 </tbody>
 </table>
 <h3 class="sub-h">ENA throttling on m8g (approximate)</h3>
 <table class="cmp">
-<thead><tr><th>Specs</th><th>Baseline bandwidth</th><th>PPS limit</th><th>conntrack limit</th></tr></thead>
+<thead><tr><th>Specs</th><th> Baseline bandwidth</th><th> PPS limit</th><th> conntrack limit</th></tr></thead>
 <tbody>
 <tr><td>m8g.medium</td><td>~0.4 Gbps</td><td>~100K</td><td>~35K</td></tr>
 <tr><td>m8g.large</td><td>~0.75 Gbps</td><td>~200K</td><td>~55K</td></tr>
@@ -359,7 +359,7 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
 </tbody>
 </table>
 <h3 class="sub-h">ENA queue affinity</h3>
-<p>ENA uses one MSI-X IRQ per RX/TX queue, named <code>&lt;iface&gt;-Tx-Rx-&lt;idx&gt;</code>. AWS ENA best practices recommend: pin the app to<b>Same vCPU as the IRQ</b>; place RPS cores on<b>Same NUMA node</b>;<b>Don't disable it <code>irqbalance</code></b>, using <code>IRQBALANCE_BANNED_CPUS</code> to make it skip your NAPI cores.<sup>[7]</sup></p>
+<p>ENA uses one MSI-X IRQ per RX/TX queue, named <code>&lt;iface&gt;-Tx-Rx-&lt;idx&gt;</code>. AWS ENA best practices recommend: pin the app to<b> Same vCPU as the IRQ</b>; place RPS cores on<b> Same NUMA node</b>;<b>Don't disable it <code>irqbalance</code></b>, using <code>IRQBALANCE_BANNED_CPUS</code> to make it skip your NAPI cores.<sup>[7]</sup></p>
 <p>On multi-NUMA Graviton, the default affinity spreads IRQs across both nodes — pages get allocated on the wrong node. See <code>rx_queue#_lpc_wrong_numa</code> counters; if non-zero, pin manually.</p>
 </section>
 <!-- 9 -->
@@ -373,7 +373,7 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
 <p>Fields:<code>avg10</code> / <code>avg60</code> / <code>avg300</code>(percentage) + <code>total</code>(cumulative microseconds).<code>total</code> Catches short spikes that averages hide. CPU only has <code>some</code>— system-wide full CPU is meaningless.<sup>[5]</sup></p>
 <h3 class="sub-h">Threshold reference</h3>
 <table class="cmp">
-<thead><tr><th>Values</th><th>Judgment</th></tr></thead>
+<thead><tr><th>Values</th><th> Judgment</th></tr></thead>
 <tbody>
 <tr><td><code>some avg10 &gt; 10%</code></td><td>Warning</td></tr>
 <tr><td><code>full avg10 &gt; 5%</code></td><td>Urgent—the business really is waiting</td></tr>
@@ -389,13 +389,13 @@ ls /sys/devices/ | grep -i arm_cmn || echo "arm_cmn not present"</pre>
 <p>AL2023 runs kernel 6.x,<code>bcc-tools</code> and <code>bpftrace</code> Install and use, no ARM-specific flags:</p>
 <pre>sudo dnf install -y bcc-tools bpftrace</pre>
 <table class="cmp">
-<thead><tr><th>Tools</th><th>Question answered</th></tr></thead>
+<thead><tr><th>Tools</th><th> Question answered</th></tr></thead>
 <tbody>
-<tr><td><code>runqlat</code></td><td>Scheduler run-queue wait latency histogram — the real CPU saturation signal</td></tr>
-<tr><td><code>biolatency</code></td><td>Block device IO latency distribution (<code>-D</code> split by disk)</td></tr>
-<tr><td><code>offcputime</code></td><td>Thread stacks while off-CPU — pair with D-state in load avg</td></tr>
-<tr><td><code>tcpretrans</code></td><td>5-tuple + socket state for TCP retransmits</td></tr>
-<tr><td><code>cachestat</code></td><td>Page cache hit / miss ratio — early memory pressure</td></tr>
+<tr><td><code>runqlat</code></td><td> Scheduler run-queue wait latency histogram — the real CPU saturation signal</td></tr>
+<tr><td><code>biolatency</code></td><td> Block device IO latency distribution (<code>-D</code> split by disk)</td></tr>
+<tr><td><code>offcputime</code></td><td> Thread stacks while off-CPU — pair with D-state in load avg</td></tr>
+<tr><td><code>tcpretrans</code></td><td> 5-tuple + socket state for TCP retransmits</td></tr>
+<tr><td><code>cachestat</code></td><td> Page cache hit / miss ratio — early memory pressure</td></tr>
 </tbody>
 </table>
 <p><b>Gregg's rule:</b>Daemons use BCC; one-liners use <code>bpftrace</code>.<sup>[9]</sup></p>

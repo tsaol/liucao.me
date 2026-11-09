@@ -96,7 +96,7 @@
 </section>
 <!-- 1. arch -->
 <section class="content-section" id="arch">
-<h2 class="section-title">1 · <span>Microarchitecture</span>Differences</h2>
+<h2 class="section-title">1 · <span>Microarchitecture</span> Differences</h2>
 <h3 class="sub-h">M8g — AWS Graviton4 / Arm Neoverse V2 "Demeter"</h3>
 <ul>
 <li>Instruction set <b>Armv9.0-A</b>, which mandates SVE2, Pointer Authentication (PAC), and Branch Target Identification (BTI).</li>
@@ -116,12 +116,12 @@
 </ul>
 <h3 class="sub-h">What SVE2 actually brings</h3>
 <p>SVE2 is a "vector-length agnostic" instruction set: the same binary auto-vectorizes on 128-bit V2 cores and future 256-bit cores without recompiling.<b>SVE2 on Graviton4 is 128-bit wide</b>(Graviton3's SVE1 is 256-bit; V2 switched to two narrower SVE units).<sup>[2]</sup> Real-world gains: memcpy / memcmp / strlen (glibc 2.35+), zlib-ng, ChaCha and AES-GCM in OpenSSL 3.2+, and FFmpeg's h.264 / AV1 dsputil.</p>
-<p><b>AVX-512 still leads</b>is dense linear algebra and CPU-side LLM inference, roughly a 4× vector-width gap; AMX widens the gap further on INT8 matrix multiplication.</p>
-<div class="callout warn"><b>Two easy-to-miss "not available" pitfalls:</b>Graviton4 has no Turbo Boost, and no<b>32-bit userspace no longer supported</b>. Any single-threaded x86 code that relies on high clock speeds, or old programs running 32-bit ELF binaries, will regress when moved to M8g.<sup>[1]</sup></div>
+<p><b>AVX-512 still leads</b> is dense linear algebra and CPU-side LLM inference, roughly a 4× vector-width gap; AMX widens the gap further on INT8 matrix multiplication.</p>
+<div class="callout warn"><b>Two easy-to-miss "not available" pitfalls:</b>Graviton4 has no Turbo Boost, and no<b> 32-bit userspace no longer supported</b>. Any single-threaded x86 code that relies on high clock speeds, or old programs running 32-bit ELF binaries, will regress when moved to M8g.<sup>[1]</sup></div>
 </section>
 <!-- 2. sizes -->
 <section class="content-section" id="sizes">
-<h2 class="section-title">2 · Full<span>Spec sheet</span></h2>
+<h2 class="section-title">2 · Full<span> Spec sheet</span></h2>
 <p>M8g has four sub-families: standard,<b>M8gd</b>(with local NVMe),<b>M8gn</b>(600 Gbps networking),<b>M8gb</b>(EBS 300 Gbps). M7i only has base + m7i-flex.</p>
 <table class="cmp">
 <thead>
@@ -165,21 +165,21 @@
 </section>
 <!-- 4. ecosystem -->
 <section class="content-section" id="ecosystem">
-<h2 class="section-title">4 · Ecosystem<span>Compatibility</span>Quick reference</h2>
+<h2 class="section-title">4 · Ecosystem<span> Compatibility</span> Quick reference</h2>
 <table class="cmp">
-<thead><tr><th>Tech stack</th><th>arm64 status</th><th>Pitfalls</th></tr></thead>
+<thead><tr><th>Tech stack</th><th> arm64 status</th><th> Pitfalls</th></tr></thead>
 <tbody>
 <tr><td>Node.js</td><td>Native (≥16)</td><td>None</td></tr>
-<tr><td>Python</td><td>Native</td><td><b>pip must be ≥ 19.3</b> before manylinux2014-aarch64 wheels can be installed.<code>psycopg2-binary</code>, older cryptography versions may fall back to building from source</td></tr>
-<tr><td>Java (Corretto)</td><td>First-class citizen</td><td>Use Corretto 11.0.20+ / 17.0.8+ / 21+; older versions statically link zlib and don't get zlib-ng acceleration.<b>Exception throwing is 2× slower than on x86</b> <sup>[5]</sup></td></tr>
+<tr><td>Python</td><td>Native</td><td><b> pip must be ≥ 19.3</b> before manylinux2014-aarch64 wheels can be installed.<code>psycopg2-binary</code>, older cryptography versions may fall back to building from source</td></tr>
+<tr><td>Java (Corretto)</td><td>First-class citizen</td><td> Use Corretto 11.0.20+ / 17.0.8+ / 21+; older versions statically link zlib and don't get zlib-ng acceleration.<b>Exception throwing is 2× slower than on x86</b> <sup>[5]</sup></td></tr>
 <tr><td>Go</td><td>Native</td><td><code>GOARCH=arm64</code>. Go 1.16+ uses Armv8.1 atomic instructions; in containers, manually set <code>GOMAXPROCS</code>——CFS quota doesn't shrink the visible CPU count<sup>[7]</sup></td></tr>
 <tr><td>Rust</td><td>Native</td><td><code>aarch64-unknown-linux-gnu</code> is the default rustup target</td></tr>
-<tr><td>PostgreSQL</td><td>15+ perfect</td><td><b>Not enabled in Ubuntu's official apt postgresql <code>-moutline-atomics</code></b>, LSE isn't used; switch to the PGDG PPA or RDS</td></tr>
+<tr><td>PostgreSQL</td><td> 15+ perfect</td><td><b> Not enabled in Ubuntu's official apt postgresql <code>-moutline-atomics</code></b>, LSE isn't used; switch to the PGDG PPA or RDS</td></tr>
 <tr><td>MySQL</td><td>8.0.23+</td><td>Self-compiled with <code>-moutline-atomics</code></td></tr>
-<tr><td>nginx</td><td>Native</td><td>Use <code>-mcpu=neoverse-512tvb</code> Compiling pushes peak throughput up another notch</td></tr>
+<tr><td>nginx</td><td>Native</td><td> Use <code>-mcpu=neoverse-512tvb</code> Compiling pushes peak throughput up another notch</td></tr>
 <tr><td>HAProxy</td><td>2.4+</td><td>Reuse <code>CPU=armv81</code> compiled, the official benchmark says <b>~4× speedup</b></td></tr>
 <tr><td>Docker</td><td>Native</td><td><code>docker buildx</code> Produce a multi-arch manifest</td></tr>
-<tr><td>K8s</td><td>Native</td><td>Mixed-architecture clusters need the image to ship a multi-arch manifest, and the Pod needs to add <code>nodeSelector</code></td></tr>
+<tr><td>K8s</td><td>Native</td><td> Mixed-architecture clusters need the image to ship a multi-arch manifest, and the Pod needs to add <code>nodeSelector</code></td></tr>
 </tbody>
 </table>
 <h3 class="sub-h">Recommended compiler flags for Graviton4 <sup>[1]</sup></h3>
@@ -233,7 +233,7 @@ find / -name '*.whl' 2&gt;/dev/null | grep -E 'x86_64|manylinux.*x86'</pre>
 </section>
 <!-- 6. stay -->
 <section class="content-section" id="stay">
-<h2 class="section-title">6 · When to<span>Don't migrate</span></h2>
+<h2 class="section-title">6 · When to<span> Don't migrate</span></h2>
 <ol>
 <li><b>x86-only commercial software</b>——Oracle DB, some SAS/SPSS/MATLAB, older Splunk agents, IBM MQ's JNI libraries.<sup>[1]</sup></li>
 <li><b>CPU-side LLM / traditional ML inference</b>——AVX-512 + AMX lead Graviton4's 128-bit SVE2 by a wide margin on INT8/BF16 GEMM. Unless you move to GPU / Inferentia, stay on M7i / C7i / R7iz.</li>
@@ -249,7 +249,7 @@ find / -name '*.whl' 2&gt;/dev/null | grep -E 'x86_64|manylinux.*x86'</pre>
 <section class="content-section" id="cost">
 <h2 class="section-title">7 · <span>Price</span>(us-east-1, Linux, on-demand)</h2>
 <table class="cmp">
-<thead><tr><th>Specs</th><th>m8g $/h</th><th>m7i $/h</th><th>M8g is cheaper</th></tr></thead>
+<thead><tr><th>Specs</th><th>m8g $/h</th><th>m7i $/h</th><th> M8g is cheaper</th></tr></thead>
 <tbody>
 <tr><td>xlarge</td><td>~$0.180</td><td>~$0.202</td><td>~11%</td></tr>
 <tr><td>2xlarge</td><td>~$0.359</td><td>~$0.403</td><td>~11%</td></tr>
@@ -262,7 +262,7 @@ find / -name '*.whl' 2&gt;/dev/null | grep -E 'x86_64|manylinux.*x86'</pre>
 </section>
 <!-- 8. family -->
 <section class="content-section" id="family">
-<h2 class="section-title">8 · Graviton <span>Family</span>A brief history</h2>
+<h2 class="section-title">8 · Graviton <span>Family</span> A brief history</h2>
 <p>Graviton1 (2018, EC2 A1) was a trial run with 16 Cortex-A72 cores and modest performance. Graviton2 (2019, M6g/C6g/R6g) jumped to 64 Neoverse N1 cores, 7nm, and DDR4, bringing Arm on AWS into the mainstream. Graviton3 (2022, M7g/C7g) moved to Neoverse V1, Armv8.4, SVE1, and DDR5.</p>
 <p><b>Graviton4 (2024, R8g / M8g / C8g)</b>——Neoverse V2, Armv9.0, SVE2, 96 cores, 12-channel DDR5.<b>Graviton5 (Neoverse V3, 192 cores, PCIe Gen 6, 3 nm) reaches GA in June 2026</b>, available in M9g / M9gd, which AWS claims is another ~25% faster than M8g. This means <b>M8g is now the "middle generation"</b>——not cutting-edge, but the most mature ecosystem.</p>
 </section>

@@ -306,7 +306,7 @@
                 An e-commerce site finds its search isn't accurate enough — users type
                 <b>"apple 128gb latest"</b> You want to buy an iPhone, but the first result is
                 <b>Red Fuji apples</b>. Instead of retraining the model, the dev team had the AI automatically
-                <b>Write 4 versions of glue code</b>to improve it. This demo shows the full story of how these 4 code
+                <b>Write 4 versions of glue code</b> to improve it. This demo shows the full story of how these 4 code
                 versions succeeded and failed.
             </p>
 <h3 class="ex-h3">What is "glue code" (the harness)</h3>
@@ -330,7 +330,7 @@
 </div>
 </div>
 <div class="harness-note">
-                All changes happen in<b>The middle layer</b>. The base model was never retrained, not even once.
+                All changes happen in<b> The middle layer</b>. The base model was never retrained, not even once.
             </div>
 <h3 class="ex-h3">Why 4 rounds</h3>
 <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:0.8rem;">
@@ -402,10 +402,10 @@
 </div>
 <!-- Section 1: What are you about to see -->
 <div class="intro-section">
-<h2><span class="num">1</span>What you're about to see</h2>
+<h2><span class="num">1</span> What you're about to see</h2>
 <p>
 <span class="hi">The base model (e.g., Sonnet 5) stays frozen throughout</span>, with not a single training run.
-                What's actually changing is its<span class="hi">The glue code around it</span> —— Each round, the AI reads the previous log,
+                What's actually changing is its<span class="hi"> The glue code around it</span> —— Each round, the AI reads the previous log,
                 modifies this layer of code itself, and pushes accuracy step by step from 60% to 80~90%.
             </p>
 <p>
@@ -433,7 +433,7 @@
 </div>
 <!-- Section 2: How it works, 4 steps -->
 <div class="intro-section">
-<h2><span class="num">2</span>What happens in one loop iteration</h2>
+<h2><span class="num">2</span> What happens in one loop iteration</h2>
 <p>Press Play and these 4 steps run 4 times:</p>
 <div class="loop">
 <div class="step">
@@ -465,12 +465,12 @@
 </div>
 <!-- Section 3: Sample tasks — make it concrete -->
 <div class="intro-section">
-<h2><span class="num">3</span>What the task actually looks like</h2>
+<h2><span class="num">3</span> What the task actually looks like</h2>
 <p><b>Scenario 1 · Financial report extraction (FiNER XBRL)</b> —— Precisely pick the matching accounting line-item tag from a single sentence of financial report text:</p>
 <div class="sample">
 <div class="row"><span class="lbl">Original</span><span class="val">"Total Revenues for the fiscal year ended December 31 was $12,458 million"</span></div>
 <div class="row"><span class="lbl">Correct label</span><span class="val ok">us-gaap:RevenueFromContractWithCustomer</span></div>
-<div class="row"><span class="lbl">Baseline answer</span><span class="val bad">us-gaap:Revenues ✗   (two similar concepts confused)</span></div>
+<div class="row"><span class="lbl">Baseline answer</span><span class="val bad"> us-gaap:Revenues ✗   (two similar concepts confused)</span></div>
 <div class="row"><span class="lbl">Answer after evolution</span><span class="val ok">us-gaap:RevenueFromContractWithCustomer ✓</span></div>
 </div>
 <div class="sample-caption">
@@ -479,8 +479,8 @@
 <p style="margin-top:1.5rem;"><b>Scenario 2 · E-commerce search (attribute-aware)</b> —— from a casual remark by the user, find the product they actually want:</p>
 <div class="sample">
 <div class="row"><span class="lbl">User input</span><span class="val">"water bottle no plastic" (plastic-free water bottle)</span></div>
-<div class="row"><span class="lbl">Correct SKU</span><span class="val ok">sku-glass-500ml (500ml glass cup)</span></div>
-<div class="row"><span class="lbl">Baseline answer</span><span class="val bad">sku-plastic-500ml ✗   (the negation "no" got swallowed)</span></div>
+<div class="row"><span class="lbl">Correct SKU</span><span class="val ok"> sku-glass-500ml (500ml glass cup)</span></div>
+<div class="row"><span class="lbl">Baseline answer</span><span class="val bad"> sku-plastic-500ml ✗   (the negation "no" got swallowed)</span></div>
 <div class="row"><span class="lbl">Answer after evolution</span><span class="val ok">sku-glass-500ml ✓</span></div>
 </div>
 <div class="sample-caption">
@@ -490,7 +490,7 @@
 </div>
 <!-- Section 4: The 4 rounds preview -->
 <div class="intro-section">
-<h2><span class="num">4</span>Preview of the 4 rounds</h2>
+<h2><span class="num">4</span> Preview of the 4 rounds</h2>
 <p>Here's the spoiler up front, so the table won't leave you confused later:</p>
 <div class="outcomes">
 <div class="outcome">
@@ -515,13 +515,13 @@
 </div>
 </div>
 <p style="margin-top:1.5rem;">
-                The Easter egg comes at the end: this evolved harness<span class="hi">Without changing a single line of code, switched directly to another base model (Fable 5)</span>,
+                The Easter egg comes at the end: this evolved harness<span class="hi"> Without changing a single line of code, switched directly to another base model (Fable 5)</span>,
                 still runs just as well, or even better.<b>This shows it learned general engineering patterns, not a trick specific to one model.</b>
 </p>
 </div>
 <!-- Section 5: Glossary -->
 <div class="intro-section">
-<h2><span class="num">5</span>Terms in one sentence</h2>
+<h2><span class="num">5</span> Terms in one sentence</h2>
 <dl class="glossary">
 <dt>Harness</dt>
 <dd>The "glue" code around the model: prompt assembly, retrieval, tool calls, retries on failure.<b>This is what evolves in this demo.</b></dd>

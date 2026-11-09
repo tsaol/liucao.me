@@ -1816,7 +1816,7 @@
                                     </div>
 </div>
 <b>Action B · Pull the scorecard</b>: Attach this version of the code's results on <b>The questions it got wrong out of the 31</b> · The AI makes targeted fixes.<br/>
-<b>Why merge into one step</b>: Right after selecting, it must look at its failures · the AI can't make blind changes — this is<b>Evaluation first</b>.
+<b>Why merge into one step</b>: Right after selecting, it must look at its failures · the AI can't make blind changes — this is<b> Evaluation first</b>.
                                 </div>
 </div>
 </li>
@@ -1844,8 +1844,8 @@
 <span class="hd-wf-spinner" id="hd-wf-spinner"></span>
 </div>
 <div style="margin-top:4px;">
-<b>Three sub-actions</b>:<b>a</b> Opus first<b>Inference</b>(10-20 s) · <b>b</b> Output diff · <b>c</b> The system applies the diff to the parent file to produce new Python.<br/>
-<b>Key</b>: This step is only<b>Propose</b> —— the later Verify + Commit steps decide whether to adopt it.
+<b>Three sub-actions</b>:<b>a</b> Opus first<b> Inference</b>(10-20 s) · <b>b</b> Output diff · <b>c</b> The system applies the diff to the parent file to produce new Python.<br/>
+<b>Key</b>: This step is only<b> Propose</b> —— the later Verify + Commit steps decide whether to adopt it.
                                   </div>
 <!-- AI Reasoning · surfaces WHY the AI proposed the change -->
 <div class="hd-reasoning" id="hd-reasoning-panel" style="display:none;">
@@ -1882,7 +1882,7 @@
 <span class="v"><span id="hd-wf-eval-elapsed">0</span>s</span>
 </div>
 <div style="margin-top:4px;">
-<b>What the system is doing</b>: Run the new code<b>Three test suites</b> —— 31 public questions · 5 questions the AI has never seen · 31 questions with typos added.<br/>
+<b>What the system is doing</b>: Run the new code<b> Three test suites</b> —— 31 public questions · 5 questions the AI has never seen · 31 questions with typos added.<br/>
 <b>Why</b>: Anti-cheating. Code that memorizes answers will, on the last two sets,<b>Collapse</b>.
                                   </div>
 <!-- Per-question grid · shows all 31 public queries with hit/miss + score -->
@@ -1913,7 +1913,7 @@
 <span class="hd-wf-verdict" id="hd-wf-verdict"></span>
 </div>
 <div style="margin-top:4px;">
-<b>What the system is doing</b>: Weight the four scores (public · spot-check · robustness · code simplicity) into a composite score · <b>&gt; 0 required for promotion</b>Archived.<br/>
+<b>What the system is doing</b>: Weight the four scores (public · spot-check · robustness · code simplicity) into a composite score · <b>&gt; 0 required for promotion</b> Archived.<br/>
 <b>Loop</b>: After Commit, go back to step 1 (Run) · using the newly promoted candidate as the parent of the next generation.<br/>
 <span style="color:var(--text-mute);">Rejected changes are simply discarded · git reset semantics</span>
 </div>
@@ -1990,7 +1990,7 @@
 <div class="hd-refs">
 <p>Method references: ACE (arXiv:2510.04618) · Meta-Harness (arXiv:2603.28052) · DGM (arXiv:2505.22954) · <a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" style="color:var(--accent);" target="_blank">ShinkaEvolve</a></p>
 <p>
-                    Every time you click "Start Evolution" it's<b>Actually calls Bedrock</b>(proposer: Sonnet 4.5 / Opus 4.7 / 4.8). The eval set has 31 e-commerce search questions (8 easy + 8 medium + 15 hardest) plus 5 hold-out + 31 typo questions;
+                    Every time you click "Start Evolution" it's<b> Actually calls Bedrock</b>(proposer: Sonnet 4.5 / Opus 4.7 / 4.8). The eval set has 31 e-commerce search questions (8 easy + 8 medium + 15 hardest) plus 5 hold-out + 31 typo questions;
                     the proposer generates 3 versions of harness code live, with different results each time. When the run finishes, it automatically shows a score bar chart, before/after comparisons of typical queries, and the full 31-question matrix.
                 </p>
 </div>
@@ -2077,7 +2077,7 @@
              pred: <span class="${o.hit ? 'g' : 'p-wrong'}">${shortTag(o.pred)}</span>
              ${o.hit ? '✓' : '✗'}
         </div>
-        ${o.trap && !o.hit ? `<span class="trap">陷阱: ${o.trap}</span>` : ''}
+        ${o.trap && !o.hit ? `<span class="trap">Trap: ${o.trap}</span>` : ''}
       </li>`;
 
     if (round.n === 0) {
@@ -2086,7 +2086,7 @@
     } else {
       if (gained.length) html += `<div class="hd-task-group">✓ Wrong → right (the harness's contribution)</div><ul class="hd-tasklist">${gained.map(g => taskLine(g.o, 'gained')).join('')}</ul>`;
       if (lost.length) html += `<div class="hd-task-group">✗ Right → wrong (side effects — evolution isn't monotonic)</div><ul class="hd-tasklist">${lost.map(g => taskLine(g.o, 'lost')).join('')}</ul>`;
-      if (wrong.length) html += `<div class="hd-task-group">○ 一直答错 (下一轮的目标)</div><ul class="hd-tasklist">${wrong.slice(0, 5).map(o => taskLine(o, 'wrong')).join('')}${wrong.length > 5 ? '<li class="hd-task">... 共 ' + wrong.length + ' 题' : ''}</ul>`;
+      if (wrong.length) html += `<div class="hd-task-group">○ Still wrong (next round's targets)</div><ul class="hd-tasklist">${wrong.slice(0, 5).map(o => taskLine(o, 'wrong')).join('')}${wrong.length > 5 ? '<li class="hd-task">... ' + wrong.length + ' in total' : ''}</ul>`;
     }
 
     return html;
@@ -2427,12 +2427,12 @@
 
       card.innerHTML = `
         <div class="hd-case-q">
-          <span class="prefix">${domain === "ecommerce" ? "查询:" : "原文:"}</span>
+          <span class="prefix">${domain === "ecommerce" ? "Query:" : "Source text:"}</span>
           ${s.input}
         </div>
         <div class="hd-case-trap">
-          <span class="icon">难点:</span> ${s.trap}
-          &nbsp;·&nbsp;标准答案: <span class="gold">${shortSku(s.gold)}</span>
+          <span class="icon">Trap:</span> ${s.trap}
+          &nbsp;·&nbsp;Gold answer: <span class="gold">${shortSku(s.gold)}</span>
         </div>
         <div class="hd-case-trace">${traceRows}</div>
       `;
@@ -3576,7 +3576,7 @@
           const title = p.pred_title || p.pred || "(no answer)";
           return `
             <div class="hd-flip-row ${cls}">
-              <span class="gen">Gen ${gens[gi].n}${gens[gi].n === 0 ? " 起点" : ""}</span>
+              <span class="gen">Gen ${gens[gi].n}${gens[gi].n === 0 ? " start" : ""}</span>
               <span class="pred">${escapeHtml(title)}</span>
               <span class="mark">${mark}</span>
             </div>`;
@@ -3594,7 +3594,7 @@
     if (matrix && gen0.length) {
       const cols = gens.map(g => {
         const s = g.public.ndcg != null ? g.public.ndcg : (g.public.accuracy || 0);
-        return `<th>Gen ${g.n}${g.n === 0 ? "起点" : ""} · NDCG ${(s*100).toFixed(0)}%</th>`;
+        return `<th>Gen ${g.n}${g.n === 0 ? " (start)" : ""} · NDCG ${(s*100).toFixed(0)}%</th>`;
       }).join("");
       const rows = gen0.map((row, i) => {
         const cells = gens.map(g => {

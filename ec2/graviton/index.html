@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Graviton4 / EC2 深度指南 — liucao.me</title>
 <meta content="M8g vs M7i、EC2 监控、ARM 资源饱和判定、on-call playbook — 四篇一体的 EC2 深度指南" name="description"/>
-<link href="../../ec2/assets/style.css" rel="stylesheet"/>
+<link href="../assets/style.css" rel="stylesheet"/>
 <style>
         .gv-hub-hero { text-align: center; padding: 3.5rem 1.5rem 2rem; }
         .gv-hub-hero .eyebrow {
@@ -89,7 +89,7 @@
 <nav class="nav">
 <div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
 <div class="links">
-<a href="../../ec2/">EC2</a>
+<a href="../">EC2</a>
 </div>
 </nav>
 <main class="wrap">
@@ -101,42 +101,42 @@
 </div>
 <section>
 <div class="hub-grid">
-<a class="hub-card" href="../../ec2/graviton/compare/">
+<a class="hub-card" href="compare/">
 <div class="num">01 · 硬件对比</div>
 <h3>M8g vs M7i</h3>
 <p>Graviton4 (Neoverse V2) 与 Intel Sapphire Rapids 的架构、规格、性能、迁移全景。带 Compiler flags 和一份 x86→arm64 兼容性扫描脚本。</p>
 <div class="tags"><span>SVE2</span><span>AVX-512</span><span>价格</span><span>迁移</span></div>
 <div class="arrow">→ 进入</div>
 </a>
-<a class="hub-card" href="../../ec2/graviton/monitor/">
+<a class="hub-card" href="monitor/">
 <div class="num">02 · 可观测性</div>
 <h3>EC2 三层监控体系</h3>
 <p>CloudWatch → CloudWatch Agent → Prometheus + Node Exporter。USE vs RED vs 4 Golden Signals，2026 年 CloudWatch 定价陷阱，Alertmanager 完整配置。</p>
 <div class="tags"><span>Prometheus</span><span>USE</span><span>RED</span><span>Grafana</span></div>
 <div class="arrow">→ 进入</div>
 </a>
-<a class="hub-card" href="../../ec2/graviton/saturation/">
+<a class="hub-card" href="saturation/">
 <div class="num">03 · 饱和判定</div>
 <h3>ARM 上怎么判断资源用满</h3>
 <p>99% 和 x86 一样；1% 是 <code>armv8_pmuv3</code> PMU、IPC 度量、PSI 内核算法。ENA 六个 <code>allowance_exceeded</code> 计数器逐个解读。</p>
 <div class="tags"><span>PSI</span><span>IPC</span><span>ENA</span><span>eBPF</span></div>
 <div class="arrow">→ 进入</div>
 </a>
-<a class="hub-card" href="../../ec2/graviton/playbook/">
+<a class="hub-card" href="playbook/">
 <div class="num">04 · On-Call</div>
 <h3>Playbook — 服务慢了怎么办</h3>
 <p>Netflix 60 秒 checklist；USE method 逐资源展开；10 个真实故障签名；coredump + 事故快照命令；来自 Google SRE / Brendan Gregg 的方法论。</p>
 <div class="tags"><span>Netflix</span><span>Google SRE</span><span>coredump</span></div>
 <div class="arrow">→ 进入</div>
 </a>
-<a class="hub-card" href="../../ec2/graviton/generations/">
+<a class="hub-card" href="generations/">
 <div class="num">研究 · 7 / 8 / 9 代</div>
 <h3>Graviton3 → 4 → 5，每一代进步了什么</h3>
 <p>核心、缓存、内存、最大规格、网络存储、安全和官方性能数字逐项对比；9 代把 192 核放进一颗芯片、L3 变 5 倍、DDR5-8800。附升级注意事项。</p>
 <div class="tags"><span>M7g</span><span>M8g</span><span>M9g</span></div>
 <div class="arrow">→ 进入</div>
 </a>
-<a class="hub-card" href="../../ec2/numa/">
+<a class="hub-card" href="../numa/">
 <div class="num">延伸阅读 · 通用主题</div>
 <h3>NUMA — 大机型的隐形税</h3>
 <p>为什么两颗 CPU 拼起来会有非一致内存访问；kernel 定义的五种 mempolicy；MySQL "swap insanity" 案例；ENA 队列亲和性与 NUMA 的坑。Intel、AMD、Graviton 都适用，所以单独成篇。</p>
@@ -148,11 +148,11 @@
 <h4>为什么把四个主题拆成子页</h4>
 <p>一开始我把这些话题写在同一页上，读起来像读一份 30 屏的备忘录。技术内容如果不"按主题一次一件"地组织，注意力会漂。</p>
 <p>拆开之后：每篇独立、可深读、有引用；导航栏一致；子页之间用"下一站"链条串起来，也可以按需跳转。读者进来能选看，也能顺读。</p>
-<p>四篇的推荐阅读顺序：<b>01 → 03 → 02 → 04</b>。先建立硬件差异的直觉（01）；再学会看指标（03）；再搭建监控（02）；最后落地成 playbook（04）。大机型上还要理解物理架构，见延伸阅读 <a href="../../ec2/numa/">NUMA</a>——它不只是 Graviton 的问题。</p>
+<p>四篇的推荐阅读顺序：<b>01 → 03 → 02 → 04</b>。先建立硬件差异的直觉（01）；再学会看指标（03）；再搭建监控（02）；最后落地成 playbook（04）。大机型上还要理解物理架构，见延伸阅读 <a href="../numa/">NUMA</a>——它不只是 Graviton 的问题。</p>
 </div>
 </section>
 <div style="text-align:center; padding:2.5rem 0 1rem;">
-<a class="back" href="../../ec2/">← 返回 EC2</a>
+<a class="back" href="../">← 返回 EC2</a>
 </div>
 </main>
 <footer class="footer">

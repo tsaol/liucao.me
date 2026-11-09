@@ -254,9 +254,9 @@
 <span class="sk-title">Opening · <span class="sk-title-cn">Ten customers, seven leave empty-handed</span></span>
 </div>
 <div class="sk-mainline">
-      Picture this: a customer searches our app for "mooncakes to give my mother-in-law", and the top result is<em>Men's razor</em>.
+      Picture this: a customer searches our app for "mooncakes to give my mother-in-law", and the top result is<em> Men's razor</em>.
       This isn't a joke · it's where our search agent actually is today — BM25 baseline · hit rate <em>30%</em> ·
-      Out of ten customers, seven leave empty-handed. Next, I won't talk about swapping models · I'll talk about how to make it<em>Not a single weight is touched</em>, it rewrites its own search code by itself.
+      Out of ten customers, seven leave empty-handed. Next, I won't talk about swapping models · I'll talk about how to make it<em> Not a single weight is touched</em>, it rewrites its own search code by itself.
     </div>
 <div class="sk-punch">Weights untouched · what changes is the harness layer around them.</div>
 <div class="sk-cue-block">Full-screen search screenshot in the PPT · query "mooncakes to give my mother-in-law" · top result "men's razor" · big red 30% in the bottom-right corner.</div>
@@ -271,7 +271,7 @@
 <span class="sk-title">Click "Start evolution" · <span class="sk-title-cn">Press the button</span></span>
 </div>
 <div class="sk-mainline">
-      The fix is right on this page · one button. I'll click it now · <em>90 seconds</em>then we look at the numbers.
+      The fix is right on this page · one button. I'll click it now · <em>90 seconds</em> then we look at the numbers.
     </div>
 <div class="sk-punch">In these 90 seconds · no human writes the code.</div>
 <div class="sk-cue-block">Switch to liucao.me/demo/harness/run/ · click "Start Evolution" · the timer starts. (If the network fails, switch to the liucao.me/demo/harness/play/ replay · same narrative.)</div>
@@ -287,7 +287,7 @@
 </div>
 <div class="sk-mainline">
       While it runs · let's see what it does first — <em>Not writing code · grading the exam papers</em>.
-      The Observe node picks a parent from the program library · and takes the questions it got wrong<em>Laid out one by one</em>.
+      The Observe node picks a parent from the program library · and takes the questions it got wrong<em> Laid out one by one</em>.
       The whole method is five verbs: Run · Observe · Propose · Verify · Commit · the engine is ShinkaEvolve, open-sourced by Sakana AI.
     </div>
 <div class="sk-punch">First see clearly where you went wrong · then start writing. This order can't be reversed.</div>
@@ -303,8 +303,8 @@
 <span class="sk-title">AI reads missed questions · writes new code · <span class="sk-title-cn">It writes code for itself</span></span>
 </div>
 <div class="sk-mainline">
-      Next is Propose: Claude Opus 4.8 gets this error report · and starts writing<em>New search code</em>.
-      Notice what it writes — not gradients · not LoRA parameters · but<em>Real Python</em> ·
+      Next is Propose: Claude Opus 4.8 gets this error report · and starts writing<em> New search code</em>.
+      Notice what it writes — not gradients · not LoRA parameters · but<em> Real Python</em> ·
       Tokenization logic, synonym table, ranking rules · it's all in this diff.
       "丈母娘" and "岳母" (both mean "mother-in-law") · to BM25 they're two literally unrelated words · now it adds that rule for itself.
     </div>
@@ -321,8 +321,8 @@
 <span class="sk-title">Three eval suites running · <span class="sk-title-cn">Three checkpoints</span></span>
 </div>
 <div class="sk-mainline">
-      The new code is written · but it can't just declare itself good · this is where Verify comes in. Three evaluation suites<em>Run concurrently</em>:
-      <em>31 questions</em>E-commerce search tasks: 8 easy · 8 medium · 15 hardest;
+      The new code is written · but it can't just declare itself good · this is where Verify comes in. Three evaluation suites<em> Run concurrently</em>:
+      <em>31 questions</em> E-commerce search tasks: 8 easy · 8 medium · 15 hardest;
       plus <em>5 hold-out problems</em>(which it has never seen);
       plus <em>31 typo-variant questions</em>(deliberately misspelled).
       hold-out prevents memorization · typo prevents brittleness · without both, it doesn't count.
@@ -372,7 +372,7 @@
 <span class="sk-title">Comparison after 3 generations · <span class="sk-title-cn">The gap between the two flat lines</span></span>
 </div>
 <div class="sk-mainline">
-      Then all three generations finish · the curve appears · but what I want you to look at<em>Not the Opus line · the flat one next to it</em>.
+      Then all three generations finish · the curve appears · but what I want you to look at<em> Not the Opus line · the flat one next to it</em>.
       Same eval, same pipeline · swap in Sonnet 4.5 as the author · after three generations it's stuck at <em>9%</em> ——
       It's not that the pipeline broke · it can't understand the error report · and can't write code that passes the Gate.
       Opus 4.8 plateaus at 90% · Sonnet 4.5 plateaus at 9% · <em>The gap between the two plateau lines · is the ceiling of model capability</em> ·

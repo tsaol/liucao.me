@@ -99,31 +99,31 @@
 <section class="content-section" id="tldr">
 <div class="callout">
 <div class="lead">Bottom line</div>
-<b class="gen3">7th gen</b>brought Graviton into the DDR5 and SVE era;<b class="gen4">8th gen</b>scaled things up: 96 cores per chip, double the L2, and 3x the vCPUs and memory of the 7th generation at the largest size;<b class="gen5">Gen 9</b>Puts 192 cores into<b>A single</b>chip, L3 grows 5×, memory moves to DDR5-8800, the clock reaches 3.3 GHz, and it is the first to use the formally verified Nitro Isolation Engine. By AWS's numbers, each generation is about 25–30% faster than the last.
+<b class="gen3">7th gen</b> brought Graviton into the DDR5 and SVE era;<b class="gen4">8th gen</b> scaled things up: 96 cores per chip, double the L2, and 3x the vCPUs and memory of the 7th generation at the largest size;<b class="gen5">Gen 9</b> Puts 192 cores into<b> A single</b> chip, L3 grows 5×, memory moves to DDR5-8800, the clock reaches 3.3 GHz, and it is the first to use the formally verified Nitro Isolation Engine. By AWS's numbers, each generation is about 25–30% faster than the last.
             </div>
 </section>
 <section class="content-section" id="table">
 <h2 class="section-title">1 · <span>Summary table</span></h2>
 <table class="cmp">
-<thead><tr><th></th><th class="gen3">Gen 7 · Graviton3</th><th class="gen4">Gen 8 · Graviton4</th><th class="gen5">Gen 9 · Graviton5</th></tr></thead>
+<thead><tr><th></th><th class="gen3">Gen 7 · Graviton3</th><th class="gen4"> Gen 8 · Graviton4</th><th class="gen5"> Gen 9 · Graviton5</th></tr></thead>
 <tbody>
-<tr><td><b>Representative instances</b></td><td>C7g / M7g / R7g (+gd); C7gn and Hpc7g use Graviton3E</td><td>C8g / M8g / R8g / X8g / I8g (+gd / gn / gb)</td><td>M9g / M9gd, C9g / C9gd, R9g / R9gd</td></tr>
+<tr><td><b>Representative instances</b></td><td> C7g / M7g / R7g (+gd); C7gn and Hpc7g use Graviton3E</td><td> C8g / M8g / R8g / X8g / I8g (+gd / gn / gb)</td><td>M9g / M9gd, C9g / C9gd, R9g / R9gd</td></tr>
 <tr><td><b>CPU core design</b></td><td>Arm Neoverse V1</td><td>Neoverse V2</td><td>Neoverse V3</td></tr>
 <tr><td><b>Instruction set</b></td><td>Armv8.4-A</td><td>Armv9.0-A</td><td>Armv9.2-A</td></tr>
-<tr><td><b>Clock speed</b>(no Turbo)</td><td>2.6 GHz</td><td>2.8 GHz (2.7 GHz for 48xlarge)</td><td class="up">3.3 GHz</td></tr>
-<tr><td><b>Cores per chip</b></td><td>64</td><td>96 (48xlarge uses 2 chips, 192 total)</td><td class="up">192 (single chip)</td></tr>
-<tr><td><b>L1 / core</b></td><td>64 KB instruction + 64 KB data</td><td>Same as left</td><td>Same as left</td></tr>
+<tr><td><b>Clock speed</b>(no Turbo)</td><td>2.6 GHz</td><td> 2.8 GHz (2.7 GHz for 48xlarge)</td><td class="up">3.3 GHz</td></tr>
+<tr><td><b>Cores per chip</b></td><td>64</td><td> 96 (48xlarge uses 2 chips, 192 total)</td><td class="up">192 (single chip)</td></tr>
+<tr><td><b>L1 / core</b></td><td> 64 KB instruction + 64 KB data</td><td> Same as left</td><td> Same as left</td></tr>
 <tr><td><b>L2 / core</b></td><td>1 MB</td><td class="up">2 MB</td><td>2 MB</td></tr>
-<tr><td><b>Shared last-level cache</b></td><td>32 MB</td><td>36 MB</td><td class="up">48 MB per NUMA node (≤16xlarge) or 96 MB (24/48xlarge); AWS says it's 5x the previous generation</td></tr>
-<tr><td><b>On-chip interconnect</b></td><td>CMN-650</td><td>CMN-700</td><td>CMN-S3; up to 33% lower core-to-core latency</td></tr>
-<tr><td><b>Memory</b></td><td>8-channel DDR5 (50% more bandwidth than the Graviton2-based M6g)</td><td>12-channel DDR5-5600 (DDR5-6400 on M8gn / M8gb)</td><td class="up">12-channel DDR5-8800, which AWS calls the fastest in the cloud</td></tr>
+<tr><td><b>Shared last-level cache</b></td><td>32 MB</td><td>36 MB</td><td class="up"> 48 MB per NUMA node (≤16xlarge) or 96 MB (24/48xlarge); AWS says it's 5x the previous generation</td></tr>
+<tr><td><b>On-chip interconnect</b></td><td>CMN-650</td><td>CMN-700</td><td> CMN-S3; up to 33% lower core-to-core latency</td></tr>
+<tr><td><b>Memory</b></td><td> 8-channel DDR5 (50% more bandwidth than the Graviton2-based M6g)</td><td>12-channel DDR5-5600 (DDR5-6400 on M8gn / M8gb)</td><td class="up">12-channel DDR5-8800, which AWS calls the fastest in the cloud</td></tr>
 <tr><td><b>PCIe</b></td><td>—</td><td>—</td><td class="up">PCIe Gen6 (first in the AWS fleet)</td></tr>
 <tr><td><b>Vector units</b></td><td>4×128 bit Neon / <b>2×256 bit SVE</b></td><td>4×128 bit Neon / SVE2</td><td>4×128 bit Neon / SVE2</td></tr>
-<tr><td><b>New features</b></td><td>SVE, RNG, bf16, int8</td><td>SVE2, sve-int8, sve-bf16, sve-bitperm, sve-crypto</td><td>afp, wfxt</td></tr>
+<tr><td><b>New features</b></td><td> SVE, RNG, bf16, int8</td><td> SVE2, sve-int8, sve-bf16, sve-bitperm, sve-crypto</td><td> afp, wfxt</td></tr>
 <tr><td><b>Pointer Authentication (PAC) / Branch Target Identification (BTI)</b></td><td>PAC ✅ / BTI ❌</td><td>PAC ✅ / BTI ✅</td><td>PAC ✅ / BTI ✅</td></tr>
-<tr><td><b>32-bit user-space compatibility</b></td><td>Supported</td><td>No longer supported</td><td>Not supported</td></tr>
-<tr><td><b>NUMA nodes</b></td><td>1</td><td>1 (2 for 48xlarge)</td><td>1 (2 for 16xlarge and 48xlarge)</td></tr>
-<tr><td><b>Largest size (M series)</b></td><td>m7g.16xlarge: 64 vCPU / 256 GiB</td><td class="up">m8g.48xlarge: 192 vCPU / 768 GiB</td><td>m9g.48xlarge: 192 vCPU (M9g has 4 GiB per vCPU)</td></tr>
+<tr><td><b>32-bit user-space compatibility</b></td><td> Supported</td><td> No longer supported</td><td> Not supported</td></tr>
+<tr><td><b>NUMA nodes</b></td><td>1</td><td> 1 (2 for 48xlarge)</td><td>1 (2 for 16xlarge and 48xlarge)</td></tr>
+<tr><td><b>Largest size (M series)</b></td><td>m7g.16xlarge: 64 vCPU / 256 GiB</td><td class="up"> m8g.48xlarge: 192 vCPU / 768 GiB</td><td> m9g.48xlarge: 192 vCPU (M9g has 4 GiB per vCPU)</td></tr>
 <tr><td><b>Faster than the previous generation</b>(AWS official, up to)</td><td>25% (vs. Graviton2)</td><td>30% (vs. Graviton3)</td><td>25% (vs. Graviton4)</td></tr>
 </tbody>
 </table>
@@ -157,14 +157,14 @@
 <section class="content-section" id="perf">
 <h2 class="section-title">4 · <span>Official performance numbers</span></h2>
 <table class="cmp">
-<thead><tr><th>Compare</th><th>Published by AWS (up to)</th></tr></thead>
+<thead><tr><th>Compare</th><th> Published by AWS (up to)</th></tr></thead>
 <tbody>
 <tr><td><b>M7g vs M6g</b>(Graviton3 vs 2)</td><td>Up to 25% faster overall; up to 2x floating point; up to 2x cryptography; 50% more memory bandwidth <sup>[6]</sup></td></tr>
 <tr><td><b>M8g vs M7g</b>(Graviton4 vs 3)</td><td>Up to 30% faster overall <sup>[4]</sup></td></tr>
-<tr><td><b>X8g vs X2gd</b></td><td>Up to 60% faster <sup>[9]</sup></td></tr>
+<tr><td><b>X8g vs X2gd</b></td><td> Up to 60% faster <sup>[9]</sup></td></tr>
 <tr><td><b>M9g vs M8g</b>(Graviton5 vs 4)</td><td>Up to 25% faster compute; 35% for web applications; 35% for ML inference; 30% for databases <sup>[2][7]</sup></td></tr>
-<tr><td><b>C9g vs C8g</b></td><td>Up to 25% higher performance per vCPU <sup>[3]</sup></td></tr>
-<tr><td><b>R9g vs R8g</b></td><td>Up to 25% higher compute performance per vCPU <sup>[5]</sup></td></tr>
+<tr><td><b>C9g vs C8g</b></td><td> Up to 25% higher performance per vCPU <sup>[3]</sup></td></tr>
+<tr><td><b>R9g vs R8g</b></td><td> Up to 25% higher compute performance per vCPU <sup>[5]</sup></td></tr>
 </tbody>
 </table>
 <div class="callout warn">
@@ -175,7 +175,7 @@
 <section class="content-section" id="io">
 <h2 class="section-title">5 · <span>Networking and storage</span></h2>
 <table class="cmp">
-<thead><tr><th>Largest size</th><th>Network</th><th>EBS</th></tr></thead>
+<thead><tr><th>Largest size</th><th> Network</th><th>EBS</th></tr></thead>
 <tbody>
 <tr><td><span class="pill i">m8g.48xlarge</span></td><td>50 Gbps</td><td>40 Gbps</td></tr>
 <tr><td><span class="pill g">c9g / r9g .48xlarge</span></td><td class="up">100 Gbps</td><td class="up">72 Gbps</td></tr>
@@ -183,14 +183,14 @@
 <tr><td><span class="pill i">m8gb (EBS-enhanced)</span></td><td>—</td><td>Up to 300 Gbps / 1,440K IOPS</td></tr>
 </tbody>
 </table>
-<p>Gen 9 currently only has M / C / R and their local-disk variants (gd). There are no network- or EBS-optimized variants like M8gn or M8gb yet. So if you need<b>Limit</b>network or EBS bandwidth, the 8th-gen gn / gb variants are currently higher <sup>[3][4][5]</sup>.</p>
+<p>Gen 9 currently only has M / C / R and their local-disk variants (gd). There are no network- or EBS-optimized variants like M8gn or M8gb yet. So if you need<b> Limit</b> network or EBS bandwidth, the 8th-gen gn / gb variants are currently higher <sup>[3][4][5]</sup>.</p>
 </section>
 <section class="content-section" id="sec">
 <h2 class="section-title">6 · <span>Safety</span></h2>
 <ul>
 <li><b>7th gen</b>: Memory is always encrypted (always-on memory encryption), with support for Pointer Authentication (PAC) <sup>[1][6]</sup>.</li>
 <li><b>8th gen</b>: Adds Branch Target Identification (BTI), and each vCPU gets its own dedicated cache <sup>[1][4]</sup>.</li>
-<li><b>Gen 9</b>: First introduced <b>Nitro Isolation Engine</b>. It handles isolation between VMs (including access to VM memory, CPU registers and I/O devices), and uses<b>Formal verification</b>Mathematically proves that the isolation holds; AWS says this makes Nitro the first formally verified cloud hypervisor <sup>[2][5]</sup>.</li>
+<li><b>Gen 9</b>: First introduced <b>Nitro Isolation Engine</b>. It handles isolation between VMs (including access to VM memory, CPU registers and I/O devices), and uses<b> Formal verification</b> Mathematically proves that the isolation holds; AWS says this makes Nitro the first formally verified cloud hypervisor <sup>[2][5]</sup>.</li>
 </ul>
 </section>
 <section class="content-section" id="timeline">
@@ -207,7 +207,7 @@
 <div class="step">
 <h4 class="gen4">7th gen → 8th gen</h4>
 <ul>
-<li>Compiler flags <code>-mcpu=neoverse-512tvb</code> Applies to all three generations; usually<b>No recompilation needed</b> <sup>[1]</sup>.</li>
+<li>Compiler flags <code>-mcpu=neoverse-512tvb</code> Applies to all three generations; usually<b> No recompilation needed</b> <sup>[1]</sup>.</li>
 <li><b>32-bit userspace no longer supported</b>: Also, armv7 / 32-bit programs must first be replaced with 64-bit versions <sup>[1]</sup>.</li>
 <li>Vectors go from 2×256 bit SVE to 4×128 bit: SVE code tuned specifically for 256 bit needs to be re-benchmarked.</li>
 <li>48xlarge is two chips and two NUMA nodes, so pay attention to NUMA; see <a href="../../numa/">NUMA deep-dive guide</a>.</li>

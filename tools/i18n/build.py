@@ -30,11 +30,12 @@ ZH_PAGES = ['index.html', 'ec2/index.html', 'ec2/graviton/index.html',
     'rsi/demo/talk/index.html', 'rsi/demo/script/index.html', 'rsi/demo/script-v2/index.html',
     'rsi/demo/script-play/index.html', 'rsi/demo/static/play-standalone.html']
 EN_PAGES = ['network/index.html', 'network/matrix/index.html',
-    'network/s3bench/index.html', 'network/zaz-latency/index.html']
+    'network/s3bench/index.html', 'network/zaz-latency/index.html'] + sorted(
+    'aws-gpu/instances/' + f for f in os.listdir(os.path.join(ROOT, 'aws-gpu/instances')) if f.endswith('.html'))
 ZH_JSON = ['rsi/demo/static/play-run.json', 'rsi/demo/static/data.json']
 
 CJK = re.compile(r'[㐀-鿿＀-￯　-〿]')
-WORDS = re.compile(r'[A-Za-z]{2,}.*\s.*[A-Za-z]{2,}|^[A-Z][a-z]{3,}')
+WORDS = re.compile(r'[A-Za-z]*[a-z]{3,}')
 SKIP_TAGS = {'script', 'style', 'noscript', 'svg', 'math'}
 ATTRS = ['title', 'alt', 'placeholder', 'aria-label', 'data-tip']
 # string literal containing CJK inside inline JS ('...', "...", `...`)
@@ -83,6 +84,18 @@ def js_strings(code):
     return out
 def js_cjk_strings(code):
     return [t for t in js_strings(code) if CJK.search(t[3])]
+def js_text_strings(code, lang):
+    if lang == 'zh': return js_cjk_strings(code)
+    out = []
+    for t in js_strings(code):
+        body = t[3]
+        vis = re.sub(r'\$\{[^}]*\}|<[^>]+>', ' ', body).strip()
+        if CJK.search(body) or not re.search(r'[A-Za-z]{3,}', vis): continue
+        if re.fullmatch(r'[a-z][A-Za-z0-9]*', vis): continue                  # identifiers, camelCase
+        if re.match(r'^[#.\[]|^[a-z0-9_-]+(\s+[a-z0-9_-]+)*$', vis): continue  # selectors, class lists
+        if re.search(r'^(https?:|/|\.\./)|\.(js|json|html|css)$', vis): continue
+        out.append(t)
+    return out
 
 def other(lang): return 'en' if lang == 'zh' else 'zh'
 PAGES = {p: 'zh' for p in ZH_PAGES}; PAGES.update({p: 'en' for p in EN_PAGES})
@@ -150,7 +163,7 @@ def walk(soup, lang, fn_text, fn_attr, fn_script):
     for node in soup.find_all(string=True):
         if isinstance(node, (Comment, Doctype)): continue
         if node.parent and node.parent.name in SKIP_TAGS:
-            if node.parent.name == 'script' and lang == 'zh' and not node.parent.get('src'): fn_script(node)
+            if node.parent.name == 'script' and not node.parent.get('src') and node.parent.get('type') not in ('application/json', 'application/ld+json'): fn_script(node)
             continue
         if need(str(node), lang): fn_text(node)
     for tag in soup.find_all(True):
@@ -161,7 +174,7 @@ def collect(html, lang):
     segs = []
     soup = BeautifulSoup(html, 'html.parser')
     walk(soup, lang, lambda n: segs.append(split_ws(str(n))[1]), lambda t, a: segs.append(t[a].strip()),
-         lambda n: segs.extend(t[3] for t in js_cjk_strings(str(n))))
+         lambda n: segs.extend(t[3] for t in js_text_strings(str(n), lang)))
     return segs
 def json_strings(o, out):
     if isinstance(o, str):
@@ -187,6 +200,13 @@ def as_page(t):
         c = c.lstrip('./') if c.startswith('./') else c
         if c in PAGES: return c
     if t == '': return 'index.html'
+    # a link that already points at a language copy (en/... or zh/...) means that page
+    for pre in ('en/', 'zh/'):
+        if t.startswith(pre):
+            q = as_page(t[len(pre):])
+            if q and counterpart(q, PAGES[q]) == version(q, other(PAGES[q])) and version(q, pre[:2]) == (t if t.endswith('.html') else q if PAGES[q] == pre[:2] else counterpart(q, PAGES[q])):
+                return q
+            if q and pre[:2] != PAGES[q]: return q
     return None
 def rewrite_link(link, src_page, out_page, lang_out):
     if not link or re.match(r'^(https?:|mailto:|data:|javascript:|#|//)', link): return link
@@ -250,13 +270,21 @@ def build(toggles_only=False):
         src = open(os.path.join(ROOT, p), encoding='utf-8').read()
         ssoup = BeautifulSoup(src, 'html.parser')
         if ssoup.html: ssoup.html['lang'] = 'zh-CN' if lang == 'zh' else 'en'
+        for tag, at in URL_ATTR.items():
+            for t in ssoup.find_all(tag):
+                if t.get(at): t[at] = rewrite_link(t[at], p, p, lang)
         add_toggle(ssoup, p, counterpart(p, lang), lang)
         write(p, str(ssoup))
         if toggles_only: continue
         out = counterpart(p, lang); lo = other(lang)
         soup = BeautifulSoup(src, 'html.parser')
         def ft(n):
-            a, core, b = split_ws(str(n)); n.replace_with(NavigableString(a + tr(d, core) + b))
+            a, core, b = split_ws(str(n)); t = tr(d, core)
+            if lo == 'en' and not a and t[:1].isalnum():
+                prev = n.find_previous(string=True)
+                pt = str(prev) if prev is not None else ''
+                if pt[-1:].isalnum(): a = ' '
+            n.replace_with(NavigableString(a + t + b))
         def fa(tag, at): tag[at] = tr(d, tag[at].strip())
         def js_safe(q, x):
             if q in ('"', "'"):
@@ -271,17 +299,22 @@ def build(toggles_only=False):
                 while j < len(x) and depth:
                     depth += (x[j] == '{') - (x[j] == '}'); j += 1
                 out.append(x[i:j]); i = j
+        def tags(x): return re.findall(r'<[^>]*>', x)
         def js_piece(q, body):
             t = tr(d, body)
+            if tags(t) != tags(body): return body
             if q == '`':
                 # keep every ${...} and backtick exactly, otherwise keep the original
-                if t.count('`') != body.count('`') or tmpl_exprs(t) != tmpl_exprs(body): return body
+                def code_only(e):
+                    for a2, b2, q2, _ in reversed(js_strings(e)): e = e[:a2] + q2 + q2 + e[b2:]
+                    return e
+                if t.count('`') != body.count('`') or [code_only(e) for e in tmpl_exprs(t)] != [code_only(e) for e in tmpl_exprs(body)]: return body
                 return t
             return js_safe(q, t)
         def fs(n):
             orig = str(n)
             new = orig
-            for a, b, q, body in reversed(js_cjk_strings(orig)):
+            for a, b, q, body in reversed(js_text_strings(orig, lang)):
                 new = new[:a] + q + js_piece(q, body) + q + new[b:]
             if new != orig and not js_ok(new): new = orig; bad_js.append(out)
             n.replace_with(NavigableString(new))
