@@ -1,5 +1,5 @@
 // Auto-generated from instances.vantage.sh China region data
-// Last updated: 2026-11-08
+// Last updated: 2026-11-09
 
 var instanceData = [
   {
