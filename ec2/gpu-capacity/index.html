@@ -83,23 +83,25 @@
 <div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
 <div class="links">
 <a href="../">EC2</a>
-<a href="https://github.com/tsaol/grab-gpu">GitHub</a>
+<a href="https://github.com/tsaol/gpu-hunter">GitHub</a>
 </div>
 </nav>
 <main class="wrap">
 <div class="gv-hero">
 <div class="crumb"><a href="../">EC2</a> · GPU · 按需容量</div>
 <h1>按需<span class="g">抢 GPU</span>：ODCR + 自动重试</h1>
-<p class="sub">GPU 紧张的时候，开机器总是报 <code>InsufficientInstanceCapacity</code>。这篇讲怎么用按需容量预留（ODCR）把空出来的 GPU 容量先占住，再慢慢用。附一个开源脚本，抢到为止。</p>
+<p class="sub">GPU 紧张的时候，开机器总是报 <code>InsufficientInstanceCapacity</code>。这篇讲怎么用按需容量预留（ODCR）把空出来的 GPU 容量先占住，再慢慢用。附一个演示脚本 gpu-hunter，抢到为止。</p>
 <nav class="toc">
 <a href="#why">1 · 为什么用 ODCR</a>
 <a href="#how">2 · 脚本怎么抢</a>
 <a href="#use">3 · 怎么用</a>
 <a href="#check">4 · 抢之前检查</a>
 <a href="#eu">5 · 欧洲 GPU 分布</a>
-<a href="#cost">6 · 费用和释放</a>
+<a href="#fleet">6 · 官方 Fleet</a>
+<a href="#cost">7 · 费用和释放</a>
 </nav>
 </div>
+<div class="callout danger"><b>声明：本文的脚本只用于演示和学习，不是 AWS 官方工具，不要直接用在生产环境。</b><br/>容量预留从创建起就按按需价收费，用不用都收。限制、价格、配额以 AWS 官方文档为准。</div>
 <div class="tldr">
 <div class="lead">一句话版</div>
 <ol>
@@ -128,12 +130,14 @@
 </section>
 <section class="content-section" id="how">
 <h2 class="section-title"><span>2</span> · 脚本怎么抢</h2>
-<p>脚本叫 <a href="https://github.com/tsaol/grab-gpu"><code>grab-gpu.sh</code></a>，只用 bash 和 AWS CLI。每一轮这样跑：</p>
+<p>脚本叫 <a href="https://github.com/tsaol/gpu-hunter"><code>gpu-hunter.sh</code></a>，只用 bash 和 AWS CLI。每一轮这样跑（每条机制的出处见 <a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">机制详解</a>）：</p>
 <ol class="steps">
 <li><b>查哪些 AZ 有这个机型</b>，没有的组合直接跳过，不浪费请求。</li>
 <li><b>按你给的机型顺序</b>，在每个 AZ 里申请<b>剩下的全部数量</b>。</li>
 <li>没容量就<b>减半再试</b>：4 → 2 → 1。空出几台就先占几台。</li>
-<li>抢到的预留<b>都打上 tag</b>，以后能查、能一键释放。可选：发 SNS 消息。</li>
+<li>返回 <code>active</code> 或 <code>pending</code> 都算抢到：API 是<b>最终一致</b>的，<code>pending</code> 最多可能持续约 5 分钟，<b>不能当成失败取消掉</b>。</li>
+<li>实测发现，CLI 默认会对 ICE <b>自己再重试 2 次</b>（每次都会留下一条 <code>failed</code> 记录），所以脚本关掉了 CLI 的重试；每个请求带唯一的 <b>ClientToken</b>，网络超时时用同一个 token 再发一次，<b>不会多建预留</b>。</li>
+<li>抢到的预留<b>都打上 tag</b>，以后能查、能一键释放。可选：发 SNS 消息。每次尝试都记进 CSV，方便评估效果。</li>
 <li>这一轮都失败，就<b>等更久</b>再来：30 秒起，每轮乘 1.5，最多 5 分钟，加随机抖动。抢到一次就重置。</li>
 <li>碰到<b>配额、权限、参数错误马上停</b>：这些错误重试也没用。</li>
 </ol>
@@ -146,17 +150,17 @@
 <section class="content-section" id="use">
 <h2 class="section-title"><span>3</span> · 怎么用</h2>
 <pre><span class="c"># 先测：--dry-run 只检查权限和参数，不创建</span>
-<span class="k">./grab-gpu.sh</span> -r eu-central-1 -t g6e.12xlarge -n 2 --dry-run
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6e.12xlarge -n 2 --dry-run
 
 <span class="c"># 抢 4 台：先 g6e.12xlarge，再 g6e.24xlarge，抢到发 SNS</span>
-<span class="k">./grab-gpu.sh</span> -r eu-central-1 -t g6e.12xlarge,g6e.24xlarge -n 4 \
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6e.12xlarge,g6e.24xlarge -n 4 \
   -s arn:aws:sns:&lt;region&gt;:&lt;account&gt;:&lt;topic&gt;
 
 <span class="c"># 放后台一直跑</span>
-nohup <span class="k">./grab-gpu.sh</span> -r eu-central-1 -t p4d.24xlarge -n 2 &gt; grab.out 2&gt;&amp;1 &amp;
+nohup <span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t p4d.24xlarge -n 2 &gt; hunter.out 2&gt;&amp;1 &amp;
 
-<span class="k">./grab-gpu.sh</span> -r eu-central-1 --status    <span class="c"># 看抢到了什么</span>
-<span class="k">./grab-gpu.sh</span> -r eu-central-1 --release   <span class="c"># 全部释放，停止收费</span></pre>
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --status    <span class="c"># 看抢到了什么</span>
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --release   <span class="c"># 全部释放，停止收费</span></pre>
 <h3 class="sub-h">抢到以后怎么开机器</h3>
 <p>默认是 <code>open</code> 模式：同一个账号里，机型、平台、AZ 对得上的机器<b>会自动用这个预留</b>，正常 run-instances 就行。如果只想给指定的机器用，加 <code>--targeted</code>，开机时再指定预留 ID。</p>
 </section>
@@ -166,6 +170,8 @@ nohup <span class="k">./grab-gpu.sh</span> -r eu-central-1 -t p4d.24xlarge -n 2 
 <li><b>先查按需 vCPU 配额</b>（Running On-Demand G and VT / P instances）。很多时候失败不是没货，是配额不够。一台 p4d.24xlarge 就是 96 vCPU；ODCR 也算在配额里。</li>
 <li><b>机型和 AZ 多给几个</b>。业务能接受的话，把 g6e、g7 这类同级别的都写上，选择越多越容易抢到。</li>
 <li><b>先跑 --dry-run</b>，确认权限（创建、查询、取消预留，打 tag，可选 SNS）。</li>
+<li><b>别调得太快</b>：<code>CreateCapacityReservation</code> 和账号里所有"修改资源"的 API <b>共用一个限流桶</b>（50 个令牌，每秒补 5 个），太快会影响客户自己的 Auto Scaling、Terraform。</li>
+<li><b>在同一个区域里运行</b>：实测查询请求在本区域约 0.4 秒，跨区域约 1.3 秒（创建请求在本区域没有单独测过）。</li>
 <li><b>量大或长期要用</b>，同时找 AWS account team。脚本只能抢偶尔空出来的容量。</li>
 </ul>
 </section>
@@ -189,19 +195,38 @@ nohup <span class="k">./grab-gpu.sh</span> -r eu-central-1 -t p4d.24xlarge -n 2 
 </table>
 <div class="callout warn"><b>注意：</b>要 8 卡 H100/H200 的话，法兰克福没有 p5.48xlarge / p5en.48xlarge，萨拉戈萨有 p5en.48xlarge。两个区域都在欧盟内。AZ 名字在每个账号里可能对应不同的物理 AZ，跨账号要用 AZ ID 对齐。</div>
 </section>
+<section class="content-section" id="fleet">
+<h2 class="section-title"><span>6</span> · 先看看官方的 Capacity Reservation Fleet</h2>
+<p>AWS 自己就有一个类似的功能：<b>Capacity Reservation Fleet</b>。容量不够时，它会<b>在后台一直重试</b>，直到满足目标；预留被取消了还会自动补回来。</p>
+<table class="cmp">
+<thead><tr><th></th><th>官方 Fleet</th><th>gpu-hunter（演示）</th></tr></thead>
+<tbody>
+<tr><td><b>谁来跑</b></td><td class="yes">AWS 托管</td><td>要自己找台机器一直跑</td></tr>
+<tr><td><b>多个机型</b></td><td>可以，按优先级</td><td>可以，按顺序</td></tr>
+<tr><td><b>多个 AZ</b></td><td class="no">不行（实测 API 直接报错）</td><td class="yes">可以</td></tr>
+<tr><td><b>open / targeted</b></td><td>只支持 open</td><td>两种都支持</td></tr>
+<tr><td><b>被取消后自动补回</b></td><td class="yes">会</td><td class="no">不会</td></tr>
+<tr><td><b>每次尝试的记录</b></td><td>没有</td><td>有（CSV）</td></tr>
+</tbody>
+</table>
+<div class="callout"><b>怎么选：</b>只要一个 AZ、open 模式就够 → <b>优先用官方 Fleet</b>。要多个 AZ 一起抢、要 targeted、或者要详细记录 → 再考虑这个脚本。</div>
+</section>
 <section class="content-section" id="cost">
-<h2 class="section-title"><span>6</span> · 费用和释放</h2>
+<h2 class="section-title"><span>7</span> · 费用和释放</h2>
 <ul>
-<li>ODCR <b>一生效就按按需价收费</b>，没开机器也收；开了机器不会重复收。</li>
+<li>ODCR <b>一生效就按按需价收费</b>，没开机器也收；开了机器不会重复收。<b>按秒计费，最少 60 秒</b>。</li>
 <li>Savings Plans 的折扣对 ODCR 也有效。</li>
-<li>脚本建的预留没有结束时间，<b>随时可以取消</b>：<code>./grab-gpu.sh --release</code>。</li>
+<li>脚本建的预留没有结束时间，<b>随时可以取消</b>：<code>./gpu-hunter.sh --release</code>。还在 <code>pending</code> 的预留暂时取消不了，过几分钟再运行一次。</li>
+<li>每次没抢到会留下一条 <code>failed</code> 记录：不收费、不占配额，60 分钟后就看不到了。</li>
 <li>多个任务一起跑时，用 <code>--tag</code> 分开，释放时不会互相影响。</li>
 </ul>
 </section>
 <div class="refs">
 <h4>参考</h4>
 <ol>
-<li><a href="https://github.com/tsaol/grab-gpu">github.com/tsaol/grab-gpu</a> · 脚本和测试（MIT-0）</li>
+<li><a href="https://github.com/tsaol/gpu-hunter">github.com/tsaol/gpu-hunter</a> · 演示脚本和测试（MIT-0，仅供演示）</li>
+<li><a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">ODCR 机制详解</a> · 状态、计费、限流、重试、幂等、怎么评估效果</li>
+<li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/cr-fleets.html">Capacity Reservation Fleets · AWS 文档</a></li>
 <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html">On-Demand Capacity Reservations · AWS 文档</a></li>
 <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html">Capacity Reservation 计费 · AWS 文档</a></li>
 </ol>

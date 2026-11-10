@@ -4,8 +4,8 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Grab On-Demand GPUs: ODCR + Auto-Retry · liucao.me</title>
-<meta content="Grabbing GPUs with On-Demand Capacity Reservations (ODCR): how it differs from run-instances, an auto-retry script, and GPU availability in European regions" name="description"/>
+<title>Secure On-Demand GPUs: ODCR + Auto-Retry · liucao.me</title>
+<meta content="Securing GPUs with On-Demand Capacity Reservations (ODCR): how it differs from run-instances, an auto-retry script, and GPU availability in European regions" name="description"/>
 <link href="../../../ec2/assets/style.css" rel="stylesheet"/>
 <style>
         .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
@@ -83,28 +83,30 @@
 <div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
 <div class="links">
 <a href="../">EC2</a>
-<a href="https://github.com/tsaol/grab-gpu">GitHub</a>
+<a href="https://github.com/tsaol/gpu-hunter">GitHub</a>
 </div>
 </nav>
 <main class="wrap">
 <div class="gv-hero">
 <div class="crumb"><a href="../">EC2</a> · GPU · On-Demand capacity</div>
-<h1>On-Demand<span class="g"> Grab GPUs</span>: ODCR + auto-retry</h1>
-<p class="sub">When GPUs are scarce, launching instances keeps failing with <code>InsufficientInstanceCapacity</code>. This post shows how to use On-Demand Capacity Reservations (ODCR) to lock in GPU capacity as soon as it frees up, then use it at your own pace. Includes an open-source script that keeps trying until it succeeds.</p>
+<h1>On-Demand<span class="g"> Secure GPUs</span>: ODCR + auto-retry</h1>
+<p class="sub">When GPUs are scarce, launching instances keeps failing with <code>InsufficientInstanceCapacity</code>. This post covers how to use On-Demand Capacity Reservations (ODCR) to secure GPU capacity as soon as it frees up, then use it at your own pace. It includes a demo script, gpu-hunter, that keeps trying until it gets capacity.</p>
 <nav class="toc">
 <a href="#why">1 · Why ODCR</a>
-<a href="#how">2 · How the script grabs capacity</a>
+<a href="#how">2 · How the script secures capacity</a>
 <a href="#use">3 · How to use it</a>
 <a href="#check">4 · Pre-flight checks</a>
 <a href="#eu">5 · GPU availability in Europe</a>
-<a href="#cost">6 · Cost and release</a>
+<a href="#fleet">6 · Official Fleet</a>
+<a href="#cost">7 · Costs and Release</a>
 </nav>
 </div>
+<div class="callout danger"><b>Disclaimer: The scripts in this article are for demonstration and learning only. They are not official AWS tools and should not be used directly in production.</b><br/>Capacity Reservations are billed at the On-Demand rate from the moment they are created, whether you use them or not. For limits, pricing, and quotas, refer to the official AWS documentation.</div>
 <div class="tldr">
 <div class="lead">TL;DR</div>
 <ol>
-<li><b>Don't use run-instances to grab capacity</b>: once the instance stops, the capacity goes back.</li>
-<li><b>Grab with ODCR</b>: just instance type + AZ + count. Once you get it, it stays yours, whether instances are stopped or started.</li>
+<li><b>Don't use run-instances to secure capacity</b>: once the instance stops, the capacity goes back.</li>
+<li><b>Secure with ODCR</b>: just instance type + AZ + count. Once you get it, it stays yours, whether instances are stopped or started.</li>
 <li><b>Multiple instance types, multiple AZs, halve-and-retry, longer waits each time</b>, and stop immediately on quota errors.</li>
 <li><b>ODCR is billed at On-Demand rates once active</b>, so be sure to release them when you're done.</li>
 </ol>
@@ -121,20 +123,22 @@
 <tr><td><b>Only got part of it</b></td><td> MinCount lets you accept fewer</td><td> Each request is all-or-nothing, so retry with half the count</td></tr>
 <tr><td><b>Price</b></td><td> On-Demand price, charged while instances run</td><td> On-Demand price,<b>Charged once active, whether you use it or not</b></td></tr>
 <tr><td><b>Savings Plans</b></td><td> Works</td><td> Works</td></tr>
-<tr><td><b>Good for</b></td><td> Need to run jobs right away</td><td><b> Grab it first</b>, then set up the environment and hand it over</td></tr>
+<tr><td><b>Good for</b></td><td> Need to run jobs right away</td><td><b> Secure it first</b>, then set up the environment and hand it over</td></tr>
 </tbody>
 </table>
-<div class="callout"><b>Bottom line:</b>Use ODCR to grab GPUs. Once you have the capacity, starting, stopping, or changing the AMI won't lose it. Whoever needs it just launches instances in that capacity.</div>
+<div class="callout"><b>Bottom line:</b>Use ODCR to secure GPUs. Once you have the capacity, starting, stopping, or changing the AMI won't lose it. Whoever needs it just launches instances in that capacity.</div>
 </section>
 <section class="content-section" id="how">
-<h2 class="section-title"><span>2</span> · How the script grabs capacity</h2>
-<p>The script is called <a href="https://github.com/tsaol/grab-gpu"><code>grab-gpu.sh</code></a>, using only bash and the AWS CLI. Each round works like this:</p>
+<h2 class="section-title"><span>2</span> · How the script secures capacity</h2>
+<p>The script is called <a href="https://github.com/tsaol/gpu-hunter"><code>gpu-hunter.sh</code></a>, using only bash and the AWS CLI. Each round runs like this (for the source of each mechanism, see <a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">How it works</a>):</p>
 <ol class="steps">
 <li><b>Check which AZs offer this instance type</b>, and unavailable combinations are skipped, so no requests are wasted.</li>
 <li><b>In the order of instance types you give</b>, request in each AZ<b> all of the remaining count</b>.</li>
-<li>If there's no capacity,<b>Halve and retry</b>: 4 → 2 → 1. Grab as many as free up.</li>
-<li>The reservation you got<b> Everything is tagged</b>, so you can find them later and release them in one step. Optional: send an SNS message.</li>
-<li>If the whole round fails,<b>wait longer</b> Retry: start at 30 seconds, multiply by 1.5 each round, cap at 5 minutes, and add random jitter. Reset after each successful grab.</li>
+<li>If there's no capacity,<b>Halve and retry</b>: 4 → 2 → 1. Take as many as free up.</li>
+<li>Returns <code>active</code> or <code>pending</code> counts as success: the API is<b> eventually consistent</b>,<code>pending</code> can last up to about 5 minutes,<b>must not be treated as a failure and canceled</b>.</li>
+<li>In testing, by default the CLI retries ICE errors <b> 2 more times on its own</b> (each attempt leaves a <code>failed</code> record), so the script disables CLI retries; each request carries a unique <b>ClientToken</b>; on a network timeout, it resends with the same token,<b>won't create extra reservations</b>.</li>
+<li>The reservation you got<b> Everything is tagged</b>, so it can be looked up later and released with one click. Optional: send an SNS message. Every attempt is logged to CSV to make it easy to evaluate results.</li>
+<li>If the whole round fails,<b>wait longer</b> Retry: start at 30 seconds, multiply by 1.5 each round, cap at 5 minutes, and add random jitter. Reset after each successful secure.</li>
 <li>On<b> Stop immediately on quota, permission, or parameter errors</b>: retrying won't help with these errors.</li>
 </ol>
 <pre><span class="c"># Exit codes</span>
@@ -146,17 +150,17 @@
 <section class="content-section" id="use">
 <h2 class="section-title"><span>3</span> · How to use it</h2>
 <pre><span class="c"># Test first: --dry-run only checks permissions and parameters, creates nothing</span>
-<span class="k">./grab-gpu.sh</span> -r eu-central-1 -t g6e.12xlarge -n 2 --dry-run
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6e.12xlarge -n 2 --dry-run
 
-<span class="c"># Grab 4: g6e.12xlarge first, then g6e.24xlarge; send SNS when secured</span>
-<span class="k">./grab-gpu.sh</span> -r eu-central-1 -t g6e.12xlarge,g6e.24xlarge -n 4 \
+<span class="c"># Secure 4: g6e.12xlarge first, then g6e.24xlarge; send SNS when secured</span>
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6e.12xlarge,g6e.24xlarge -n 4 \
   -s arn:aws:sns:&lt;region&gt;:&lt;account&gt;:&lt;topic&gt;
 
 <span class="c"># Keep it running in the background</span>
-nohup <span class="k">./grab-gpu.sh</span> -r eu-central-1 -t p4d.24xlarge -n 2 &gt; grab.out 2&gt;&amp;1 &amp;
+nohup <span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t p4d.24xlarge -n 2 &gt; hunter.out 2&gt;&amp;1 &amp;
 
-<span class="k">./grab-gpu.sh</span> -r eu-central-1 --status    <span class="c"># See what you got</span>
-<span class="k">./grab-gpu.sh</span> -r eu-central-1 --release   <span class="c"># Release everything to stop charges</span></pre>
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --status    <span class="c"># See what you got</span>
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --release   <span class="c"># Release everything to stop charges</span></pre>
 <h3 class="sub-h">How to launch instances once you have it</h3>
 <p>The default is <code>open</code> mode: instances in the same account with matching instance type, platform, and AZ<b> will automatically use this reservation</b>, a normal run-instances works. If you only want specific instances to use it, add <code>--targeted</code>, then specify the reservation ID when launching.</p>
 </section>
@@ -166,7 +170,9 @@ nohup <span class="k">./grab-gpu.sh</span> -r eu-central-1 -t p4d.24xlarge -n 2 
 <li><b>Check your On-Demand vCPU quota first</b>(Running On-Demand G and VT / P instances). Often the failure isn't a lack of capacity but insufficient quota. A single p4d.24xlarge is 96 vCPUs, and ODCRs also count against the quota.</li>
 <li><b>List several instance types and AZs</b>. If your workload allows, list comparable types like g6e and g7 too. The more options, the easier it is to get capacity.</li>
 <li><b>Run --dry-run first</b>, and confirm permissions (create, describe, and cancel reservations, tagging, optional SNS).</li>
-<li><b>Large quantities or long-term use</b>, and also contact your AWS account team. The script can only grab capacity that occasionally frees up.</li>
+<li><b>don't set it too fast</b>:<code>CreateCapacityReservation</code> and all "mutating" APIs in the account <b>share one throttling bucket</b> (50 tokens, refilled at 5 per second); going too fast affects the customer's own Auto Scaling and Terraform.</li>
+<li><b>run in the same region</b>: in testing, query requests took about 0.4 seconds in the same Region and about 1.3 seconds cross-Region (create requests were not measured separately in the same Region).</li>
+<li><b>Large quantities or long-term use</b>, and also contact your AWS account team. The script can only secure capacity that occasionally frees up.</li>
 </ul>
 </section>
 <section class="content-section" id="eu">
@@ -189,19 +195,38 @@ nohup <span class="k">./grab-gpu.sh</span> -r eu-central-1 -t p4d.24xlarge -n 2 
 </table>
 <div class="callout warn"><b>Note:</b>If you need 8x H100/H200, Frankfurt doesn't have p5.48xlarge / p5en.48xlarge, but Zaragoza has p5en.48xlarge. Both regions are in the EU. AZ names may map to different physical AZs in each account, so use AZ IDs to match them across accounts.</div>
 </section>
+<section class="content-section" id="fleet">
+<h2 class="section-title"><span>6</span> · First, a look at the official Capacity Reservation Fleet</h2>
+<p>AWS has a similar feature of its own:<b>Capacity Reservation Fleet</b>. When there isn't enough capacity, it<b> keeps retrying in the background</b>, until the target is met; canceled reservations are automatically replaced.</p>
+<table class="cmp">
+<thead><tr><th></th><th>Official Fleet</th><th> gpu-hunter (demo)</th></tr></thead>
+<tbody>
+<tr><td><b>Who runs it</b></td><td class="yes"> Managed by AWS</td><td> You have to keep a machine running it yourself</td></tr>
+<tr><td><b>Multiple instance types</b></td><td> Yes, by priority</td><td> Yes, in order</td></tr>
+<tr><td><b>Multiple AZs</b></td><td class="no"> No (tested: the API returns an error)</td><td class="yes">Yes</td></tr>
+<tr><td><b>open / targeted</b></td><td> open only</td><td> Both supported</td></tr>
+<tr><td><b>Automatically replaced after cancellation</b></td><td class="yes"> Yes</td><td class="no"> No</td></tr>
+<tr><td><b>Per-attempt log</b></td><td> None</td><td> Yes (CSV)</td></tr>
+</tbody>
+</table>
+<div class="callout"><b>How to choose:</b>If one AZ and open mode are enough → <b>Prefer the official Fleet</b>. If you need to hunt across multiple AZs at once, need targeted, or need detailed logs → then consider this script.</div>
+</section>
 <section class="content-section" id="cost">
-<h2 class="section-title"><span>6</span> · Cost and release</h2>
+<h2 class="section-title"><span>7</span> · Cost and release</h2>
 <ul>
-<li>ODCR <b>billed at On-Demand rates as soon as it's active</b>, even if no instances are running. Running instances aren't charged twice.</li>
+<li>ODCR <b>billed at On-Demand rates as soon as it's active</b>, even if no instances are running. Running instances aren't charged twice.<b>Per-second billing, 60-second minimum</b>.</li>
 <li>Savings Plans discounts also apply to ODCR.</li>
-<li>Reservations created by the script have no end date,<b>Can be canceled anytime</b>:<code>./grab-gpu.sh --release</code>.</li>
+<li>Reservations created by the script have no end date,<b>Can be canceled anytime</b>:<code>./gpu-hunter.sh --release</code>. Still <code>pending</code> reservation can't be canceled yet; run it again in a few minutes.</li>
+<li>Each failed attempt leaves a <code>failed</code> record: free, doesn't count against quotas, and disappears after 60 minutes.</li>
 <li>When running multiple jobs at once, use <code>--tag</code> separately, so releasing one doesn't affect the others.</li>
 </ul>
 </section>
 <div class="refs">
 <h4>Reference</h4>
 <ol>
-<li><a href="https://github.com/tsaol/grab-gpu">github.com/tsaol/grab-gpu</a> · Script and tests (MIT-0)</li>
+<li><a href="https://github.com/tsaol/gpu-hunter">github.com/tsaol/gpu-hunter</a> · Demo script and tests (MIT-0, demo only)</li>
+<li><a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">How ODCR Works</a> · State, billing, throttling, retries, idempotency, and how to evaluate results</li>
+<li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/cr-fleets.html">Capacity Reservation Fleets · AWS Documentation</a></li>
 <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html">On-Demand Capacity Reservations · AWS docs</a></li>
 <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html">Capacity Reservation pricing · AWS docs</a></li>
 </ol>
