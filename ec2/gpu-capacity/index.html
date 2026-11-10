@@ -4,8 +4,8 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>按需抢 GPU：ODCR + 自动重试 · liucao.me</title>
-<meta content="用按需容量预留（ODCR）抢 GPU：和 run-instances 的区别、自动重试脚本、欧洲区域 GPU 分布" name="description"/>
+<title>GPU 开不出来？先把容量订下来 · liucao.me</title>
+<meta content="用订酒店的比方讲清楚按需容量预留（ODCR）：什么时候用官方 Fleet、什么时候用演示脚本 gpu-hunter、怎么判断效果，附流程图" name="description"/>
 <link href="../assets/style.css" rel="stylesheet"/>
 <style>
         .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
@@ -76,6 +76,48 @@
         .steps li { counter-increment: s; position: relative; padding-left: 2.2rem; margin-bottom: 0.7rem !important; }
         .steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--accent-dim); color: var(--accent); font-family: var(--mono); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
         .cmp td.yes { color: #34d399; font-weight: 600; } .cmp td.no { color: #f87171; font-weight: 600; }
+    
+        /* ---- diagrams (HTML + CSS, so the English copy gets translated too) ---- */
+        .dg { margin: 1rem 0 1.4rem; padding: 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .dg-cap { text-align: center; font-size: 0.8rem; color: var(--text-mute); margin-top: 0.8rem; }
+        .box { background: var(--bg-soft); border: 1px solid var(--border-hi); border-radius: 10px; padding: 0.6rem 0.8rem; font-size: 0.86rem; color: var(--text); line-height: 1.45; }
+        .box small { display: block; color: var(--text-dim); font-size: 0.78rem; margin-top: 0.15rem; }
+        .box.q { border-style: dashed; border-color: var(--accent-dim); text-align: center; font-weight: 600; }
+        .box.good { background: rgba(52,211,153,.10); border-color: #34d399; }
+        .box.retry { background: rgba(251,191,36,.10); border-color: #fbbf24; }
+        .box.stop { background: rgba(248,113,113,.10); border-color: #f87171; }
+        .box.pay { background: rgba(251,191,36,.08); border-color: #d97706; }
+        .arrow-d { text-align: center; color: var(--text-mute); font-size: 1.1rem; line-height: 1.2; margin: 0.25rem 0; }
+        .arrow-d span { font-size: 0.75rem; display: block; }
+        .tl { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.4rem; }
+        .tl .box { flex: 1 1 140px; text-align: center; }
+        .tl .ar { align-self: center; color: var(--text-mute); }
+        .dec { display: grid; grid-template-columns: 1fr; gap: 0.3rem; max-width: 720px; margin: 0 auto; }
+        .branch { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+        .branch .lbl { font-size: 0.75rem; color: var(--text-mute); margin-bottom: 0.25rem; text-align: center; }
+        .loop { max-width: 560px; margin: 0 auto; }
+        .loopnote { border-left: 2px dashed #fbbf24; margin: 0.35rem 0 0 0.9rem; padding: 0.15rem 0 0.15rem 0.6rem; font-size: 0.8rem; color: var(--text-dim); }
+        .res { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1.6fr); gap: 0.45rem 0.6rem; align-items: center; }
+        .res .ar { color: var(--text-mute); }
+        .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem 1rem; max-width: 680px; margin: 0 auto; }
+        .lanes .hd { text-align: center; font-weight: 700; color: var(--accent); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+        .lanes .msg { font-size: 0.84rem; color: var(--text-dim); padding: 0.35rem 0.6rem; border-radius: 8px; background: var(--bg-soft); }
+        .lanes .msg.r { grid-column: 2; } .lanes .msg.l { grid-column: 1; }
+        .lanes .msg.bad { border: 1px dashed #f87171; } .lanes .msg.ok { border: 1px solid #34d399; }
+        .lanes .full { grid-column: 1 / span 2; text-align: center; }
+        .bucket { display: grid; grid-template-columns: auto auto 1fr; gap: 0.6rem; align-items: center; }
+        .bucket .stack { display: grid; gap: 0.4rem; }
+        .gloss code { word-break: break-all; }
+        .users { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
+        .sublbl { font-size: 0.75rem; color: var(--text-mute); text-align: center; }
+        @media (max-width: 640px) {
+          .branch, .lanes { grid-template-columns: 1fr; }
+          .lanes .msg.r, .lanes .msg.l { grid-column: 1; }
+          .res { grid-template-columns: 1fr; } .res .ar { display: none; }
+          .bucket { grid-template-columns: 1fr; } .tl .ar { display: none; }
+          .users { grid-template-columns: 1fr; }
+          .cmp { display: block; overflow-x: auto; }
+        }
     </style>
 </head>
 <body>
@@ -89,103 +131,219 @@
 <main class="wrap">
 <div class="gv-hero">
 <div class="crumb"><a href="../">EC2</a> · GPU · 按需容量</div>
-<h1>按需<span class="g">抢 GPU</span>：ODCR + 自动重试</h1>
-<p class="sub">GPU 紧张的时候，开机器总是报 <code>InsufficientInstanceCapacity</code>。这篇讲怎么用按需容量预留（ODCR）把空出来的 GPU 容量先占住，再慢慢用。附一个演示脚本 gpu-hunter，抢到为止。</p>
+<h1>GPU 开不出来？先把<span class="g">容量订下来</span></h1>
+<p class="sub">GPU 紧张时，开机器总是报"没有容量"。这篇用订酒店来打个比方，讲清楚按需容量预留（ODCR）是什么、什么时候用官方的 Fleet、什么时候用演示脚本 gpu-hunter，以及怎么判断效果。</p>
 <nav class="toc">
-<a href="#why">1 · 为什么用 ODCR</a>
-<a href="#how">2 · 脚本怎么抢</a>
-<a href="#use">3 · 怎么用</a>
-<a href="#check">4 · 抢之前检查</a>
-<a href="#eu">5 · 欧洲 GPU 分布</a>
-<a href="#fleet">6 · 官方 Fleet</a>
-<a href="#cost">7 · 费用和释放</a>
+<a href="#choose">1 · 先选方案</a>
+<a href="#odcr">2 · ODCR 是什么</a>
+<a href="#how">3 · gpu-hunter 怎么抢</a>
+<a href="#use">4 · 怎么用</a>
+<a href="#check">5 · 抢之前检查</a>
+<a href="#measure">6 · 怎么看效果</a>
+<a href="#eu">7 · 欧洲 GPU 分布</a>
+<a href="#cost">8 · 费用和释放</a>
+<a href="#terms">术语表</a>
 </nav>
 </div>
 <div class="callout danger"><b>声明：本文的脚本只用于演示和学习，不是 AWS 官方工具，不要直接用在生产环境。</b><br/>容量预留从创建起就按按需价收费，用不用都收。限制、价格、配额以 AWS 官方文档为准。</div>
 <div class="tldr">
-<div class="lead">一句话版</div>
+<div class="lead">先看这里：三句话</div>
 <ol>
-<li><b>别用 run-instances 抢</b>：机器一关，容量就还回去了。</li>
-<li><b>用 ODCR 抢</b>：只要机型 + AZ + 数量，抢到就一直是你的，开关机都不丢。</li>
-<li><b>多机型、多 AZ、减半重试、越等越久</b>，碰到配额错误马上停。</li>
-<li><b>ODCR 生效就按按需价收费</b>，不用了一定要释放。</li>
+<li><b>开不出 GPU，是那个机房暂时没有空机器。</b>能做的只有：过一会儿再试、换机房（AZ）、换机型、少要几台。</li>
+<li><b>ODCR 就像提前订酒店房间</b>：订到了就一直给你留着，机器关了也不丢；但从订到那一刻起就收钱，住不住都收。</li>
+<li><b>只在一个 AZ 里抢的话，先用 AWS 自带的 Capacity Reservation Fleet</b>；要同时在好几个 AZ 里找，再用 gpu-hunter。</li>
 </ol>
 </div>
-<section class="content-section" id="why">
-<h2 class="section-title"><span>1</span> · 为什么用 ODCR，不直接 run-instances</h2>
-<p>两种方式都是按需价格，碰到没货也都会报 <code>InsufficientInstanceCapacity</code>，所以都要重试。区别在于<b>抢到以后能不能留住</b>。</p>
+<section class="content-section" id="choose">
+<h2 class="section-title"><span>1</span> · 先选方案</h2>
+<p>先回答两个问题，就知道该用哪个：</p>
+<div class="dg">
+<div class="dec">
+<div class="box">要 GPU，但开不出来</div>
+<div class="arrow-d">↓</div>
+<div class="box q">问题 1：报的是"配额"错误吗？<small>比如 InstanceLimitExceeded、VcpuLimitExceeded</small></div>
+<div class="branch">
+<div><div class="lbl">是</div><div class="box stop">先去申请提高配额<small>这不是没货，重试再多次也没用</small></div></div>
+<div><div class="lbl">不是，是没货</div><div class="arrow-d">↓</div></div>
+</div>
+<div class="box q">问题 2：只在 1 个 AZ 里要，而且 open 模式就够？<small>open 模式的意思见术语表</small></div>
+<div class="branch">
+<div><div class="lbl">是</div><div class="box good">✅ 用官方 Capacity Reservation Fleet<small>AWS 托管，会在后台自动一直重试；被取消了还会自动补回来</small></div></div>
+<div><div class="lbl">不是：要多个 AZ，或者要 targeted</div><div class="box good">✅ 用 gpu-hunter（演示）<small>要自己找台机器一直跑着</small></div></div>
+</div>
+</div>
+<div class="dg-cap">图 1 · 两个问题选出方案</div>
+</div>
 <table class="cmp">
-<thead><tr><th></th><th>run-instances（直接开机器）</th><th>ODCR（按需容量预留）</th></tr></thead>
+<thead><tr><th></th><th>官方 Fleet</th><th>gpu-hunter（演示）</th></tr></thead>
 <tbody>
-<tr><td><b>拿到的是什么</b></td><td>一台运行中的机器</td><td>某个 AZ、某个机型的容量，给你留着</td></tr>
-<tr><td><b>每次重试要准备</b></td><td>AMI、子网、安全组、密钥、磁盘</td><td>只要机型、AZ、数量</td></tr>
-<tr><td><b>stop / terminate 以后</b></td><td class="no">容量还回去，下次可能开不出来</td><td class="yes">容量还是你的</td></tr>
-<tr><td><b>只抢到一部分</b></td><td>MinCount 可以少拿</td><td>一次请求要么全给要么不给，所以要减半重试</td></tr>
-<tr><td><b>价格</b></td><td>按需价，机器运行时收</td><td>按需价，<b>生效就收，用不用都收</b></td></tr>
-<tr><td><b>Savings Plans</b></td><td>能用</td><td>能用</td></tr>
-<tr><td><b>适合</b></td><td>马上就要跑任务</td><td><b>先抢住</b>，再配环境、交付使用</td></tr>
+<tr><td><b>谁来跑</b></td><td class="yes">AWS 托管</td><td>要自己找台机器一直跑</td></tr>
+<tr><td><b>多个机型</b></td><td>可以，按优先级</td><td>可以，按你给的顺序</td></tr>
+<tr><td><b>多个 AZ</b></td><td class="no">不行（实测 API 直接报错）</td><td class="yes">可以</td></tr>
+<tr><td><b>open / targeted</b></td><td>只支持 open</td><td>两种都支持</td></tr>
+<tr><td><b>被取消后自动补回</b></td><td class="yes">会</td><td class="no">不会</td></tr>
+<tr><td><b>每次尝试的记录</b></td><td>没有</td><td>有（CSV 文件）</td></tr>
 </tbody>
 </table>
-<div class="callout"><b>结论：</b>抢 GPU 用 ODCR。容量拿到手以后，机器开、关、换镜像都不会丢；要给谁用，再在这个容量里开机器就行。</div>
+</section>
+<section class="content-section" id="odcr">
+<h2 class="section-title"><span>2</span> · ODCR 是什么：像订酒店房间</h2>
+<p>ODCR（按需容量预留）就是在<b>某一个 AZ</b> 里，把<b>某种机器</b>先订下来，不用马上开机。</p>
+<div class="dg">
+<div class="tl">
+<div class="box">① 订房<small>创建 ODCR，比如订 4 台 g6e.12xlarge</small></div><div class="ar">→</div>
+<div class="box pay">② 房间留着<small>💰 开始按按需价收钱，不住也收</small></div><div class="ar">→</div>
+<div class="box pay">③ 入住<small>在预留里开机器，💰 只收机器的钱</small></div><div class="ar">→</div>
+<div class="box pay">④ 退房<small>机器关掉，🔑 房间还是你的，想用再开</small></div><div class="ar">→</div>
+<div class="box good">⑤ 退订<small>取消预留，✅ 停止收钱</small></div>
+</div>
+<div class="dg-cap">图 2 · ODCR 的一生</div>
+</div>
+<p>和直接开机器（run-instances）比，<b>最大的区别是第 ④ 步：机器关了，容量还在。</b></p>
+<table class="cmp">
+<thead><tr><th></th><th>直接开机器（run-instances）</th><th>先订容量（ODCR）</th></tr></thead>
+<tbody>
+<tr><td><b>拿到的是什么</b></td><td>一台运行中的机器</td><td>某个 AZ 里某种机器的"房间"，给你留着</td></tr>
+<tr><td><b>每次重试要准备</b></td><td>镜像、子网、安全组、密钥、磁盘</td><td>只要机型、AZ、数量</td></tr>
+<tr><td><b>机器关掉以后</b></td><td class="no">容量还回去，下次可能开不出来</td><td class="yes">容量还是你的</td></tr>
+<tr><td><b>只有一部分空房</b></td><td>可以少拿几台</td><td>一次请求要么全给、要么不给，所以要自己拆小</td></tr>
+<tr><td><b>价格</b></td><td>按需价，机器开着才收</td><td>按需价，<b>订到就收，用不用都收</b></td></tr>
+</tbody>
+</table>
+<div class="callout warn"><b>要注意的一点：</b>订到以后，系统可能要<b>最多约 5 分钟</b>才把状态从 <code>pending</code> 显示成 <code>active</code>。这段时间<b>不是没订到</b>，不要去退掉它。</div>
 </section>
 <section class="content-section" id="how">
-<h2 class="section-title"><span>2</span> · 脚本怎么抢</h2>
-<p>脚本叫 <a href="https://github.com/tsaol/gpu-hunter"><code>gpu-hunter.sh</code></a>，只用 bash 和 AWS CLI。每一轮这样跑（每条机制的出处见 <a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">机制详解</a>）：</p>
-<ol class="steps">
-<li><b>查哪些 AZ 有这个机型</b>，没有的组合直接跳过，不浪费请求。</li>
-<li><b>按你给的机型顺序</b>，在每个 AZ 里申请<b>剩下的全部数量</b>。</li>
-<li>没容量就<b>减半再试</b>：4 → 2 → 1。空出几台就先占几台。</li>
-<li>返回 <code>active</code> 或 <code>pending</code> 都算抢到：API 是<b>最终一致</b>的，<code>pending</code> 最多可能持续约 5 分钟，<b>不能当成失败取消掉</b>。</li>
-<li>实测发现，CLI 默认会对 ICE <b>自己再重试 2 次</b>（每次都会留下一条 <code>failed</code> 记录），所以脚本关掉了 CLI 的重试；每个请求带唯一的 <b>ClientToken</b>，网络超时时用同一个 token 再发一次，<b>不会多建预留</b>。</li>
-<li>抢到的预留<b>都打上 tag</b>，以后能查、能一键释放。可选：发 SNS 消息。每次尝试都记进 CSV，方便评估效果。</li>
-<li>这一轮都失败，就<b>等更久</b>再来：30 秒起，每轮乘 1.5，最多 5 分钟，加随机抖动。抢到一次就重置。</li>
-<li>碰到<b>配额、权限、参数错误马上停</b>：这些错误重试也没用。</li>
-</ol>
-<pre><span class="c"># 退出码</span>
-0  全部抢到
-2  选的机型在这些 AZ 都没有
-3  致命错误（配额不够、没权限）
-4  到了 --max-hours 还没抢满</pre>
+<h2 class="section-title"><span>3</span> · gpu-hunter 怎么抢</h2>
+<p>脚本叫 <a href="https://github.com/tsaol/gpu-hunter"><code>gpu-hunter.sh</code></a>，只用 bash 和 AWS CLI。它做的事，就是把官方建议的办法（再试、换地方、换机型、少要一点）<b>自动地一轮一轮做下去</b>。</p>
+<div class="dg">
+<div class="loop">
+<div class="box">准备<small>查每个机型在哪些 AZ 有；检查有没有查询权限</small></div>
+<div class="arrow-d">↓</div>
+<div class="box">一轮：按机型顺序 × 每个 AZ 去申请<small>每次申请之后怎么办，见图 4</small></div>
+<div class="arrow-d">↓</div>
+<div class="box q">订满了吗？</div>
+<div class="branch">
+<div><div class="lbl">还没有</div><div class="box retry">等一会儿再来<small>30 秒起，每轮 ×1.5，最多 300 秒</small></div><div class="loopnote">↺ 然后回到上面的"一轮"，再试一次</div></div>
+<div><div class="lbl">订满了</div><div class="box">确认所有预留都已生效<small>pending 的最多等 6 分钟；有失败的就回去继续抢</small></div><div class="arrow-d">↓</div><div class="box good">✅ 完成，打印统计</div></div>
+</div>
+</div>
+<div class="dg-cap">图 3 · 整体流程：一轮一轮地抢</div>
+</div>
+<div class="dg">
+<div class="res">
+<div class="box">申请 N 台 → <b>订到了</b></div><div class="ar">→</div><div class="box good">✅ 剩余数量减掉，继续申请剩下的</div>
+<div class="box">申请 N 台 → <b>没货</b></div><div class="ar">→</div><div class="box retry">数量减半再试（4 → 2 → 1）；还没有就换下一个 AZ / 机型</div>
+<div class="box">申请 N 台 → <b>网络断了，不知道订上没有</b></div><div class="ar">→</div><div class="box retry">用同一个"请求编号"重发，最多 2 次（不会多订）；还不清楚就结束这一轮</div>
+<div class="box">申请 N 台 → <b>问得太勤，被限流</b></div><div class="ar">→</div><div class="box retry">这一轮马上结束，等最长时间再来</div>
+<div class="box">申请 N 台 → <b>配额 / 权限 / 参数错误</b></div><div class="ar">→</div><div class="box stop">停止（重试也没用）</div>
+</div>
+<div class="dg-cap">图 4 · 一次申请之后，看结果怎么办（绿 = 好，黄 = 再试，红 = 停）</div>
+</div>
+<p>为什么"网络断了"要用同一个编号重发？看这个例子：</p>
+<div class="dg">
+<div class="lanes">
+<div class="hd">gpu-hunter</div><div class="hd">AWS</div>
+<div class="msg l">① 订 2 台，请求编号 42 →</div>
+<div class="msg r">② 订好了（cr-abc）</div>
+<div class="msg r bad">③ 回复在路上丢了 ✗</div>
+<div class="msg l">④ 不知道订上没有，用编号 42 再发一次 →</div>
+<div class="msg r ok">⑤ "编号 42 处理过了，就是 cr-abc"</div>
+<div class="msg full ok">✅ 只有一个预留，没有多订、没有多花钱</div>
+</div>
+<div class="dg-cap">图 5 · 同一个编号，AWS 只处理一次</div>
+</div>
+<p>每一条机制的官方出处和实测数据，见 <a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">机制详解（GitHub）</a>。</p>
 </section>
 <section class="content-section" id="use">
-<h2 class="section-title"><span>3</span> · 怎么用</h2>
-<pre><span class="c"># 先测：--dry-run 只检查权限和参数，不创建</span>
+<h2 class="section-title"><span>4</span> · 怎么用</h2>
+<pre><span class="c"># 1. 一定先 dry-run：只检查权限和参数，不创建任何东西</span>
 <span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6e.12xlarge -n 2 --dry-run
 
-<span class="c"># 抢 4 台：先 g6e.12xlarge，再 g6e.24xlarge，抢到发 SNS</span>
-<span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6e.12xlarge,g6e.24xlarge -n 4 \
-  -s arn:aws:sns:&lt;region&gt;:&lt;account&gt;:&lt;topic&gt;
+<span class="c"># 2. 抢 4 台：先试 g6e.12xlarge，再试 g6e.24xlarge；6 小时还没抢满就停</span>
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6e.12xlarge,g6e.24xlarge -n 4 --max-hours 6
 
-<span class="c"># 放后台一直跑</span>
-nohup <span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t p4d.24xlarge -n 2 &gt; hunter.out 2&gt;&amp;1 &amp;
+<span class="c"># 3. 看抢到了什么；不用了就释放（停止收费）</span>
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --status
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --release
 
-<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --status    <span class="c"># 看抢到了什么</span>
-<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --release   <span class="c"># 全部释放，停止收费</span></pre>
+<span class="c"># 4. 看这次运行的效果（默认读最新的记录文件）</span>
+<span class="k">tools/report.sh</span></pre>
+<h3 class="sub-h">脚本结束时的退出码</h3>
+<table class="cmp">
+<thead><tr><th>退出码</th><th>意思</th></tr></thead>
+<tbody>
+<tr><td><b>0</b></td><td>全部抢到了</td></tr>
+<tr><td><b>1</b></td><td>参数写错了</td></tr>
+<tr><td><b>2</b></td><td>选的机型在这些 AZ 都没有</td></tr>
+<tr><td><b>3</b></td><td>致命错误：配额不够、没权限、参数不被接受</td></tr>
+<tr><td><b>4</b></td><td>到了 <code>--max-hours</code> 还没抢满</td></tr>
+<tr><td><b>130</b></td><td>被你手动停掉了（Ctrl+C）</td></tr>
+</tbody>
+</table>
+<p>不管怎么结束，<b>已经抢到的预留都会保留</b>，要用 <code>--release</code> 释放。</p>
 <h3 class="sub-h">抢到以后怎么开机器</h3>
-<p>默认是 <code>open</code> 模式：同一个账号里，机型、平台、AZ 对得上的机器<b>会自动用这个预留</b>，正常 run-instances 就行。如果只想给指定的机器用，加 <code>--targeted</code>，开机时再指定预留 ID。</p>
+<ul>
+<li><b>open 模式（默认）</b>：同一个账号里，机型、平台、AZ 对得上的机器<b>会自动用上预留</b>，正常开机就行。</li>
+<li><b>targeted 模式</b>（加 <code>--targeted</code>）：只有开机时写明了预留 ID 的机器才能用：</li>
+</ul>
+<pre>aws ec2 run-instances ... \
+  --capacity-reservation-specification 'CapacityReservationTarget={CapacityReservationId=cr-xxxx}'</pre>
 </section>
 <section class="content-section" id="check">
-<h2 class="section-title"><span>4</span> · 抢之前检查</h2>
+<h2 class="section-title"><span>5</span> · 抢之前检查</h2>
 <ul>
-<li><b>先查按需 vCPU 配额</b>（Running On-Demand G and VT / P instances）。很多时候失败不是没货，是配额不够。一台 p4d.24xlarge 就是 96 vCPU；ODCR 也算在配额里。</li>
-<li><b>机型和 AZ 多给几个</b>。业务能接受的话，把 g6e、g7 这类同级别的都写上，选择越多越容易抢到。</li>
-<li><b>先跑 --dry-run</b>，确认权限（创建、查询、取消预留，打 tag，可选 SNS）。</li>
-<li><b>别调得太快</b>：<code>CreateCapacityReservation</code> 和账号里所有"修改资源"的 API <b>共用一个限流桶</b>（50 个令牌，每秒补 5 个），太快会影响客户自己的 Auto Scaling、Terraform。</li>
-<li><b>在同一个区域里运行</b>：实测查询请求在本区域约 0.4 秒，跨区域约 1.3 秒（创建请求在本区域没有单独测过）。</li>
-<li><b>量大或长期要用</b>，同时找 AWS account team。脚本只能抢偶尔空出来的容量。</li>
+<li><b>配额够不够</b>：看按需 vCPU 配额（Running On-Demand G and VT / P instances）。预留也算在配额里。比如一台 p4d.24xlarge 就是 96 vCPU。</li>
+<li><b>权限</b>：创建、查询、取消预留，打 tag；用通知的话还要 SNS。先跑 <code>--dry-run</code> 确认。</li>
+<li><b>机型和 AZ 多给几个</b>：业务能接受的话，把同级别的机型都写上，选择越多越容易抢到。</li>
+<li><b>open 模式会"吸走"正在跑的机器</b>：账号里已经有同型号、同 AZ 的机器在跑的话，预留一生效它们就会占进来，你抢到的容量就被用掉了。不想这样就用 <code>--targeted</code>。</li>
+<li><b>别问得太勤</b>：创建预留和账号里所有"修改资源"的操作<b>共用一个限流额度</b>（见图 6）。太快会连累客户自己的 Auto Scaling、Terraform。</li>
+<li><b>在同一个区域里运行</b>：实测查询请求本区域约 0.4 秒，跨区域约 1.3 秒（本区域的创建请求没有单独测过）。</li>
+<li><b>量大或要长期用</b>：同时找 AWS account team。脚本只能抢偶尔空出来的容量。</li>
 </ul>
+<div class="dg">
+<div class="dec">
+<div class="box">每秒补 5 个令牌</div>
+<div class="arrow-d">↓</div>
+<div class="box q">令牌桶：最多 50 个<small>整个账号 + 区域共用一个桶</small></div>
+<div class="arrow-d">↓<span>这三个都从同一个桶里拿令牌，每调用一次拿一个</span></div>
+<div class="users">
+<div class="box">gpu-hunter<small>创建预留</small></div>
+<div class="box">客户的 Auto Scaling<small>开机器、关机器</small></div>
+<div class="box">客户的 Terraform / CI<small>改资源</small></div>
+</div>
+<div class="arrow-d">↓<span>gpu-hunter 拿得太猛</span></div>
+<div class="box stop">桶空了 → 三个都被限流（RequestLimitExceeded），客户自己的程序也会出错</div>
+</div>
+<div class="dg-cap">图 6 · 限流像一个大家共用的令牌桶</div>
+</div>
+</section>
+<section class="content-section" id="measure">
+<h2 class="section-title"><span>6</span> · 怎么看效果</h2>
+<p>每次运行都会把每次申请记进一个 CSV 文件，结束时打印一行统计；<code>tools/report.sh</code> 可以汇总成表。主要看这几个数：</p>
+<table class="cmp">
+<thead><tr><th>看什么</th><th>说明什么</th></tr></thead>
+<tbody>
+<tr><td><b>⭐ 多久抢满</b></td><td>最重要，代表整体效果</td></tr>
+<tr><td><b>多久抢到第一台</b></td><td>最快多久能开始干活</td></tr>
+<tr><td><b>各机型 × AZ 的成功率</b></td><td>哪里更好抢，下次把它排在前面</td></tr>
+<tr><td><b>被限流的次数</b></td><td>应该是 0；不是 0 就把间隔调大</td></tr>
+<tr><td><b>闲置成本</b></td><td>订到了却没用上，浪费了多少钱（看 CloudWatch 的使用率指标）</td></tr>
+</tbody>
+</table>
+<div class="callout"><b>对比要公平：</b>容量一直在变，所以要和一个"基线"做法比，两种做法<b>轮流跑</b>，<b>不要在同一个账号里同时跑</b>，每种多跑几次再看结果。详细方法见 <a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">机制详解</a>。</div>
 </section>
 <section class="content-section" id="eu">
-<h2 class="section-title"><span>5</span> · 欧洲两个区域的 GPU 分布</h2>
-<p>2026-11-10 用 <code>describe-instance-type-offerings</code> 查的结果。机型在哪个 AZ 有，脚本就只在那里抢。</p>
+<h2 class="section-title"><span>7</span> · 欧洲两个区域的 GPU 分布</h2>
+<div class="callout warn"><b>先看这条：</b>表里的 1a、1b 这些 AZ 名字是<b>我们测试账号</b>看到的。同一个名字在不同账号里可能是不同的机房，你自己的账号要重新查（<code>describe-instance-type-offerings</code>），跨账号沟通要用 AZ ID。</div>
+<p>2026-11-10 查询的结果。机型在哪个 AZ 有，脚本就只在那里抢。</p>
 <table class="cmp">
 <thead><tr><th>机型</th><th>GPU</th><th>法兰克福 eu-central-1</th><th>萨拉戈萨 eu-south-2</th></tr></thead>
 <tbody>
-<tr><td><b>p5en.48xlarge</b></td><td>8 × H200</td><td class="no">没有</td><td class="yes">2a, 2b</td></tr>
-<tr><td><b>p5.48xlarge</b></td><td>8 × H100</td><td class="no">没有</td><td class="no">没有</td></tr>
-<tr><td><b>p5.4xlarge</b></td><td>1 × H100</td><td>1b, 1c</td><td class="no">没有</td></tr>
-<tr><td><b>p4d.24xlarge</b></td><td>8 × A100 40GB</td><td>1a, 1b, 1c</td><td class="no">没有</td></tr>
-<tr><td><b>p4de.24xlarge</b></td><td>8 × A100 80GB</td><td>1a, 1c</td><td class="no">没有</td></tr>
+<tr><td><b>p5en.48xlarge</b></td><td>8 × H200</td><td class="no">不提供</td><td class="yes">2a, 2b</td></tr>
+<tr><td><b>p5.48xlarge</b></td><td>8 × H100</td><td class="no">不提供</td><td class="no">不提供</td></tr>
+<tr><td><b>p5.4xlarge</b></td><td>1 × H100</td><td>1b, 1c</td><td class="no">不提供</td></tr>
+<tr><td><b>p4d.24xlarge</b></td><td>8 × A100 40GB</td><td>1a, 1b, 1c</td><td class="no">不提供</td></tr>
+<tr><td><b>p4de.24xlarge</b></td><td>8 × A100 80GB</td><td>1a, 1c</td><td class="no">不提供</td></tr>
 <tr><td><b>g7e</b></td><td>RTX PRO 6000 Blackwell</td><td>1a, 1b</td><td>2a, 2b</td></tr>
 <tr><td><b>g7</b></td><td>RTX PRO 4500 Blackwell</td><td>1a, 1b, 1c</td><td>2a, 2b</td></tr>
 <tr><td><b>g6e</b></td><td>L40S</td><td>1a, 1b, 1c</td><td>2b, 2c</td></tr>
@@ -193,39 +351,41 @@ nohup <span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t p4d.24xlarge -n 
 <tr><td><b>g5</b></td><td>A10G</td><td>1a, 1b, 1c</td><td>2a, 2b, 2c</td></tr>
 </tbody>
 </table>
-<div class="callout warn"><b>注意：</b>要 8 卡 H100/H200 的话，法兰克福没有 p5.48xlarge / p5en.48xlarge，萨拉戈萨有 p5en.48xlarge。两个区域都在欧盟内。AZ 名字在每个账号里可能对应不同的物理 AZ，跨账号要用 AZ ID 对齐。</div>
-</section>
-<section class="content-section" id="fleet">
-<h2 class="section-title"><span>6</span> · 先看看官方的 Capacity Reservation Fleet</h2>
-<p>AWS 自己就有一个类似的功能：<b>Capacity Reservation Fleet</b>。容量不够时，它会<b>在后台一直重试</b>，直到满足目标；预留被取消了还会自动补回来。</p>
-<table class="cmp">
-<thead><tr><th></th><th>官方 Fleet</th><th>gpu-hunter（演示）</th></tr></thead>
-<tbody>
-<tr><td><b>谁来跑</b></td><td class="yes">AWS 托管</td><td>要自己找台机器一直跑</td></tr>
-<tr><td><b>多个机型</b></td><td>可以，按优先级</td><td>可以，按顺序</td></tr>
-<tr><td><b>多个 AZ</b></td><td class="no">不行（实测 API 直接报错）</td><td class="yes">可以</td></tr>
-<tr><td><b>open / targeted</b></td><td>只支持 open</td><td>两种都支持</td></tr>
-<tr><td><b>被取消后自动补回</b></td><td class="yes">会</td><td class="no">不会</td></tr>
-<tr><td><b>每次尝试的记录</b></td><td>没有</td><td>有（CSV）</td></tr>
-</tbody>
-</table>
-<div class="callout"><b>怎么选：</b>只要一个 AZ、open 模式就够 → <b>优先用官方 Fleet</b>。要多个 AZ 一起抢、要 targeted、或者要详细记录 → 再考虑这个脚本。</div>
+<p>要 8 卡 H100/H200 的话：法兰克福没有 p5.48xlarge / p5en.48xlarge，萨拉戈萨有 p5en.48xlarge。两个区域都在欧盟内。</p>
 </section>
 <section class="content-section" id="cost">
-<h2 class="section-title"><span>7</span> · 费用和释放</h2>
+<h2 class="section-title"><span>8</span> · 费用和释放</h2>
 <ul>
-<li>ODCR <b>一生效就按按需价收费</b>，没开机器也收；开了机器不会重复收。<b>按秒计费，最少 60 秒</b>。</li>
-<li>Savings Plans 的折扣对 ODCR 也有效。</li>
-<li>脚本建的预留没有结束时间，<b>随时可以取消</b>：<code>./gpu-hunter.sh --release</code>。还在 <code>pending</code> 的预留暂时取消不了，过几分钟再运行一次。</li>
-<li>每次没抢到会留下一条 <code>failed</code> 记录：不收费、不占配额，60 分钟后就看不到了。</li>
-<li>多个任务一起跑时，用 <code>--tag</code> 分开，释放时不会互相影响。</li>
+<li>预留<b>订到就按按需价收钱</b>，没开机器也收；开了机器只收机器的钱，不会重复收。<b>按秒计费，最少 60 秒</b>。</li>
+<li>Savings Plans 的折扣对预留也有效。</li>
+<li>脚本订的预留没有结束时间，<b>随时可以退订，退订免费</b>：<code>./gpu-hunter.sh --release</code>。还在 <code>pending</code> 的暂时退不了，过几分钟再运行一次。</li>
+<li>每次没抢到，账号里会留下一条 <code>failed</code> 记录：不收钱、不占配额，60 分钟后就看不到了。</li>
+<li>几个任务一起跑时，用 <code>--tag</code> 分开，释放时不会互相影响。</li>
 </ul>
+</section>
+<section class="content-section" id="terms">
+<h2 class="section-title"><span>?</span> · 术语表</h2>
+<table class="cmp gloss">
+<thead><tr><th>术语</th><th>大白话</th></tr></thead>
+<tbody>
+<tr><td><b>AZ</b>（可用区）</td><td>一个区域里的一个机房。法兰克福有 3 个</td></tr>
+<tr><td><b>ICE</b></td><td><code>InsufficientInstanceCapacity</code>："这个机房现在没有空的这种机器了"</td></tr>
+<tr><td><b>ODCR</b></td><td>On-Demand Capacity Reservation，按需容量预留：先把机器"订下来"</td></tr>
+<tr><td><b>open 模式</b></td><td>订下的容量"谁来都能用"：机型、AZ 对得上的机器自动用上</td></tr>
+<tr><td><b>targeted 模式</b></td><td>订下的容量"只给报了订单号的用"：开机时要写明预留 ID</td></tr>
+<tr><td><b>配额</b></td><td>账号最多能同时用多少 vCPU。超了就开不了，和有没有货无关</td></tr>
+<tr><td><b>限流</b></td><td>一秒钟内调用 API 太多次，AWS 让你等一会儿再来</td></tr>
+<tr><td><b>pending / active</b></td><td>预留的状态："订到了，还在准备" / "准备好了"</td></tr>
+<tr><td><b>请求编号</b>（ClientToken）</td><td>给每个请求编个号，同一个号重复发，AWS 只处理一次</td></tr>
+<tr><td><b>Capacity Reservation Fleet</b></td><td>AWS 官方的"自动帮你一直订"的功能，只能在一个 AZ 里用</td></tr>
+</tbody>
+</table>
 </section>
 <div class="refs">
 <h4>参考</h4>
 <ol>
 <li><a href="https://github.com/tsaol/gpu-hunter">github.com/tsaol/gpu-hunter</a> · 演示脚本和测试（MIT-0，仅供演示）</li>
-<li><a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">ODCR 机制详解</a> · 状态、计费、限流、重试、幂等、怎么评估效果</li>
+<li><a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">ODCR 机制详解</a> · 状态、计费、限流、重试、请求编号、怎么评估效果，附流程图</li>
 <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/cr-fleets.html">Capacity Reservation Fleets · AWS 文档</a></li>
 <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html">On-Demand Capacity Reservations · AWS 文档</a></li>
 <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html">Capacity Reservation 计费 · AWS 文档</a></li>
