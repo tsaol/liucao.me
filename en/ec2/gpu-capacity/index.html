@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Grab On-Demand GPUs: ODCR + Auto-Retry · liucao.me</title>
+<meta content="Grabbing GPUs with On-Demand Capacity Reservations (ODCR): how it differs from run-instances, an auto-retry script, and GPU availability in European regions" name="description"/>
+<link href="../../../ec2/assets/style.css" rel="stylesheet"/>
+<style>
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .fig { margin: 1.2rem 0 1.4rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .fig svg { display: block; width: 100%; height: auto; }
+        .fig figcaption { text-align: center; font-size: 0.8rem; color: var(--text-mute); margin-top: 0.6rem; }
+        .photo { position: relative; }
+        .photo img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
+        .pin { position: absolute; transform: translate(-50%, -50%); background: rgba(11,15,20,0.88); border: 1px solid var(--accent); color: var(--accent); font-size: 0.74rem; font-weight: 600; padding: 0.12rem 0.55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+        .pin.n1 { border-color: #60a5fa; color: #60a5fa; }
+        .fig figcaption a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .tldr { background: var(--surface); border: 1px solid var(--accent-dim); border-radius: var(--radius); padding: 1.1rem 1.3rem; margin: 0.4rem 0 2.2rem; }
+        .tldr .lead { color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; }
+        .tldr ol { color: var(--text-dim); padding-left: 1.2rem; }
+        .tldr li { margin-bottom: 0.3rem; }
+        .tldr b { color: var(--text); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.87rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        pre.ascii { line-height: 1.35; font-size: 0.78rem; }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+
+        .steps { counter-reset: s; list-style: none; padding-left: 0 !important; }
+        .steps li { counter-increment: s; position: relative; padding-left: 2.2rem; margin-bottom: 0.7rem !important; }
+        .steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--accent-dim); color: var(--accent); font-family: var(--mono); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
+        .cmp td.yes { color: #34d399; font-weight: 600; } .cmp td.no { color: #f87171; font-weight: 600; }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">EC2</a>
+<a href="https://github.com/tsaol/grab-gpu">GitHub</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hero">
+<div class="crumb"><a href="../">EC2</a> · GPU · On-Demand capacity</div>
+<h1>On-Demand<span class="g"> Grab GPUs</span>: ODCR + auto-retry</h1>
+<p class="sub">When GPUs are scarce, launching instances keeps failing with <code>InsufficientInstanceCapacity</code>. This post shows how to use On-Demand Capacity Reservations (ODCR) to lock in GPU capacity as soon as it frees up, then use it at your own pace. Includes an open-source script that keeps trying until it succeeds.</p>
+<nav class="toc">
+<a href="#why">1 · Why ODCR</a>
+<a href="#how">2 · How the script grabs capacity</a>
+<a href="#use">3 · How to use it</a>
+<a href="#check">4 · Pre-flight checks</a>
+<a href="#eu">5 · GPU availability in Europe</a>
+<a href="#cost">6 · Cost and release</a>
+</nav>
+</div>
+<div class="tldr">
+<div class="lead">TL;DR</div>
+<ol>
+<li><b>Don't use run-instances to grab capacity</b>: once the instance stops, the capacity goes back.</li>
+<li><b>Grab with ODCR</b>: just instance type + AZ + count. Once you get it, it stays yours, whether instances are stopped or started.</li>
+<li><b>Multiple instance types, multiple AZs, halve-and-retry, longer waits each time</b>, and stop immediately on quota errors.</li>
+<li><b>ODCR is billed at On-Demand rates once active</b>, so be sure to release them when you're done.</li>
+</ol>
+</div>
+<section class="content-section" id="why">
+<h2 class="section-title"><span>1</span> · Why ODCR instead of plain run-instances</h2>
+<p>Both use On-Demand pricing, and both return an error when there's no capacity <code>InsufficientInstanceCapacity</code>, so both need retries. The difference is<b> Can you keep it once you have it?</b>.</p>
+<table class="cmp">
+<thead><tr><th></th><th>run-instances (launch instances directly)</th><th>ODCR (On-Demand Capacity Reservation)</th></tr></thead>
+<tbody>
+<tr><td><b>What you get</b></td><td> a running instance</td><td> Capacity for a specific instance type in a specific AZ, held for you</td></tr>
+<tr><td><b>Each retry needs</b></td><td> AMI, subnet, security group, key pair, disk</td><td> Only needs instance type, AZ, and count</td></tr>
+<tr><td><b>after stop / terminate</b></td><td class="no"> The capacity goes back, and next time you may not be able to launch</td><td class="yes"> The capacity is still yours</td></tr>
+<tr><td><b>Only got part of it</b></td><td> MinCount lets you accept fewer</td><td> Each request is all-or-nothing, so retry with half the count</td></tr>
+<tr><td><b>Price</b></td><td> On-Demand price, charged while instances run</td><td> On-Demand price,<b>Charged once active, whether you use it or not</b></td></tr>
+<tr><td><b>Savings Plans</b></td><td> Works</td><td> Works</td></tr>
+<tr><td><b>Good for</b></td><td> Need to run jobs right away</td><td><b> Grab it first</b>, then set up the environment and hand it over</td></tr>
+</tbody>
+</table>
+<div class="callout"><b>Bottom line:</b>Use ODCR to grab GPUs. Once you have the capacity, starting, stopping, or changing the AMI won't lose it. Whoever needs it just launches instances in that capacity.</div>
+</section>
+<section class="content-section" id="how">
+<h2 class="section-title"><span>2</span> · How the script grabs capacity</h2>
+<p>The script is called <a href="https://github.com/tsaol/grab-gpu"><code>grab-gpu.sh</code></a>, using only bash and the AWS CLI. Each round works like this:</p>
+<ol class="steps">
+<li><b>Check which AZs offer this instance type</b>, and unavailable combinations are skipped, so no requests are wasted.</li>
+<li><b>In the order of instance types you give</b>, request in each AZ<b> all of the remaining count</b>.</li>
+<li>If there's no capacity,<b>Halve and retry</b>: 4 → 2 → 1. Grab as many as free up.</li>
+<li>The reservation you got<b> Everything is tagged</b>, so you can find them later and release them in one step. Optional: send an SNS message.</li>
+<li>If the whole round fails,<b>wait longer</b> Retry: start at 30 seconds, multiply by 1.5 each round, cap at 5 minutes, and add random jitter. Reset after each successful grab.</li>
+<li>On<b> Stop immediately on quota, permission, or parameter errors</b>: retrying won't help with these errors.</li>
+</ol>
+<pre><span class="c"># Exit codes</span>
+0  All secured
+2  None of the chosen instance types are available in these AZs
+3  Fatal error (insufficient quota, missing permissions)
+4  Reached --max-hours without securing all</pre>
+</section>
+<section class="content-section" id="use">
+<h2 class="section-title"><span>3</span> · How to use it</h2>
+<pre><span class="c"># Test first: --dry-run only checks permissions and parameters, creates nothing</span>
+<span class="k">./grab-gpu.sh</span> -r eu-central-1 -t g6e.12xlarge -n 2 --dry-run
+
+<span class="c"># Grab 4: g6e.12xlarge first, then g6e.24xlarge; send SNS when secured</span>
+<span class="k">./grab-gpu.sh</span> -r eu-central-1 -t g6e.12xlarge,g6e.24xlarge -n 4 \
+  -s arn:aws:sns:&lt;region&gt;:&lt;account&gt;:&lt;topic&gt;
+
+<span class="c"># Keep it running in the background</span>
+nohup <span class="k">./grab-gpu.sh</span> -r eu-central-1 -t p4d.24xlarge -n 2 &gt; grab.out 2&gt;&amp;1 &amp;
+
+<span class="k">./grab-gpu.sh</span> -r eu-central-1 --status    <span class="c"># See what you got</span>
+<span class="k">./grab-gpu.sh</span> -r eu-central-1 --release   <span class="c"># Release everything to stop charges</span></pre>
+<h3 class="sub-h">How to launch instances once you have it</h3>
+<p>The default is <code>open</code> mode: instances in the same account with matching instance type, platform, and AZ<b> will automatically use this reservation</b>, a normal run-instances works. If you only want specific instances to use it, add <code>--targeted</code>, then specify the reservation ID when launching.</p>
+</section>
+<section class="content-section" id="check">
+<h2 class="section-title"><span>4</span> · Pre-flight checks</h2>
+<ul>
+<li><b>Check your On-Demand vCPU quota first</b>(Running On-Demand G and VT / P instances). Often the failure isn't a lack of capacity but insufficient quota. A single p4d.24xlarge is 96 vCPUs, and ODCRs also count against the quota.</li>
+<li><b>List several instance types and AZs</b>. If your workload allows, list comparable types like g6e and g7 too. The more options, the easier it is to get capacity.</li>
+<li><b>Run --dry-run first</b>, and confirm permissions (create, describe, and cancel reservations, tagging, optional SNS).</li>
+<li><b>Large quantities or long-term use</b>, and also contact your AWS account team. The script can only grab capacity that occasionally frees up.</li>
+</ul>
+</section>
+<section class="content-section" id="eu">
+<h2 class="section-title"><span>5</span> · GPU availability in two European regions</h2>
+<p>For use on 2026-11-10 <code>describe-instance-type-offerings</code> results. The script only tries the AZs where the instance type is offered.</p>
+<table class="cmp">
+<thead><tr><th>Instance type</th><th>GPU</th><th> Frankfurt eu-central-1</th><th> Zaragoza eu-south-2</th></tr></thead>
+<tbody>
+<tr><td><b>p5en.48xlarge</b></td><td>8 × H200</td><td class="no"> None</td><td class="yes">2a, 2b</td></tr>
+<tr><td><b>p5.48xlarge</b></td><td>8 × H100</td><td class="no"> None</td><td class="no"> None</td></tr>
+<tr><td><b>p5.4xlarge</b></td><td>1 × H100</td><td>1b, 1c</td><td class="no"> None</td></tr>
+<tr><td><b>p4d.24xlarge</b></td><td>8 × A100 40GB</td><td>1a, 1b, 1c</td><td class="no"> None</td></tr>
+<tr><td><b>p4de.24xlarge</b></td><td>8 × A100 80GB</td><td>1a, 1c</td><td class="no"> None</td></tr>
+<tr><td><b>g7e</b></td><td>RTX PRO 6000 Blackwell</td><td>1a, 1b</td><td>2a, 2b</td></tr>
+<tr><td><b>g7</b></td><td>RTX PRO 4500 Blackwell</td><td>1a, 1b, 1c</td><td>2a, 2b</td></tr>
+<tr><td><b>g6e</b></td><td>L40S</td><td>1a, 1b, 1c</td><td>2b, 2c</td></tr>
+<tr><td><b>g6</b></td><td>L4</td><td>1a, 1b, 1c</td><td>2a, 2b, 2c</td></tr>
+<tr><td><b>g5</b></td><td>A10G</td><td>1a, 1b, 1c</td><td>2a, 2b, 2c</td></tr>
+</tbody>
+</table>
+<div class="callout warn"><b>Note:</b>If you need 8x H100/H200, Frankfurt doesn't have p5.48xlarge / p5en.48xlarge, but Zaragoza has p5en.48xlarge. Both regions are in the EU. AZ names may map to different physical AZs in each account, so use AZ IDs to match them across accounts.</div>
+</section>
+<section class="content-section" id="cost">
+<h2 class="section-title"><span>6</span> · Cost and release</h2>
+<ul>
+<li>ODCR <b>billed at On-Demand rates as soon as it's active</b>, even if no instances are running. Running instances aren't charged twice.</li>
+<li>Savings Plans discounts also apply to ODCR.</li>
+<li>Reservations created by the script have no end date,<b>Can be canceled anytime</b>:<code>./grab-gpu.sh --release</code>.</li>
+<li>When running multiple jobs at once, use <code>--tag</code> separately, so releasing one doesn't affect the others.</li>
+</ul>
+</section>
+<div class="refs">
+<h4>Reference</h4>
+<ol>
+<li><a href="https://github.com/tsaol/grab-gpu">github.com/tsaol/grab-gpu</a> · Script and tests (MIT-0)</li>
+<li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html">On-Demand Capacity Reservations · AWS docs</a></li>
+<li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html">Capacity Reservation pricing · AWS docs</a></li>
+</ol>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../">Home</a> · <a href="../">EC2</a></p>
+</footer>
+<a data-cur="en" data-to="zh" href="../../../ec2/gpu-capacity/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>按需抢 GPU：ODCR + 自动重试 · liucao.me</title>
+<meta content="用按需容量预留（ODCR）抢 GPU：和 run-instances 的区别、自动重试脚本、欧洲区域 GPU 分布" name="description"/>
+<link href="../assets/style.css" rel="stylesheet"/>
+<style>
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .fig { margin: 1.2rem 0 1.4rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .fig svg { display: block; width: 100%; height: auto; }
+        .fig figcaption { text-align: center; font-size: 0.8rem; color: var(--text-mute); margin-top: 0.6rem; }
+        .photo { position: relative; }
+        .photo img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
+        .pin { position: absolute; transform: translate(-50%, -50%); background: rgba(11,15,20,0.88); border: 1px solid var(--accent); color: var(--accent); font-size: 0.74rem; font-weight: 600; padding: 0.12rem 0.55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+        .pin.n1 { border-color: #60a5fa; color: #60a5fa; }
+        .fig figcaption a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .tldr { background: var(--surface); border: 1px solid var(--accent-dim); border-radius: var(--radius); padding: 1.1rem 1.3rem; margin: 0.4rem 0 2.2rem; }
+        .tldr .lead { color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; }
+        .tldr ol { color: var(--text-dim); padding-left: 1.2rem; }
+        .tldr li { margin-bottom: 0.3rem; }
+        .tldr b { color: var(--text); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.87rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        pre.ascii { line-height: 1.35; font-size: 0.78rem; }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+
+        .steps { counter-reset: s; list-style: none; padding-left: 0 !important; }
+        .steps li { counter-increment: s; position: relative; padding-left: 2.2rem; margin-bottom: 0.7rem !important; }
+        .steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--accent-dim); color: var(--accent); font-family: var(--mono); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
+        .cmp td.yes { color: #34d399; font-weight: 600; } .cmp td.no { color: #f87171; font-weight: 600; }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">EC2</a>
+<a href="https://github.com/tsaol/grab-gpu">GitHub</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hero">
+<div class="crumb"><a href="../">EC2</a> · GPU · 按需容量</div>
+<h1>按需<span class="g">抢 GPU</span>：ODCR + 自动重试</h1>
+<p class="sub">GPU 紧张的时候，开机器总是报 <code>InsufficientInstanceCapacity</code>。这篇讲怎么用按需容量预留（ODCR）把空出来的 GPU 容量先占住，再慢慢用。附一个开源脚本，抢到为止。</p>
+<nav class="toc">
+<a href="#why">1 · 为什么用 ODCR</a>
+<a href="#how">2 · 脚本怎么抢</a>
+<a href="#use">3 · 怎么用</a>
+<a href="#check">4 · 抢之前检查</a>
+<a href="#eu">5 · 欧洲 GPU 分布</a>
+<a href="#cost">6 · 费用和释放</a>
+</nav>
+</div>
+<div class="tldr">
+<div class="lead">一句话版</div>
+<ol>
+<li><b>别用 run-instances 抢</b>：机器一关，容量就还回去了。</li>
+<li><b>用 ODCR 抢</b>：只要机型 + AZ + 数量，抢到就一直是你的，开关机都不丢。</li>
+<li><b>多机型、多 AZ、减半重试、越等越久</b>，碰到配额错误马上停。</li>
+<li><b>ODCR 生效就按按需价收费</b>，不用了一定要释放。</li>
+</ol>
+</div>
+<section class="content-section" id="why">
+<h2 class="section-title"><span>1</span> · 为什么用 ODCR，不直接 run-instances</h2>
+<p>两种方式都是按需价格，碰到没货也都会报 <code>InsufficientInstanceCapacity</code>，所以都要重试。区别在于<b>抢到以后能不能留住</b>。</p>
+<table class="cmp">
+<thead><tr><th></th><th>run-instances（直接开机器）</th><th>ODCR（按需容量预留）</th></tr></thead>
+<tbody>
+<tr><td><b>拿到的是什么</b></td><td>一台运行中的机器</td><td>某个 AZ、某个机型的容量，给你留着</td></tr>
+<tr><td><b>每次重试要准备</b></td><td>AMI、子网、安全组、密钥、磁盘</td><td>只要机型、AZ、数量</td></tr>
+<tr><td><b>stop / terminate 以后</b></td><td class="no">容量还回去，下次可能开不出来</td><td class="yes">容量还是你的</td></tr>
+<tr><td><b>只抢到一部分</b></td><td>MinCount 可以少拿</td><td>一次请求要么全给要么不给，所以要减半重试</td></tr>
+<tr><td><b>价格</b></td><td>按需价，机器运行时收</td><td>按需价，<b>生效就收，用不用都收</b></td></tr>
+<tr><td><b>Savings Plans</b></td><td>能用</td><td>能用</td></tr>
+<tr><td><b>适合</b></td><td>马上就要跑任务</td><td><b>先抢住</b>，再配环境、交付使用</td></tr>
+</tbody>
+</table>
+<div class="callout"><b>结论：</b>抢 GPU 用 ODCR。容量拿到手以后，机器开、关、换镜像都不会丢；要给谁用，再在这个容量里开机器就行。</div>
+</section>
+<section class="content-section" id="how">
+<h2 class="section-title"><span>2</span> · 脚本怎么抢</h2>
+<p>脚本叫 <a href="https://github.com/tsaol/grab-gpu"><code>grab-gpu.sh</code></a>，只用 bash 和 AWS CLI。每一轮这样跑：</p>
+<ol class="steps">
+<li><b>查哪些 AZ 有这个机型</b>，没有的组合直接跳过，不浪费请求。</li>
+<li><b>按你给的机型顺序</b>，在每个 AZ 里申请<b>剩下的全部数量</b>。</li>
+<li>没容量就<b>减半再试</b>：4 → 2 → 1。空出几台就先占几台。</li>
+<li>抢到的预留<b>都打上 tag</b>，以后能查、能一键释放。可选：发 SNS 消息。</li>
+<li>这一轮都失败，就<b>等更久</b>再来：30 秒起，每轮乘 1.5，最多 5 分钟，加随机抖动。抢到一次就重置。</li>
+<li>碰到<b>配额、权限、参数错误马上停</b>：这些错误重试也没用。</li>
+</ol>
+<pre><span class="c"># 退出码</span>
+0  全部抢到
+2  选的机型在这些 AZ 都没有
+3  致命错误（配额不够、没权限）
+4  到了 --max-hours 还没抢满</pre>
+</section>
+<section class="content-section" id="use">
+<h2 class="section-title"><span>3</span> · 怎么用</h2>
+<pre><span class="c"># 先测：--dry-run 只检查权限和参数，不创建</span>
+<span class="k">./grab-gpu.sh</span> -r eu-central-1 -t g6e.12xlarge -n 2 --dry-run
+
+<span class="c"># 抢 4 台：先 g6e.12xlarge，再 g6e.24xlarge，抢到发 SNS</span>
+<span class="k">./grab-gpu.sh</span> -r eu-central-1 -t g6e.12xlarge,g6e.24xlarge -n 4 \
+  -s arn:aws:sns:&lt;region&gt;:&lt;account&gt;:&lt;topic&gt;
+
+<span class="c"># 放后台一直跑</span>
+nohup <span class="k">./grab-gpu.sh</span> -r eu-central-1 -t p4d.24xlarge -n 2 &gt; grab.out 2&gt;&amp;1 &amp;
+
+<span class="k">./grab-gpu.sh</span> -r eu-central-1 --status    <span class="c"># 看抢到了什么</span>
+<span class="k">./grab-gpu.sh</span> -r eu-central-1 --release   <span class="c"># 全部释放，停止收费</span></pre>
+<h3 class="sub-h">抢到以后怎么开机器</h3>
+<p>默认是 <code>open</code> 模式：同一个账号里，机型、平台、AZ 对得上的机器<b>会自动用这个预留</b>，正常 run-instances 就行。如果只想给指定的机器用，加 <code>--targeted</code>，开机时再指定预留 ID。</p>
+</section>
+<section class="content-section" id="check">
+<h2 class="section-title"><span>4</span> · 抢之前检查</h2>
+<ul>
+<li><b>先查按需 vCPU 配额</b>（Running On-Demand G and VT / P instances）。很多时候失败不是没货，是配额不够。一台 p4d.24xlarge 就是 96 vCPU；ODCR 也算在配额里。</li>
+<li><b>机型和 AZ 多给几个</b>。业务能接受的话，把 g6e、g7 这类同级别的都写上，选择越多越容易抢到。</li>
+<li><b>先跑 --dry-run</b>，确认权限（创建、查询、取消预留，打 tag，可选 SNS）。</li>
+<li><b>量大或长期要用</b>，同时找 AWS account team。脚本只能抢偶尔空出来的容量。</li>
+</ul>
+</section>
+<section class="content-section" id="eu">
+<h2 class="section-title"><span>5</span> · 欧洲两个区域的 GPU 分布</h2>
+<p>2026-11-10 用 <code>describe-instance-type-offerings</code> 查的结果。机型在哪个 AZ 有，脚本就只在那里抢。</p>
+<table class="cmp">
+<thead><tr><th>机型</th><th>GPU</th><th>法兰克福 eu-central-1</th><th>萨拉戈萨 eu-south-2</th></tr></thead>
+<tbody>
+<tr><td><b>p5en.48xlarge</b></td><td>8 × H200</td><td class="no">没有</td><td class="yes">2a, 2b</td></tr>
+<tr><td><b>p5.48xlarge</b></td><td>8 × H100</td><td class="no">没有</td><td class="no">没有</td></tr>
+<tr><td><b>p5.4xlarge</b></td><td>1 × H100</td><td>1b, 1c</td><td class="no">没有</td></tr>
+<tr><td><b>p4d.24xlarge</b></td><td>8 × A100 40GB</td><td>1a, 1b, 1c</td><td class="no">没有</td></tr>
+<tr><td><b>p4de.24xlarge</b></td><td>8 × A100 80GB</td><td>1a, 1c</td><td class="no">没有</td></tr>
+<tr><td><b>g7e</b></td><td>RTX PRO 6000 Blackwell</td><td>1a, 1b</td><td>2a, 2b</td></tr>
+<tr><td><b>g7</b></td><td>RTX PRO 4500 Blackwell</td><td>1a, 1b, 1c</td><td>2a, 2b</td></tr>
+<tr><td><b>g6e</b></td><td>L40S</td><td>1a, 1b, 1c</td><td>2b, 2c</td></tr>
+<tr><td><b>g6</b></td><td>L4</td><td>1a, 1b, 1c</td><td>2a, 2b, 2c</td></tr>
+<tr><td><b>g5</b></td><td>A10G</td><td>1a, 1b, 1c</td><td>2a, 2b, 2c</td></tr>
+</tbody>
+</table>
+<div class="callout warn"><b>注意：</b>要 8 卡 H100/H200 的话，法兰克福没有 p5.48xlarge / p5en.48xlarge，萨拉戈萨有 p5en.48xlarge。两个区域都在欧盟内。AZ 名字在每个账号里可能对应不同的物理 AZ，跨账号要用 AZ ID 对齐。</div>
+</section>
+<section class="content-section" id="cost">
+<h2 class="section-title"><span>6</span> · 费用和释放</h2>
+<ul>
+<li>ODCR <b>一生效就按按需价收费</b>，没开机器也收；开了机器不会重复收。</li>
+<li>Savings Plans 的折扣对 ODCR 也有效。</li>
+<li>脚本建的预留没有结束时间，<b>随时可以取消</b>：<code>./grab-gpu.sh --release</code>。</li>
+<li>多个任务一起跑时，用 <code>--tag</code> 分开，释放时不会互相影响。</li>
+</ul>
+</section>
+<div class="refs">
+<h4>参考</h4>
+<ol>
+<li><a href="https://github.com/tsaol/grab-gpu">github.com/tsaol/grab-gpu</a> · 脚本和测试（MIT-0）</li>
+<li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html">On-Demand Capacity Reservations · AWS 文档</a></li>
+<li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html">Capacity Reservation 计费 · AWS 文档</a></li>
+</ol>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../">Home</a> · <a href="../">EC2</a></p>
+</footer>
+<a data-cur="zh" data-to="en" href="../../en/ec2/gpu-capacity/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>
