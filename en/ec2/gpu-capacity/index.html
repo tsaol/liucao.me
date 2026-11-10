@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Can't launch GPUs? Reserve the capacity first · liucao.me</title>
-<meta content="On-Demand Capacity Reservations (ODCR) explained with a hotel-booking analogy: when to use the official Fleet, when to use the demo script gpu-hunter, and how to judge the results, with flowcharts" name="description"/>
+<meta content="On-Demand Capacity Reservations (ODCR) explained with a hotel-booking analogy: when to use the official Fleet, how to call the key APIs, and how to measure results, with a flowchart and sample code" name="description"/>
 <link href="../../../ec2/assets/style.css" rel="stylesheet"/>
 <style>
         .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
@@ -132,12 +132,12 @@
 <div class="gv-hero">
 <div class="crumb"><a href="../">EC2</a> · GPU · On-Demand capacity</div>
 <h1>Can't launch GPUs? First<span class="g"> Capacity locked in</span></h1>
-<p class="sub">When GPUs are scarce, launching instances keeps failing with "insufficient capacity". This post uses a hotel booking analogy to explain what On-Demand Capacity Reservations (ODCR) are, when to use the official Fleet, when to use the demo script gpu-hunter, and how to evaluate the results.</p>
+<p class="sub">When GPUs are scarce, launching instances keeps failing with "insufficient capacity". This post uses a hotel-booking analogy to explain what On-Demand Capacity Reservations (ODCR) are, when to use the official Fleet, how to call the key APIs, and how to measure the results. Includes gpu-hunter, sample code for illustration.</p>
 <nav class="toc">
 <a href="#choose">1 · Choose an approach first</a>
 <a href="#odcr">2 · What is ODCR</a>
-<a href="#how">3 · How gpu-hunter secures capacity</a>
-<a href="#use">4 · How to use it</a>
+<a href="#how">3 · How the sample chains the APIs together</a>
+<a href="#use">4 · How to call the key APIs</a>
 <a href="#check">5 · Pre-flight checks</a>
 <a href="#measure">6 · How to evaluate results</a>
 <a href="#eu">7 · GPU availability in Europe</a>
@@ -145,13 +145,13 @@
 <a href="#terms">Glossary</a>
 </nav>
 </div>
-<div class="callout danger"><b>Disclaimer: The scripts in this article are for demonstration and learning only. They are not official AWS tools and should not be used directly in production.</b><br/>Capacity Reservations are billed at the On-Demand rate from the moment they are created, whether you use them or not. For limits, pricing, and quotas, refer to the official AWS documentation.</div>
+<div class="callout danger"><b>Disclaimer: The sample code in this post is meant to illustrate how to use the APIs. It is not a ready-to-run tool and must not be used in production.</b><br/>Please understand these APIs, then write your own code for your needs. The sample is not an official AWS tool. Capacity reservations are billed at the On-Demand rate from the moment they're created, whether you use them or not. Refer to the official AWS documentation for limits, pricing, and quotas.</div>
 <div class="tldr">
 <div class="lead">Start here: in three sentences</div>
 <ol>
 <li><b>You can't launch GPUs because that data center has no free machines right now.</b>All you can do is: retry later, switch data centers (AZs), switch instance types, or ask for fewer instances.</li>
 <li><b>ODCR is like booking a hotel room in advance</b>: once reserved, the capacity is held for you even if your instances are stopped; but billing starts the moment it's reserved, whether you use it or not.</li>
-<li><b>If you only need capacity in one AZ, start with AWS's built-in Capacity Reservation Fleet</b>; to search across multiple AZs at once, use gpu-hunter.</li>
+<li><b>If you only need capacity in one AZ, start with AWS's built-in Capacity Reservation Fleet</b>; to search across several AZs at once, you have to call the underlying APIs yourself. This post explains how to call these APIs, with gpu-hunter as a reference example.</li>
 </ol>
 </div>
 <section class="content-section" id="choose">
@@ -169,15 +169,15 @@
 <div class="box q">Question 2: Only need 1 AZ, and open mode is enough?<small>See the glossary for what open mode means</small></div>
 <div class="branch">
 <div><div class="lbl">Yes</div><div class="box good">✅ Use the official Capacity Reservation Fleet<small> Managed by AWS, keeps retrying automatically in the background; if cancelled, it refills automatically</small></div></div>
-<div><div class="lbl">No: you need multiple AZs, or targeted</div><div class="box good">✅ Use gpu-hunter (demo)<small>You have to keep a machine running yourself</small></div></div>
+<div><div class="lbl">No: you need multiple AZs, or targeted</div><div class="box good">✅ Call the underlying APIs yourself<small> See Section 4 for how to call them; reference sample: gpu-hunter</small></div></div>
 </div>
 </div>
 <div class="dg-cap">Figure 1 · Pick an approach with two questions</div>
 </div>
 <table class="cmp">
-<thead><tr><th></th><th>Official Fleet</th><th> gpu-hunter (demo)</th></tr></thead>
+<thead><tr><th></th><th>Official Fleet</th><th> Call the APIs yourself (e.g., the gpu-hunter sample)</th></tr></thead>
 <tbody>
-<tr><td><b>Who runs it</b></td><td class="yes"> Managed by AWS</td><td> You have to keep a machine running it yourself</td></tr>
+<tr><td><b>Who runs it</b></td><td class="yes"> Managed by AWS</td><td> You write and run the code yourself</td></tr>
 <tr><td><b>Multiple instance types</b></td><td> Yes, by priority</td><td> Yes, in the order you give</td></tr>
 <tr><td><b>Multiple AZs</b></td><td class="no"> No (tested: the API returns an error)</td><td class="yes">Yes</td></tr>
 <tr><td><b>open / targeted</b></td><td> open only</td><td> Both supported</td></tr>
@@ -213,8 +213,8 @@
 <div class="callout warn"><b>One thing to note:</b>After the reservation succeeds, the system may need to<b> Up to about 5 minutes</b> before the state changes from <code>pending</code> Shown as <code>active</code>. During this time<b> doesn't mean the reservation failed</b>, don't cancel it.</div>
 </section>
 <section class="content-section" id="how">
-<h2 class="section-title"><span>3</span> · How gpu-hunter secures capacity</h2>
-<p>The script is called <a href="https://github.com/tsaol/gpu-hunter"><code>gpu-hunter.sh</code></a>, using only bash and the AWS CLI. It takes the officially recommended approaches (retry, try another location, try another instance type, request fewer)<b>Keeps going automatically, round after round</b>.</p>
+<h2 class="section-title"><span>3</span> · How the sample code chains the APIs together</h2>
+<p>Sample <a href="https://github.com/tsaol/gpu-hunter"><code>gpu-hunter.sh</code></a>(bash + AWS CLI) is used to<b> show how these APIs work together in a retry loop</b>: works through the officially recommended fixes (retry, switch location, switch instance type, request fewer) round by round. It's for illustration, not meant to be run as is.</p>
 <div class="dg">
 <div class="loop">
 <div class="box">Setup<small> Check which AZs offer each instance type; check that you have query permissions</small></div>
@@ -255,39 +255,37 @@
 <p>For the official sources and measured data behind each mechanism, see <a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">Mechanism details (GitHub)</a>.</p>
 </section>
 <section class="content-section" id="use">
-<h2 class="section-title"><span>4</span> · How to use it</h2>
-<pre><span class="c"># 1. Always dry-run first: only checks permissions and parameters, creates nothing</span>
-<span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6e.12xlarge -n 2 --dry-run
-
-<span class="c"># 2. Reserve 4 instances: try g6e.12xlarge first, then g6e.24xlarge; stop if not all are secured after 6 hours</span>
-<span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6e.12xlarge,g6e.24xlarge -n 4 --max-hours 6
-
-<span class="c"># 3. See what you got; release it when no longer needed (stops billing)</span>
-<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --status
-<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --release
-
-<span class="c"># 4. Check how this run went (reads the latest log file by default)</span>
-<span class="k">tools/report.sh</span></pre>
-<h3 class="sub-h">Script exit codes</h3>
-<table class="cmp">
-<thead><tr><th>Exit code</th><th> Meaning</th></tr></thead>
-<tbody>
-<tr><td><b>0</b></td><td> Got all of it</td></tr>
-<tr><td><b>1</b></td><td> Wrong parameters</td></tr>
-<tr><td><b>2</b></td><td> The selected instance type isn't available in any of these AZs</td></tr>
-<tr><td><b>3</b></td><td> Fatal errors: insufficient quota, missing permissions, parameters not accepted</td></tr>
-<tr><td><b>4</b></td><td> Reached <code>--max-hours</code> Not fully secured yet</td></tr>
-<tr><td><b>130</b></td><td> Stopped manually by you (Ctrl+C)</td></tr>
-</tbody>
-</table>
-<p>No matter how it ends,<b>Reservations already obtained are kept</b>, use <code>--release</code> release it.</p>
-<h3 class="sub-h">How to launch instances once you have it</h3>
+<h2 class="section-title"><span>4</span> · How to call the key APIs</h2>
+<p>The whole process uses only 4 APIs. Below is an example call for each, along with the most important things to watch out for:</p>
+<h3 class="sub-h">① Which AZs offer this instance type? DescribeInstanceTypeOfferings</h3>
+<pre>aws ec2 describe-instance-type-offerings --region eu-central-1   --location-type availability-zone   --filters Name=instance-type,Values=g6e.12xlarge   --query 'InstanceTypeOfferings[].Location' --output text</pre>
+<p>Skip AZs that don't offer this instance type; requests there will never succeed.</p>
+<h3 class="sub-h">② Reserve capacity: CreateCapacityReservation</h3>
+<pre>aws ec2 create-capacity-reservation --region eu-central-1   --instance-type g6e.12xlarge --instance-platform Linux/UNIX   --availability-zone eu-central-1a --instance-count 4   --instance-match-criteria targeted --end-date-type unlimited   --client-token "my-unique-id-0001"   --query 'CapacityReservation.[CapacityReservationId,State]' --output text</pre>
 <ul>
-<li><b>open mode (default)</b>: instances in the same account with a matching instance type, platform, and AZ<b> automatically uses the reservation</b>, just launch instances normally.</li>
-<li><b>targeted mode</b>(add <code>--targeted</code>): only instances that specify the reservation ID at launch can use it:</li>
+<li><b>All or nothing</b>: if there's no capacity, it returns <code>InsufficientInstanceCapacity</code>, you have to request fewer and try again (4 → 2 → 1).</li>
+<li><b>Include the request ID</b>(<code>--client-token</code>): If the network drops, resend with the same token and you won't end up with a duplicate reservation (see Figure 5).</li>
+<li><b>Turn off the CLI's built-in retries</b>(<code>AWS_MAX_ATTEMPTS=1</code>): In our tests with default settings, a single out-of-capacity error was silently retried into 3 attempts.</li>
+<li><b>open or targeted</b>: if your account already has instances of the same type running, use targeted; otherwise they will use up the reservation.</li>
 </ul>
-<pre>aws ec2 run-instances ... \
-  --capacity-reservation-specification 'CapacityReservationTarget={CapacityReservationId=cr-xxxx}'</pre>
+<h3 class="sub-h">③ Check status: DescribeCapacityReservations</h3>
+<pre>aws ec2 describe-capacity-reservations --region eu-central-1   --capacity-reservation-ids cr-0123456789abcdef0   --query 'CapacityReservations[0].State' --output text</pre>
+<p><code>pending</code> This isn't a failure; it can take up to about 5 minutes to become <code>active</code>, don't cancel it.</p>
+<h3 class="sub-h">④ Release: CancelCapacityReservation</h3>
+<pre>aws ec2 cancel-capacity-reservation --region eu-central-1   --capacity-reservation-id cr-0123456789abcdef0</pre>
+<p>Canceling is free, and billing stops once you cancel; running instances keep running and are billed at the regular On-Demand rate.</p>
+<h3 class="sub-h">Use the reserved capacity</h3>
+<ul>
+<li><b>open mode</b>: instances with a matching instance type, platform, and AZ will<b> Reservations are used automatically</b>, just launch instances normally.</li>
+<li><b>targeted mode</b>: specify the reservation ID at launch:</li>
+</ul>
+<pre>aws ec2 run-instances ...   --capacity-reservation-specification 'CapacityReservationTarget={CapacityReservationId=cr-0123456789abcdef0}'</pre>
+<h3 class="sub-h">If you want to try the sample in a test account</h3>
+<p>reading through the code first.<code>--dry-run</code> Checks only, creates nothing; to actually create a reservation (which is billed), the sample requires <code>--i-understand-this-is-a-demo</code>:</p>
+<pre><span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6.xlarge -n 2 --dry-run
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6.xlarge -n 2 --max-hours 1 --i-understand-this-is-a-demo
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --release   <span class="c"># Always release it when you're done testing</span></pre>
+<p>For all parameters and exit codes, see <a href="https://github.com/tsaol/gpu-hunter">README</a>.</p>
 </section>
 <section class="content-section" id="check">
 <h2 class="section-title"><span>5</span> · Pre-flight checks</h2>
@@ -319,7 +317,7 @@
 </section>
 <section class="content-section" id="measure">
 <h2 class="section-title"><span>6</span> · How to evaluate results</h2>
-<p>Each run logs every request to a CSV file and prints a one-line summary at the end;<code>tools/report.sh</code> You can summarize this in a table. The key numbers:</p>
+<p>Whether you use the sample or your own code, we recommend<b> Log every request</b>(the sample writes a CSV file,<code>tools/report.sh</code> which you can summarize in a table). The key numbers to watch:</p>
 <table class="cmp">
 <thead><tr><th>What to look at</th><th> What it means</th></tr></thead>
 <tbody>
@@ -384,7 +382,7 @@
 <div class="refs">
 <h4>Reference</h4>
 <ol>
-<li><a href="https://github.com/tsaol/gpu-hunter">github.com/tsaol/gpu-hunter</a> · Demo script and tests (MIT-0, demo only)</li>
+<li><a href="https://github.com/tsaol/gpu-hunter">github.com/tsaol/gpu-hunter</a> · Sample code illustrating API usage (MIT-0, not meant to be run as-is)</li>
 <li><a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">How ODCR Works</a> · States, billing, throttling, retries, request IDs, how to evaluate results, with flowcharts</li>
 <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/cr-fleets.html">Capacity Reservation Fleets · AWS Documentation</a></li>
 <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html">On-Demand Capacity Reservations · AWS docs</a></li>

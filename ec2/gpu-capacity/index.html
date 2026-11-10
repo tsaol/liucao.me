@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>GPU 开不出来？先把容量订下来 · liucao.me</title>
-<meta content="用订酒店的比方讲清楚按需容量预留（ODCR）：什么时候用官方 Fleet、什么时候用演示脚本 gpu-hunter、怎么判断效果，附流程图" name="description"/>
+<meta content="用订酒店的比方讲清楚按需容量预留（ODCR）：什么时候用官方 Fleet、关键 API 怎么调用、怎么判断效果，附流程图和示例代码" name="description"/>
 <link href="../assets/style.css" rel="stylesheet"/>
 <style>
         .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
@@ -132,12 +132,12 @@
 <div class="gv-hero">
 <div class="crumb"><a href="../">EC2</a> · GPU · 按需容量</div>
 <h1>GPU 开不出来？先把<span class="g">容量订下来</span></h1>
-<p class="sub">GPU 紧张时，开机器总是报"没有容量"。这篇用订酒店来打个比方，讲清楚按需容量预留（ODCR）是什么、什么时候用官方的 Fleet、什么时候用演示脚本 gpu-hunter，以及怎么判断效果。</p>
+<p class="sub">GPU 紧张时，开机器总是报"没有容量"。这篇用订酒店来打个比方，讲清楚按需容量预留（ODCR）是什么、什么时候用官方的 Fleet、关键的 API 怎么调用，以及怎么判断效果。附一个讲解用的示例代码 gpu-hunter。</p>
 <nav class="toc">
 <a href="#choose">1 · 先选方案</a>
 <a href="#odcr">2 · ODCR 是什么</a>
-<a href="#how">3 · gpu-hunter 怎么抢</a>
-<a href="#use">4 · 怎么用</a>
+<a href="#how">3 · 示例怎么串起 API</a>
+<a href="#use">4 · 关键 API 怎么调用</a>
 <a href="#check">5 · 抢之前检查</a>
 <a href="#measure">6 · 怎么看效果</a>
 <a href="#eu">7 · 欧洲 GPU 分布</a>
@@ -145,13 +145,13 @@
 <a href="#terms">术语表</a>
 </nav>
 </div>
-<div class="callout danger"><b>声明：本文的脚本只用于演示和学习，不是 AWS 官方工具，不要直接用在生产环境。</b><br/>容量预留从创建起就按按需价收费，用不用都收。限制、价格、配额以 AWS 官方文档为准。</div>
+<div class="callout danger"><b>声明：本文的示例代码是用来讲解 API 怎么用的，不是拿来直接运行的工具，也不能用在生产环境。</b><br/>请读懂这些 API，再按自己的需要写自己的代码。示例不是 AWS 官方工具。容量预留从创建起就按按需价收费，用不用都收。限制、价格、配额以 AWS 官方文档为准。</div>
 <div class="tldr">
 <div class="lead">先看这里：三句话</div>
 <ol>
 <li><b>开不出 GPU，是那个机房暂时没有空机器。</b>能做的只有：过一会儿再试、换机房（AZ）、换机型、少要几台。</li>
 <li><b>ODCR 就像提前订酒店房间</b>：订到了就一直给你留着，机器关了也不丢；但从订到那一刻起就收钱，住不住都收。</li>
-<li><b>只在一个 AZ 里抢的话，先用 AWS 自带的 Capacity Reservation Fleet</b>；要同时在好几个 AZ 里找，再用 gpu-hunter。</li>
+<li><b>只在一个 AZ 里抢的话，先用 AWS 自带的 Capacity Reservation Fleet</b>；要同时在好几个 AZ 里找，就要自己调用底层 API。本文讲这些 API 怎么调用，gpu-hunter 是参考示例。</li>
 </ol>
 </div>
 <section class="content-section" id="choose">
@@ -169,15 +169,15 @@
 <div class="box q">问题 2：只在 1 个 AZ 里要，而且 open 模式就够？<small>open 模式的意思见术语表</small></div>
 <div class="branch">
 <div><div class="lbl">是</div><div class="box good">✅ 用官方 Capacity Reservation Fleet<small>AWS 托管，会在后台自动一直重试；被取消了还会自动补回来</small></div></div>
-<div><div class="lbl">不是：要多个 AZ，或者要 targeted</div><div class="box good">✅ 用 gpu-hunter（演示）<small>要自己找台机器一直跑着</small></div></div>
+<div><div class="lbl">不是：要多个 AZ，或者要 targeted</div><div class="box good">✅ 自己调用底层 API<small>怎么调用见第 4 节；参考示例：gpu-hunter</small></div></div>
 </div>
 </div>
 <div class="dg-cap">图 1 · 两个问题选出方案</div>
 </div>
 <table class="cmp">
-<thead><tr><th></th><th>官方 Fleet</th><th>gpu-hunter（演示）</th></tr></thead>
+<thead><tr><th></th><th>官方 Fleet</th><th>自己调用 API（如 gpu-hunter 示例）</th></tr></thead>
 <tbody>
-<tr><td><b>谁来跑</b></td><td class="yes">AWS 托管</td><td>要自己找台机器一直跑</td></tr>
+<tr><td><b>谁来跑</b></td><td class="yes">AWS 托管</td><td>要自己写代码、自己运行</td></tr>
 <tr><td><b>多个机型</b></td><td>可以，按优先级</td><td>可以，按你给的顺序</td></tr>
 <tr><td><b>多个 AZ</b></td><td class="no">不行（实测 API 直接报错）</td><td class="yes">可以</td></tr>
 <tr><td><b>open / targeted</b></td><td>只支持 open</td><td>两种都支持</td></tr>
@@ -213,8 +213,8 @@
 <div class="callout warn"><b>要注意的一点：</b>订到以后，系统可能要<b>最多约 5 分钟</b>才把状态从 <code>pending</code> 显示成 <code>active</code>。这段时间<b>不是没订到</b>，不要去退掉它。</div>
 </section>
 <section class="content-section" id="how">
-<h2 class="section-title"><span>3</span> · gpu-hunter 怎么抢</h2>
-<p>脚本叫 <a href="https://github.com/tsaol/gpu-hunter"><code>gpu-hunter.sh</code></a>，只用 bash 和 AWS CLI。它做的事，就是把官方建议的办法（再试、换地方、换机型、少要一点）<b>自动地一轮一轮做下去</b>。</p>
+<h2 class="section-title"><span>3</span> · 示例代码怎么把 API 串起来</h2>
+<p>示例 <a href="https://github.com/tsaol/gpu-hunter"><code>gpu-hunter.sh</code></a>（bash + AWS CLI）用来<b>说明这些 API 在一个重试循环里怎么配合</b>：把官方建议的办法（再试、换地方、换机型、少要一点）一轮一轮做下去。它是讲解用的，不是拿来直接运行的。</p>
 <div class="dg">
 <div class="loop">
 <div class="box">准备<small>查每个机型在哪些 AZ 有；检查有没有查询权限</small></div>
@@ -255,39 +255,37 @@
 <p>每一条机制的官方出处和实测数据，见 <a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">机制详解（GitHub）</a>。</p>
 </section>
 <section class="content-section" id="use">
-<h2 class="section-title"><span>4</span> · 怎么用</h2>
-<pre><span class="c"># 1. 一定先 dry-run：只检查权限和参数，不创建任何东西</span>
-<span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6e.12xlarge -n 2 --dry-run
-
-<span class="c"># 2. 抢 4 台：先试 g6e.12xlarge，再试 g6e.24xlarge；6 小时还没抢满就停</span>
-<span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6e.12xlarge,g6e.24xlarge -n 4 --max-hours 6
-
-<span class="c"># 3. 看抢到了什么；不用了就释放（停止收费）</span>
-<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --status
-<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --release
-
-<span class="c"># 4. 看这次运行的效果（默认读最新的记录文件）</span>
-<span class="k">tools/report.sh</span></pre>
-<h3 class="sub-h">脚本结束时的退出码</h3>
-<table class="cmp">
-<thead><tr><th>退出码</th><th>意思</th></tr></thead>
-<tbody>
-<tr><td><b>0</b></td><td>全部抢到了</td></tr>
-<tr><td><b>1</b></td><td>参数写错了</td></tr>
-<tr><td><b>2</b></td><td>选的机型在这些 AZ 都没有</td></tr>
-<tr><td><b>3</b></td><td>致命错误：配额不够、没权限、参数不被接受</td></tr>
-<tr><td><b>4</b></td><td>到了 <code>--max-hours</code> 还没抢满</td></tr>
-<tr><td><b>130</b></td><td>被你手动停掉了（Ctrl+C）</td></tr>
-</tbody>
-</table>
-<p>不管怎么结束，<b>已经抢到的预留都会保留</b>，要用 <code>--release</code> 释放。</p>
-<h3 class="sub-h">抢到以后怎么开机器</h3>
+<h2 class="section-title"><span>4</span> · 关键 API 怎么调用</h2>
+<p>整个过程只用到 4 个 API。下面是每个 API 的调用例子，以及最要注意的地方：</p>
+<h3 class="sub-h">① 这个机型在哪些 AZ 有？DescribeInstanceTypeOfferings</h3>
+<pre>aws ec2 describe-instance-type-offerings --region eu-central-1   --location-type availability-zone   --filters Name=instance-type,Values=g6e.12xlarge   --query 'InstanceTypeOfferings[].Location' --output text</pre>
+<p>没有这个机型的 AZ 直接跳过，去那里申请永远不会成功。</p>
+<h3 class="sub-h">② 订容量：CreateCapacityReservation</h3>
+<pre>aws ec2 create-capacity-reservation --region eu-central-1   --instance-type g6e.12xlarge --instance-platform Linux/UNIX   --availability-zone eu-central-1a --instance-count 4   --instance-match-criteria targeted --end-date-type unlimited   --client-token "my-unique-id-0001"   --query 'CapacityReservation.[CapacityReservationId,State]' --output text</pre>
 <ul>
-<li><b>open 模式（默认）</b>：同一个账号里，机型、平台、AZ 对得上的机器<b>会自动用上预留</b>，正常开机就行。</li>
-<li><b>targeted 模式</b>（加 <code>--targeted</code>）：只有开机时写明了预留 ID 的机器才能用：</li>
+<li><b>要么全给，要么不给</b>：没货就报 <code>InsufficientInstanceCapacity</code>，要自己少要一点再试（4 → 2 → 1）。</li>
+<li><b>带上请求编号</b>（<code>--client-token</code>）：网络断了就用同一个编号重发，不会多订（见图 5）。</li>
+<li><b>关掉 CLI 自己的重试</b>（<code>AWS_MAX_ATTEMPTS=1</code>）：实测默认设置下，一次没货会悄悄重试成 3 次。</li>
+<li><b>open 还是 targeted</b>：账号里已经有同型号的机器在跑的话，用 targeted，不然会被它们占掉。</li>
 </ul>
-<pre>aws ec2 run-instances ... \
-  --capacity-reservation-specification 'CapacityReservationTarget={CapacityReservationId=cr-xxxx}'</pre>
+<h3 class="sub-h">③ 查状态：DescribeCapacityReservations</h3>
+<pre>aws ec2 describe-capacity-reservations --region eu-central-1   --capacity-reservation-ids cr-0123456789abcdef0   --query 'CapacityReservations[0].State' --output text</pre>
+<p><code>pending</code> 不是失败，最多可能要约 5 分钟才变成 <code>active</code>，不要退掉它。</p>
+<h3 class="sub-h">④ 释放：CancelCapacityReservation</h3>
+<pre>aws ec2 cancel-capacity-reservation --region eu-central-1   --capacity-reservation-id cr-0123456789abcdef0</pre>
+<p>退订免费，退了就停止收费；正在跑的机器会继续跑，按普通按需价收费。</p>
+<h3 class="sub-h">用上订到的容量</h3>
+<ul>
+<li><b>open 模式</b>：机型、平台、AZ 对得上的机器会<b>自动用上预留</b>，正常开机就行。</li>
+<li><b>targeted 模式</b>：开机时写明预留 ID：</li>
+</ul>
+<pre>aws ec2 run-instances ...   --capacity-reservation-specification 'CapacityReservationTarget={CapacityReservationId=cr-0123456789abcdef0}'</pre>
+<h3 class="sub-h">如果要在测试账号里试一下示例</h3>
+<p>先读一遍代码。<code>--dry-run</code> 只检查、不创建；真的创建预留（会收费）时，示例要求必须加上 <code>--i-understand-this-is-a-demo</code>：</p>
+<pre><span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6.xlarge -n 2 --dry-run
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 -t g6.xlarge -n 2 --max-hours 1 --i-understand-this-is-a-demo
+<span class="k">./gpu-hunter.sh</span> -r eu-central-1 --release   <span class="c"># 试完一定要释放</span></pre>
+<p>全部参数和退出码见 <a href="https://github.com/tsaol/gpu-hunter">README</a>。</p>
 </section>
 <section class="content-section" id="check">
 <h2 class="section-title"><span>5</span> · 抢之前检查</h2>
@@ -319,7 +317,7 @@
 </section>
 <section class="content-section" id="measure">
 <h2 class="section-title"><span>6</span> · 怎么看效果</h2>
-<p>每次运行都会把每次申请记进一个 CSV 文件，结束时打印一行统计；<code>tools/report.sh</code> 可以汇总成表。主要看这几个数：</p>
+<p>不管是用示例还是自己写的代码，都建议<b>把每次申请记下来</b>（示例会写一个 CSV 文件，<code>tools/report.sh</code> 可以汇总成表）。主要看这几个数：</p>
 <table class="cmp">
 <thead><tr><th>看什么</th><th>说明什么</th></tr></thead>
 <tbody>
@@ -384,7 +382,7 @@
 <div class="refs">
 <h4>参考</h4>
 <ol>
-<li><a href="https://github.com/tsaol/gpu-hunter">github.com/tsaol/gpu-hunter</a> · 演示脚本和测试（MIT-0，仅供演示）</li>
+<li><a href="https://github.com/tsaol/gpu-hunter">github.com/tsaol/gpu-hunter</a> · 讲解 API 用法的示例代码（MIT-0，不要直接运行）</li>
 <li><a href="https://github.com/tsaol/gpu-hunter/blob/main/docs/MECHANISM.md">ODCR 机制详解</a> · 状态、计费、限流、重试、请求编号、怎么评估效果，附流程图</li>
 <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/cr-fleets.html">Capacity Reservation Fleets · AWS 文档</a></li>
 <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html">On-Demand Capacity Reservations · AWS 文档</a></li>
