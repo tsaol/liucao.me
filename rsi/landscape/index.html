@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RSI 全景 · 领域进展、云厂商竞争、行业实践 · 2026-11</title>
+<link href="../assets/style.css" rel="stylesheet"/>
+<style>
+:root{--rs-bg:#0B0D12;--rs-bg2:#12151d;--rs-ink:#E6EAF2;--rs-dim:#8A94A6;--rs-cold:#4CC2FF;--rs-warm:#FFB020;--rs-ok:#38D39F;--rs-line:#232a36;
+--rs-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+--rs-mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+body{background:var(--rs-bg)}
+main.rs-wrap{color:var(--rs-ink);font-family:var(--rs-sans);font-size:17px;line-height:1.8;max-width:980px;margin:0 auto;padding:4vh 5vw 12vh}
+main.rs-wrap h1{font-size:36px;line-height:1.25;margin:0 0 .3em}
+main.rs-wrap h2{font-size:24px;margin:0 0 .9em;color:var(--rs-cold)}
+main.rs-wrap h3{font-size:18px;margin:1.6em 0 .6em;color:var(--rs-ink)}
+main.rs-wrap section{border-top:1px solid var(--rs-line);padding:2.4em 0;scroll-margin-top:56px}
+main.rs-wrap section.head{border-top:none;padding-top:0}
+main.rs-wrap p{margin:0 0 1em}
+main.rs-wrap b{color:var(--rs-warm);font-weight:600}
+main.rs-wrap a{color:var(--rs-cold);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.5)}
+main.rs-wrap a:hover{border-bottom-style:solid}
+main.rs-wrap .dim{color:var(--rs-dim)}
+main.rs-wrap .small{font-size:14px}
+main.rs-wrap code{font-family:var(--rs-mono);font-size:.86em;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:4px;padding:0 .3em}
+main.rs-wrap ul{margin:0 0 1em;padding-left:1.3em}
+main.rs-wrap li{margin:.35em 0}
+main.rs-wrap .lead{font-size:21px;line-height:1.6;padding:1em 1.2em;border-left:3px solid var(--rs-warm);background:var(--rs-bg2);border-radius:0 8px 8px 0;margin:1.2em 0}
+main.rs-wrap .note{font-size:14px;color:var(--rs-dim);background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.7em 1em;margin:1em 0}
+.rs-toc{position:sticky;top:0;z-index:5;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--rs-line);display:flex;gap:1.2em;justify-content:center;flex-wrap:wrap;padding:.55em 1em;font-size:14px}
+.rs-toc a{color:var(--rs-dim);text-decoration:none}
+.rs-toc a:hover{color:var(--rs-cold)}
+.rs-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:1.2em 0}
+.rs-card{display:block;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:1em 1.1em;color:var(--rs-ink)!important;border-bottom:1px solid var(--rs-line)!important;transition:border-color .2s}
+.rs-card:hover{border-color:var(--rs-cold)!important}
+.rs-card .k{font-size:13px;color:var(--rs-dim)}
+.rs-card .t{font-size:18px;font-weight:600;margin:.2em 0}
+.rs-card .d{font-size:14px;color:var(--rs-dim);line-height:1.6}
+.rs-q{background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:.2em 1.1em;margin:.8em 0}
+.rs-q summary{cursor:pointer;font-weight:600;padding:.7em 0;list-style:none}
+.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:var(--rs-warm)}
+.rs-q[open] summary::before{content:"− "}
+.rs-q > div{padding:0 0 .8em}
+table.rs-t{width:100%;border-collapse:collapse;font-size:15px;margin:.6em 0 1.2em}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--rs-line);padding:.55em .5em;text-align:left;vertical-align:top}
+table.rs-t th{color:var(--rs-dim);font-weight:500;font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--rs-line);border-radius:999px;padding:0 .6em;color:var(--rs-dim);margin-right:.3em;white-space:nowrap}
+.tag.top{color:var(--rs-warm);border-color:rgba(255,176,32,.5)}
+.tag.ok{color:var(--rs-ok);border-color:rgba(56,211,159,.5)}
+pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7;color:var(--rs-ink)}
+@media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
+@media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
+.rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← RSI 资料包</a>
+<a href="../demo/play/">Play</a>
+<a href="../slides/">RSI 幻灯片</a>
+</div>
+</nav>
+<div class="rs-toc">
+<a href="#what">分层</a>
+<a href="#news">最新进展</a>
+<a href="#cloud">云厂商竞争</a>
+<a href="#practice">行业实践</a>
+<a href="#risk">风险</a>
+<a href="#trend">接下来</a>
+<a href="#sources">来源</a>
+</div>
+<main class="rs-wrap">
+<section class="head">
+<h1>RSI 全景 · 2026 年 11 月</h1>
+<p class="dim">递归自我改进(Recursive Self-Improvement)这个领域现在走到哪了:前沿实验室怎么说、云厂商在卖什么、企业怎么用。整理于 2026-11-16,覆盖到 2026-11-15 的公开资料。</p>
+<div class="lead"><b>一句话结论:</b>「AI 帮着造下一代 AI」已经是三家前沿实验室公开承认的事实,但<b>还没有人做到全自主</b>。在企业里真正落地的是一个更小的版本 —— <b>冻结模型、自动改 harness(prompt、skill、工具、代码)</b>。Google、微软、AWS 三家的产品最后都收敛到同一个闭环:<b>生产轨迹 → 候选改动 → 留出集评测 → 人审 → 上线</b>。谁的「验证」做得好,谁就赢。</div>
+<div class="note"><span class="tag ok">一手</span>= 读过官方原文(公司博客、论文摘要、新闻稿)。<span class="tag">二手</span>= 只读到媒体或博客的转述,数字没在原文核对。<span class="tag top">判断</span>= 这一页作者自己的看法,不是事实。</div>
+</section>
+<section id="what">
+<h2>① RSI 是什么,分几层</h2>
+<p><b>RSI = AI 改进它自己,再用改好的版本继续改自己。</b>关键看两点:改的对象是不是系统自己;改完的版本能不能接着改下一轮。只是「用 AI 把别的东西改好」不算 RSI,只能叫自动优化。</p>
+<p>下面这个分层是为了方便理解自己整理的,越往下越接近真正的 RSI,也越难验证:</p>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>层</th><th>改什么</th><th>今天的例子</th><th>状态</th></tr>
+<tr><td>L1</td><td>prompt、skill、工具描述(模型冻结)</td><td>Foundry Agent Optimizer、AgentCore optimization、AlphaEvolve 改 SKILL.md</td><td><span class="tag ok">已是云产品</span></td></tr>
+<tr><td>L2</td><td>harness 代码、算法代码(模型冻结)</td><td>AlphaEvolve、DGM、ShinkaEvolve、本场 demo、NVIDIA SoL-Pi</td><td><span class="tag ok">已是云产品 / 开源</span></td></tr>
+<tr><td>L3</td><td>harness 和模型权重一起改</td><td>微软研究院 Self-HPO:先改 harness,再用强化学习改模型,轮流来</td><td><span class="tag">论文</span></td></tr>
+<tr><td>L4</td><td>AI 主导做 AI 研发,造出下一代模型</td><td>Recursive 的 Eureka Machine 造出 Flint;Google 说 Gemini 在帮着造下一个 Gemini</td><td><span class="tag">部分自动,人还在掌舵</span></td></tr>
+<tr><td>L5</td><td>全自主,人退出</td><td>—</td><td><span class="tag top">没有人做到;OpenAI 明确说现在不应该做</span></td></tr>
+</table></div>
+<p class="dim small">想先看概念和 demo,回到 <a href="../">RSI 资料包</a>;想看 harness 自进化怎么跑,看 <a href="../demo/play/">demo 回放</a>。</p>
+</section>
+<section id="news">
+<h2>② 这一个月发生了什么(2026-10-15 ~ 11-15)</h2>
+<h3>前沿实验室:都承认「AI 在加速 AI」,但说法很克制</h3>
+<ul>
+<li><b>Google</b>:Sergey Brin 在 Gemini 4 Argon 的圆桌上说,Google「开始踏上 RSI 的跑步机」,研究员和模型一起做下一版模型。但 Google DeepMind 自己的 Argon 安全报告写的是:<b>没有看到显著的端到端 AI 研发加速</b>,风险「目前低」。报告里的数字:生产代码超过 75% 由 AI 写;完全交给 AI 的 PR 从 4 月的 7.5% 涨到 9 月的 11.9%;约 88% 仍需要人反复引导。<span class="tag">二手 · TNW 转述安全报告</span></li>
+<li><b>Anthropic(由 METR 独立评估)</b>:METR 在 2026-08-12 到 10-29 进驻 Anthropic 做了一次高权限评估。结论:截至 10 月,Anthropic 在「定义清楚的任务」上提升模型能力的速度,大约是 2024-03 到 2025-10 的 <b>2 倍</b>(不确定性大,真实值可能在 1.3 到 3 倍之间),而且<b>大部分加速可能来自 Anthropic 大量用 AI 做研发</b>。大部分证据被 Anthropic 涂黑了,METR 自己也说外界只能信它的判断。<span class="tag ok">一手 · METR 2026-11-05</span></li>
+<li><b>OpenAI</b>:9 月说已经达到「自动化研究实习生」的目标(能在人指导下完成几天量的研究任务),下一个目标是 <b>2028 年 3 月做出自动化 AI 研究员</b>。同时明确写:在能安全做到之前,<b>不应该追求完全自主的 RSI</b>。<span class="tag ok">一手 · OpenAI 2026-09-06 / 09-09</span></li>
+<li><b>Recursive(创业公司)</b>:10-21 发布第一个模型 <b>Flint</b>(40B 总参数,每个 token 约 2.5B 激活,Apache 2.0 开源)。公司说数据、训练配方、架构、芯片内核代码几乎都由它的自动研究系统 Eureka Machine 完成,小团队不到 4 个月做完。自测 SWE-bench Verified 74.2%(媒体未独立验证)。创始团队有 Richard Socher(CEO)、Jeff Clune、Tim Rocktäschel、Peter Norvig 等,估值 46.5 亿美元。<span class="tag ok">一手 · WIRED / TNW / TechCrunch</span></li>
+</ul>
+<h3>研究:harness 层论文爆发,重点都在「怎么验证」</h3>
+<ul>
+<li><b>微软研究院 · Self-HPO</b>:编码 agent 先分析自己的失败、提出新 harness,再在新 harness 下用强化学习更新模型,两步轮流。Qwen3.5-35B-A3B 平均解题率 57.8% → 64.8%;两样一起改的收益大于分开改的收益之和。<span class="tag ok">一手 · 摘要</span></li>
+<li><b>微软研究院 · HarnessMM</b>:让 harness 记住「已经定下来的决定」,别每次工具返回都重新想一遍。HumanEval 上 Codex 成功率不变(90.82%),每题 token 少 29.5%。<span class="tag ok">一手 · 摘要</span></li>
+<li><b>微软研究院等 · Épi</b>:能跨会话持续做研究、靠经验改进方法的 agent,由固定的验证器打分,刷新了 120 项数学纪录。<span class="tag ok">一手 · 摘要</span></li>
+<li><b>NVIDIA · SoL-Pi</b>:在 535 个可执行环境里,AI 研究 agent 观察另一个 agent 的轨迹,提出 152 个 harness 改进想法,只有 4 个活下来;token 少约 45%~49%,得分保留约 94%。关键护栏:<b>能力底线事先定好,被优化的一方看不到也改不了;留出集结果绝不回流</b>。<span class="tag">二手 · Tony Bai 解读</span></li>
+<li><b>Google Research · SwarmEvolve</b>(2611.08483):几百个小 agent 在隐空间里搜索、共享 KV cache,用 Qwen3-8B 在 3 个问题上超过 AlphaEvolve 式搜索。<span class="tag">二手</span></li>
+<li><b>可信 RSI</b>:TRUST(2611.10787)用在线多重假设检验控制「假进化」的比例;另有一篇《大模型时代的可信 RSI》综述(2610.35193);中科院自动化所、美团等也发了 Agent RSI 综述,把方向分成 prompt、记忆、skill、harness 四条线。<span class="tag">二手 · 摘要转述</span></li>
+</ul>
+<h3>争论和政策</h3>
+<ul>
+<li>Hinton、Bengio、OpenAI 首席科学家 Pachocki、微软的 Eric Horvitz 等人合写的论文认为:AI 几年内可能自动化大部分 AI 研发,可能引发「智能爆炸」,政策要尽快跟上。<span class="tag ok">一手 · 摘要</span></li>
+<li>Forecasting Research Institute(11-10):按现在的趋势简单外推,2027–2028 年 AI 可能接手大部分 AI 研发任务;多个前沿模型一起预测,到 2030 年出现「能力一年猛涨」的概率约 40%。<span class="tag ok">一手</span></li>
+<li>Dwarkesh Patel(11-13):认为 RSI 已经开始,和顶尖人类 AI 研究员一样强的 AI 中位数在 2028 年。<span class="tag">二手</span></li>
+<li>美国众议员 Ro Khanna 说要提出法案禁止自我改进 AI;国会里有几份类似提案。<span class="tag">二手</span></li>
+</ul>
+</section>
+<section id="cloud">
+<h2>③ 三家云厂商:竞争分析</h2>
+<p>先说结论:<b>三家都把「agent 自动变好」做成了产品,而且形状几乎一样</b>。差别在三处:有没有自己的「算法发现」引擎、研究和产品接得顺不顺、RSI 创业公司把算力放在谁家。</p>
+<h3>Google / Google Cloud:研究到产品链条最完整</h3>
+<ul>
+<li><b>AlphaEvolve 已 GA</b>(2026-07-09):DeepMind 的进化式代码优化 agent,挂在 Gemini Enterprise Agent Platform 上(Vertex AI 已改名为这个)。你给种子算法和打分函数,它用 Gemini 不断变异、评测、留下更好的版本。早期客户有 BASF、JetBrains、Kinaxis;Schrödinger 用它把分子模拟里两个瓶颈算法提速约 4 倍。<span class="tag ok">一手</span></li>
+<li><b>默认模型换成 Gemini 4 Argon</b>(10-26 起),按 Argon 的 token 价计费。<span class="tag">二手 · release notes 转载</span></li>
+<li><b>用 AlphaEvolve 改 agent 的 skill</b>(11-05 官方教程):把 SKILL.md 当成「程序」,让 Harbor 在 GKE 上跑真实编码任务来打分,每个候选和基线同时跑、看差值,最后在没见过的任务上复查。几轮迭代提升约 5%。—— 这其实就是 L1/L2 级 RSI 的官方做法。<span class="tag ok">一手</span></li>
+<li><b>AlphaEvolve on Cloud Batch</b>(SC26,11-13):一个蓝图把候选评测扇出到几百台机器,包括多节点 MPI,支持 Spot 降成本。<span class="tag ok">一手</span></li>
+<li><b>Agent Compute Engine</b>(10-22 发布,几个月后预览):给 agent 用的 microVM 沙箱,启动快、空闲自动暂停,官方明确说是为了「agent 循环或评测扫描不等基础设施」。<span class="tag ok">一手</span></li>
+<li><b>RSI 生态</b>:GV(Google Ventures)和 Greycroft 领投了 Recursive;Anthropic 出身的 Mirendil(自我改进 AI)签了 1 亿美元以上的 Google Cloud 算力协议。<span class="tag ok">一手 · TechCrunch</span></li>
+<li><span class="tag top">判断</span>短板:AlphaEvolve 的效果取决于你能不能写出好的打分函数,这一步 Google 帮不了你;深度绑定 Gemini;官方 skill 优化案例的提升只有 5%,说明 L1 级的空间有限。</li>
+</ul>
+<h3>微软 / Azure:产品闭环做得细,研究很多但组织在变</h3>
+<ul>
+<li><b>Foundry Agent Optimizer</b>(Build 2026-06-03 发布,当时为私有预览,并说 30 天后进入公开预览):对托管 agent 做「评测基线 → 按失败生成候选 → 同一批任务重评 → 排名 → 一条命令上线」。能优化三样:<b>指令、skill、模型选择</b>。命令是 <code>azd ai agent optimize</code>,官方示例分数 0.60 → 0.92。<span class="tag ok">一手</span></li>
+<li><b>持续优化</b>(09-24):Foundry 把这套叫「hill-climbing」—— 观察、评测、优化、验证、重复,人保持控制。<span class="tag ok">一手</span></li>
+<li><b>闭环参考方案</b>(11-06):生产轨迹 → 人工复核标注 → Agent Optimizer 搜索 → 开 PR 给工程师审 → 留出回归集把关 → 灰度上线。<span class="tag ok">一手 · 微软技术社区</span></li>
+<li><b>MAI(Mustafa Suleyman)</b>:6 月发布 7 个自研模型,说要建「超级智能实验室」和「hill-climbing machine」;10 月发布医疗诊断系统 MAI-DxO(论文发在 Science)。<span class="tag ok">一手</span></li>
+<li><b>研究院</b>:这一个月 Self-HPO、HarnessMM、Épi 都是 harness / 研究 agent 方向;Eric Horvitz 也参与了「智能爆炸」那篇论文。<span class="tag ok">一手</span></li>
+<li><b>组织变化</b>:研究院的 AI Frontiers(约 50 人,做过 AutoGen)9 月并入 MAI,联合创始人 John Langford 11 月离职,公开批评 MAI 只重规模、不重新方法。<span class="tag">二手 · Neowin</span></li>
+<li><span class="tag top">判断</span>短板:没有 AlphaEvolve 那样的「算法发现」托管服务;研究院的 RSI 论文和 Foundry 产品之间没有看到直接的连接。</li>
+</ul>
+<h3>AWS:评测和优化工具齐全,最大的 RSI 创业公司在这里</h3>
+<ul>
+<li><b>AgentCore optimization</b>(2026-05-04 预览,06-17 扩展):从生产轨迹里找出「静默失败」、用户意图和行为路径,自动给出 <b>system prompt 和工具描述</b> 的改进建议,打包成配置,先离线批量评测,再在真实流量上 <b>A/B 测试</b>,赢了才上线。<span class="tag ok">一手</span></li>
+<li><b>AgentCore Evaluations</b>(11-10 新文章):15 个内置评估器,再加托管运行的 DeepEval 和 AutoEval 评估器,轨迹级和会话级都能打分。<span class="tag ok">一手</span></li>
+<li><b>UAEF</b>(11-11):跨 LangGraph、Strands、AgentCore 等框架的统一评测,36 个指标 / 7 个维度,结果存 DynamoDB + S3,给下一轮改进用;电信、医疗、金融 12 家机构用过。<span class="tag ok">一手</span></li>
+<li><b>Recursive 选了 AWS</b>(2026-07-28):多年期 4.1 亿美元协议,AWS 是它自动 AI 研究系统的云服务商。目前最受关注的 RSI 创业公司的研究循环跑在 AWS 上。<span class="tag ok">一手 · Amazon 新闻稿</span></li>
+<li><b>Bedrock 上有 Claude</b>:METR 这次评估的就是 Anthropic,结论是 AI 正在明显加速它的研发;这家的模型能直接在 Bedrock 上用。</li>
+<li><span class="tag top">判断</span>短板:公开资料里没找到对标 AlphaEvolve 的托管「算法发现」服务;AWS 自己在 RSI 方向的研究声量比 Google、微软小。但可以用开源引擎(OpenEvolve、ShinkaEvolve)+ Bedrock + AWS Batch 搭出等价方案 —— <a href="../demo/">本场 demo</a> 就是这么做的。</li>
+</ul>
+<h3>放在一起看</h3>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>维度</th><th>Google Cloud</th><th>Microsoft Azure</th><th>AWS</th></tr>
+<tr><td>自动改 prompt / skill(L1)</td><td>AlphaEvolve + Harbor 改 skill(教程)</td><td>Foundry Agent Optimizer:指令、skill、模型</td><td>AgentCore optimization:system prompt、工具描述</td></tr>
+<tr><td>自动改代码 / 算法(L2)</td><td><b>AlphaEvolve 托管服务,已 GA</b></td><td>没有托管服务</td><td>没有托管服务,开源引擎 + Bedrock 自建</td></tr>
+<tr><td>上线前怎么验证</td><td>和基线同跑看差值 + 留出任务</td><td>留出回归集 + PR 人审 + 灰度</td><td>离线批量评测 + 线上 A/B</td></tr>
+<tr><td>大规模评测算力</td><td>Cloud Batch 扇出;Agent Compute Engine(待预览)</td><td>—</td><td>AgentCore Runtime;Batch / EC2 自建</td></tr>
+<tr><td>RSI 创业公司</td><td>Mirendil(1 亿美元+);GV 领投 Recursive</td><td>—</td><td><b>Recursive(4.1 亿美元)</b></td></tr>
+<tr><td>自研前沿研究</td><td>DeepMind:AlphaEvolve、SwarmEvolve</td><td>研究院 Self-HPO 等;MAI 偏规模</td><td>声量小</td></tr>
+</table></div>
+<p class="dim small">「—」表示这次在公开资料里没找到,不代表一定没有。</p>
+<h3>给 SA 的打法 <span class="tag top">判断</span></h3>
+<ul>
+<li><b>别和 AlphaEvolve 比「谁的进化引擎更强」</b>,要讲「验证和闭环」:AgentCore 的离线评测 + 线上 A/B,正好对上「能自我改进 ≠ 能自我验证」。</li>
+<li><b>模型选择</b>:Bedrock 上能用 Claude 和多家模型,评测时同一套任务换模型对比很方便。</li>
+<li><b>标杆案例</b>:Recursive 把自动 AI 研究跑在 AWS 上,这是目前最有说服力的「RSI 跑在哪」的答案。</li>
+<li><b>遇到客户问 AlphaEvolve</b>:用开源 ShinkaEvolve / OpenEvolve + Bedrock + AWS Batch 演示同样的循环,评测费用可以用 Spot 压下来(本场测算里评测占一轮成本的 97.7%)。</li>
+</ul>
+</section>
+<section id="practice">
+<h2>④ 行业实践:谁在用,怎么用</h2>
+<h3>实验室内部:AI 写 AI 的代码</h3>
+<ul>
+<li>Google DeepMind:生产代码超过 75% 由 AI 写,但代码改动仍要人审。<span class="tag">二手</span></li>
+<li>OpenAI:研究员整天开多个编码 agent 并行干活;研究方向、取舍、是否上线仍由人决定。<span class="tag ok">一手</span></li>
+<li>OpenAI + Scripps 等:几千个 GPT-Rosalind agent 并行分析几百万个小鼠脑细胞的数据,32 分钟完成,人工估计要几个月到一年。<span class="tag ok">一手</span></li>
+</ul>
+<h3>企业:用在「能打分」的问题上</h3>
+<ul>
+<li>算法和代码优化:Schrödinger(分子模拟约 4 倍提速)、BASF、JetBrains、Kinaxis(供应链)用 AlphaEvolve。<span class="tag ok">一手</span></li>
+<li>agent 质量:电信、医疗、金融 12 家机构用 UAEF 在上线前比较 agent 版本。<span class="tag ok">一手</span></li>
+<li>医疗:微软 MAI-DxO 在急诊常见病例上的诊断准确率是医生的 1.7 倍(微软自己的评测)。<span class="tag ok">一手</span></li>
+</ul>
+<h3>大家收敛出来的做法</h3>
+<pre class="rs-f">生产轨迹 ──→ 找失败 / 抽样成数据集(人复核标注)
+          ──→ 生成候选改动(prompt、skill、工具、代码、模型选择)
+          ──→ 和基线同时跑同一批任务,看差值
+          ──→ 留出集复查(搜索过程从没见过的题)
+          ──→ 能力底线 + 成本上限 都过了才算赢
+          ──→ PR 人审 / 灰度 / A/B ──→ 上线,成为新基线</pre>
+<p>落地清单(来自 Google 教程、微软参考方案、AWS 文章、NVIDIA SoL-Pi 和本场 demo):</p>
+<ul>
+<li><b>先有评测,再谈自我改进</b>。没有可信的分数,优化器只会学会刷分。</li>
+<li><b>候选和基线同时跑</b>,比差值,不比绝对分 —— agent 分数噪声很大,Google 发现延迟就能解释大部分分差。</li>
+<li><b>留出集只用一次</b>,结果不回流给优化器。</li>
+<li><b>能力底线事先写死</b>,被优化的一方看不到、改不了;防止「早收工、跳过验证」这种省 token 的作弊。</li>
+<li><b>成本也算进分数</b>:评测是最贵的部分。</li>
+<li><b>人留在上线这一步</b>:三家产品都把「开 PR / 人审 / 灰度」放在最后。</li>
+</ul>
+</section>
+<section id="risk">
+<h2>⑤ 风险和没解决的问题</h2>
+<ul>
+<li><b>自我评判不可靠</b>:有研究(如字节 Seed 的 Self-Developing Agents,见<a href="../#china">资料包 · 国内成果</a>)发现 agent 对自己「下一轮能不能变好」的判断几乎预测不了结果,必须靠外部验证器。</li>
+<li><b>刷分和泄漏</b>:优化器会找评测的漏洞,所以要隐藏题、换说法重考、泄漏审计。</li>
+<li><b>透明度</b>:最关键的证据(实验室内部的加速数据)大多不公开,METR 的评估里大部分证据被涂黑。</li>
+<li><b>人在哪一步介入</b>:SoL-Pi 论文自己也承认,开放循环里目标和实现的漂移,可能在人发现之前就已经积累。</li>
+<li><b>政策</b>:美国已有禁止自我改进 AI 的提案;OpenAI 呼吁建立「什么时候该慢下来或停下」的共同标准。</li>
+</ul>
+</section>
+<section id="trend">
+<h2>⑥ 接下来看什么 <span class="tag top">判断</span></h2>
+<ul>
+<li><b>L1 会变成标配</b>:「从轨迹自动改 prompt / skill」三家都有了,接下来拼的是评测质量和使用门槛。</li>
+<li><b>L2 是下一个战场</b>:Google 有 AlphaEvolve,微软和 AWS 暂时没有对应的托管服务,看它们会不会补上。</li>
+<li><b>评测算力是新的卖点</b>:评测占了 RSI 的大部分成本,能便宜、安全、大规模地跑 agent 沙箱的云更有优势(Google 已经推出 Agent Compute Engine)。</li>
+<li><b>RSI 创业公司的算力订单</b>:Recursive 在 AWS、Mirendil 在 Google Cloud,这类订单会越来越多。</li>
+<li><b>要看的指标</b>:实验室公布的「完全交给 AI 的 PR 比例」、METR 这类第三方评估、Epoch 能力指数是否出现「一年猛涨」。</li>
+</ul>
+</section>
+<section id="sources">
+<h2>⑦ 来源</h2>
+<h3>前沿实验室和争论</h3>
+<ul class="small">
+<li><a href="https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/" rel="noopener" target="_blank">METR · Independent Assessment of AI R&amp;D Acceleration at Anthropic(2026-11-05)</a></li>
+<li><a href="https://openai.com/index/research-acceleration-view-inside-openai/" rel="noopener" target="_blank">OpenAI · Research acceleration: The view inside OpenAI(2026-09-06)</a></li>
+<li><a href="https://openai.com/index/ai-policy-window/" rel="noopener" target="_blank">OpenAI · The AI policy window is open(2026-09-09)</a></li>
+<li><a href="https://thenextweb.com/news/sergey-brin-gemini-recursive-self-improvement-safety-report" rel="noopener" target="_blank">TNW · Sergey Brin says Gemini now helps build the next Gemini(2026-10-17)</a></li>
+<li><a href="https://www.wired.com/story/recursive-self-improvement-flint-latest-model-scary-good/" rel="noopener" target="_blank">WIRED · Recursive 与 Flint(2026-10-21)</a> · <a href="https://thenextweb.com/news/recursive-flint-local-coding-model-eureka-machine" rel="noopener" target="_blank">TNW(2026-10-23)</a> · <a href="https://techcrunch.com/2026/05/14/what-happens-when-ai-starts-building-itself/" rel="noopener" target="_blank">TechCrunch 采访 Socher</a></li>
+<li><a href="https://www.microsoft.com/en-us/research/publication/what-if-automating-ai-rd-triggers-an-intelligence-explosion/" rel="noopener" target="_blank">What if automating AI R&amp;D triggers an intelligence explosion?</a></li>
+<li><a href="https://forecastingresearch.org/research/recursive-self-improvement-v1" rel="noopener" target="_blank">Forecasting Research Institute · How Close is RSI?(2026-11-10)</a></li>
+<li><a href="https://dl.acm.org/doi/full/10.1145/3849084" rel="noopener" target="_blank">CACM · Is Recursive Self-Improvement Really Here?(2026-10-16)</a></li>
+<li><a href="https://www.rdworldonline.com/as-ai-bubble-talk-grows-dwarkesh-patel-predicts-recursive-self-improvement-will-set-off-an-ai-research-explosion/" rel="noopener" target="_blank">R&amp;D World · Dwarkesh Patel(2026-11-14)</a></li>
+</ul>
+<h3>Google</h3>
+<ul class="small">
+<li><a href="https://cloud.google.com/blog/products/ai-machine-learning/alphaevolve-is-available-for-everyone" rel="noopener" target="_blank">AlphaEvolve is available for everyone(2026-07-09)</a> · <a href="https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/alphaevolve-on-cloud/" rel="noopener" target="_blank">blog.google</a></li>
+<li><a href="https://cloud.google.com/blog/products/ai-machine-learning/schrodinger-alphaevolve-molecular-discovery-accelerates-4x" rel="noopener" target="_blank">Schrödinger 用 AlphaEvolve 提速 4 倍</a></li>
+<li><a href="https://cloud.google.com/blog/topics/developers-practitioners/how-to-build-an-agent-skill-optimizer-with-alphaevolve-and-harbor/" rel="noopener" target="_blank">Agent skill optimizer with AlphaEvolve and Harbor(2026-11-05)</a></li>
+<li><a href="https://cloud.google.com/blog/topics/hpc/whats-new-in-hpc-and-ai-at-sc26/" rel="noopener" target="_blank">What's new in HPC and AI at SC26(2026-11-13)</a></li>
+<li><a href="https://cloud.google.com/blog/topics/ai-infrastructure/introducing-agent-compute-engine-and-expanded-agent-governance/" rel="noopener" target="_blank">Introducing Agent Compute Engine(2026-10-22)</a></li>
+<li><a href="https://cloud.google.com/blog/topics/developers-practitioners/io26-news-for-agent-developers-on-google-cloud/" rel="noopener" target="_blank">I/O '26:Vertex AI 演进为 Gemini Enterprise Agent Platform</a></li>
+<li><a href="https://techcrunch.com/2026/08/06/exclusive-mirendil-inks-100m-google-cloud-deal-to-scale-self-improving-ai/" rel="noopener" target="_blank">TechCrunch · Mirendil 与 Google Cloud(2026-08-06)</a></li>
+<li><a href="https://arxiv.org/abs/2611.08483" rel="noopener" target="_blank">SwarmEvolve(arXiv 2611.08483)</a></li>
+</ul>
+<h3>微软</h3>
+<ul class="small">
+<li><a href="https://devblogs.microsoft.com/foundry/agent-optimizer-build2026/" rel="noopener" target="_blank">Introducing Agent Optimizer in Foundry Agent Service(2026-06-03)</a></li>
+<li><a href="https://azure.microsoft.com/en-us/blog/ship-agents-faster-with-expanded-model-choice-voice-agents-and-continuous-optimization/" rel="noopener" target="_blank">Foundry continuous optimization(2026-09-24)</a></li>
+<li><a href="https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/improve-production-agents-with-closed-loop-evaluations-in-microsoft-foundry/4569762" rel="noopener" target="_blank">Closed-loop evaluations in Microsoft Foundry(2026-11-06)</a></li>
+<li><a href="https://microsoft.ai/news/building-a-hillclimbing-machine-launching-seven-new-mai-models/" rel="noopener" target="_blank">MAI · Building a hill-climbing machine(2026-06-02)</a> · <a href="https://microsoft.ai/news/building-medical-superintelligence/" rel="noopener" target="_blank">Building Medical Superintelligence(2026-10-22)</a></li>
+<li><a href="https://www.microsoft.com/en-us/research/publication/self-evolving-coding-agents-via-harness-policy-optimization/" rel="noopener" target="_blank">Self-HPO</a> · <a href="https://www.microsoft.com/en-us/research/publication/harnessmm-recursive-self-improvement-for-harness-token-efficiency/" rel="noopener" target="_blank">HarnessMM</a> · <a href="https://www.microsoft.com/en-us/research/publication/epi-towards-a-persistent-self-improving-agent-for-autonomous-research/" rel="noopener" target="_blank">Épi</a></li>
+<li><a href="https://www.neowin.net/news/microsoft-ai-frontiers-co-founder-quits-criticizes-companys-ai-strategy/" rel="noopener" target="_blank">Neowin · AI Frontiers 联合创始人离职(2026-11-13)</a></li>
+</ul>
+<h3>AWS</h3>
+<ul class="small">
+<li><a href="https://aws.amazon.com/blogs/machine-learning/introducing-agent-quality-optimization-in-agentcore-now-in-preview/" rel="noopener" target="_blank">Introducing agent quality optimization in AgentCore(2026-05-04)</a> · <a href="https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-bedrock-agentcore-new-optimization-capabilities/" rel="noopener" target="_blank">What's New(2026-06)</a></li>
+<li><a href="https://aws.amazon.com/blogs/machine-learning/optimizing-agent-system-prompts-with-amazon-bedrock-agentcore/" rel="noopener" target="_blank">Optimizing agent system prompts with AgentCore(2026-09-16)</a></li>
+<li><a href="https://aws.amazon.com/blogs/machine-learning/the-agent-evaluation-playbook-built-in-deepeval-and-autoeval-on-agentcore/" rel="noopener" target="_blank">The agent evaluation playbook(2026-11-10)</a></li>
+<li><a href="https://aws.amazon.com/blogs/machine-learning/uaef-a-framework-agnostic-system-for-closed-loop-evaluation-of-ai-agents/" rel="noopener" target="_blank">UAEF(2026-11-11)</a></li>
+<li><a href="https://press.aboutamazon.com/aws/2026/7/recursive-signs-410-million-multi-year-collaboration-with-aws-to-scale-self-improving-ai" rel="noopener" target="_blank">Recursive 与 AWS 签 4.1 亿美元协议(2026-07-28)</a></li>
+</ul>
+<h3>其他研究</h3>
+<ul class="small">
+<li><a href="https://tonybai.com/2026/11/01/rsi-harness-nvidia-sol-pi-recursive-self-improvement-agent/" rel="noopener" target="_blank">Tony Bai · NVIDIA SoL-Pi 解读</a></li>
+<li><a href="https://openai.com/index/scaling-ai-research-for-complex-biological-data/" rel="noopener" target="_blank">OpenAI · 几千个 agent 分析生物数据(2026-10-21)</a></li>
+<li><a href="https://arxiv.org/abs/2611.10787" rel="noopener" target="_blank">TRUST(2611.10787)</a> · <a href="https://arxiv.org/abs/2610.35193" rel="noopener" target="_blank">Trustworthy RSI 综述(2610.35193)</a> · <a href="https://feng.ifeng.com/c/8y4K87rZxdz" rel="noopener" target="_blank">中科院自动化所等 RSI 综述(报道)</a></li>
+</ul>
+<p class="dim small">AI 整理:资料由搜索 + 阅读原文整理,数字以原文为准。发现错误欢迎指出。</p>
+</section>
+</main>
+<a data-cur="zh" data-to="en" href="../../en/rsi/landscape/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>
