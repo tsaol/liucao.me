@@ -1,5 +1,5 @@
 // Auto-generated P6 Family data from instances.vantage.sh
-// Last updated: 2026-11-09
+// Last updated: 2026-11-16
 // Includes: p6-b200, p6-b300, p6e-gb200
 
 var instanceData = [
