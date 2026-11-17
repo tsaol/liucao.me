@@ -53,7 +53,9 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 @media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
 @media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
 .rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
-    </style>
+    .rs-fig{margin:1em 0 1.6em}.rs-fig img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;border:1px solid var(--rs-line)}.rs-fig figcaption{font-size:13px;color:var(--rs-dim);line-height:1.65;margin-top:.6em}.rs-fig a{border-bottom:none}
+.rs-tl{border-left:2px solid var(--rs-line);margin:1em 0 1.4em;padding-left:1em}.rs-tl>div{margin:.55em 0;font-size:15px}.rs-tl .y{display:inline-block;min-width:6.5em;color:var(--rs-cold);font-family:var(--rs-mono);font-size:13px}
+</style>
 </head>
 <body>
 <nav class="nav">
@@ -65,7 +67,7 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 </div>
 </nav>
 <div class="rs-toc">
-<a href="#what">Layers</a>
+<a href="#what">Definition and big picture</a>
 <a href="#news">Latest developments</a>
 <a href="#cloud">Cloud provider competition</a>
 <a href="#practice">Industry practice</a>
@@ -81,17 +83,46 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <div class="note"><span class="tag ok">Primary</span>= Read the official source (company blog, paper abstract, press release).<span class="tag">Second-hand</span>= Only seen in media or blog reports; numbers not checked against the original source.<span class="tag top">Judgment</span>= The author's own opinion on this page, not fact.</div>
 </section>
 <section id="what">
-<h2>① What RSI is and its levels</h2>
-<p><b>RSI = AI improves itself, then uses the improved version to keep improving itself.</b>Two things matter: whether the thing being modified is the system itself, and whether the modified version can go on to run the next round. Just “using AI to improve something else” isn't RSI; that's automated optimization.</p>
-<p>The layers below are my own breakdown to make this easier to follow. The further down, the closer to true RSI, and the harder to verify:</p>
+<h2>① What is RSI: authoritative definitions and the big picture</h2>
+<p class="dim small">The definitions and figures in this section all come from the original paper; they were not created for this page. The source and license are noted below each figure.</p>
+<h3>Definition: Anthropic's framing</h3>
+<div class="lead">“Push this trend far enough and give it enough compute, and it points to an AI system that can<b> fully autonomously design and develop its own successor</b>. This is called<b> Recursive self-improvement</b>. We're not there yet, and recursive self-improvement isn't inevitable, but it may arrive sooner than most institutions are prepared for."</div>
+<p class="dim small">Original: “Taken far enough, and given enough compute, that trend points to an AI system capable of fully autonomously designing and developing its own successor. This is called recursive self-improvement. We are not there yet…” — <a href="https://www.anthropic.com/institute/recursive-self-improvement" rel="noopener" target="_blank">Anthropic Institute · When AI builds itself</a></p>
+<p>The same page gives a timeline of Anthropic's internal progression from “humans write the code” to “a closed loop” (as stated in the original):</p>
+<div class="rs-tl">
+<div><span class="y">2021–2023</span><b> Building the first Claude</b>: like other tech companies, people write code and documentation on their laptops.</div>
+<div><span class="y">2023–2025</span><b> Chatbots</b>: people use early chatbots to help with parts of their work, such as generating short code snippets and copying them into an editor.</div>
+<div><span class="y">2025–2026</span><b> Coding agents</b>: agents can write and modify code on their own, sometimes entire files.</div>
+<div><span class="y">Today</span><b> Autonomous agents</b>: agents can run code on their own and hand off hours of work to other agents.</div>
+<div><span class="y">20XX?</span><b>Closing the loop</b>: in the future, agents may become capable enough to build and train models on their own. If that happens, future versions of Claude could be continuously improved by Claude itself.</div>
+</div>
+<h3>Figure 1: The simplest RSI loop</h3>
+<figure class="rs-fig"><a href="../../../rsi/landscape/img/fri2026-fig1.jpg" target="_blank"><img alt="An idealized recursive self-improvement loop" loading="lazy" src="../../../rsi/landscape/img/fri2026-fig1.jpg"/></a>
+<figcaption>Current AI → does AI R&amp;D → better next-generation AI → does AI R&amp;D again.<br/>Source: Forecasting Research Institute,<a href="https://forecastingresearch.org/research/recursive-self-improvement-v1" rel="noopener" target="_blank">How Close is Recursive Self-Improvement? A Review of the Evidence</a>(2026-11-10), Figure 1. Copyright belongs to the original authors; cited here with attribution.</figcaption></figure>
+<h3>Figure 2: Why it might “spin faster and faster”</h3>
+<figure class="rs-fig"><a href="../../../rsi/landscape/img/chan2026-fig2.jpg" target="_blank"><img alt="Chan et al. 2026 Figure 2" loading="lazy" src="../../../rsi/landscape/img/chan2026-fig2.jpg"/></a>
+<figcaption>The mechanism has two steps: (1) AI gets better and better at AI R&amp;D, which effectively expands the “R&amp;D workforce”; (2) a larger R&amp;D workforce builds better AI, which expands the workforce further — a recursive feedback loop. The paper also lists four kinds of “friction”: diminishing returns, insufficient compute and data, tasks that are hard to automate, and time-consuming processes (such as long training runs).<br/>Source: Chan, Winter, Barto, Pachocki, Hinton, Horvitz, Bengio, Clark, Clune et al.,<a href="https://arxiv.org/abs/2609.36054" rel="noopener" target="_blank">What if automating AI R&amp;D triggers an intelligence explosion?</a>(arXiv 2609.36054, 2026), Figure 2. Licensed under CC BY 4.0.</figcaption></figure>
+<h3>Figure 3: Where it fits in “AI for X” — AI for AI</h3>
+<p>Viewed within “AI for X”,<b>RSI falls into the category where X = AI itself, which academia calls AI for AI (AI4AI)</b>. The AI4AI survey defines it as follows: AI is changing how AI itself is developed, from designing learning algorithms to automating research workflows and evaluation; it<b> By “who makes the three decisions in the discovery loop”</b>to define levels — search direction, search space and evaluation signal — and explicitly states that “AI4AI may lead to recursive self-improvement.”</p>
+<figure class="rs-fig"><a href="../../../rsi/landscape/img/ai4ai-fig1.jpg" target="_blank"><img alt="AI4AI survey Figure 1" loading="lazy" src="../../../rsi/landscape/img/ai4ai-fig1.jpg"/></a>
+<figcaption>Top: timeline of representative AI4AI work (2016 → 2025 and beyond, including AlphaEvolve, DGM and AI Scientist). Bottom left: control gradually handed to AI — L0 fully human-controlled → L1 AI sets the direction → L2 AI sets the search space → L3 AI sets the evaluation. Bottom right: four kinds of targets — what AI uses to improve<b> Learning</b>(parameters updated), <b>Inference</b>(parameters frozen), <b>Data</b>, <b>Infrastructure</b>(the hardware/software stack).<br/>Source: Liu, Wang, Hu et al. (Nankai University, Zhongguancun Academy, Xi'an Jiaotong University, Shanghai Jiao Tong University, NTU, NUS, HKUST),<a href="https://ai4ai-research.github.io/" rel="noopener" target="_blank">AI4AI: Toward AI-discovered Superintelligence</a>, Figure 1. Copyright belongs to the original authors; cited here with attribution.</figcaption></figure>
+<p>Compared with other X's, two things are different:<b>The loop is closed</b>(what gets improved is the AI itself, and the improved version goes on to improve the next round);<b>It amplifies every other X</b>(as AI gets stronger, AI for Science, for Math and for Code all get stronger too). The arrow in Figure 2 reads "Improves &amp; Multiplies," so it's more of a "multiplier" than just another application area.</p>
+<h3>Figure 4: What counts as RSI, not just “a few more iterations”</h3>
+<figure class="rs-fig"><a href="../../../rsi/landscape/img/hit-rsi-survey-fig3.jpg" target="_blank"><img alt="RSI survey Figure 3" loading="lazy" src="../../../rsi/landscape/img/hit-rsi-survey-fig3.jpg"/></a>
+<figcaption>Top: four stages — evolution (the current artifact gets better) → self-evolution (accepted improvements are kept and reused) → meta-evolution (the improvement mechanism itself also changes) → RSI (improvements carry over across rounds). Middle: the general loop <b>Propose → feedback → optimize</b>, deciding each round whether to reject, revise, ship or roll back, while keeping versions and validation evidence. Bottom: two tests for "recursive progress" — inherited changes alter the subsequent improvement process, and later improvements are better in expectation. The line in the figure:<b>Iteration alone isn't RSI: accepted improvements must carry into later improvement loops</b>.<br/>Source: Li, Chen, Zhang et al. (HIT Shenzhen, HKU, NUS and others),<a href="https://lee1003-lee.github.io/Awesome-RSI-Research/" rel="noopener" target="_blank">Towards AI That Improves Itself: A Survey of Recursive Self-Improvement</a>, Figure 3. Copyright belongs to the original authors; cited here with attribution.</figcaption></figure>
+<h3>Figure 5: Five levels of RSI autonomy, with representative systems at each level</h3>
+<figure class="rs-fig"><a href="../../../rsi/landscape/img/last-ai-fig1.jpg" target="_blank"><img alt="The Last AI Built by Humans Figure 1" loading="lazy" src="../../../rsi/landscape/img/last-ai-fig1.jpg"/></a>
+<figcaption>The horizontal axis runs from B0 (only revising answers within a single task, which doesn't count as RSI) to L5, with representative systems listed at each level (including Anthropic, AlphaEvolve, Recursive, Mirendil, DeepSeek, Sakana, HyperAgents and others).<br/>Source: Tang, Zhou et al. (ByteDance, ModelBest, Xiaohongshu, Shanghai AI Lab, Tsinghua and others),<a href="https://arxiv.org/abs/2609.11873" rel="noopener" target="_blank">The Last AI Built by Humans: Toward Genuine Recursive Self-Improvement</a>(arXiv 2609.11873), Figure 1. Licensed under CC BY-NC-ND 4.0 (original figure unmodified).</figcaption></figure>
+<p>The paper's definitions of the five levels (summarized from the original):</p>
 <div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
-<tr><th>Layer</th><th> What to change</th><th> Today's examples</th><th> Status</th></tr>
-<tr><td>L1</td><td> Prompts, skills, tool descriptions (model frozen)</td><td>Foundry Agent Optimizer, AgentCore optimization, AlphaEvolve editing SKILL.md</td><td><span class="tag ok"> Already a cloud product</span></td></tr>
-<tr><td>L2</td><td> Harness code, algorithm code (model frozen)</td><td>AlphaEvolve, DGM, ShinkaEvolve, this session's demo, NVIDIA SoL-Pi</td><td><span class="tag ok"> Already a cloud product / open source</span></td></tr>
-<tr><td>L3</td><td> Harness and model weights modified together</td><td> Microsoft Research Self-HPO: improve the harness first, then the model with reinforcement learning, taking turns</td><td><span class="tag"> Paper</span></td></tr>
-<tr><td>L4</td><td> AI leads AI R&amp;D and builds the next generation of models</td><td> Recursive's Eureka Machine builds Flint; Google says Gemini is helping build the next Gemini</td><td><span class="tag"> Partly automated, with humans still at the helm</span></td></tr>
-<tr><td>L5</td><td> Fully autonomous, humans out of the loop</td><td>—</td><td><span class="tag top">No one has done it; OpenAI explicitly says it shouldn't be done yet</span></td></tr>
+<tr><th>Level</th><th> Definitions from the paper</th><th> Compared with today's cloud products <span class="tag top">Judgment</span></th></tr>
+<tr><td>L1 Execution</td><td> AI executes an improvement process defined by humans</td><td> Evaluation / fine-tuning pipelines that run a fixed process</td></tr>
+<tr><td>L2 Strategy</td><td> AI chooses its own improvement methods; goals and acceptance criteria are still set by humans</td><td> Foundry Agent Optimizer, AgentCore optimization: humans set the goal and the scoring, the AI chooses how to make changes, and the improved configuration is kept as the new baseline</td></tr>
+<tr><td>L3 Experience</td><td> AI decides on its own what experience / data to acquire</td><td> Research systems that create their own tasks and environments</td></tr>
+<tr><td>L4 Deployment</td><td> AI adapts and improves on its own in real deployment environments</td><td> No mature cloud products yet</td></tr>
+<tr><td>L5 Meta-improvement</td><td> AI improves "how to improve" itself</td><td> Research such as HyperAgents; no products yet</td></tr>
 </table></div>
+<p class="note">Note: Figure 5 puts <b>AlphaEvolve is placed in B0</b>(Repeatedly revising answers within a single task doesn't count as RSI.) This is because it modifies the algorithm code you give it, not itself. Only when AlphaEvolve is used to modify the AI's own components (for example, Google using it to improve training kernels and agent skills), and the improved results are kept for the next round, does it move toward RSI. This is also what the statement in Figure 4 means: iteration alone is not RSI.</p>
 <p class="dim small">For concepts and demos first, go back to <a href="../">RSI Resources</a>; to see how harness self-evolution works, see <a href="../demo/play/">Demo replay</a>.</p>
 </section>
 <section id="news">
@@ -127,11 +158,11 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <ul>
 <li><b>AlphaEvolve is GA</b>(2026-07-09): DeepMind's evolutionary code optimization agent, available on Gemini Enterprise Agent Platform (the new name for Vertex AI). You provide a seed algorithm and a scoring function, and it uses Gemini to repeatedly mutate, evaluate, and keep better versions. Early customers include BASF, JetBrains, and Kinaxis. Schrödinger used it to speed up two bottleneck algorithms in molecular simulation by about 4x.<span class="tag ok">Primary</span></li>
 <li><b>Default model switched to Gemini 4 Argon</b>(from 10-26), billed at Argon token pricing.<span class="tag">Secondary · Reposted release notes</span></li>
-<li><b>Using AlphaEvolve to improve an agent's skills</b>(11-05 official tutorial): Treat SKILL.md as a “program” and have Harbor score it by running real coding tasks on GKE. Each candidate runs alongside the baseline and the difference is compared, with a final recheck on unseen tasks. A few iterations improved results by about 5%. This is essentially the official approach to L1/L2 RSI.<span class="tag ok">Primary</span></li>
+<li><b>Using AlphaEvolve to improve an agent's skills</b>(official tutorial, 11-05): Treat SKILL.md as a "program" and have Harbor score it by running real coding tasks on GKE. Each candidate runs alongside the baseline, and the difference is compared. Finally, results are rechecked on unseen tasks. A few iterations improved results by about 5%. — This is the official approach to "freeze the model, auto-improve the skill" (L2 per Figure 5: humans set the goal and scoring, AI chooses how to make changes).<span class="tag ok">Primary</span></li>
 <li><b>AlphaEvolve on Cloud Batch</b>(SC26, 11-13): A blueprint that fans out candidate evaluations to hundreds of machines, including multi-node MPI, with Spot support to cut costs.<span class="tag ok">Primary</span></li>
 <li><b>Agent Compute Engine</b>(Released 10-22, preview a few months later): A microVM sandbox for agents with fast startup and automatic pause when idle. The stated goal is that “agent loops or eval sweeps don't wait on infrastructure.”<span class="tag ok">Primary</span></li>
 <li><b>RSI ecosystem</b>: GV (Google Ventures) and Greycroft co-led an investment in Recursive; Mirendil (self-improving AI), founded by Anthropic alumni, signed a Google Cloud compute deal worth over $100 million.<span class="tag ok">Primary · TechCrunch</span></li>
-<li><span class="tag top">Judgment</span> Weaknesses: AlphaEvolve's results depend on whether you can write a good scoring function, and Google can't help you with that step; it's tightly coupled to Gemini; the official skill-optimization case showed only a 5% improvement, which suggests limited headroom at L1.</li>
+<li><span class="tag top">Judgment</span> Weaknesses: AlphaEvolve's results depend on whether you can write a good scoring function, and Google can't help you with that step. It's tightly tied to Gemini. The official skill optimization case showed only a 5% improvement, which suggests limited room when you only change prompts / skills.</li>
 </ul>
 <h3>Microsoft / Azure: polished product feedback loops, lots of research, but the org is in flux</h3>
 <ul>
@@ -155,8 +186,8 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <h3>Putting it together</h3>
 <div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
 <tr><th>Dimension</th><th>Google Cloud</th><th>Microsoft Azure</th><th>AWS</th></tr>
-<tr><td>Automated prompt / skill changes (L1)</td><td>AlphaEvolve + Harbor for improving skills (tutorial)</td><td>Foundry Agent Optimizer: instructions, skills, models</td><td> AgentCore optimization: system prompts, tool descriptions</td></tr>
-<tr><td>Automated code / algorithm changes (L2)</td><td><b>AlphaEvolve managed service, GA</b></td><td> No managed service</td><td> No managed service; build it yourself with open-source engines + Bedrock</td></tr>
+<tr><td>Automatic prompt / skill tuning</td><td> AlphaEvolve + Harbor for improving skills (tutorial)</td><td>Foundry Agent Optimizer: instructions, skills, models</td><td> AgentCore optimization: system prompts, tool descriptions</td></tr>
+<tr><td>Automatically modifying code / algorithms</td><td><b> AlphaEvolve managed service, GA</b></td><td> No managed service</td><td> No managed service; build it yourself with open-source engines + Bedrock</td></tr>
 <tr><td>How it's validated before release</td><td> Run alongside a baseline and compare the delta + held-out tasks</td><td> Held-out regression set + PR human review + canary rollout</td><td> Offline batch evaluation + online A/B</td></tr>
 <tr><td>Large-scale evaluation compute</td><td> Cloud Batch fan-out; Agent Compute Engine (preview pending)</td><td>—</td><td>AgentCore Runtime; self-built on Batch / EC2</td></tr>
 <tr><td>RSI startups</td><td> Mirendil ($100M+); GV leads Recursive round</td><td>—</td><td><b>Recursive ($410M)</b></td></tr>
@@ -215,8 +246,8 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <section id="trend">
 <h2>⑥ What to watch next <span class="tag top">Judgment</span></h2>
 <ul>
-<li><b>L1 will become standard</b>: All three vendors now offer "automatically improve prompts / skills from trajectories." The competition now shifts to evaluation quality and ease of use.</li>
-<li><b>L2 is the next battleground</b>: Google has AlphaEvolve, while Microsoft and AWS don't yet have an equivalent managed service. Watch whether they fill the gap.</li>
+<li><b>Automatically editing prompts / skills will become standard</b>: All three vendors now offer "automatically improve prompts / skills from trajectories." The competition now shifts to evaluation quality and ease of use.</li>
+<li><b>Automatically modifying code / algorithms is the next battleground</b>: Google has AlphaEvolve, while Microsoft and AWS don't yet have an equivalent managed service. Watch whether they fill the gap.</li>
 <li><b>Eval compute is the new selling point</b>: Evaluation makes up most of the cost of RSI, so clouds that can run agent sandboxes cheaply, safely and at scale have an edge (Google has already launched Agent Compute Engine).</li>
 <li><b>Compute deals of RSI startups</b>: Recursive on AWS, Mirendil on Google Cloud. Expect more deals like these.</li>
 <li><b>Metrics to watch</b>: The share of "PRs fully handed to AI" that labs publish, third-party evaluations such as METR's, and whether the Epoch Capabilities Index shows a "one-year surge."</li>
@@ -224,6 +255,15 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 </section>
 <section id="sources">
 <h2>⑦ Sources</h2>
+<h3>Definition and big picture (Section ①)</h3>
+<ul class="small">
+<li><a href="https://www.anthropic.com/institute/recursive-self-improvement" rel="noopener" target="_blank">Anthropic Institute · When AI builds itself</a>(definition + timeline)</li>
+<li><a href="https://forecastingresearch.org/research/recursive-self-improvement-v1" rel="noopener" target="_blank">Forecasting Research Institute · How Close is RSI?</a>(Figure 1)</li>
+<li><a href="https://arxiv.org/abs/2609.36054" rel="noopener" target="_blank">Chan et al. · What if automating AI R&amp;D triggers an intelligence explosion?</a>(Figure 2, CC BY 4.0)</li>
+<li><a href="https://ai4ai-research.github.io/" rel="noopener" target="_blank">AI4AI: Toward AI-discovered Superintelligence</a>(Figure 3, <a href="https://ai4ai-research.github.io/assets/AI4AI_survey_latest.pdf" rel="noopener" target="_blank">PDF</a>)</li>
+<li><a href="https://lee1003-lee.github.io/Awesome-RSI-Research/" rel="noopener" target="_blank">Towards AI That Improves Itself: A Survey of RSI</a>(Figure 4, <a href="https://lee1003-lee.github.io/Awesome-RSI-Research/assets/rsi-survey.pdf" rel="noopener" target="_blank">PDF</a>)</li>
+<li><a href="https://arxiv.org/abs/2609.11873" rel="noopener" target="_blank">The Last AI Built by Humans: Toward Genuine RSI</a>(Figure 5, CC BY-NC-ND 4.0)</li>
+</ul>
 <h3>Frontier labs and the debate</h3>
 <ul class="small">
 <li><a href="https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/" rel="noopener" target="_blank">METR · Independent Assessment of AI R&amp;D Acceleration at Anthropic(2026-11-05)</a></li>
@@ -270,7 +310,7 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <li><a href="https://openai.com/index/scaling-ai-research-for-complex-biological-data/" rel="noopener" target="_blank">OpenAI · Thousands of agents analyze biological data (2026-10-21)</a></li>
 <li><a href="https://arxiv.org/abs/2611.10787" rel="noopener" target="_blank">TRUST(2611.10787)</a> · <a href="https://arxiv.org/abs/2610.35193" rel="noopener" target="_blank">Trustworthy RSI survey (2610.35193)</a> · <a href="https://feng.ifeng.com/c/8y4K87rZxdz" rel="noopener" target="_blank">RSI survey by the CAS Institute of Automation and others (press coverage)</a></li>
 </ul>
-<p class="dim small">AI-compiled: gathered via search + reading original sources; the original sources take precedence for all numbers. Corrections welcome.</p>
+<p class="dim small">AI-compiled: content was gathered through search and reading the original sources; the original sources are authoritative for all numbers. All figures in Section ① are from the original sources, and copyright belongs to the original authors. Figures without a CC license are cited for introduction only; please contact us for removal if there is any concern. Corrections are welcome.</p>
 </section>
 </main>
 <a data-cur="en" data-to="zh" href="../../../rsi/landscape/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>

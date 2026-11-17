@@ -53,7 +53,9 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 @media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
 @media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
 .rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
-    </style>
+    .rs-fig{margin:1em 0 1.6em}.rs-fig img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;border:1px solid var(--rs-line)}.rs-fig figcaption{font-size:13px;color:var(--rs-dim);line-height:1.65;margin-top:.6em}.rs-fig a{border-bottom:none}
+.rs-tl{border-left:2px solid var(--rs-line);margin:1em 0 1.4em;padding-left:1em}.rs-tl>div{margin:.55em 0;font-size:15px}.rs-tl .y{display:inline-block;min-width:6.5em;color:var(--rs-cold);font-family:var(--rs-mono);font-size:13px}
+</style>
 </head>
 <body>
 <nav class="nav">
@@ -65,7 +67,7 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 </div>
 </nav>
 <div class="rs-toc">
-<a href="#what">分层</a>
+<a href="#what">定义和大图</a>
 <a href="#news">最新进展</a>
 <a href="#cloud">云厂商竞争</a>
 <a href="#practice">行业实践</a>
@@ -81,17 +83,46 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <div class="note"><span class="tag ok">一手</span>= 读过官方原文(公司博客、论文摘要、新闻稿)。<span class="tag">二手</span>= 只读到媒体或博客的转述,数字没在原文核对。<span class="tag top">判断</span>= 这一页作者自己的看法,不是事实。</div>
 </section>
 <section id="what">
-<h2>① RSI 是什么,分几层</h2>
-<p><b>RSI = AI 改进它自己,再用改好的版本继续改自己。</b>关键看两点:改的对象是不是系统自己;改完的版本能不能接着改下一轮。只是「用 AI 把别的东西改好」不算 RSI,只能叫自动优化。</p>
-<p>下面这个分层是为了方便理解自己整理的,越往下越接近真正的 RSI,也越难验证:</p>
+<h2>① RSI 是什么:权威定义和大图</h2>
+<p class="dim small">这一节的定义和图都来自原文,不是这一页自己画的。每张图下面写了出处和授权。</p>
+<h3>定义:Anthropic 的说法</h3>
+<div class="lead">「把这个趋势推到足够远、给足够多的算力,它指向一个能<b>完全自主地设计和开发自己继任者</b>的 AI 系统。这叫<b>递归自我改进</b>。我们还没到那一步,递归自我改进也不是必然的,但它可能比大多数机构准备好的时间来得更早。」</div>
+<p class="dim small">原文:「Taken far enough, and given enough compute, that trend points to an AI system capable of fully autonomously designing and developing its own successor. This is called recursive self-improvement. We are not there yet…」—— <a href="https://www.anthropic.com/institute/recursive-self-improvement" rel="noopener" target="_blank">Anthropic Institute · When AI builds itself</a></p>
+<p>同一页给出了 Anthropic 内部从「人写代码」走到「闭合回路」的时间线(按原文翻译):</p>
+<div class="rs-tl">
+<div><span class="y">2021–2023</span><b>造第一个 Claude</b>:和别的科技公司一样,人在笔记本上写代码、写文档。</div>
+<div><span class="y">2023–2025</span><b>聊天机器人</b>:人用早期聊天机器人帮忙做一部分工作,比如生成短代码片段,再复制到编辑器。</div>
+<div><span class="y">2025–2026</span><b>编程 agent</b>:agent 能自己写和改代码,有时是整个文件。</div>
+<div><span class="y">今天</span><b>自主 agent</b>:agent 能自己跑代码,把几个小时的工作交给别的 agent。</div>
+<div><span class="y">20XX?</span><b>闭合回路</b>:将来 agent 可能强到能自己造模型、训练模型。如果发生,未来的 Claude 可以由 Claude 自己持续改进。</div>
+</div>
+<h3>图 1:最简单的 RSI 回路</h3>
+<figure class="rs-fig"><a href="img/fri2026-fig1.jpg" target="_blank"><img alt="An idealized recursive self-improvement loop" loading="lazy" src="img/fri2026-fig1.jpg"/></a>
+<figcaption>现有 AI → 做 AI 研发 → 更好的下一代 AI → 再去做 AI 研发。<br/>出处:Forecasting Research Institute,<a href="https://forecastingresearch.org/research/recursive-self-improvement-v1" rel="noopener" target="_blank">How Close is Recursive Self-Improvement? A Review of the Evidence</a>(2026-11-10),Figure 1。版权归原作者,此处引用并注明出处。</figcaption></figure>
+<h3>图 2:为什么可能「越转越快」</h3>
+<figure class="rs-fig"><a href="img/chan2026-fig2.jpg" target="_blank"><img alt="Chan et al. 2026 Figure 2" loading="lazy" src="img/chan2026-fig2.jpg"/></a>
+<figcaption>机制分两步:(1) AI 越来越会做 AI 研发,等于扩大了「研发人力」;(2) 更大的研发人力造出更好的 AI,又进一步扩大人力 —— 一个递归的反馈回路。论文同时列了四种「摩擦」:收益递减、算力和数据不够、难自动化的任务、耗时的流程(比如长训练)。<br/>出处:Chan, Winter, Barto, Pachocki, Hinton, Horvitz, Bengio, Clark, Clune 等,<a href="https://arxiv.org/abs/2609.36054" rel="noopener" target="_blank">What if automating AI R&amp;D triggers an intelligence explosion?</a>(arXiv 2609.36054,2026),Figure 2。授权 CC BY 4.0。</figcaption></figure>
+<h3>图 3:在「AI for X」里的位置 —— AI for AI</h3>
+<p>放在「AI for X」里看,<b>RSI 属于 X = AI 自己的那一类,学界叫 AI for AI(AI4AI)</b>。AI4AI 综述的定义是:AI 正在改变 AI 本身的开发方式,从设计学习算法、到自动化研究流程和评测;它<b>按「发现循环里三个决定交给谁」</b>来分级 —— 搜索方向、搜索空间、评测信号;并且写明「AI4AI 可能带来递归自我改进」。</p>
+<figure class="rs-fig"><a href="img/ai4ai-fig1.jpg" target="_blank"><img alt="AI4AI survey Figure 1" loading="lazy" src="img/ai4ai-fig1.jpg"/></a>
+<figcaption>上:AI4AI 代表工作时间线(2016 → 2025 以后,AlphaEvolve、DGM、AI Scientist 都在里面)。左下:控制权逐步交给 AI —— L0 纯人控制 → L1 AI 定方向 → L2 AI 定搜索空间 → L3 AI 定评测。右下:四类对象 —— AI 用来改进<b>学习</b>(更新参数)、<b>推理</b>(参数冻结)、<b>数据</b>、<b>基础设施</b>(软硬件栈)。<br/>出处:Liu, Wang, Hu 等(南开、中关村学院、西安交大、上海交大、南洋理工、新加坡国立、港科大),<a href="https://ai4ai-research.github.io/" rel="noopener" target="_blank">AI4AI: Toward AI-discovered Superintelligence</a>,Figure 1。版权归原作者,此处引用并注明出处。</figcaption></figure>
+<p>和别的 X 比,有两点不一样:<b>回路是闭合的</b>(改的是 AI 自己,改好的接着改下一轮);<b>它会放大所有别的 X</b>(AI 变强,for Science、for Math、for Code 都跟着变强)。图 2 里那条箭头写的就是「Improves &amp; Multiplies」(改进并放大),所以它更像一个「乘数」,而不是又一个应用方向。</p>
+<h3>图 4:怎样才算 RSI,而不只是「多迭代几轮」</h3>
+<figure class="rs-fig"><a href="img/hit-rsi-survey-fig3.jpg" target="_blank"><img alt="RSI survey Figure 3" loading="lazy" src="img/hit-rsi-survey-fig3.jpg"/></a>
+<figcaption>上:四个阶段 —— 进化(当前产物变好)→ 自进化(被接受的改进留下来、被复用)→ 元进化(改进机制本身也在变)→ RSI(改进跨轮次继承)。中:通用循环 <b>提出 → 反馈 → 优化</b>,每轮决定拒绝、修改、上线还是回滚,并保留版本和验证证据。下:「递归进步」的两条检验 —— 继承下来的改动会改变后面的改进过程;后面的改进在期望上更好。图里那句话:<b>只靠迭代不是 RSI,被接受的改进必须带进后面的改进循环</b>。<br/>出处:Li, Chen, Zhang 等(哈工大深圳、港大、新加坡国立等),<a href="https://lee1003-lee.github.io/Awesome-RSI-Research/" rel="noopener" target="_blank">Towards AI That Improves Itself: A Survey of Recursive Self-Improvement</a>,Figure 3。版权归原作者,此处引用并注明出处。</figcaption></figure>
+<h3>图 5:RSI 的五级自主,和各级的代表系统</h3>
+<figure class="rs-fig"><a href="img/last-ai-fig1.jpg" target="_blank"><img alt="The Last AI Built by Humans Figure 1" loading="lazy" src="img/last-ai-fig1.jpg"/></a>
+<figcaption>横轴从 B0(只在一次任务里改答案,不算 RSI)到 L5,每一级都列了代表系统(包括 Anthropic、AlphaEvolve、Recursive、Mirendil、DeepSeek、Sakana、HyperAgents 等)。<br/>出处:Tang, Zhou 等(字节跳动、面壁智能、小红书、上海 AI Lab、清华等),<a href="https://arxiv.org/abs/2609.11873" rel="noopener" target="_blank">The Last AI Built by Humans: Toward Genuine Recursive Self-Improvement</a>(arXiv 2609.11873),Figure 1。授权 CC BY-NC-ND 4.0(原图未改动)。</figcaption></figure>
+<p>论文对五级的定义(按原文概括):</p>
 <div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
-<tr><th>层</th><th>改什么</th><th>今天的例子</th><th>状态</th></tr>
-<tr><td>L1</td><td>prompt、skill、工具描述(模型冻结)</td><td>Foundry Agent Optimizer、AgentCore optimization、AlphaEvolve 改 SKILL.md</td><td><span class="tag ok">已是云产品</span></td></tr>
-<tr><td>L2</td><td>harness 代码、算法代码(模型冻结)</td><td>AlphaEvolve、DGM、ShinkaEvolve、本场 demo、NVIDIA SoL-Pi</td><td><span class="tag ok">已是云产品 / 开源</span></td></tr>
-<tr><td>L3</td><td>harness 和模型权重一起改</td><td>微软研究院 Self-HPO:先改 harness,再用强化学习改模型,轮流来</td><td><span class="tag">论文</span></td></tr>
-<tr><td>L4</td><td>AI 主导做 AI 研发,造出下一代模型</td><td>Recursive 的 Eureka Machine 造出 Flint;Google 说 Gemini 在帮着造下一个 Gemini</td><td><span class="tag">部分自动,人还在掌舵</span></td></tr>
-<tr><td>L5</td><td>全自主,人退出</td><td>—</td><td><span class="tag top">没有人做到;OpenAI 明确说现在不应该做</span></td></tr>
+<tr><th>级</th><th>论文定义</th><th>对照今天的云产品 <span class="tag top">判断</span></th></tr>
+<tr><td>L1 执行</td><td>AI 执行人定好的改进流程</td><td>按固定流程跑的评测 / 微调流水线</td></tr>
+<tr><td>L2 策略</td><td>AI 自己选改进手段,目标和验收标准仍由人定</td><td>Foundry Agent Optimizer、AgentCore optimization:人给目标和打分,AI 选改法,改好的配置留下来当新基线</td></tr>
+<tr><td>L3 经验</td><td>AI 自己决定去获取什么经验 / 数据</td><td>自己造任务、造环境的研究系统</td></tr>
+<tr><td>L4 部署</td><td>AI 在真实部署环境里自己适应、改进</td><td>暂无成型的云产品</td></tr>
+<tr><td>L5 元改进</td><td>AI 改进「怎么改进」本身</td><td>HyperAgents 等研究;没有产品</td></tr>
 </table></div>
+<p class="note">注意:图 5 把 <b>AlphaEvolve 放在 B0</b>(只在一次任务里反复改答案,不算 RSI)。因为它改的是你给的算法代码,不是改进它自己;只有把 AlphaEvolve 用来改 AI 自己的东西(比如 Google 用它改训练内核、改 agent 的 skill),而且改好的结果留下来进入下一轮,才往 RSI 靠。这也是图 4 那句话的意思:只靠迭代不是 RSI。</p>
 <p class="dim small">想先看概念和 demo,回到 <a href="../">RSI 资料包</a>;想看 harness 自进化怎么跑,看 <a href="../demo/play/">demo 回放</a>。</p>
 </section>
 <section id="news">
@@ -127,11 +158,11 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <ul>
 <li><b>AlphaEvolve 已 GA</b>(2026-07-09):DeepMind 的进化式代码优化 agent,挂在 Gemini Enterprise Agent Platform 上(Vertex AI 已改名为这个)。你给种子算法和打分函数,它用 Gemini 不断变异、评测、留下更好的版本。早期客户有 BASF、JetBrains、Kinaxis;Schrödinger 用它把分子模拟里两个瓶颈算法提速约 4 倍。<span class="tag ok">一手</span></li>
 <li><b>默认模型换成 Gemini 4 Argon</b>(10-26 起),按 Argon 的 token 价计费。<span class="tag">二手 · release notes 转载</span></li>
-<li><b>用 AlphaEvolve 改 agent 的 skill</b>(11-05 官方教程):把 SKILL.md 当成「程序」,让 Harbor 在 GKE 上跑真实编码任务来打分,每个候选和基线同时跑、看差值,最后在没见过的任务上复查。几轮迭代提升约 5%。—— 这其实就是 L1/L2 级 RSI 的官方做法。<span class="tag ok">一手</span></li>
+<li><b>用 AlphaEvolve 改 agent 的 skill</b>(11-05 官方教程):把 SKILL.md 当成「程序」,让 Harbor 在 GKE 上跑真实编码任务来打分,每个候选和基线同时跑、看差值,最后在没见过的任务上复查。几轮迭代提升约 5%。—— 这就是「冻结模型、自动改 skill」的官方做法(按图 5 属于 L2:人定目标和打分,AI 选改法)。<span class="tag ok">一手</span></li>
 <li><b>AlphaEvolve on Cloud Batch</b>(SC26,11-13):一个蓝图把候选评测扇出到几百台机器,包括多节点 MPI,支持 Spot 降成本。<span class="tag ok">一手</span></li>
 <li><b>Agent Compute Engine</b>(10-22 发布,几个月后预览):给 agent 用的 microVM 沙箱,启动快、空闲自动暂停,官方明确说是为了「agent 循环或评测扫描不等基础设施」。<span class="tag ok">一手</span></li>
 <li><b>RSI 生态</b>:GV(Google Ventures)和 Greycroft 领投了 Recursive;Anthropic 出身的 Mirendil(自我改进 AI)签了 1 亿美元以上的 Google Cloud 算力协议。<span class="tag ok">一手 · TechCrunch</span></li>
-<li><span class="tag top">判断</span>短板:AlphaEvolve 的效果取决于你能不能写出好的打分函数,这一步 Google 帮不了你;深度绑定 Gemini;官方 skill 优化案例的提升只有 5%,说明 L1 级的空间有限。</li>
+<li><span class="tag top">判断</span>短板:AlphaEvolve 的效果取决于你能不能写出好的打分函数,这一步 Google 帮不了你;深度绑定 Gemini;官方 skill 优化案例的提升只有 5%,说明只改 prompt / skill 的空间有限。</li>
 </ul>
 <h3>微软 / Azure:产品闭环做得细,研究很多但组织在变</h3>
 <ul>
@@ -155,8 +186,8 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <h3>放在一起看</h3>
 <div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
 <tr><th>维度</th><th>Google Cloud</th><th>Microsoft Azure</th><th>AWS</th></tr>
-<tr><td>自动改 prompt / skill(L1)</td><td>AlphaEvolve + Harbor 改 skill(教程)</td><td>Foundry Agent Optimizer:指令、skill、模型</td><td>AgentCore optimization:system prompt、工具描述</td></tr>
-<tr><td>自动改代码 / 算法(L2)</td><td><b>AlphaEvolve 托管服务,已 GA</b></td><td>没有托管服务</td><td>没有托管服务,开源引擎 + Bedrock 自建</td></tr>
+<tr><td>自动改 prompt / skill</td><td>AlphaEvolve + Harbor 改 skill(教程)</td><td>Foundry Agent Optimizer:指令、skill、模型</td><td>AgentCore optimization:system prompt、工具描述</td></tr>
+<tr><td>自动改代码 / 算法</td><td><b>AlphaEvolve 托管服务,已 GA</b></td><td>没有托管服务</td><td>没有托管服务,开源引擎 + Bedrock 自建</td></tr>
 <tr><td>上线前怎么验证</td><td>和基线同跑看差值 + 留出任务</td><td>留出回归集 + PR 人审 + 灰度</td><td>离线批量评测 + 线上 A/B</td></tr>
 <tr><td>大规模评测算力</td><td>Cloud Batch 扇出;Agent Compute Engine(待预览)</td><td>—</td><td>AgentCore Runtime;Batch / EC2 自建</td></tr>
 <tr><td>RSI 创业公司</td><td>Mirendil(1 亿美元+);GV 领投 Recursive</td><td>—</td><td><b>Recursive(4.1 亿美元)</b></td></tr>
@@ -215,8 +246,8 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <section id="trend">
 <h2>⑥ 接下来看什么 <span class="tag top">判断</span></h2>
 <ul>
-<li><b>L1 会变成标配</b>:「从轨迹自动改 prompt / skill」三家都有了,接下来拼的是评测质量和使用门槛。</li>
-<li><b>L2 是下一个战场</b>:Google 有 AlphaEvolve,微软和 AWS 暂时没有对应的托管服务,看它们会不会补上。</li>
+<li><b>自动改 prompt / skill 会变成标配</b>:「从轨迹自动改 prompt / skill」三家都有了,接下来拼的是评测质量和使用门槛。</li>
+<li><b>自动改代码 / 算法是下一个战场</b>:Google 有 AlphaEvolve,微软和 AWS 暂时没有对应的托管服务,看它们会不会补上。</li>
 <li><b>评测算力是新的卖点</b>:评测占了 RSI 的大部分成本,能便宜、安全、大规模地跑 agent 沙箱的云更有优势(Google 已经推出 Agent Compute Engine)。</li>
 <li><b>RSI 创业公司的算力订单</b>:Recursive 在 AWS、Mirendil 在 Google Cloud,这类订单会越来越多。</li>
 <li><b>要看的指标</b>:实验室公布的「完全交给 AI 的 PR 比例」、METR 这类第三方评估、Epoch 能力指数是否出现「一年猛涨」。</li>
@@ -224,6 +255,15 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 </section>
 <section id="sources">
 <h2>⑦ 来源</h2>
+<h3>定义和大图(第 ① 节)</h3>
+<ul class="small">
+<li><a href="https://www.anthropic.com/institute/recursive-self-improvement" rel="noopener" target="_blank">Anthropic Institute · When AI builds itself</a>(定义 + 时间线)</li>
+<li><a href="https://forecastingresearch.org/research/recursive-self-improvement-v1" rel="noopener" target="_blank">Forecasting Research Institute · How Close is RSI?</a>(图 1)</li>
+<li><a href="https://arxiv.org/abs/2609.36054" rel="noopener" target="_blank">Chan et al. · What if automating AI R&amp;D triggers an intelligence explosion?</a>(图 2,CC BY 4.0)</li>
+<li><a href="https://ai4ai-research.github.io/" rel="noopener" target="_blank">AI4AI: Toward AI-discovered Superintelligence</a>(图 3,<a href="https://ai4ai-research.github.io/assets/AI4AI_survey_latest.pdf" rel="noopener" target="_blank">PDF</a>)</li>
+<li><a href="https://lee1003-lee.github.io/Awesome-RSI-Research/" rel="noopener" target="_blank">Towards AI That Improves Itself: A Survey of RSI</a>(图 4,<a href="https://lee1003-lee.github.io/Awesome-RSI-Research/assets/rsi-survey.pdf" rel="noopener" target="_blank">PDF</a>)</li>
+<li><a href="https://arxiv.org/abs/2609.11873" rel="noopener" target="_blank">The Last AI Built by Humans: Toward Genuine RSI</a>(图 5,CC BY-NC-ND 4.0)</li>
+</ul>
 <h3>前沿实验室和争论</h3>
 <ul class="small">
 <li><a href="https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/" rel="noopener" target="_blank">METR · Independent Assessment of AI R&amp;D Acceleration at Anthropic(2026-11-05)</a></li>
@@ -270,7 +310,7 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <li><a href="https://openai.com/index/scaling-ai-research-for-complex-biological-data/" rel="noopener" target="_blank">OpenAI · 几千个 agent 分析生物数据(2026-10-21)</a></li>
 <li><a href="https://arxiv.org/abs/2611.10787" rel="noopener" target="_blank">TRUST(2611.10787)</a> · <a href="https://arxiv.org/abs/2610.35193" rel="noopener" target="_blank">Trustworthy RSI 综述(2610.35193)</a> · <a href="https://feng.ifeng.com/c/8y4K87rZxdz" rel="noopener" target="_blank">中科院自动化所等 RSI 综述(报道)</a></li>
 </ul>
-<p class="dim small">AI 整理:资料由搜索 + 阅读原文整理,数字以原文为准。发现错误欢迎指出。</p>
+<p class="dim small">AI 整理:资料由搜索 + 阅读原文整理,数字以原文为准。第 ① 节的图均为原文图片,版权归原作者;未注明 CC 授权的图仅作引用介绍,如有不妥请联系删除。发现错误欢迎指出。</p>
 </section>
 </main>
 <a data-cur="zh" data-to="en" href="../../en/rsi/landscape/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>

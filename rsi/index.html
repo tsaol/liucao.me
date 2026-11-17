@@ -94,6 +94,7 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <h2>② 核心概念,一句话版</h2>
 <ul>
 <li><b>RSI(递归自我改进)</b>:AI 改进它自己,再用改好的版本继续改自己。判断标准:改进的对象是不是系统自己。</li>
+<li><b>AI for AI</b>:放在「AI for X」里看,RSI 就是 X 换成 AI 自己的那一种 —— 回路是闭合的,而且会放大所有别的 X(for Science、Math、Code……)。详见 <a href="landscape/#what">RSI 全景 ①</a>。</li>
 <li><b>哥德尔机 vs 达尔文哥德尔机</b>:前者「先证明有益才改」(像律师),后者「先试再选」(像育种的农民)。</li>
 <li><b>harness</b>:包在模型外面的那一层 —— prompt、代码、工具、检索逻辑。本场只改 harness,模型权重冻结(模型 = 厨师,harness = 菜谱和厨房)。</li>
 <li><b>一轮进化</b>:选亲本 → 变异 → 评测 → 晋升门 → 存回档案库。好的坏的都存,差的版本可能是「踏脚石」。</li>
@@ -127,16 +128,6 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 </div></details>
 <details class="rs-q"><summary>为什么不直接改模型权重?</summary><div>
 <p>改权重要训练(SageMaker 那一侧),贵、慢,验证更难,也很难回滚;改 harness 只跑推理(Bedrock),便宜,随时能换回来。用厨师的话说:换菜谱随时能换回来,送厨师去进修可退不回来。</p>
-</div></details>
-<details class="rs-q"><summary>放在「AI for X」里看,RSI 属于哪一类?</summary><div>
-<p><b>RSI = X 是 AI 自己的那一种 AI for X,也就是 AI for AI。</b>AI for Science、AI for Math、AI for Code 的 X 是外面的问题;RSI 的 X 是做 AI 这件事本身(写训练代码、调 harness、跑评测、设计下一代模型)。</p>
-<p>但它和别的 X 有两点不一样:</p>
-<ul>
-<li><b>回路是闭合的</b>:别的 X,AI 改的是外面的东西,AI 本身不变;RSI 改的是 AI 自己,改好的 AI 再去改下一轮。只是「用 AI 帮着做 AI 研发」还不够,要能一轮接一轮地自己改,才算 RSI。</li>
-<li><b>它会放大所有别的 X</b>:AI 变强了,AI for Science、for Math、for Code 都跟着变强。所以前沿实验室把它看成「乘数」,而不是又一个应用方向。</li>
-</ul>
-<p>反过来,RSI 用的方法也被用在别的 X 上:AlphaEvolve 这类「变异 → 评测 → 留下更好的」引擎,既用来改 AI 自己的 harness 和内核,也用来做数学、芯片、分子模拟(Schrödinger 提速约 4 倍)。可以这么记:<b>方法是通用的,X 换成 AI 自己,就成了 RSI</b>。</p>
-<p>共同的门槛还是验证:哪个 X 有便宜、可靠的打分方法(数学证明、代码测试、芯片仿真),AI for X 和 RSI 就先在哪里落地。最新进展见 <a href="landscape/">RSI 全景</a>。</p>
 </div></details>
 </section>
 <section id="videos">

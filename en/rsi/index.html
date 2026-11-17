@@ -94,6 +94,7 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <h2>② Core concepts, in one sentence</h2>
 <ul>
 <li><b>RSI (Recursive Self-Improvement)</b>: AI improves itself, then uses the improved version to keep improving itself. The test: is the thing being improved the system itself?</li>
+<li><b>AI for AI</b>: seen through "AI for X", RSI is the case where X is AI itself — the loop is closed, and it amplifies every other X (Science, Math, Code…). See <a href="landscape/#what">RSI overview ①</a>.</li>
 <li><b>Gödel Machine vs Darwin Gödel Machine</b>: The former "proves a change is beneficial before making it" (like a lawyer); the latter "tries first, then selects" (like a farmer breeding crops).</li>
 <li><b>harness</b>: The layer wrapped around the model: prompts, code, tools, retrieval logic. This session only changes the harness; model weights stay frozen (model = chef, harness = recipe and kitchen).</li>
 <li><b>One evolution round</b>: Select parent → mutate → evaluate → promotion gate → store back in the archive. Both good and bad versions are kept; a weak version may be a "stepping stone".</li>
@@ -127,16 +128,6 @@ Leakage audit finds answers written into code → straight −1, invalidated</pr
 </div></details>
 <details class="rs-q"><summary>Why not just change the model weights?</summary><div>
 <p>Changing weights requires training (the SageMaker side): expensive, slow, harder to verify, and hard to roll back. Changing the harness only runs inference (Bedrock): cheap, and you can switch back anytime. In chef terms: you can always switch back to an old recipe, but you can't un-send a chef to culinary school.</p>
-</div></details>
-<details class="rs-q"><summary>Within "AI for X", where does RSI fit?</summary><div>
-<p><b>RSI = the kind of AI for X where X is AI itself, i.e. AI for AI.</b>In AI for Science, AI for Math, and AI for Code, X is an external problem; in RSI, X is the work of building AI itself (writing training code, tuning the harness, running evals, designing the next-generation model).</p>
-<p>But it differs from other X in two ways:</p>
-<ul>
-<li><b>The loop is closed</b>: With other X, AI changes something external while AI itself stays the same; RSI changes AI itself, and the improved AI then improves the next round. Just "using AI to help with AI R&amp;D" isn't enough. It only counts as RSI when it can keep improving itself round after round.</li>
-<li><b>It amplifies every other X</b>: As AI gets stronger, AI for Science, for Math, and for Code all get stronger with it. That's why frontier labs see it as a "multiplier" rather than just another application area.</li>
-</ul>
-<p>Conversely, the methods RSI uses are also applied to other X: engines like AlphaEvolve that "mutate → evaluate → keep the better ones" are used both to improve AI's own harnesses and kernels and for math, chips, and molecular simulation (about 4x speedup at Schrödinger). An easy way to remember it:<b>The methods are general; swap X for AI itself and you get RSI</b>.</p>
-<p>The shared bottleneck is still verification: wherever an X has a cheap, reliable way to score results (math proofs, code tests, chip simulation), that's where AI for X and RSI land first. For the latest progress, see <a href="landscape/">RSI Landscape</a>.</p>
 </div></details>
 </section>
 <section id="videos">
