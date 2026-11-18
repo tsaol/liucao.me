@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Automated AI R&amp;D · Business Overview · Where Frameworks and Argus Fit</title>
+<style>
+:root{--bg:#fdf8f0;--ink:#2d1b0e;--muted:#6b4423;
+  --s1-bg:#faf1e0;--s1-card:#f5e3c4;--s1-border:#c9994e;--s1-text:#6b4910;
+  --s2-bg:#ffeed6;--s2-card:#ffd8a6;--s2-border:#e07a3c;--s2-text:#7a3a0c;
+  --s3-bg:#fbe5dc;--s3-card:#f5c8b8;--s3-border:#c47057;--s3-text:#6b2e1e;
+  --s4-bg:#f9efcf;--s4-card:#f0dca0;--s4-border:#b08842;--s4-text:#5e4514;
+  --s5-bg:#e8f0e4;--s5-card:#d4e8cc;--s5-border:#6b9e5a;--s5-text:#3a5e2e;
+  --s6-bg:#e8e4f0;--s6-card:#d4cce8;--s6-border:#7a5e9e;--s6-text:#4a2e6b}
+*{box-sizing:border-box}
+body{margin:0;padding:26px 26px 44px;color:var(--ink);background:var(--bg);
+  background-image:radial-gradient(ellipse at top,rgba(255,220,180,.35),transparent 60%),radial-gradient(ellipse at bottom,rgba(240,220,160,.25),transparent 60%);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:#7a3a0c}
+.top{max-width:1380px;margin:0 auto 10px;font-size:13px}.top a{text-decoration:none;color:var(--muted)}
+h1{text-align:center;font-size:30px;font-weight:700;margin:0 0 6px}
+.subtitle{text-align:center;font-size:14px;color:var(--muted);margin:0 0 20px}
+.canvas{max-width:1380px;margin:0 auto}
+.sec{margin:26px 0 10px;display:flex;align-items:baseline;gap:12px}
+.sec h2{font-size:18px;margin:0}
+.sec span{font-size:12.5px;color:var(--muted)}
+.lead{border-radius:14px;padding:12px 18px;text-align:center;font-size:14.5px;font-weight:600;background:linear-gradient(90deg,var(--s2-card),var(--s1-card));border:1.5px solid var(--s2-border);color:var(--s2-text)}
+/* reference architecture */
+.ref{display:grid;grid-template-columns:150px 1fr;gap:10px 14px}
+.lname{border-radius:14px;padding:10px;font-size:13px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.45;background:rgba(255,255,255,.55);border:1px solid rgba(160,110,60,.25);color:var(--muted)}
+.lname small{font-weight:400;font-size:11px;margin-top:3px}
+.scen{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.card{border-radius:12px;padding:9px 12px;border:1px solid rgba(0,0,0,.05);box-shadow:0 1px 2px rgba(0,0,0,.04);background:rgba(255,255,255,.65)}
+.card .title{font-size:12.5px;font-weight:600;margin-bottom:2px}
+.card .body{font-size:11px;line-height:1.55;color:#4a3220}
+.loop{display:grid;grid-template-columns:1fr 34px 1fr 34px 1fr 34px 1fr 34px 1fr 34px 1fr;align-items:stretch}
+.cap{border-radius:14px;padding:12px 10px;border:1.5px solid;position:relative}
+.cap .no{font-size:11px;font-weight:700;opacity:.8}
+.cap .t{font-size:13.5px;font-weight:700;margin:2px 0 4px}
+.cap .d{font-size:11px;line-height:1.55}
+.cap .dse{position:absolute;top:-10px;right:10px;font-size:10px;font-weight:700;color:#fff;padding:2px 7px;border-radius:6px}
+.c1{background:var(--s1-bg);border-color:var(--s1-border);color:var(--s1-text)}.c1 .dse{background:var(--s1-border)}
+.c2{background:var(--s4-bg);border-color:var(--s4-border);color:var(--s4-text)}.c2 .dse{background:var(--s4-border)}
+.c3{background:var(--s2-bg);border-color:var(--s2-border);color:var(--s2-text)}.c3 .dse{background:var(--s2-border)}
+.c4{background:var(--s3-bg);border-color:var(--s3-border);color:var(--s3-text)}
+.c5{background:var(--s5-bg);border-color:var(--s5-border);color:var(--s5-text)}
+.c6{background:var(--s6-bg);border-color:var(--s6-border);color:var(--s6-text)}
+.ac{display:flex;align-items:center;justify-content:center}
+.arrow-h{position:relative;width:100%;height:22px}
+.arrow-h::before{content:"";position:absolute;top:50%;left:3px;right:12px;height:2.5px;background:#c09060;border-radius:2px;transform:translateY(-50%)}
+.arrow-h::after{content:"";position:absolute;top:50%;right:1px;border-left:9px solid #c09060;border-top:6px solid transparent;border-bottom:6px solid transparent;transform:translateY(-50%)}
+.back{margin-top:6px;border:1.5px dashed #c09060;border-top:none;border-radius:0 0 14px 14px;height:16px;position:relative}
+.back span{position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);background:var(--bg);padding:0 8px;font-size:11px;color:var(--muted)}
+.bands{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.band{border-radius:12px;padding:9px 12px;font-size:12px;line-height:1.55;background:rgba(255,255,255,.6);border:1px solid rgba(160,110,60,.22)}
+.band b{font-size:12.5px}
+.base{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* coverage matrix */
+table.mx{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px;background:rgba(255,255,255,.55);border:1px solid rgba(160,110,60,.25);border-radius:14px;overflow:hidden}
+.mx th,.mx td{padding:7px 8px;border-bottom:1px solid rgba(160,110,60,.15);vertical-align:top;text-align:left}
+.mx thead th{background:rgba(240,220,190,.6);font-size:11.5px;color:var(--muted);text-align:center}
+.mx thead th:first-child,.mx thead th:nth-child(2){text-align:left}
+.mx td.m{text-align:center;font-size:15px;line-height:1;width:64px}
+.mx td.m small{display:block;font-size:10px;color:#7b5a3c;margin-top:3px;line-height:1.3}
+.mx .fam{font-weight:700;font-size:12.5px}
+.mx .fam small{display:block;font-weight:400;font-size:11px;color:#7b5a3c;margin-top:2px}
+.mx .idea{font-size:11.5px;line-height:1.5;min-width:210px}
+.mx .lv{text-align:center;font-weight:700;white-space:nowrap}
+.mx tr.argus td{background:rgba(255,216,166,.55)}
+.mx tr.argus td.fam{color:var(--s2-text)}
+.mx tr.argus.plan td{background:rgba(255,232,200,.55)}
+.f{color:#b8541a}.h{color:#c9994e}.o{color:#cbb9a5}
+.wrap{overflow-x:auto}
+/* map */
+.two{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
+.box{border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.6);border:1px solid rgba(160,110,60,.22)}
+.box h3{margin:0 0 8px;font-size:15px}
+.box ul{margin:0;padding-left:1.15em;font-size:12.5px;line-height:1.7}
+.map{position:relative;height:340px;margin:28px 6px 28px 36px;border-left:2px solid var(--muted);border-bottom:2px solid var(--muted);
+  background:linear-gradient(90deg,transparent 33.2%,rgba(160,110,60,.12) 33.3%,transparent 33.5%,transparent 66.5%,rgba(160,110,60,.12) 66.6%,transparent 66.8%)}
+.map .ax-x{position:absolute;left:0;right:0;bottom:-24px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.map .ax-y{position:absolute;left:-30px;top:-22px;font-size:11px;color:var(--muted);white-space:nowrap}
+.map .zone{position:absolute;right:4px;top:4px;width:31%;height:40%;border:1.5px dashed #d0602a;border-radius:12px;background:rgba(255,216,166,.25)}
+.map .zone span{position:absolute;right:8px;bottom:6px;font-size:10.5px;color:#a2471a}
+.dot{position:absolute;transform:translate(-50%,-50%);font-size:11px;white-space:nowrap;padding:3px 8px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.14)}
+.dot.a{background:var(--s2-card);border:2px solid var(--s2-border);font-weight:700;color:var(--s2-text)}
+.dot.a.plan{border-style:dashed}
+.legend{margin-top:12px;display:flex;justify-content:center;flex-wrap:wrap;gap:16px;padding:10px 16px;border:1px solid rgba(160,110,60,.2);border-radius:12px;background:rgba(255,255,255,.55);font-size:12px;color:var(--muted)}
+.foot{text-align:center;font-size:11px;color:var(--muted);margin-top:12px;line-height:1.7}
+@media (max-width:1100px){.loop{grid-template-columns:1fr}.ac{transform:rotate(90deg);height:30px}.ref{grid-template-columns:1fr}.scen{grid-template-columns:repeat(2,1fr)}.two,.bands,.base{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top"><a href="../">← RSI Resources</a></div>
+<h1>Automated AI R&amp;D · Business Overview</h1>
+<p class="subtitle">What business capabilities make up a system that “lets AI do R&amp;D automatically and improve itself” · How the various frameworks approach it and where they fit · Where Argus sits · 2026-11-18</p>
+<div class="canvas">
+<div class="sec"><h2>1. General Business Architecture</h2><span> The skeleton comes from the AI4AI survey's three decisions, "Direction D · Space S · Evaluation E", plus execution, gating, and deployment</span></div>
+<div class="ref">
+<div class="lname">Scenario<small> What it's for</small></div>
+<div class="scen">
+<div class="card"><div class="title">Enterprise software development</div><div class="body"> From requirements to software that passes acceptance</div></div>
+<div class="card"><div class="title">AI application optimization</div><div class="body"> Make existing agents more accurate and cheaper</div></div>
+<div class="card"><div class="title">Algorithms and scientific discovery</div><div class="body"> Math, kernels, chips, scheduling, forecasting</div></div>
+<div class="card"><div class="title">Automated AI research</div><div class="body"> AI helps build the next generation of AI</div></div>
+</div>
+<div class="lname">Core loop<small> Six business capabilities</small></div>
+<div>
+<div class="loop">
+<div class="cap c1"><span class="dse">E</span><div class="no">①</div><div class="t"> Define goals and evaluation</div><div class="d"> What counts as “done” and what counts as “better”: acceptance tests, eval sets, metrics</div></div>
+<div class="ac"><div class="arrow-h"></div></div>
+<div class="cap c2"><span class="dse">S</span><div class="no">②</div><div class="t"> Define what can be changed</div><div class="d"> What can be changed: code blocks, prompts, tool descriptions, skills, team structure</div></div>
+<div class="ac"><div class="arrow-h"></div></div>
+<div class="cap c3"><span class="dse">D</span><div class="no">③</div><div class="t"> Generate and select changes</div><div class="d"> Which direction to change: the proposer writes edits, the search algorithm picks candidates</div></div>
+<div class="ac"><div class="arrow-h"></div></div>
+<div class="cap c4"><div class="no">④</div><div class="t"> Execution</div><div class="d"> Actually run the candidate: a single agent or a multi-agent team</div></div>
+<div class="ac"><div class="arrow-h"></div></div>
+<div class="cap c5"><div class="no">⑤</div><div class="t"> Evaluation and promotion gates</div><div class="d"> Prove it's really better: not luck, not more spending, not gaming the system</div></div>
+<div class="ac"><div class="arrow-h"></div></div>
+<div class="cap c6"><div class="no">⑥</div><div class="t"> Deployment and governance</div><div class="d"> Approval, A/B, versioning, rollback; the improved version enters the next round</div></div>
+</div>
+<div class="back"><span>Next round: the improved version becomes the new starting point</span></div>
+</div>
+<div class="lname">Cross-cutting capabilities</div>
+<div class="bands">
+<div class="band"><b>Isolation and security</b>: where untrusted code runs, whether it can get credentials, whether it can modify the evaluation</div>
+<div class="band"><b>Observability, accounting, and replay</b>: what each step did, how much it cost, whether you can roll back to any point in time</div>
+</div>
+<div class="lname">Basic</div>
+<div class="base">
+<div class="band"><b>Model</b>: Claude, Gemini, GPT, open-source models (most frameworks freeze the model and only change the outer layers)</div>
+<div class="band"><b>Compute and sandboxing</b>: managed runtimes, containers, microVMs, batch evaluation clusters</div>
+</div>
+</div>
+<div class="sec"><h2>2. Approaches and positions of different frameworks</h2><span>● Core capability · ◐ Partial · ○ Not done or not mentioned in docs (doesn't necessarily mean absent)</span></div>
+<div class="wrap">
+<table class="mx">
+<thead><tr><th>School</th><th> Approach</th><th> ① Evaluation</th><th> ② Scope</th><th> ③ Generation &amp; selection</th><th> ④ Execution</th><th> ⑤ Gating</th><th> ⑥ Deployment</th><th> Isolation</th><th> Observation and replay</th><th> Level*</th></tr></thead>
+<tbody>
+<tr><td class="fam">Evolution engine<small>AlphaEvolve · OpenEvolve · ShinkaEvolve · FunSearch · CodeEvolve</small></td><td class="idea"> Frames the problem as "editable code + a scoring function" and runs large-scale evolutionary search. Evaluation is left to the user.</td>
+<td class="m o">○<small>User-written</small></td><td class="m o">○<small>Human-marked code blocks</small></td><td class="m f">●<small>Islands, MAP-Elites</small></td><td class="m o">○</td><td class="m o">○<small>Not mentioned in docs</small></td><td class="m o">○</td><td class="m h">◐<small>Some use Docker</small></td><td class="m h">◐</td><td class="lv">L1</td></tr>
+<tr><td class="fam">Self-modifying agents<small>DGM · HGM · HyperAgents · STOP · ADAS</small></td><td class="idea"> Let the agent modify its own code and use a fixed benchmark to pick better versions; a few also modify the "improver" itself.</td>
+<td class="m o">○<small>Fixed benchmark</small></td><td class="m h">◐<small>Some modify the improver</small></td><td class="m f">●<small>archive, tree search</small></td><td class="m o">○</td><td class="m h">◐<small>Staged evaluation</small></td><td class="m o">○</td><td class="m h">◐<small>Docker + warning</small></td><td class="m o">○</td><td class="lv">L1–L2</td></tr>
+<tr><td class="fam">Prompt and workflow optimization<small>DSPy · GEPA · TextGrad · AFlow</small></td><td class="idea"> Treats prompts, examples, and workflows as optimizable parameters and rewrites them automatically using a validation set and reflection.</td>
+<td class="m o">○</td><td class="m o">○</td><td class="m f">●<small>Pareto, Bayesian, MCTS</small></td><td class="m o">○</td><td class="m h">◐<small>Candidates selected on the validation set</small></td><td class="m o">○</td><td class="m o">○</td><td class="m h">◐</td><td class="lv">L1</td></tr>
+<tr><td class="fam">Cloud-vendor managed optimization<small>AgentCore optimization · Foundry Agent Optimizer · AlphaEvolve + Harbor</small></td><td class="idea"> Finds failures in production traces and automatically recommends fixes; the focus is on “shipping safely.”</td>
+<td class="m h">◐<small>Built-in + custom evaluators</small></td><td class="m o">○<small>Prompts, tool descriptions</small></td><td class="m f">●<small>reflector</small></td><td class="m h">◐<small>Managed runtime</small></td><td class="m f">●<small>AgentCore reports statistical significance</small></td><td class="m f">●<small>Human approval, A/B, versioning</small></td><td class="m f">●</td><td class="m f">●</td><td class="lv">L1</td></tr>
+<tr><td class="fam">Multiple agents write software<small>MetaGPT · ChatDev · OpenHands · CrewAI · Cursor swarm · Claude Code agent teams</small></td><td class="idea"> Splits work by role or task tree to build software; the team itself does not improve.</td>
+<td class="m h">◐<small>Cursor has a judge</small></td><td class="m o">—</td><td class="m o">—</td><td class="m f">●<small>Role workflows, task trees</small></td><td class="m o">○</td><td class="m o">○</td><td class="m h">◐<small>Partial Docker</small></td><td class="m h">◐</td><td class="lv">L0</td></tr>
+<tr><td class="fam">Automated science<small>AI Scientist · autoresearch · SoL-Pi</small></td><td class="idea"> End to end: generate ideas, run experiments, write conclusions; results are partly evaluated by the AI itself.</td>
+<td class="m h">◐<small>AI review / fixed metrics</small></td><td class="m o">○</td><td class="m f">●</td><td class="m h">◐<small>Run experiments</small></td><td class="m h">◐<small>Compute parity</small></td><td class="m o">○</td><td class="m h">◐<small>Containers recommended</small></td><td class="m h">◐</td><td class="lv">L1–L3</td></tr>
+<tr><td class="fam">Evaluation infrastructure<small>Harbor · Inspect AI</small></td><td class="idea"> Only handles “running evals reliably”: task format, parallel environments, repeated runs, logs.</td>
+<td class="m h">◐<small>Task format</small></td><td class="m o">—</td><td class="m o">—</td><td class="m f">●<small>Parallel environments</small></td><td class="m h">◐<small>Repeated runs</small></td><td class="m o">○</td><td class="m f">●</td><td class="m f">●</td><td class="lv">—</td></tr>
+<tr class="argus"><td class="fam">Argus · Swarm<small> Implemented</small></td><td class="idea"> The team gets only an empty database,<b>Designs its own division of labor</b>; the planner writes acceptance criteria, and the spec gate proves the tests are real.</td>
+<td class="m f">●<small>Spec gates</small></td><td class="m o">—</td><td class="m o">—</td><td class="m f">●<small>Self-organizing teams</small></td><td class="m h">◐<small>Approved-version tests</small></td><td class="m h">◐<small>Iteration rounds</small></td><td class="m f">●<small>No credentials + proxy</small></td><td class="m f">●<small>Full replay</small></td><td class="lv">L0</td></tr>
+<tr class="argus plan"><td class="fam">Argus · Evolve<small> Proposed</small></td><td class="idea"> Engine borrowed,<b>Self-built gates</b>: held-out sets the proposer can't see, noise distributions, budget-matched baselines, per-item regression checks, human review.</td>
+<td class="m o">○<small>Set and frozen by humans</small></td><td class="m o">○<small>Checklist</small></td><td class="m h">◐<small>Borrowed engine</small></td><td class="m h">◐</td><td class="m f">●<small>Includes budget-matched baseline</small></td><td class="m f">●<small>Approval, rollback</small></td><td class="m f">●</td><td class="m f">●</td><td class="lv">L1</td></tr>
+</tbody>
+</table>
+</div>
+<p class="foot" style="text-align:left">* Levels follow the AI4AI survey's grading by source of control (author's judgment): L0 no self-improvement; L1 AI sets the direction; L2 AI sets what can be changed; L3 AI sets the evaluation. “Not in docs” means it wasn't stated in the README / docs read during the survey.</p>
+<div class="sec"><h2>3. Where Argus fits</h2><span> Author's assessment</span></div>
+<div class="lead">Argus doesn't build models or rebuild evolution engines; its position is <b>④ Execution + ⑤ Gating + ⑥ Deployment + isolation + replay</b> This segment — an "AI R&amp;D testbed with strict gates"</div>
+<div class="two" style="margin-top:12px">
+<div class="box">
+<h3>Positioning map</h3>
+<div class="map">
+<div class="ax-y">↑ Stricter validation (held-out, statistics, budget, approval)</div>
+<div class="zone"><span>Largely empty territory today</span></div>
+<div class="dot" style="left:16%;top:86%">Multiple agents write software</div>
+<div class="dot" style="left:16%;top:66%">Evolution engine</div>
+<div class="dot" style="left:26%;top:52%">AlphaEvolve + Harbor</div>
+<div class="dot a" style="left:18%;top:28%">Argus Swarm</div>
+<div class="dot" style="left:50%;top:62%">Prompt optimization</div>
+<div class="dot" style="left:52%;top:36%">Cloud-vendor managed optimization</div>
+<div class="dot a plan" style="left:52%;top:14%">Argus Evolve</div>
+<div class="dot" style="left:78%;top:74%">Self-modifying agents</div>
+<div class="dot" style="left:84%;top:56%">Automated science</div>
+<div class="dot a plan" style="left:84%;top:16%">Once Argus connects the pieces</div>
+<div class="ax-x"><span>External product / code</span><span> Other agents</span><span> AI itself</span></div>
+</div>
+<div style="font-size:11.5px;color:var(--muted);line-height:1.6">X-axis: what gets improved. Y-axis: how rigorous the verification is. Solid = implemented, dashed = proposed. Positions are qualitative judgments.</div>
+</div>
+<div class="box">
+<h3>How to read the chart</h3>
+<ul>
+<li><b>Each school covers a different block</b>: Evolution engines and prompt optimization cover ③, multi-agent frameworks cover ④, cloud vendors cover ⑤⑥, and evaluation infrastructure covers the “getting it running” part of ④⑤.</li>
+<li><b>③ most crowded, ⑤ scarcest</b>: Most frameworks optimize “the score you give them” and rarely handle noise, budget, and shortcuts together. In the survey, only AgentCore explicitly states that it reports statistical significance; none uses a “budget-matched baseline” as a gate.</li>
+<li><b>Isolation is generally weak</b>: most open-source projects offer only Docker or a warning that they “execute untrusted code”; “no credentials in the sandbox + model calls go through a signed, metered proxy” wasn't seen anywhere else in the survey.</li>
+<li><b>Different approaches to multi-agent collaboration</b>: MetaGPT / ChatDev use preset role workflows, Cursor and Claude Code provide a task tree or task list, and Argus provides only an empty database and lets the team design it themselves — this is what makes it experimental.</li>
+<li><b>Argus's positioning</b>: integration of ④⑤⑥ + isolation + replay; ③ borrows open-source engines (OpenEvolve, ShinkaEvolve, GEPA, etc.; mind the licenses); closest to cloud vendors' managed optimization, but with stricter gates, and it can treat its own team as the target of improvement (top right).</li>
+</ul>
+</div>
+</div>
+<div class="legend">
+<span><b class="f">●</b> Core capabilities</span><span><b class="h">◐</b> Partially</span><span><b class="o">○</b> Not done / not documented</span><span>— N/A</span>
+<span><span style="display:inline-block;width:22px;height:12px;border-radius:3px;background:rgba(255,216,166,.8);vertical-align:-1px;margin-right:6px"></span>Where Argus sits</span>
+</div>
+<p class="foot">Only representative projects of each school are listed; this is not the full market. Capability ratings are based on a 2026-11-18 review of official repos, docs and papers; Argus is the author's prototype project (private). Related:<a href="../ai4ai/">AI4AI explained (source of the D/S/E framework)</a> · <a href="../landscape/">RSI Landscape</a> · <a href="../alphaevolve/">AlphaEvolve Explained</a> · <a href="../view/">My take</a></p>
+</div>
+<a data-cur="en" data-to="zh" href="../../../rsi/argus/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>
