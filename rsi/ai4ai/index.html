@@ -56,6 +56,13 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
     .rs-fig{margin:1em 0 1.6em}.rs-fig img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;border:1px solid var(--rs-line)}.rs-fig figcaption{font-size:13px;color:var(--rs-dim);line-height:1.65;margin-top:.6em}.rs-fig a{border-bottom:none}
 .rs-tl{border-left:2px solid var(--rs-line);margin:1em 0 1.4em;padding-left:1em}.rs-tl>div{margin:.55em 0;font-size:15px}.rs-tl .y{display:inline-block;min-width:6.5em;color:var(--rs-cold);font-family:var(--rs-mono);font-size:13px}
 main.rs-wrap a{overflow-wrap:anywhere}
+.key{background:rgba(255,176,32,.08);border:1px solid rgba(255,176,32,.35);border-left:4px solid var(--rs-warm);border-radius:0 8px 8px 0;padding:.7em 1em;margin:.2em 0 1.2em}
+.key .kl{display:inline-block;font-size:12px;font-weight:700;color:#111;background:var(--rs-warm);border-radius:4px;padding:0 .45em;margin-right:.5em}
+.key ul{margin:.4em 0 0;padding-left:1.2em}.key li{margin:.25em 0}
+main.rs-wrap mark{background:rgba(255,176,32,.22);color:var(--rs-ink);padding:0 .15em;border-radius:3px}
+.src{display:inline-block;font-family:var(--rs-mono);font-size:11.5px;color:var(--rs-cold);border:1px solid rgba(76,194,255,.4);border-radius:4px;padding:0 .35em;margin-left:.3em;vertical-align:1px;white-space:nowrap}
+.legend{font-size:13px;color:var(--rs-dim);margin:.6em 0 0}
+@media print{.key{background:#fff8ec}main.rs-wrap mark{background:#ffe9b8;color:#111}}
 </style>
 </head>
 <body>
@@ -86,11 +93,13 @@ main.rs-wrap a{overflow-wrap:anywhere}
 <h1>一文读懂 AI4AI:AI 帮 AI 做研究,到底是谁说了算?</h1>
 <p class="dim">论文解读 · 《AI4AI: Toward AI-discovered Superintelligence》(南开、中关村学院、西安交大、上海交大、南洋理工、新加坡国立、港科大,2026-10)。按 ai-writing 的论文解读流程写成:原文抽取 → 初稿 → 润色 → 对照原文审稿 → 修改 → Kimi 润色 → 锐评 → 去 AI 味。整理于 2026-11-18。</p>
 <p>现在很多系统都号称「AI 在自己做研究」：自动改代码、自动跑实验、自动写论文。但流程跑完了，真就是 AI 在主导吗？</p>
-<p>南开大学、中关村学院、西安交大、上海交大、南洋理工、新加坡国立和港科大的研究者合写了一篇 80 页的综述《AI4AI: Toward AI-discovered Superintelligence》，引了 336 篇文献。答案很干脆：<strong>衡量研究自主权，不看 AI 执行了多少任务，而看哪些决定是 AI 做的。</strong></p>
+<p>南开大学、中关村学院、西安交大、上海交大、南洋理工、新加坡国立和港科大的研究者合写了一篇 80 页的综述《AI4AI: Toward AI-discovered Superintelligence》，引了 336 篇文献。答案很干脆：<mark><strong>衡量研究自主权，不看 AI 执行了多少任务，而看哪些决定是 AI 做的。</strong></mark><span class="src">§1</span></p>
+<p class="legend">标注说明:<span class="key" style="display:inline;padding:0 .4em;margin:0;border-left-width:3px">要点</span> 每节开头的关键信息 · <mark>高亮</mark> 核心结论 · <span class="src">§3.6</span> 原文章节 / 图表位置,可对照 PDF 查找。</p>
 <div class="note">原文:<a href="https://ai4ai-research.github.io/" rel="noopener" target="_blank">项目页</a> · <a href="https://ai4ai-research.github.io/assets/AI4AI_survey_latest.pdf" rel="noopener" target="_blank">PDF</a>。文中图片均来自原文和项目页,版权归原作者,此处引用并注明出处。相关:<a href="../landscape/#what">RSI 全景 ①</a>(本文图 1 也出现在那里)、<a href="../alphaevolve/">AlphaEvolve 详解</a>。</div>
 </section>
 <section id="s1">
 <h2>一、先分清两件事：「执行流程」和「掌握决定」</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li>衡量研究自主权,<mark>看 AI 做了哪些决定,不看它执行了多少任务</mark>。<span class="src">§1</span></li><li>AI4AI 的硬性条件:AI 要实质参与发现,而不只是执行写好的流程。<span class="src">§2.1</span></li></ul></div>
 <p>AI4AI（AI for AI）就是用 AI 来发现和改进 AI 系统本身。论文把它看作 AI for Science 的分支，只是研究对象换成了 AI 自己。硬性条件是：AI 要<strong>实质参与发现</strong>，而不只是跑写好的流程。</p>
 <p>自动化的范围确实在变大：从超参数搜索、AutoML（自动机器学习）、神经架构搜索，到 FunSearch、AlphaEvolve 自动改程序，再到 prompt 和 agent 结构也能自动优化；The AI Scientist 甚至把想点子、做实验、写报告串成了一条流水线。</p>
 <p>但论文提醒：<strong>自动化范围变大，不等于研究自主权变大</strong>。人可能仍决定研究什么问题、允许改哪里、什么算成功。反过来，也可能人亲手做实验，而 AI 已经在改写「什么算进步」。</p>
@@ -98,6 +107,7 @@ main.rs-wrap a{overflow-wrap:anywhere}
 </section>
 <section id="s2">
 <h2>二、三个决定，一张责任档案</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li>发现循环里有三个决定:<mark>方向(D)、空间(S)、评测(E)</mark>。<span class="src">§1 · Figure 2</span></li><li>按 <mark>E &gt; S &gt; D</mark> 的优先顺序定级:评测是 AI 定的就是 L3。<span class="src">§3.6</span></li><li>梯子描述的是<mark>控制从哪来,不是能力有多强</mark>。<span class="src">§1 · §3.6</span></li></ul></div>
 <p>论文把 AI 开发看成<strong>发现循环</strong>：提候选改进，评测，再根据反馈选择或修改。循环里有三个关键决定。拿系统性能调优打比方：</p>
 <ul>
 <li><strong>搜索方向（D）</strong>：往哪找。好比先查数据库还是先查网络。</li>
@@ -105,7 +115,7 @@ main.rs-wrap a{overflow-wrap:anywhere}
 <li><strong>评测信号（E）</strong>：什么算进步。好比验收用的 SLO 和回归测试。</li>
 </ul>
 <figure class="rs-fig"><a href="img/control-framework.jpg" target="_blank"><img alt="AI4AI 控制框架" loading="lazy" src="img/control-framework.jpg"/></a><figcaption>图2:控制框架。上面三栏是方向、空间、评测三个控制变量;下面是发现循环:证据来源进入「生成、评测、更新」,再回到迭代改进。(图源:AI4AI 综述 Figure 2)</figcaption></figure>
-<p>每个系统可以记一张<strong>责任档案</strong> ⟨D, S, E⟩。每一项标 H 或 A。注意，<strong>H 不只指人，也包括外部固定的东西</strong>，比如固定的基准测试、固定的评测器；A 指 AI 原创或实质修改的决定。</p>
+<p>每个系统可以记一张<strong>责任档案</strong> ⟨D, S, E⟩。每一项标 H 或 A。注意，<strong>H 不只指人，也包括外部固定的东西</strong><span class="src">§3.5</span>，比如固定的基准测试、固定的评测器；A 指 AI 原创或实质修改的决定。</p>
 <p>按最高的 AI 决定分四级：</p>
 <ul>
 <li><strong>L0 ⟨H, H, H⟩</strong>：三个决定都不是 AI 定的，对照组。</li>
@@ -113,50 +123,55 @@ main.rs-wrap a{overflow-wrap:anywhere}
 <li><strong>L2 ⟨任意, A, H⟩</strong>：AI 构造或实质修改搜索空间，评测仍由人或外部固定。</li>
 <li><strong>L3 ⟨任意, 任意, A⟩</strong>：AI 提供或实质修改评测信号。</li>
 </ul>
-<p>定级顺序是 <strong>E &gt; S &gt; D</strong>：评测是 AI 定的就是 L3，否则看空间，最后看方向。像告警定级，按最敏感的那项触发，不是看系统整体多强。论文反复强调：<strong>这把梯子描述的是「控制从哪来」，不是「能力有多强」，级别高不代表更好用、更可靠。</strong></p>
+<p>定级顺序是 <strong>E &gt; S &gt; D</strong>：评测是 AI 定的就是 L3，否则看空间，最后看方向。像告警定级，按最敏感的那项触发，不是看系统整体多强。论文反复强调：<mark><strong>这把梯子描述的是「控制从哪来」，不是「能力有多强」，级别高不代表更好用、更可靠。</strong></mark><span class="src">§3.6</span></p>
 </section>
 <section id="s3">
 <h2>三、怎么判断 AI 是不是真的「掌握」了某个决定</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li>定级靠<mark>反事实检验</mark>:换掉 AI 产生的部分,搜索轨迹变不变。<span class="src">§3.6 第 3 步</span></li><li>起源、针对性、因果作用、可修订这四个性质,<mark>只是强度参考,不是定级门槛</mark>。<span class="src">§3.5</span></li></ul></div>
 <p>这是全文最实用的部分，因为很多系统只是「挂名控制」。</p>
-<p><strong>核心工具是反事实检验</strong>：把 AI 产生的部分拿掉或换掉，后续搜索轨迹会不会实质改变？不会，就不算掌握控制。和消融实验、A/B 测试一个道理。</p>
+<p><mark><strong>核心工具是反事实检验</strong></mark><span class="src">§3.6 第 3 步</span>：把 AI 产生的部分拿掉或换掉，后续搜索轨迹会不会实质改变？不会，就不算掌握控制。和消融实验、A/B 测试一个道理。</p>
 <p>论文还划了几条边界：</p>
 <ul>
-<li><strong>生成候选不等于控制空间</strong>。在给定菜单里点菜，不等于设计菜单。</li>
-<li><strong>自我修改本身不等于 L2</strong>。改了自己，但改动范围是人划好的，控制空间的还是人。</li>
-<li><strong>没有持续适应，也不抹杀一次性的实质控制</strong>。</li>
+<li><strong>生成候选不等于控制空间</strong><span class="src">§2.1</span>。在给定菜单里点菜，不等于设计菜单。</li>
+<li><strong>自我修改本身不等于 L2</strong><span class="src">§3.6</span>。改了自己，但改动范围是人划好的，控制空间的还是人。</li>
+<li><strong>没有持续适应，也不抹杀一次性的实质控制</strong><span class="src">§3.6 第 4 步</span>。</li>
 </ul>
-<p>此外，论文用四个性质描述 AI 控制的「强度」：起源（AI 产生，不是人给的）、针对性（根据当前任务证据）、因果作用（换掉结果会变）、可修订（发现不对能改）。它们是<strong>汇报时的参考，不是定级门槛</strong>；二元 H/A 标签会掩盖共享控制，混合来源要如实记录，不能「四舍五入」成全由 AI 控制。</p>
-<p>论文建议每次报告附一份<strong>残余人类控制清单</strong>：人给了哪些种子、模板、原语库、隐藏测试、审批关卡、救援干预和停止规则。评估厂商宣传时，这几乎就是现成的审计清单。</p>
+<p>此外，论文用四个性质描述 AI 控制的「强度」：起源（AI 产生，不是人给的）、针对性（根据当前任务证据）、因果作用（换掉结果会变）、可修订（发现不对能改）。它们是<strong>汇报时的参考，不是定级门槛</strong><span class="src">§3.5</span>；二元 H/A 标签会掩盖共享控制，混合来源要如实记录，不能「四舍五入」成全由 AI 控制。</p>
+<p>论文建议每次报告附一份<strong>残余人类控制清单</strong><span class="src">§3.6 第 6 步</span>：人给了哪些种子、模板、原语库、隐藏测试、审批关卡、救援干预和停止规则。评估厂商宣传时，这几乎就是现成的审计清单。</p>
 </section>
 <section id="s4">
 <h2>四、几个让人意外的归类</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li><mark>FunSearch、AlphaEvolve 属于 L1</mark>:方向由 AI 引导,空间和评测由人定。<span class="src">§1 · §4.1</span></li><li>STOP、DGM 在固定边界下是<mark>相邻的 L1</mark>。<span class="src">§6.5</span></li><li><mark>L3 不等于全自主</mark>,只有 ⟨A, A, A⟩ 才是三个决定都交给 AI。<span class="src">§3.6</span></li></ul></div>
 <p>用这套方法去量，一些名气很大的系统级别并不高：</p>
 <ul>
-<li><strong>FunSearch、OpenEvolve</strong> 是论文点名的典型 L1。AlphaEvolve 也根据评测历史引导程序搜索，在人划定的编辑范围和人写的评测器里工作，同样放在 L1；若某次部署让 AI 自己定义编辑边界，要记额外的 L2 控制。</li>
-<li><strong>STOP 和达尔文哥德尔机（DGM）</strong> 会反复修改「改进者」或编码 agent 本身，但在论文的固定边界下，是<strong>相邻的 L1 系统</strong>；只有当 AI 产生的评测器或验收规则决定下一次修改时，才算 L3。论文特别提醒：反复自我修改，本身不能证明收益会持续。</li>
-<li><strong>真实的 L2 例子</strong>：S3 让 AI 设计 ViT 架构搜索里「哪些取值是允许的」，即由 AI 来划搜索空间。</li>
-<li><strong>L3 的例子</strong>：Eureka 根据环境结果进化奖励程序，由 AI 来写「什么算好」；论文表格里 Constitutional AI 也标为 L3（AI 产生批评、修订和偏好标签，而宪法条款、有害性规则和基础模型由人固定）。这正好说明，<strong>L3 不等于全自主</strong>，只有 ⟨A, A, A⟩ 才是三个决定都交给了 AI。</li>
+<li><strong>FunSearch、OpenEvolve</strong><span class="src">§4.1</span> 是论文点名的典型 L1。AlphaEvolve 也根据评测历史引导程序搜索，在人划定的编辑范围和人写的评测器里工作，同样放在 L1；若某次部署让 AI 自己定义编辑边界，要记额外的 L2 控制。</li>
+<li><strong>STOP 和达尔文哥德尔机（DGM）</strong> 会反复修改「改进者」或编码 agent 本身，但在论文的固定边界下，是<strong>相邻的 L1 系统</strong><span class="src">§6.5</span>；只有当 AI 产生的评测器或验收规则决定下一次修改时，才算 L3。论文特别提醒：反复自我修改，本身不能证明收益会持续。</li>
+<li><strong>真实的 L2 例子</strong><span class="src">Table 6</span>：S3 让 AI 设计 ViT 架构搜索里「哪些取值是允许的」，即由 AI 来划搜索空间。</li>
+<li><strong>L3 的例子</strong><span class="src">§4.5 · Table 6</span>：Eureka 根据环境结果进化奖励程序，由 AI 来写「什么算好」；论文表格里 Constitutional AI 也标为 L3（AI 产生批评、修订和偏好标签，而宪法条款、有害性规则和基础模型由人固定）。这正好说明，<mark><strong>L3 不等于全自主</strong></mark>，只有 ⟨A, A, A⟩ 才是三个决定都交给了 AI。</li>
 </ul>
 </section>
 <section id="s5">
 <h2>五、每一级都可能失败，L3 的风险最特殊</h2>
-<p>论文的结论很冷静：<strong>级别越高，不保证系统越好</strong>。</p>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li><mark>级别越高,不保证系统越好</mark>,每一级都有自己的失败方式。<span class="src">§9</span></li><li>L3 的特殊风险:<mark>评测的错误会变成选择压力</mark>。<span class="src">§9</span></li></ul></div>
+<p>论文的结论很冷静：<mark><strong>级别越高，不保证系统越好</strong></mark><span class="src">§9</span>。</p>
 <ul>
-<li><strong>L1</strong>：有希望的方向，不一定能变成成功的实验。常见四种失败：被早期结果锚住（永远在第一版上修修补补）、候选档案坍缩（方案池只剩一种思路）、功劳错配（改了十处，把提升算到错的那处）、过拟合固定评测器（专门针对压测脚本优化，真实流量一来就不行）。在严格控制预算和评测的复现实验里，一些精巧的自适应策略甚至会输给随机搜索。</li>
+<li><strong>L1</strong>：有希望的方向，不一定能变成成功的实验。常见四种失败<span class="src">§4.6</span>：被早期结果锚住（永远在第一版上修修补补）、候选档案坍缩（方案池只剩一种思路）、功劳错配（改了十处，把提升算到错的那处）、过拟合固定评测器（专门针对压测脚本优化，真实流量一来就不行）。在严格控制预算和评测的复现实验里，一些精巧的自适应策略甚至会输给随机搜索。</li>
 <li><strong>L2</strong>：更丰富的表示不一定带来更好用的搜索空间，观察到的收益可能只是多采样了几次。</li>
-<li><strong>L3</strong>：特殊之处在于，<strong>评测器本身成了优化回路里可变的一环，评测的错误会变成选择压力</strong>。在固定候选上表现良好的信号，在持续优化下可能变得不可靠；大模型评委本身有系统性偏差，比如位置偏差、偏爱自己的输出，多个评委集成也不能消除共享的盲区。</li>
+<li><strong>L3</strong>：特殊之处在于，<mark><strong>评测器本身成了优化回路里可变的一环，评测的错误会变成选择压力</strong></mark><span class="src">§6.5 · §9</span>。在固定候选上表现良好的信号，在持续优化下可能变得不可靠；大模型评委本身有系统性偏差<span class="src">§6.5</span>，比如位置偏差、偏爱自己的输出，多个评委集成也不能消除共享的盲区。</li>
 </ul>
 <figure class="rs-fig"><a href="img/l3-evaluation-mechanism.jpg" target="_blank"><img alt="AI 构造评测器的机制" loading="lazy" src="img/l3-evaluation-mechanism.jpg"/></a><figcaption>图3:L3 的机制。人提供任务说明、示例和约束作为锚点;AI 生成或修改测试、判分方式、汇总方式和阈值;评测结果决定选择或训练,产生新证据。底部是独立验证:冻结的外部评测器、留出测试、跨模型或专家检查。(图源:AI4AI 综述项目页)</figcaption></figure>
 <p>所以独立验证几乎是 L3 的底线：<strong>冻结的外部评测器</strong>（锁定版本、被优化的系统看不到也改不了的测试集）、优化过程从没见过的留出测试、跨模型和专家复核。</p>
 </section>
 <section id="s6">
 <h2>六、和 RSI 的关系：证据门槛很高</h2>
-<p>论文对递归自我改进（RSI）的定义是：<strong>对 AI 系统的改进，增强了它产生后续改进的能力</strong>。不是「产品一版比一版好」，而是「生产线本身越来越会造产品」。</p>
-<p>要证明 RSI，门槛很高：要说明第 g+1 代改进了「产出第 g+2 代的机制」；收益要跨多代持续；每一代都要在<strong>运行前就冻结的评测器</strong>下更好；评测器本身要做版本管理，以免把「标准变了」误当成「候选变好了」。</p>
-<p>还有一个反直觉的结论：<strong>RSI 和控制级别是两回事</strong>。由外部评测的回路可能出现递归收益，由 AI 自己评测的回路可能根本没有。更强的任务表现，也不能证明更强的后续自我改进能力。</p>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li>RSI = <mark>改进增强了产生后续改进的能力</mark>。<span class="src">§2.1</span></li><li>证明 RSI 需要<mark>运行前冻结的外部评测器</mark>,且收益跨多代持续。<span class="src">§6.5</span></li><li><mark>RSI 和控制级别是两回事</mark>。<span class="src">§8.1</span></li></ul></div>
+<p>论文对递归自我改进（RSI）的定义是：<mark><strong>对 AI 系统的改进，增强了它产生后续改进的能力</strong></mark><span class="src">§2.1</span>。不是「产品一版比一版好」，而是「生产线本身越来越会造产品」。</p>
+<p>要证明 RSI，门槛很高：要说明第 g+1 代改进了「产出第 g+2 代的机制」；收益要跨多代持续；每一代都要在<strong>运行前就冻结的评测器</strong><span class="src">§6.5</span>下更好；评测器本身要做版本管理，以免把「标准变了」误当成「候选变好了」。</p>
+<p>还有一个反直觉的结论：<mark><strong>RSI 和控制级别是两回事</strong></mark><span class="src">§8.1</span>。由外部评测的回路可能出现递归收益，由 AI 自己评测的回路可能根本没有。更强的任务表现，也不能证明更强的后续自我改进能力。</p>
 </section>
 <section id="s7">
 <h2>七、四类改进对象（和级别是两条独立的轴）</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li>「改什么」(四类对象)和「谁做决定」(L0–L3)是<mark>两条独立的轴</mark>。<span class="src">Figure 10</span></li></ul></div>
 <figure class="rs-fig"><a href="img/applications-overview.jpg" target="_blank"><img alt="AI4AI 应用全景" loading="lazy" src="img/applications-overview.jpg"/></a><figcaption>图4:按改进对象划分的四个应用族。(图源:AI4AI 综述项目页)</figcaption></figure>
 <p>除了「谁做决定」，论文还按「改的是什么」整理应用。这条轴和 L0 到 L3 互相独立，同一族里的方法级别可以完全不同：</p>
 <ul>
@@ -168,9 +183,10 @@ main.rs-wrap a{overflow-wrap:anywhere}
 </section>
 <section id="s8">
 <h2>八、几个还没有答案的问题</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li>值不值得交权,取决于<mark>错误多快被发现、能否撤回、验证多贵、原本要花多少人力</mark>。<span class="src">§8.1</span></li></ul></div>
 <p>论文最后留下的问题，比给出的答案更值得想：</p>
 <ul>
-<li><strong>什么时候值得把控制权交给 AI？</strong> 可能取决于错误多快能被发现、后果能不能撤回、独立验证有多贵、这个决定原本要花人多少精力。研究自主权应该是固定配置，还是随证据和风险调整的授权？</li>
+<li><strong>什么时候值得把控制权交给 AI？</strong><span class="src">§8.1</span> 可能取决于错误多快能被发现、后果能不能撤回、独立验证有多贵、这个决定原本要花人多少精力。研究自主权应该是固定配置，还是随证据和风险调整的授权？</li>
 <li><strong>可表达不等于够得着。</strong> 一门足够强的语言也许已经能表达理想的算法，却没法在现实预算内找到它。好的抽象就像好用的高层 API，让好方案变得「够得着」。AI 能不能做到这一点？</li>
 <li><strong>当评测本身在变，什么才算进步？</strong></li>
 <li><strong>RSI 什么时候会持续，什么时候会饱和？</strong></li>
