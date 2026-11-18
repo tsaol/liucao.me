@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My take · RSI from an SA's perspective · 2026-11</title>
+<link href="../../../rsi/assets/style.css" rel="stylesheet"/>
+<style>
+:root{--rs-bg:#0B0D12;--rs-bg2:#12151d;--rs-ink:#E6EAF2;--rs-dim:#8A94A6;--rs-cold:#4CC2FF;--rs-warm:#FFB020;--rs-ok:#38D39F;--rs-line:#232a36;
+--rs-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+--rs-mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+body{background:var(--rs-bg)}
+main.rs-wrap{color:var(--rs-ink);font-family:var(--rs-sans);font-size:17px;line-height:1.8;max-width:980px;margin:0 auto;padding:4vh 5vw 12vh}
+main.rs-wrap h1{font-size:36px;line-height:1.25;margin:0 0 .3em}
+main.rs-wrap h2{font-size:24px;margin:0 0 .9em;color:var(--rs-cold)}
+main.rs-wrap h3{font-size:18px;margin:1.6em 0 .6em;color:var(--rs-ink)}
+main.rs-wrap section{border-top:1px solid var(--rs-line);padding:2.4em 0;scroll-margin-top:56px}
+main.rs-wrap section.head{border-top:none;padding-top:0}
+main.rs-wrap p{margin:0 0 1em}
+main.rs-wrap b{color:var(--rs-warm);font-weight:600}
+main.rs-wrap a{color:var(--rs-cold);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.5)}
+main.rs-wrap a:hover{border-bottom-style:solid}
+main.rs-wrap .dim{color:var(--rs-dim)}
+main.rs-wrap .small{font-size:14px}
+main.rs-wrap code{font-family:var(--rs-mono);font-size:.86em;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:4px;padding:0 .3em}
+main.rs-wrap ul{margin:0 0 1em;padding-left:1.3em}
+main.rs-wrap li{margin:.35em 0}
+main.rs-wrap .lead{font-size:21px;line-height:1.6;padding:1em 1.2em;border-left:3px solid var(--rs-warm);background:var(--rs-bg2);border-radius:0 8px 8px 0;margin:1.2em 0}
+main.rs-wrap .note{font-size:14px;color:var(--rs-dim);background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.7em 1em;margin:1em 0}
+.rs-toc{position:sticky;top:0;z-index:5;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--rs-line);display:flex;gap:1.2em;justify-content:center;flex-wrap:wrap;padding:.55em 1em;font-size:14px}
+.rs-toc a{color:var(--rs-dim);text-decoration:none}
+.rs-toc a:hover{color:var(--rs-cold)}
+.rs-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:1.2em 0}
+.rs-card{display:block;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:1em 1.1em;color:var(--rs-ink)!important;border-bottom:1px solid var(--rs-line)!important;transition:border-color .2s}
+.rs-card:hover{border-color:var(--rs-cold)!important}
+.rs-card .k{font-size:13px;color:var(--rs-dim)}
+.rs-card .t{font-size:18px;font-weight:600;margin:.2em 0}
+.rs-card .d{font-size:14px;color:var(--rs-dim);line-height:1.6}
+.rs-q{background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:.2em 1.1em;margin:.8em 0}
+.rs-q summary{cursor:pointer;font-weight:600;padding:.7em 0;list-style:none}
+.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:var(--rs-warm)}
+.rs-q[open] summary::before{content:"− "}
+.rs-q > div{padding:0 0 .8em}
+table.rs-t{width:100%;border-collapse:collapse;font-size:15px;margin:.6em 0 1.2em}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--rs-line);padding:.55em .5em;text-align:left;vertical-align:top}
+table.rs-t th{color:var(--rs-dim);font-weight:500;font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--rs-line);border-radius:999px;padding:0 .6em;color:var(--rs-dim);margin-right:.3em;white-space:nowrap}
+.tag.top{color:var(--rs-warm);border-color:rgba(255,176,32,.5)}
+.tag.ok{color:var(--rs-ok);border-color:rgba(56,211,159,.5)}
+pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7;color:var(--rs-ink)}
+@media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
+@media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
+.rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
+    .rs-fig{margin:1em 0 1.6em}.rs-fig img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;border:1px solid var(--rs-line)}.rs-fig figcaption{font-size:13px;color:var(--rs-dim);line-height:1.65;margin-top:.6em}.rs-fig a{border-bottom:none}
+.rs-tl{border-left:2px solid var(--rs-line);margin:1em 0 1.4em;padding-left:1em}.rs-tl>div{margin:.55em 0;font-size:15px}.rs-tl .y{display:inline-block;min-width:6.5em;color:var(--rs-cold);font-family:var(--rs-mono);font-size:13px}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← RSI Resources</a>
+<a href="./">My take</a>
+<a href="../landscape/">RSI Landscape</a>
+<a href="../demo/play/">Play</a>
+<a href="../slides/">RSI slides</a>
+</div>
+</nav>
+<div class="rs-toc">
+<a href="#field">Domain</a>
+<a href="#customer">For customers</a>
+<a href="#compete">Competition</a>
+<a href="#infra">Infrastructure</a>
+<a href="#china">China Regions</a>
+<a href="#do">What to do next</a>
+<a href="#watch">Watch list</a>
+</div>
+<main class="rs-wrap">
+<section class="head">
+<h1>My take · RSI from an SA's perspective</h1>
+<p class="dim">After reviewing <a href="../landscape/">RSI Landscape</a>, <a href="../capital/">Investment perspective</a>, <a href="../alphaevolve/">AlphaEvolve Explained</a> and those papers, the author's own conclusions.<b>Everything on this page is opinion, not fact</b>; each one lists its basis and confidence level, so you can go back to the original sources if you disagree. Compiled 2026-11-18.</p>
+<div class="lead"><b>In short:</b>RSI is real, but what enterprises can use today is its "small version"— <b>Freeze the model; automatically modify the harness and algorithms</b>. Generation is no longer scarce,<b>What's scarce is trustworthy evaluation</b>. The most valuable thing an SA can do is help customers build "how to score" first, and only then talk about self-improvement.</div>
+<div class="note">Confidence:<span class="tag ok">High</span> Multiple primary sources point to the same conclusion;<span class="tag">Medium</span> Evidence exists, but may change;<span class="tag top">Low</span> Mostly speculation; worth continued watching.</div>
+</section>
+<section id="field">
+<h2>① Assessment of the field</h2>
+<ul>
+<li><b>"AI helping build AI" is already happening, but "AI building AI on its own" is still a long way off.</b><span class="tag ok">High</span><br/> Basis: over 75% of Google's production code is written by AI, but about 88% still requires repeated human guidance; METR estimates Anthropic's R&amp;D speed at about 2x; OpenAI says explicitly that fully autonomous RSI should not be pursued now. The three frontier labs point in the same direction, differing only in pace.</li>
+<li><b>What enterprises can actually deploy is L2 in Figure 5: humans set the goals and scoring, and AI chooses the changes.</b><span class="tag ok">High</span><br/> Basis: Products from Google, Microsoft and AWS (AlphaEvolve, Foundry Agent Optimizer, AgentCore optimization) all stop at this level; L3 and above exist only in research. When customers say "self-evolving," nine times out of ten they mean this level.</li>
+<li><b>The bottleneck is verification, not generation.</b><span class="tag ok">High</span><br/> Basis: In this demo, 97.7% of the cost per round was evaluation; AlphaEvolve's generation is hosted, while evaluation runs on the customer's side; nearly all new papers (SoL-Pi, TRUST, HarnessDev) are tackling "how to verify."</li>
+<li><b>Real gains are mostly in the single- to double-digit percentage range. It's not magic.</b><span class="tag ok">High</span><br/> Basis: FM Logistic 10.4%, Coolblue 5%, JetBrains 15–20%, Google's skill optimization about 5%, Borg 0.7%. On systems that are already highly optimized, these gains are very valuable; but with customers, talk about "verifiable small wins," not "self-evolving AI."</li>
+<li><b>Investor enthusiasm is running ahead of technical progress.</b><span class="tag">Medium</span><br/> Basis: Several new labs with no revenue are valued at $4 billion to $50 billion, mostly on self-reported results; a year from now, some may pivot or be acquired. Hype itself is not evidence.</li>
+</ul>
+</section>
+<section id="customer">
+<h2>② How to pitch it to customers</h2>
+<ul>
+<li><b>Diagnose first: three questions</b> <span class="tag ok">High</span>:
+<ol>
+<li>Do you have<b> Can be scored automatically</b> method (tests, benchmarks, business metrics)?</li>
+<li>Do you have<b> Held-out set</b>(problems the optimization process has never seen)?</li>
+<li>Before changes go live<b> Who reviews</b>, can it be rolled back?</li>
+</ol>
+None of the three: build evals first and don't talk about self-improvement. One: run a small-scope PoC. All three: you can adopt an automated optimization loop.</li>
+<li><b>Pick problems that "can be scored" for the PoC.</b><span class="tag ok">High</span><br/> Good fit: performance optimization (kernels, queries, video processing), scheduling and routing, demand forecasting, supply chain simulation, chip verification, and agent prompts / skills. Poor fit: problems with no benchmark, where quality depends on subjective judgment, or where feedback takes months to arrive.</li>
+<li><b>Change the harness first, not the weights.</b><span class="tag ok">High</span><br/> Basis: It only runs inference, is cheap and can be rolled back at any time; the demo's 0.42 → 0.94 was achieved with frozen weights. Leave weight changes (fine-tuning, RL) until the harness has no more headroom.</li>
+<li><b>Build "anti-gaming" into the proposal.</b><span class="tag ok">High</span><br/> Basis: in Google's video tutorial, the loop "skips rendering to get faster"; Weco measured 63% reward hacking. The solution needs: hidden problems, re-testing with rephrased prompts, capability floors, cost penalties, and human review.</li>
+<li><b>Don't use the term "RSI" to sell solutions.</b><span class="tag">Medium</span><br/> Basis: In the US it is already a sensitive term for regulators and the public (a bill to ban it has been proposed); for enterprise customers, "automated optimization + evaluation loop" is more accurate and easier to get through internal approval.</li>
+</ul>
+</section>
+<section id="compete">
+<h2>③ How to view the competition</h2>
+<ul>
+<li><b>Acknowledge that Google leads in "managed algorithm discovery."</b><span class="tag ok">High</span><br/> Basis: AlphaEvolve is GA, with public case studies from BASF, Klarna, JetBrains, and others, plus Cloud Batch fan-out evals; Microsoft and AWS currently have no equivalent managed service.</li>
+<li><b>Don't compete with AlphaEvolve on the engine; compete on the closed loop and neutrality.</b><span class="tag">Medium</span><br/> Why: The evolution engine has mature open-source implementations (ShinkaEvolve, OpenEvolve, with the same structure as AlphaEvolve). What customers actually lack is evaluation, pre-launch validation (offline evaluation + A/B), a choice of models, and integration with existing systems. AWS AgentCore optimization / Evaluations fits right at this layer.</li>
+<li><b>"Generate in the cloud, evaluate on your side" works for everyone.</b><span class="tag">Medium</span><br/> Why: AlphaEvolve's evaluations already run on the customer's own compute. You can build the same structure with an open-source engine + Bedrock + AWS Batch / Spot, and evaluation is often the biggest cost.</li>
+<li><b>Microsoft's product loop is well refined; don't underestimate it.</b><span class="tag">Medium</span><br/> Basis: Foundry's "production traces → human labeling → optimization → human PR review → regression set → canary rollout" is the most complete reference design of the three.</li>
+</ul>
+</section>
+<section id="infra">
+<h2>④ Infrastructure opportunities</h2>
+<ul>
+<li><b>Evaluation compute is a new kind of workload.</b><span class="tag ok">High</span><br/> Characteristics: many small, parallel, interruptible tasks, with one sandbox per candidate that is discarded after it runs. This suits Spot, Batch, and fast-booting microVMs. Google built a dedicated Agent Compute Engine, which shows the big players see it the same way.</li>
+<li><b>RSI companies need more than GPUs.</b><span class="tag">Medium</span><br/> Basis: Experiment orchestration, sandboxes, evaluation clusters, experiment log storage and fast delivery of the latest accelerators; automated kernel optimization may also make models easier to port to non-CUDA chips.</li>
+<li><b>Follow the funding to see demand.</b><span class="tag">Medium</span><br/> Basis: New labs usually sign their main compute contracts 1–3 months after raising, and a large share of the first round goes to a single cloud (about 63% for Recursive, about half for Mirendil). Funding news is a demand signal.</li>
+<li><b>Governance shifts from a "burden" to a "requirement".</b><span class="tag">Medium</span><br/> Basis: Regulatory proposals require auditing, isolation and kill switches; labs and researchers are doing this themselves too (OpenAI monitors full trajectories for new models; NVIDIA SoL-Pi never feeds held-out results back to the optimizer). Platforms that turn these into ready-made capabilities will sell better.</li>
+</ul>
+</section>
+<section id="china">
+<h2>⑤ Assessment for the China Regions</h2>
+<ul>
+<li><b>Domestic RSI startups are fairly far from overseas clouds.</b><span class="tag">Medium</span><br/> Basis: Mostly angel / Pre-A rounds, funded mainly by local state-owned capital and USD funds; compute partners are undisclosed, and they are likely using domestic chips.</li>
+<li><b>The more practical opportunities are with two types of customers.</b><span class="tag">Medium</span><br/> First,<b>Chinese companies expanding overseas</b> evaluation, inference, and sandboxes; second, <b>"Algorithm optimization" in traditional industries</b> — supply chain, logistics, and manufacturing scheduling. This is where AlphaEvolve has the most public case studies (BASF, FM Logistic, Kinaxis), and where local customers can most easily calculate ROI.</li>
+<li><b>Research in China is very active and worth bringing up.</b><span class="tag ok">High</span><br/> Basis: ByteDance, Huawei, Shanghai AI Lab, DeepSeek and others all have work on harness self-evolution and self-verification (see <a href="../#china">Resource pack · Results from China</a>), and the focus is again on "how to verify".</li>
+</ul>
+</section>
+<section id="do">
+<h2>⑥ What I would do next</h2>
+<ol>
+<li><b>Prepare an "evaluation-first" demo</b>: use the existing demo to explain where 0.42 → 0.94 comes from, focusing on evals, promotion gates, and cost rather than "AI getting smarter on its own".</li>
+<li><b>Find a customer problem that can be scored and run a small PoC</b>: prioritize problems with clear metrics, such as supply chain, routing, and performance optimization, and spend the first two weeks building the evals and the held-out set.</li>
+<li><b>Make a competitor comparison card</b>: what AlphaEvolve / Foundry Agent Optimizer / AgentCore optimization each change, how they verify, and where they run evals (material in <a href="../landscape/#cloud">Landscape ③</a>).</li>
+<li><b>Update the watchlist monthly</b>(see ⑦).</li>
+</ol>
+</section>
+<section id="watch">
+<h2>⑦ What to watch over the next six months</h2>
+<ul>
+<li>Whether Microsoft and AWS will launch a managed "algorithm discovery" service to rival AlphaEvolve.</li>
+<li>How Anthropic, after going public, discloses AI R&amp;D acceleration and RSI risk in its quarterly reports.</li>
+<li>Whether third-party evaluations like METR's cover more labs, and whether the evidence becomes more transparent.</li>
+<li>Whether US bills to ban or regulate RSI actually move forward.</li>
+<li>Whether new labs can deliver<b> Independently verifiable</b> results, not just self-reported benchmarks.</li>
+<li>Whether the gains in enterprise cases are growing, or staying in the single-digit to double-digit range.</li>
+</ul>
+<p class="dim small">These views will be updated as new material comes in. If you see things differently or have new evidence, please let us know.</p>
+</section>
+</main>
+<a data-cur="en" data-to="zh" href="../../../rsi/view/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>
