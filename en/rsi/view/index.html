@@ -69,93 +69,126 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 </div>
 </nav>
 <div class="rs-toc">
-<a href="#field">Domain</a>
-<a href="#customer">For customers</a>
-<a href="#compete">Competition</a>
-<a href="#infra">Infrastructure</a>
-<a href="#china">China Regions</a>
-<a href="#do">What to do next</a>
-<a href="#watch">Watch list</a>
+<a href="#t1">1 Evaluators</a>
+<a href="#t2">2 Compute shape</a>
+<a href="#t3">3 Goodhart</a>
+<a href="#t4">4 Adoption order</a>
+<a href="#t5">5 Auditable changes</a>
+<a href="#t6">6 Compute savings</a>
+<a href="#t7">7 Neutrality</a>
+<a href="#t8">8 Control over evaluation</a>
+<a href="#t9">9 Capital window</a>
+<a href="#bets">Predictions</a>
+<a href="#unsure">Not confident</a>
 </div>
 <main class="rs-wrap">
 <section class="head">
 <h1>My take · RSI from an SA's perspective</h1>
-<p class="dim">After reviewing <a href="../landscape/">RSI Landscape</a>, <a href="../capital/">Investment perspective</a>, <a href="../alphaevolve/">AlphaEvolve Explained</a> and those papers, the author's own conclusions.<b>Everything on this page is opinion, not fact</b>; each one lists its basis and confidence level, so you can go back to the original sources if you disagree. Compiled 2026-11-18.</p>
-<div class="lead"><b>In short:</b>RSI is real, but what enterprises can use today is its "small version"— <b>Freeze the model; automatically modify the harness and algorithms</b>. Generation is no longer scarce,<b>What's scarce is trustworthy evaluation</b>. The most valuable thing an SA can do is help customers build "how to score" first, and only then talk about self-improvement.</div>
-<div class="note">Confidence:<span class="tag ok">High</span> Multiple primary sources point to the same conclusion;<span class="tag">Medium</span> Evidence exists, but may change;<span class="tag top">Low</span> Mostly speculation; worth continued watching.</div>
+<p class="dim">After reviewing <a href="../landscape/">RSI Landscape</a>, <a href="../capital/">Investment perspective</a>, <a href="../alphaevolve/">AlphaEvolve Explained</a> and those papers, the author's own conclusions.<b>Everything on this page is judgment, not fact.</b>Each one covers why it happens, the evidence, what it means for SAs, and when I'd be wrong. Compiled on 2026-11-18, to be scored again in 2027-05.</p>
+<div class="lead"><b>Core thesis:</b>What RSI really changes isn't “how smart AI is,” but<b> the cost structure of “improvement”</b> — improvement used to be limited by scarce experts; now it's limited by<b> Evaluator quality</b> and<b> Eval compute</b>. So value will flow from models to evaluators, compute demand will shift from “big training peaks” to “a high-frequency long tail of evaluation,” and competition will come down to<b> Who hosts the evals, and who controls the changes</b>.</div>
 </section>
-<section id="field">
-<h2>① Assessment of the field</h2>
+<section id="t1">
+<h2>Thesis 1: Value is shifting from the “model” to the “evaluator”</h2>
 <ul>
-<li><b>"AI helping build AI" is already happening, but "AI building AI on its own" is still a long way off.</b><span class="tag ok">High</span><br/> Basis: over 75% of Google's production code is written by AI, but about 88% still requires repeated human guidance; METR estimates Anthropic's R&amp;D speed at about 2x; OpenAI says explicitly that fully autonomous RSI should not be pursued now. The three frontier labs point in the same direction, differing only in pace.</li>
-<li><b>What enterprises can actually deploy is L2 in Figure 5: humans set the goals and scoring, and AI chooses the changes.</b><span class="tag ok">High</span><br/> Basis: Products from Google, Microsoft and AWS (AlphaEvolve, Foundry Agent Optimizer, AgentCore optimization) all stop at this level; L3 and above exist only in research. When customers say "self-evolving," nine times out of ten they mean this level.</li>
-<li><b>The bottleneck is verification, not generation.</b><span class="tag ok">High</span><br/> Basis: In this demo, 97.7% of the cost per round was evaluation; AlphaEvolve's generation is hosted, while evaluation runs on the customer's side; nearly all new papers (SoL-Pi, TRUST, HarnessDev) are tackling "how to verify."</li>
-<li><b>Real gains are mostly in the single- to double-digit percentage range. It's not magic.</b><span class="tag ok">High</span><br/> Basis: FM Logistic 10.4%, Coolblue 5%, JetBrains 15–20%, Google's skill optimization about 5%, Borg 0.7%. On systems that are already highly optimized, these gains are very valuable; but with customers, talk about "verifiable small wins," not "self-evolving AI."</li>
-<li><b>Investor enthusiasm is running ahead of technical progress.</b><span class="tag">Medium</span><br/> Basis: Several new labs with no revenue are valued at $4 billion to $50 billion, mostly on self-reported results; a year from now, some may pivot or be acquired. Hype itself is not evidence.</li>
+<li><b>Mechanism</b>: In a “frozen model, automatically modify code / harness” loop, two of the three components are already swappable. The generation model can be swapped (Gemini, Claude, open source), and the evolution engine is open source (OpenEvolve and ShinkaEvolve share AlphaEvolve's structure).<b>The only thing that can't be replaced is the customer's own evaluators, holdout sets, and historical trajectories</b>, because they encode “what this company considers better.”</li>
+<li><b>Evidence</b>: AlphaEvolve's official design is “generation on Google Cloud, evaluation on the customer side,” and it states explicitly that it “does not run your code.” BASF's key work was first using three years of historical data to define the score for “how close the simulation is to reality.” JetBrains says “engineers still own the benchmarks, reviews, and release decisions.”</li>
+<li><b>What it means for SAs</b>: Customer stickiness isn't in “whose model does the generation,” but in<b> Where evals run, and where trajectories and holdout sets are stored</b>. Helping customers build evaluators, datasets and traces in their own accounts lasts longer than pushing any particular model. Put the other way: whoever owns the evaluator owns the loop.</li>
+<li><b>I'm wrong if</b>: If managed services start offering “industry-standard eval suites” and get customers to depend on them (the evaluator itself becomes part of the platform), stickiness shifts back to the platform.</li>
 </ul>
 </section>
-<section id="customer">
-<h2>② How to pitch it to customers</h2>
+<section id="t2">
+<h2>Thesis 2: The shape of compute demand is changing — from “training peaks” to the “evaluation long tail”</h2>
 <ul>
-<li><b>Diagnose first: three questions</b> <span class="tag ok">High</span>:
-<ol>
-<li>Do you have<b> Can be scored automatically</b> method (tests, benchmarks, business metrics)?</li>
-<li>Do you have<b> Held-out set</b>(problems the optimization process has never seen)?</li>
-<li>Before changes go live<b> Who reviews</b>, can it be rolled back?</li>
-</ol>
-None of the three: build evals first and don't talk about self-improvement. One: run a small-scope PoC. All three: you can adopt an automated optimization loop.</li>
-<li><b>Pick problems that "can be scored" for the PoC.</b><span class="tag ok">High</span><br/> Good fit: performance optimization (kernels, queries, video processing), scheduling and routing, demand forecasting, supply chain simulation, chip verification, and agent prompts / skills. Poor fit: problems with no benchmark, where quality depends on subjective judgment, or where feedback takes months to arrive.</li>
-<li><b>Change the harness first, not the weights.</b><span class="tag ok">High</span><br/> Basis: It only runs inference, is cheap and can be rolled back at any time; the demo's 0.42 → 0.94 was achieved with frozen weights. Leave weight changes (fine-tuning, RL) until the harness has no more headroom.</li>
-<li><b>Build "anti-gaming" into the proposal.</b><span class="tag ok">High</span><br/> Basis: in Google's video tutorial, the loop "skips rendering to get faster"; Weco measured 63% reward hacking. The solution needs: hidden problems, re-testing with rephrased prompts, capability floors, cost penalties, and human review.</li>
-<li><b>Don't use the term "RSI" to sell solutions.</b><span class="tag">Medium</span><br/> Basis: In the US it is already a sensitive term for regulators and the public (a bill to ban it has been proposed); for enterprise customers, "automated optimization + evaluation loop" is more accurate and easier to get through internal approval.</li>
+<li><b>Mechanism</b>: Every round of evolution has to run each of dozens to hundreds of candidates. These jobs<b> Small, short, highly parallel, interruptible, and each one isolated</b>, and many are CPU tasks (compiling, simulation, running tests), not just GPU. Cold-start time, per-second billing, Spot availability, and strength of isolation will matter more than “how many GPUs you have.”</li>
+<li><b>Evidence</b>: In this demo, 97.7% of the cost of one round went to evaluation; Google built a microVM service specifically for agents (Agent Compute Engine, pitched as “eval sweeps don't wait on infrastructure”) and connected AlphaEvolve to Cloud Batch to fan out hundreds of evaluations; sandboxes have become a standalone business (Modal's sandbox business is reportedly at about $300M annualized).</li>
+<li><b>What it means for SAs</b>: For RSI-type workloads, the architecture review question isn't “how big is the training cluster” but “how do you schedule ten thousand ten-second isolated tasks, at what cost, and how fast do they start.” Cloud providers' existing fine-grained primitives (lightweight VMs, Batch, Spot, serverless) will be a hidden competitive advantage.</li>
+<li><b>I'm wrong if</b>: Evaluation is increasingly done by “learned verifier models” (scoring on GPUs instead of actually running the code), so demand shifts back toward GPU inference.</li>
 </ul>
 </section>
-<section id="compete">
-<h2>③ How to view the competition</h2>
+<section id="t3">
+<h2>Thesis 3: Goodhart's law is the law of physics in this field — evaluation costs rise along with optimization capability</h2>
 <ul>
-<li><b>Acknowledge that Google leads in "managed algorithm discovery."</b><span class="tag ok">High</span><br/> Basis: AlphaEvolve is GA, with public case studies from BASF, Klarna, JetBrains, and others, plus Cloud Batch fan-out evals; Microsoft and AWS currently have no equivalent managed service.</li>
-<li><b>Don't compete with AlphaEvolve on the engine; compete on the closed loop and neutrality.</b><span class="tag">Medium</span><br/> Why: The evolution engine has mature open-source implementations (ShinkaEvolve, OpenEvolve, with the same structure as AlphaEvolve). What customers actually lack is evaluation, pre-launch validation (offline evaluation + A/B), a choice of models, and integration with existing systems. AWS AgentCore optimization / Evaluations fits right at this layer.</li>
-<li><b>"Generate in the cloud, evaluate on your side" works for everyone.</b><span class="tag">Medium</span><br/> Why: AlphaEvolve's evaluations already run on the customer's own compute. You can build the same structure with an open-source engine + Bedrock + AWS Batch / Spot, and evaluation is often the biggest cost.</li>
-<li><b>Microsoft's product loop is well refined; don't underestimate it.</b><span class="tag">Medium</span><br/> Basis: Foundry's "production traces → human labeling → optimization → human PR review → regression set → canary rollout" is the most complete reference design of the three.</li>
+<li><b>Mechanism</b>: The stronger the optimizer, the more holes it finds in the evaluation (“when a measure becomes a target, it ceases to be a good measure”). So evaluation isn't a one-time investment but a<b> Arms race</b>: Each time optimization capability moves up a step, evaluations need more hidden test cases, rotated problems, and added constraints. Evaluation budgets should rise with optimization strength rather than stay fixed.</li>
+<li><b>Evidence</b>: In Google's video tutorial, the evolutionary loop “skips rendering to go faster,” and the only fix is adding an image-quality threshold. Weco measured about 63% of candidates gaming the metric. NVIDIA SoL-Pi hides the “capability floor” from the party being optimized. ByteDance's HarnessDev found that the agent's own judgments barely predict the next round's improvement.</li>
+<li><b>A corollary</b>: Progress will concentrate in<b> The eval itself is hard to game</b> domains — math (formal proofs), chips (equivalence checking), and kernels (timing on real hardware). This also explains why AlphaEvolve's strongest results are all in these areas.</li>
+<li><b>What it means for SAs</b>: You can offer customers a new service:<b>“Red-teaming your evaluator”</b>: Hunt specifically for holes in evaluations, the way security teams hunt for system vulnerabilities. Evaluation operations (EvalOps) will become ongoing work, like SecOps.</li>
+<li><b>I'm wrong if</b>: A general, reliable, cheap automatic verification method emerges (one that prevents score gaming without human-designed evaluations), and evaluation stops being the bottleneck. No signs of this so far.</li>
 </ul>
 </section>
-<section id="infra">
-<h2>④ Infrastructure opportunities</h2>
+<section id="t4">
+<h2>Thesis 4: Adoption order is set by “the cost and speed of verification,” not by “where AI is smartest”</h2>
 <ul>
-<li><b>Evaluation compute is a new kind of workload.</b><span class="tag ok">High</span><br/> Characteristics: many small, parallel, interruptible tasks, with one sandbox per candidate that is discarded after it runs. This suits Spot, Batch, and fast-booting microVMs. Google built a dedicated Agent Compute Engine, which shows the big players see it the same way.</li>
-<li><b>RSI companies need more than GPUs.</b><span class="tag">Medium</span><br/> Basis: Experiment orchestration, sandboxes, evaluation clusters, experiment log storage and fast delivery of the latest accelerators; automated kernel optimization may also make models easier to port to non-CUDA chips.</li>
-<li><b>Follow the funding to see demand.</b><span class="tag">Medium</span><br/> Basis: New labs usually sign their main compute contracts 1–3 months after raising, and a large share of the first round goes to a single cloud (about 63% for Recursive, about half for Mirendil). Funding news is a demand signal.</li>
-<li><b>Governance shifts from a "burden" to a "requirement".</b><span class="tag">Medium</span><br/> Basis: Regulatory proposals require auditing, isolation and kill switches; labs and researchers are doing this themselves too (OpenAI monitors full trajectories for new models; NVIDIA SoL-Pi never feeds held-out results back to the optimizer). Platforms that turn these into ready-made capabilities will sell better.</li>
+<li><b>Mechanism</b>: Whether a problem can be improved automatically depends on two things:<b>Cost per evaluation</b>, <b>How soon we'll know</b>. Ranked by these two factors, the order is roughly: kernels / compilers (seconds, exact) → math (formal) → scheduling, routing, production planning (simulators exist) → forecasting (needs backtesting, and must wait for real data) → product experience (weeks, noisy).</li>
+<li><b>Evidence</b>: Jeff Dean says “infinite acceleration isn't realistic” because experiments take physical time. AlphaEvolve's enterprise cases are almost all problems with simulation or backtesting (BASF supply chain twin, FM Logistic routing, Kinaxis forecasting, Coolblue demand forecasting).</li>
+<li><b>A corollary</b>:<b>Simulators and digital twins are a prerequisite for RSI</b>. BASF's first step wasn't optimization but building a digital twin that matches historical data. So RSI will drive demand for simulation and HPC — Google promoting AlphaEvolve at the SC26 supercomputing conference is a sign of this.</li>
+<li><b>What it means for SAs</b>: When choosing customers, first ask: “Do you have a simulator / backtesting / automated tests?” If not, the first project is helping them build the simulation or evaluation, not jumping straight to optimization. This is also the most natural entry point for HPC and data platforms.</li>
+<li><b>I'm wrong if</b>: Foundation models can reliably “predict experiment results,” replacing real simulation. Current papers show these predictions aren't yet reliable.</li>
 </ul>
 </section>
-<section id="china">
-<h2>⑤ Assessment for the China Regions</h2>
+<section id="t5">
+<h2>Thesis 5: Big vendors aren't selling “self-improvement”; they're selling “auditable automated changes”</h2>
 <ul>
-<li><b>Domestic RSI startups are fairly far from overseas clouds.</b><span class="tag">Medium</span><br/> Basis: Mostly angel / Pre-A rounds, funded mainly by local state-owned capital and USD funds; compute partners are undisclosed, and they are likely using domestic chips.</li>
-<li><b>The more practical opportunities are with two types of customers.</b><span class="tag">Medium</span><br/> First,<b>Chinese companies expanding overseas</b> evaluation, inference, and sandboxes; second, <b>"Algorithm optimization" in traditional industries</b> — supply chain, logistics, and manufacturing scheduling. This is where AlphaEvolve has the most public case studies (BASF, FM Logistic, Kinaxis), and where local customers can most easily calculate ROI.</li>
-<li><b>Research in China is very active and worth bringing up.</b><span class="tag ok">High</span><br/> Basis: ByteDance, Huawei, Shanghai AI Lab, DeepSeek and others all have work on harness self-evolution and self-verification (see <a href="../#china">Resource pack · Results from China</a>), and the focus is again on "how to verify".</li>
+<li><b>Mechanism</b>: What enterprises fear isn't changes that aren't good enough, but<b> Regressions go unnoticed, and incidents can't be explained</b>. That's why all three vendors package the loop as “human-in-the-loop”: offline evaluation, A/B tests, PRs for human review, regression-set gates, canary rollouts. The real product is<b> Change governance</b> — versions, provenance, who approved it, how to roll back.</li>
+<li><b>Evidence</b>: Microsoft's reference approach is “production traces → human labeling → optimization → human PR review → held-out regression set → canary rollout”; AWS AgentCore uses “offline batch evaluation + online A/B, ship only if it wins”; in the words of an AlphaEvolve customer, “engineers own the release decision.”</li>
+<li><b>What it means for SAs</b>: Don't pitch it as a new AI feature. Pitch it as<b>“CI/CD for agents and algorithms”</b>, plugged into the customer's existing code review, approval, and change management processes. Whoever integrates best with the customer's change process wins. That matters more than a few percentage points of optimization gains.</li>
+<li><b>I'm wrong if</b>: Enterprises start accepting “automatic deployment without human approval” (for example, allowing it first in low-risk scenarios). At that point, competition returns to “whose optimization results are better.”</li>
 </ul>
 </section>
-<section id="do">
-<h2>⑥ What I would do next</h2>
-<ol>
-<li><b>Prepare an "evaluation-first" demo</b>: use the existing demo to explain where 0.42 → 0.94 comes from, focusing on evals, promotion gates, and cost rather than "AI getting smarter on its own".</li>
-<li><b>Find a customer problem that can be scored and run a small PoC</b>: prioritize problems with clear metrics, such as supply chain, routing, and performance optimization, and spend the first two weeks building the evals and the held-out set.</li>
-<li><b>Make a competitor comparison card</b>: what AlphaEvolve / Foundry Agent Optimizer / AgentCore optimization each change, how they verify, and where they run evals (material in <a href="../landscape/#cloud">Landscape ③</a>).</li>
-<li><b>Update the watchlist monthly</b>(see ⑦).</li>
-</ol>
-</section>
-<section id="watch">
-<h2>⑦ What to watch over the next six months</h2>
+<section id="t6">
+<h2>Thesis 6: RSI's first commercial wins are “compute savings,” and that will grow usage, not shrink it</h2>
 <ul>
-<li>Whether Microsoft and AWS will launch a managed "algorithm discovery" service to rival AlphaEvolve.</li>
-<li>How Anthropic, after going public, discloses AI R&amp;D acceleration and RSI risk in its quarterly reports.</li>
-<li>Whether third-party evaluations like METR's cover more labs, and whether the evidence becomes more transparent.</li>
-<li>Whether US bills to ban or regulate RSI actually move forward.</li>
-<li>Whether new labs can deliver<b> Independently verifiable</b> results, not just self-reported benchmarks.</li>
-<li>Whether the gains in enterprise cases are growing, or staying in the single-digit to double-digit range.</li>
+<li><b>Mechanism</b>: Almost all of the earliest results are about efficiency: Borg reclaiming 0.7% of compute, Gemini training 1% faster, FlashAttention 32.5% faster, SoL-Pi using about 45% fewer tokens, HarnessMM using 30%–88% fewer. Each task gets cheaper, but historically efficiency gains tend to drive more usage (the Jevons paradox): cheaper inference gets used in more places.</li>
+<li><b>What it means for SAs</b>: Once customers adopt these tools, bills for some workloads will drop. Proactively helping customers do this beats waiting for a competitor to do it. The money saved and the trust built usually turn into new workloads.</li>
+<li><b>I'm wrong if</b>: Demand is already saturated, and the saved compute has no new uses. Right now AWS says its capacity is largely sold out through 2027, and Google and Microsoft haven't cut capex either, so there's no sign of saturation.</li>
 </ul>
-<p class="dim small">These views will be updated as new material comes in. If you see things differently or have new evidence, please let us know.</p>
+</section>
+<section id="t7">
+<h2>Thesis 7: “Model neutrality” is a structural advantage, but others are catching up</h2>
+<ul>
+<li><b>Mechanism</b>: Frontier labs' terms prohibit customers from using their services to train competing models. a16z's rationale for investing in Mirendil is that “structurally, there has to be an independent company.” The same logic applies to cloud:<b>Platforms not tied to their own models are a natural fit for third parties to run RSI loops on</b>.</li>
+<li><b>Evidence and counterevidence</b>: Recursive runs its research loop on AWS. But in November, Google Cloud said it is the only major cloud offering all three major closed-source models, so the neutrality card is being matched. The hosted version of AlphaEvolve still uses only Gemini.</li>
+<li><b>What it means for SAs</b>: Neutrality needs to be concrete: with the same evaluation suite and the same set of tasks, switching models for comparison means changing one parameter. Evaluations and trajectories stay in the customer's account, not locked to any one model vendor. Just saying “we have lots of models” is no longer enough.</li>
+<li><b>I'm wrong if</b>: Managed AlphaEvolve opens up to third-party models, or customers find there is only one “best generation model,” so neutrality doesn't matter.</li>
+</ul>
+</section>
+<section id="t8">
+<h2>Thesis 8: The last thing humans hand over is “evaluation authority” — and it's the skill SAs most need to practice</h2>
+<ul>
+<li><b>Mechanism</b>: The AI4AI survey splits handing control to AI into three steps: first hand over<b> Search direction</b>, then hand over<b> Search space</b>, and only at the end hand over<b> Eval signal</b>(L3). Today's products all stop at the point where control over evaluation still rests with humans. In other words, over the next few years, human leverage will concentrate on “defining what good looks like.”</li>
+<li><b>What it means for SAs</b>: People who can write evaluations will be worth more than people who can write prompts. The most useful skill transfer an SA can give a customer is teaching teams to design evaluations: how to pick metrics, build held-out sets, prevent score gaming, and account for evaluation cost. This lasts longer than pitching any single product.</li>
+<li><b>I'm wrong if</b>: L3 (AI setting its own evaluations) lands reliably in enterprise settings. That would be true RSI, and most of the judgments on this page would need rewriting.</li>
+</ul>
+</section>
+<section id="t9">
+<h2>Thesis 9: The capital structure is “clouds writing call options on RSI demand”; SAs need to understand this time window</h2>
+<ul>
+<li><b>Mechanism</b>: A large share of the money new labs raise becomes long-term compute contracts with a single cloud within a year (about 63% for Recursive, about half of Mirendil's seed round). By signing these contracts, cloud providers are betting that “RSI research will keep consuming lots of compute.” If the research goes well, demand keeps growing; if not, these companies will pivot or be acquired, and the contracts will be renegotiated.</li>
+<li><b>What it means for SAs</b>: New labs usually pick a compute partner within 1–3 months of raising, and once their evaluation and data pipelines are built on a cloud, they rarely move.<b>The window is short, and it only opens once.</b></li>
+<li><b>I'm wrong if</b>: Labs widely adopt multi-cloud, portable architectures, or compute becomes a pure commodity that can be swapped at any time. Current large deals are all multi-year and single-cloud.</li>
+</ul>
+</section>
+<section id="bets">
+<h2>Scorable predictions (through 2027-11-18)</h2>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>#</th><th>Predictions</th><th> Probability</th></tr>
+<tr><td>1</td><td> At least one of Microsoft or AWS launches a managed "evolutionary algorithm / code optimization" service (comparable to AlphaEvolve)</td><td>65%</td></tr>
+<tr><td>2</td><td> In public enterprise cases, the median improvement is still 5%–25% (don't expect many general “2x”-level gains)</td><td>75%</td></tr>
+<tr><td>3</td><td> At least one major cloud launches a sandbox / batch evaluation product specifically for agent evals, billed separately</td><td>70%</td></tr>
+<tr><td>4</td><td> At least one public incident: an automated optimization loop causes a visible production failure by "gaming the eval," and it gets reported</td><td>55%</td></tr>
+<tr><td>5</td><td> At least one new RSI lab valued at $4 billion or more is acquired, does a "license + acqui-hire" deal, or clearly pivots</td><td>50%</td></tr>
+<tr><td>6</td><td> The US passes a federal law that directly restricts "self-improving AI"</td><td>10%</td></tr>
+<tr><td>7</td><td> An enterprise publicly announces it runs a self-improvement loop in production with "no human approval, automatic deployment" (not an experiment)</td><td>25%</td></tr>
+</table></div>
+<p class="dim small">These are the author's subjective probabilities, meant to make the judgments testable. A midterm review in 2027-05, formal scoring in 2027-11.</p>
+</section>
+<section id="unsure">
+<h2>Where I'm least confident</h2>
+<ul>
+<li><b>How fast are things really moving inside frontier labs</b>: The most important evidence (the labs' internal speedup data) is mostly redacted or unpublished. If labs are already close to L3 internally, this page's call that “enterprises stall at L2” will quickly become outdated.</li>
+<li><b>Will models "learn" the eval?</b>: If reliable learned verifiers emerge, judgments 1, 2, and 3 all need revising.</li>
+<li><b>China Regions</b>: There is little public information on the compute and technical approaches of China-based RSI companies and big tech firms, so this assessment relies mostly on inference.</li>
+</ul>
+<p class="dim small">Feel free to point out any judgment you think is wrong, or offer counterexamples.</p>
 </section>
 </main>
 <a data-cur="en" data-to="zh" href="../../../rsi/view/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>

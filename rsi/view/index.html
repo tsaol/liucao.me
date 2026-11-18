@@ -69,93 +69,126 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 </div>
 </nav>
 <div class="rs-toc">
-<a href="#field">领域</a>
-<a href="#customer">对客户</a>
-<a href="#compete">竞争</a>
-<a href="#infra">基础设施</a>
-<a href="#china">中国区</a>
-<a href="#do">接下来做什么</a>
-<a href="#watch">观察清单</a>
+<a href="#t1">1 评测器</a>
+<a href="#t2">2 算力形状</a>
+<a href="#t3">3 Goodhart</a>
+<a href="#t4">4 落地顺序</a>
+<a href="#t5">5 可审计改动</a>
+<a href="#t6">6 省算力</a>
+<a href="#t7">7 中立</a>
+<a href="#t8">8 评测权</a>
+<a href="#t9">9 资本窗口</a>
+<a href="#bets">预测</a>
+<a href="#unsure">没把握</a>
 </div>
 <main class="rs-wrap">
 <section class="head">
 <h1>我的判断 · 站在 SA 的角度看 RSI</h1>
-<p class="dim">看完 <a href="../landscape/">RSI 全景</a>、<a href="../capital/">资本视角</a>、<a href="../alphaevolve/">AlphaEvolve 详解</a> 和那些论文之后,作者自己的结论。<b>这一页全部是判断,不是事实</b>;每条都写了依据和把握程度,方便你不同意时回去查原始资料。整理于 2026-11-18。</p>
-<div class="lead"><b>一句话:</b>RSI 是真的,但企业今天能用的是它的「小版本」—— <b>冻结模型、自动改 harness 和算法</b>。生成已经不稀缺,<b>稀缺的是可信的评测</b>。SA 最有价值的事,是帮客户先把「怎么打分」建起来,再谈自我改进。</div>
-<div class="note">把握程度:<span class="tag ok">高</span> 多个一手来源指向同一结论;<span class="tag">中</span> 有证据,但可能变化;<span class="tag top">低</span> 主要是推测,值得持续观察。</div>
+<p class="dim">看完 <a href="../landscape/">RSI 全景</a>、<a href="../capital/">资本视角</a>、<a href="../alphaevolve/">AlphaEvolve 详解</a> 和那些论文之后,作者自己的结论。<b>这一页全部是判断,不是事实。</b>每条都写了:为什么会这样、证据是什么、对 SA 意味着什么、什么情况下我会错。整理于 2026-11-18,2027-05 回头打分。</p>
+<div class="lead"><b>核心论点:</b>RSI 真正改变的不是「AI 有多聪明」,而是<b>「改进」这件事的成本结构</b> —— 以前改进受限于稀缺的专家,现在受限于<b>评测器的质量</b>和<b>评测的算力</b>。所以价值会从模型流向评测器,算力需求会从「训练的大峰值」变成「评测的高频长尾」,而竞争会落在<b>谁托管评测、谁管住改动</b>。</div>
 </section>
-<section id="field">
-<h2>① 对这个领域的判断</h2>
+<section id="t1">
+<h2>判断 1:价值正在从「模型」迁移到「评测器」</h2>
 <ul>
-<li><b>「AI 帮着造 AI」已经发生,但离「AI 自己造 AI」还远。</b><span class="tag ok">高</span><br/>依据:Google 生产代码超过 75% 由 AI 写,但约 88% 仍需人反复引导;METR 评估 Anthropic 研发速度约 2 倍;OpenAI 明说现在不该做全自主 RSI。三家前沿实验室的说法方向一致,只是快慢不同。</li>
-<li><b>企业能落地的是图 5 的 L2:人定目标和打分,AI 选改法。</b><span class="tag ok">高</span><br/>依据:Google、微软、AWS 的产品(AlphaEvolve、Foundry Agent Optimizer、AgentCore optimization)都停在这一级;L3 以上只在研究里。客户说「自我进化」时,十有八九指的是这一级。</li>
-<li><b>瓶颈是验证,不是生成。</b><span class="tag ok">高</span><br/>依据:本场 demo 一轮成本 97.7% 在评测;AlphaEvolve 的生成是托管的,评测在客户那边;几乎所有新论文(SoL-Pi、TRUST、HarnessDev)都在解决「怎么验证」。</li>
-<li><b>真实提升多在个位数到两位数百分比,不是魔法。</b><span class="tag ok">高</span><br/>依据:FM Logistic 10.4%、Coolblue 5%、JetBrains 15–20%、Google 的 skill 优化约 5%、Borg 0.7%。在已经很优化的系统上,这些已经很值钱;但对客户要讲「可验证的小胜」,不要讲「自我进化的 AI」。</li>
-<li><b>资本热度领先于技术进展。</b><span class="tag">中</span><br/>依据:几家没有收入的新实验室估值 40 亿到 500 亿美元,成绩多为自报;一年后可能有一部分转向或被收购。热度本身不是证据。</li>
+<li><b>机制</b>:在一个「冻结模型、自动改代码 / harness」的循环里,三样东西里有两样已经可以替换 —— 生成用的模型可以换(Gemini、Claude、开源),进化引擎是开源的(OpenEvolve、ShinkaEvolve 和 AlphaEvolve 结构一样)。<b>唯一换不掉的,是客户自己的评测器、留出集和历史轨迹</b>,因为它们编码了「这家公司认为什么是更好」。</li>
+<li><b>证据</b>:AlphaEvolve 的官方设计是「生成在 Google Cloud,评测在客户那边」,而且明说「不运行你的代码」;BASF 的关键工作是先用三年历史数据定义「模拟和现实有多接近」这个打分;JetBrains 说「工程师仍然掌握基准、评审和发布决定」。</li>
+<li><b>对 SA 的意义</b>:客户粘性不在「用谁的模型生成」,而在<b>评测在哪里跑、轨迹和留出集存在哪里</b>。帮客户把评测器、数据集和轨迹建在自己账号里,比推某个模型更持久。反过来说,谁拿走了评测器,谁就拿走了这个循环。</li>
+<li><b>我会错,如果</b>:托管服务开始提供「行业标准评测集」并让客户依赖它们(评测器本身被平台化),那粘性会回到平台一侧。</li>
 </ul>
 </section>
-<section id="customer">
-<h2>② 对客户怎么讲</h2>
+<section id="t2">
+<h2>判断 2:算力需求的形状在变 —— 从「训练峰值」到「评测长尾」</h2>
 <ul>
-<li><b>先问诊,三个问题</b> <span class="tag ok">高</span>:
-<ol>
-<li>你有没有<b>能自动打分</b>的方法(测试、基准、业务指标)?</li>
-<li>你有没有<b>留出集</b>(优化过程从没见过的题)?</li>
-<li>改动上线前<b>谁来审</b>,能不能回滚?</li>
-</ol>
-三个都没有:先做评测,不谈自我改进。有一个:做小范围 PoC。三个都有:可以上自动优化循环。</li>
-<li><b>挑「能打分」的问题做 PoC。</b><span class="tag ok">高</span><br/>适合:性能优化(kernel、查询、视频处理)、调度和路径、需求预测、供应链模拟、芯片验证、agent 的 prompt / skill。不适合:没有基准、质量靠主观判断、反馈要几个月才回来的问题。</li>
-<li><b>先改 harness,不改权重。</b><span class="tag ok">高</span><br/>依据:只跑推理、便宜、随时能回滚;demo 0.42 → 0.94 就是冻结权重做到的。改权重(微调、RL)留到 harness 的空间用完以后。</li>
-<li><b>把「防刷分」写进方案。</b><span class="tag ok">高</span><br/>依据:Google 视频教程里循环会「跳过渲染来变快」;Weco 测到 63% 的钻空子。方案里要有:隐藏题、换说法重考、能力底线、成本罚分、人审。</li>
-<li><b>不要用「RSI」这个词卖方案。</b><span class="tag">中</span><br/>依据:它在美国已经是监管和舆论的敏感词(有禁止法案提案);对企业客户,「自动优化 + 评测闭环」更准确,也更容易过内部审批。</li>
+<li><b>机制</b>:每一轮进化都要把几十到几百个候选各跑一遍。这些任务<b>小、短、高度并行、可以被打断、每个都要隔离</b>,而且很多是 CPU 任务(编译、仿真、跑测试),不只是 GPU。冷启动时间、按秒计费、Spot 能不能拿到、隔离够不够强,会比「有多少张 GPU」更重要。</li>
+<li><b>证据</b>:本场 demo 一轮成本 97.7% 在评测;Google 专门做了给 agent 用的 microVM 服务(Agent Compute Engine,强调「评测扫描不等基础设施」),又把 AlphaEvolve 接到 Cloud Batch 扇出几百个评测;沙箱成了独立的生意(Modal 的沙箱业务据报年化约 3 亿美元)。</li>
+<li><b>对 SA 的意义</b>:RSI 类负载的架构评审要问的不是「训练集群多大」,而是「一万个十秒钟的隔离任务怎么调度、多少钱、多快起来」。云厂商现有的小粒度原语(轻量虚拟机、Batch、Spot、无服务器)会是隐藏的竞争力。</li>
+<li><b>我会错,如果</b>:评测越来越多地由「学出来的验证模型」完成(在 GPU 上打分,而不是真的去跑代码),需求形状会回到 GPU 推理。</li>
 </ul>
 </section>
-<section id="compete">
-<h2>③ 竞争怎么看</h2>
+<section id="t3">
+<h2>判断 3:Goodhart 定律是这个领域的物理定律 —— 评测成本会随优化能力一起上涨</h2>
 <ul>
-<li><b>承认 Google 在「托管的算法发现」上领先。</b><span class="tag ok">高</span><br/>依据:AlphaEvolve 已 GA,有 BASF、Klarna、JetBrains 等公开案例,还有 Cloud Batch 扇出评测;微软和 AWS 目前没有对应的托管服务。</li>
-<li><b>不和 AlphaEvolve 比引擎,比闭环和中立。</b><span class="tag">中</span><br/>理由:进化引擎有成熟的开源实现(ShinkaEvolve、OpenEvolve,结构和 AlphaEvolve 一样);客户真正缺的是评测、上线前验证(离线评测 + A/B)、多模型可选、和现有系统的集成。AWS 的 AgentCore optimization / Evaluations 正好在这一层。</li>
-<li><b>「生成在云上、评测在你那边」对谁都成立。</b><span class="tag">中</span><br/>理由:AlphaEvolve 的评测本来就跑在客户自己的算力上;用开源引擎 + Bedrock + AWS Batch / Spot 能搭出同样的结构,而评测往往是成本大头。</li>
-<li><b>微软的产品闭环做得细,别低估。</b><span class="tag">中</span><br/>依据:Foundry 的「生产轨迹 → 人工标注 → 优化 → PR 人审 → 回归集 → 灰度」是三家里写得最完整的参考方案。</li>
+<li><b>机制</b>:优化器越强,越会找到评测的漏洞(「指标一旦成了目标,就不再是好指标」)。所以评测不是一次性的投入,而是一场<b>军备竞赛</b>:优化能力每上一个台阶,评测就要加隐藏题、换题、加约束。评测预算应该跟着优化强度一起涨,而不是固定。</li>
+<li><b>证据</b>:Google 的视频教程里,进化循环会「跳过渲染来变快」,只能加画质门槛;Weco 测到约 63% 的候选在钻空子;NVIDIA SoL-Pi 要把「能力底线」藏起来、不让被优化的一方看到;字节 HarnessDev 发现 agent 自己的评判几乎预测不了下一轮的提升。</li>
+<li><b>一个推论</b>:进展会集中在<b>评测本身很难被骗</b>的领域 —— 数学(形式化证明)、芯片(等价性验证)、kernel(真机计时)。这也解释了为什么 AlphaEvolve 最硬的成果都在这些地方。</li>
+<li><b>对 SA 的意义</b>:可以给客户提供一种新服务 ——<b>「给你的评测器做红队」</b>:专门找评测的漏洞,像安全团队找系统漏洞一样。评测运维(EvalOps)会像 SecOps 一样变成持续的工作。</li>
+<li><b>我会错,如果</b>:出现通用、可靠、便宜的自动验证方法(不靠人设计评测也能防刷分),那评测就不再是瓶颈。目前没看到迹象。</li>
 </ul>
 </section>
-<section id="infra">
-<h2>④ 基础设施的机会</h2>
+<section id="t4">
+<h2>判断 4:落地顺序由「验证的成本和速度」决定,不是由「AI 在哪最聪明」决定</h2>
 <ul>
-<li><b>评测算力是一种新负载。</b><span class="tag ok">高</span><br/>特点:大量短小、并行、可中断的任务,每个候选一个沙箱,跑完就丢。适合 Spot、Batch、快速启动的 microVM;Google 专门做了 Agent Compute Engine,说明大厂也这么看。</li>
-<li><b>RSI 公司要的不只是 GPU。</b><span class="tag">中</span><br/>依据:实验编排、沙箱、评测集群、实验记录存储、最新加速芯片的快速交付;kernel 自动优化还可能让模型更容易移植到非 CUDA 芯片。</li>
-<li><b>跟着融资看需求。</b><span class="tag">中</span><br/>依据:新实验室通常在融资后 1–3 个月签下主要算力合同,首轮相当大一部分会流向一朵云(Recursive 约 63%、Mirendil 约一半)。融资新闻就是需求信号。</li>
-<li><b>治理会从「负担」变成「需求」。</b><span class="tag">中</span><br/>依据:监管提案要求审计、隔离、kill switch;实验室和研究者自己也在做(OpenAI 对新模型做全轨迹监控;NVIDIA SoL-Pi 的留出结果绝不回流给优化器)。能把这些做成现成能力的平台会更好卖。</li>
+<li><b>机制</b>:一个问题能不能被自动改进,取决于两件事:<b>打一次分要多少钱</b>、<b>多久能知道结果</b>。按这两项排序,大致是:kernel / 编译器(秒级、精确)→ 数学(形式化)→ 调度、路径、排产(有仿真器)→ 预测(要回测,还得等真实数据)→ 产品体验(几周、噪声大)。</li>
+<li><b>证据</b>:Jeff Dean 说「无限加速不现实」,因为实验需要物理时间;AlphaEvolve 的企业案例几乎全是有仿真或回测的问题(BASF 供应链孪生、FM Logistic 路径、Kinaxis 预测、Coolblue 需求预测)。</li>
+<li><b>一个推论</b>:<b>仿真器和数字孪生是 RSI 的前置条件</b>。BASF 的第一步不是优化,而是建一个能和历史数据对上的数字孪生。所以 RSI 会拉动仿真和 HPC 需求 —— Google 在超算大会 SC26 上推 AlphaEvolve,就是这个信号。</li>
+<li><b>对 SA 的意义</b>:挑客户时,先问「你有没有仿真器 / 回测 / 自动化测试」。没有的,第一个项目是帮他建仿真或评测,而不是直接上优化。这也是最自然的 HPC 和数据平台切入点。</li>
+<li><b>我会错,如果</b>:基础模型能可靠地「预测实验结果」,替代真实仿真。目前论文显示这类预测还不可靠。</li>
 </ul>
 </section>
-<section id="china">
-<h2>⑤ 中国区的判断</h2>
+<section id="t5">
+<h2>判断 5:大厂卖的不是「自我改进」,是「可审计的自动改动」</h2>
 <ul>
-<li><b>本土 RSI 创业公司离海外云比较远。</b><span class="tag">中</span><br/>依据:多为天使 / Pre-A,出钱的主要是地方国资和美元基金,算力伙伴没公开、很可能在用国产算力。</li>
-<li><b>更实际的机会在两类客户。</b><span class="tag">中</span><br/>一是<b>出海企业</b>的评测、推理、沙箱;二是<b>传统行业的「算法优化」</b> —— 供应链、物流、制造排产,这正是 AlphaEvolve 公开案例最多的地方(BASF、FM Logistic、Kinaxis),也是本土客户最容易算清 ROI 的地方。</li>
-<li><b>国内的研究很活跃,值得拿来讲。</b><span class="tag ok">高</span><br/>依据:字节、华为、上海 AI Lab、DeepSeek 等都有 harness 自进化和自我验证的工作(见 <a href="../#china">资料包 · 国内成果</a>),而且重点同样在「怎么验证」。</li>
+<li><b>机制</b>:企业怕的不是改得不够好,而是<b>改坏了不知道、出了事说不清</b>。所以三家产品都把循环包装成「人在环路」:离线评测、A/B、开 PR 给人审、回归集把关、灰度上线。真正的产品是<b>改动的治理</b> —— 版本、来源、谁批准的、怎么回滚。</li>
+<li><b>证据</b>:微软的参考方案是「生产轨迹 → 人工标注 → 优化 → PR 人审 → 留出回归集 → 灰度」;AWS AgentCore 是「离线批量评测 + 线上 A/B,赢了才上线」;AlphaEvolve 的客户原话是「工程师掌握发布决定」。</li>
+<li><b>对 SA 的意义</b>:不要把它讲成 AI 新功能,要讲成<b>「给 agent 和算法的 CI/CD」</b>,接进客户已有的代码评审、审批和变更管理流程。谁能和客户的变更流程集成得最好,谁就赢 —— 这比优化效果差几个百分点更重要。</li>
+<li><b>我会错,如果</b>:企业开始接受「无人审批的自动上线」(比如低风险场景先放开)。那时竞争会回到「谁的优化效果更好」。</li>
 </ul>
 </section>
-<section id="do">
-<h2>⑥ 如果是我,接下来会做什么</h2>
-<ol>
-<li><b>准备一个「评测先行」的演示</b>:用现有 demo,讲清楚 0.42 → 0.94 是怎么来的,重点放在评测、晋升门和成本,而不是「AI 自己变聪明」。</li>
-<li><b>找一个能打分的客户问题做小 PoC</b>:优先选供应链、路径、性能优化这类有明确指标的问题,先用两周把评测和留出集建好。</li>
-<li><b>做一张竞品对比卡</b>:AlphaEvolve / Foundry Agent Optimizer / AgentCore optimization 各自改什么、怎么验证、在哪里跑评测(素材在 <a href="../landscape/#cloud">全景 ③</a>)。</li>
-<li><b>每月更新一次观察清单</b>(见 ⑦)。</li>
-</ol>
-</section>
-<section id="watch">
-<h2>⑦ 接下来半年要看什么</h2>
+<section id="t6">
+<h2>判断 6:RSI 的第一批商业成果是「省算力」,而这会扩大、而不是减少用量</h2>
 <ul>
-<li>微软、AWS 会不会推出对标 AlphaEvolve 的托管「算法发现」服务。</li>
-<li>Anthropic 上市后,季度报告里怎么披露 AI 研发加速和 RSI 风险。</li>
-<li>METR 这类第三方评估是否覆盖更多实验室,证据是否更透明。</li>
-<li>美国禁止或管控 RSI 的法案是否真的推进。</li>
-<li>新实验室能否拿出<b>可独立验证</b>的成果,而不只是自报的 benchmark。</li>
-<li>企业案例里的提升幅度是在变大,还是一直停在个位数到两位数。</li>
+<li><b>机制</b>:最早落地的成果几乎都是效率:Borg 回收 0.7% 算力、Gemini 训练快 1%、FlashAttention 快 32.5%、SoL-Pi 的 token 少约 45%、HarnessMM 少 30%–88%。单个任务更便宜了,但历史上效率提升往往带来更多使用(杰文斯悖论):更便宜的推理会被用在更多地方。</li>
+<li><b>对 SA 的意义</b>:客户用这类工具后,某些负载的账单会下降。主动帮客户做这件事,比被动等竞争对手来做好 —— 省下来的钱和建立的信任,通常会变成新的负载。</li>
+<li><b>我会错,如果</b>:需求已经饱和,省下的算力没有新用途。目前 AWS 说自己的产能到 2027 年基本卖光,Google、微软的资本开支也没有下调,看不到饱和。</li>
 </ul>
-<p class="dim small">这些判断会随新资料更新。如果你有不同看法或新证据,欢迎指出。</p>
+</section>
+<section id="t7">
+<h2>判断 7:「模型中立」是结构性优势,但正在被追平</h2>
+<ul>
+<li><b>机制</b>:前沿实验室的条款不让客户用它们的服务训练竞争模型;a16z 投 Mirendil 的理由就是「结构上必须有一家独立公司」。同样的逻辑适用于云:<b>不绑定自家模型的平台,天然适合让第三方在上面跑 RSI 循环</b>。</li>
+<li><b>证据和反证</b>:Recursive 把研究循环放在 AWS;但 Google Cloud 11 月已经说自己是唯一同时提供三家主要闭源模型的大云 —— 中立这张牌在被追平。AlphaEvolve 托管版仍然只用 Gemini。</li>
+<li><b>对 SA 的意义</b>:中立要讲具体:同一套评测、同一批任务,换模型对比只需要改一个参数;评测和轨迹留在客户账号里,不被某家模型锁住。光说「我们模型多」已经不够。</li>
+<li><b>我会错,如果</b>:托管 AlphaEvolve 开放第三方模型,或者客户发现「最好的生成模型」只有一家、中立没有意义。</li>
+</ul>
+</section>
+<section id="t8">
+<h2>判断 8:人最后交出去的是「评测权」—— 这也是 SA 最该练的能力</h2>
+<ul>
+<li><b>机制</b>:AI4AI 综述把控制权分成三步交给 AI:先交出<b>搜索方向</b>,再交出<b>搜索空间</b>,最后才交出<b>评测信号</b>(L3)。今天的产品都停在评测权还在人手里。也就是说,未来几年人的杠杆会集中在「定义什么是好」上。</li>
+<li><b>对 SA 的意义</b>:会写评测的人,会比会写 prompt 的人更值钱。SA 能给客户最有用的技能转移,是教团队设计评测:怎么选指标、怎么做留出集、怎么防刷分、怎么算评测成本。这比讲任何一个产品都更持久。</li>
+<li><b>我会错,如果</b>:L3(AI 自己定评测)在企业场景里可靠地落地。那就是真正的 RSI 了,本页大部分判断都要重写。</li>
+</ul>
+</section>
+<section id="t9">
+<h2>判断 9:资本结构是「云在给 RSI 的需求做看涨期权」,SA 要看懂这个时间窗口</h2>
+<ul>
+<li><b>机制</b>:新实验室融到的钱,相当大一部分会在一年内变成某一朵云的长期算力合同(Recursive 约 63%、Mirendil 种子轮约一半)。云厂商签这些合同,等于押注「RSI 研究会持续消耗大量算力」。如果研究顺利,需求会继续涨;如果不顺,这些公司会转向或被收购,合同会被重谈。</li>
+<li><b>对 SA 的意义</b>:新实验室通常在融资后 1–3 个月就选定算力伙伴,而且一旦把评测和数据流水线建在某朵云上,很少再迁。<b>窗口很短,而且是一次性的。</b></li>
+<li><b>我会错,如果</b>:实验室普遍采用多云、可迁移的架构,或者算力变成纯商品、随时换。目前的大单都是多年期、单一云。</li>
+</ul>
+</section>
+<section id="bets">
+<h2>可以被打分的预测(到 2027-11-18)</h2>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>#</th><th>预测</th><th>概率</th></tr>
+<tr><td>1</td><td>微软或 AWS 至少一家推出托管的「进化式算法 / 代码优化」服务(对标 AlphaEvolve)</td><td>65%</td></tr>
+<tr><td>2</td><td>公开的企业案例里,中位数提升仍在 5%–25% 之间(不会出现大量「翻倍」级的通用提升)</td><td>75%</td></tr>
+<tr><td>3</td><td>至少一家大云推出专门面向 agent 评测的沙箱 / 批量评测产品并单独计费</td><td>70%</td></tr>
+<tr><td>4</td><td>至少一个公开事件:自动优化循环在生产中因「钻评测空子」造成可见事故,并被报道</td><td>55%</td></tr>
+<tr><td>5</td><td>至少一家估值 40 亿美元以上的 RSI 新实验室被收购、「授权 + 挖人」或明显转向</td><td>50%</td></tr>
+<tr><td>6</td><td>美国通过一部直接限制「自我改进 AI」的联邦法律</td><td>10%</td></tr>
+<tr><td>7</td><td>有企业公开宣布在生产中采用「无人审批、自动上线」的自我改进循环(非实验)</td><td>25%</td></tr>
+</table></div>
+<p class="dim small">这些是作者的主观概率,目的是让判断可以被检验。2027-05 做中期回顾,2027-11 正式打分。</p>
+</section>
+<section id="unsure">
+<h2>我最没把握的地方</h2>
+<ul>
+<li><b>前沿实验室内部到底多快</b>:最关键的证据(实验室内部的加速数据)大多被涂黑或不公开。如果内部已经接近 L3,本页对「企业停在 L2」的判断会很快过时。</li>
+<li><b>评测会不会被模型「学会」</b>:如果出现可靠的学习型验证器,判断 1、2、3 都要改。</li>
+<li><b>中国区</b>:本土 RSI 公司和大厂的算力、技术路线公开信息很少,判断主要靠推测。</li>
+</ul>
+<p class="dim small">欢迎指出哪条判断有问题,或者给出反例。</p>
 </section>
 </main>
 <a data-cur="zh" data-to="en" href="../../en/rsi/view/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
