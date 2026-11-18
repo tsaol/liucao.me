@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>跟着算力的钱走 · RSI 的资本视角 · 2026-11</title>
+<link href="../assets/style.css" rel="stylesheet"/>
+<style>
+:root{--rs-bg:#0B0D12;--rs-bg2:#12151d;--rs-ink:#E6EAF2;--rs-dim:#8A94A6;--rs-cold:#4CC2FF;--rs-warm:#FFB020;--rs-ok:#38D39F;--rs-line:#232a36;
+--rs-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+--rs-mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+body{background:var(--rs-bg)}
+main.rs-wrap{color:var(--rs-ink);font-family:var(--rs-sans);font-size:17px;line-height:1.8;max-width:980px;margin:0 auto;padding:4vh 5vw 12vh}
+main.rs-wrap h1{font-size:36px;line-height:1.25;margin:0 0 .3em}
+main.rs-wrap h2{font-size:24px;margin:0 0 .9em;color:var(--rs-cold)}
+main.rs-wrap h3{font-size:18px;margin:1.6em 0 .6em;color:var(--rs-ink)}
+main.rs-wrap section{border-top:1px solid var(--rs-line);padding:2.4em 0;scroll-margin-top:56px}
+main.rs-wrap section.head{border-top:none;padding-top:0}
+main.rs-wrap p{margin:0 0 1em}
+main.rs-wrap b{color:var(--rs-warm);font-weight:600}
+main.rs-wrap a{color:var(--rs-cold);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.5)}
+main.rs-wrap a:hover{border-bottom-style:solid}
+main.rs-wrap .dim{color:var(--rs-dim)}
+main.rs-wrap .small{font-size:14px}
+main.rs-wrap code{font-family:var(--rs-mono);font-size:.86em;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:4px;padding:0 .3em}
+main.rs-wrap ul{margin:0 0 1em;padding-left:1.3em}
+main.rs-wrap li{margin:.35em 0}
+main.rs-wrap .lead{font-size:21px;line-height:1.6;padding:1em 1.2em;border-left:3px solid var(--rs-warm);background:var(--rs-bg2);border-radius:0 8px 8px 0;margin:1.2em 0}
+main.rs-wrap .note{font-size:14px;color:var(--rs-dim);background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.7em 1em;margin:1em 0}
+.rs-toc{position:sticky;top:0;z-index:5;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--rs-line);display:flex;gap:1.2em;justify-content:center;flex-wrap:wrap;padding:.55em 1em;font-size:14px}
+.rs-toc a{color:var(--rs-dim);text-decoration:none}
+.rs-toc a:hover{color:var(--rs-cold)}
+.rs-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:1.2em 0}
+.rs-card{display:block;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:1em 1.1em;color:var(--rs-ink)!important;border-bottom:1px solid var(--rs-line)!important;transition:border-color .2s}
+.rs-card:hover{border-color:var(--rs-cold)!important}
+.rs-card .k{font-size:13px;color:var(--rs-dim)}
+.rs-card .t{font-size:18px;font-weight:600;margin:.2em 0}
+.rs-card .d{font-size:14px;color:var(--rs-dim);line-height:1.6}
+.rs-q{background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:.2em 1.1em;margin:.8em 0}
+.rs-q summary{cursor:pointer;font-weight:600;padding:.7em 0;list-style:none}
+.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:var(--rs-warm)}
+.rs-q[open] summary::before{content:"− "}
+.rs-q > div{padding:0 0 .8em}
+table.rs-t{width:100%;border-collapse:collapse;font-size:15px;margin:.6em 0 1.2em}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--rs-line);padding:.55em .5em;text-align:left;vertical-align:top}
+table.rs-t th{color:var(--rs-dim);font-weight:500;font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--rs-line);border-radius:999px;padding:0 .6em;color:var(--rs-dim);margin-right:.3em;white-space:nowrap}
+.tag.top{color:var(--rs-warm);border-color:rgba(255,176,32,.5)}
+.tag.ok{color:var(--rs-ok);border-color:rgba(56,211,159,.5)}
+pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7;color:var(--rs-ink)}
+@media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
+@media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
+.rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
+    .rs-fig{margin:1em 0 1.6em}.rs-fig img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;border:1px solid var(--rs-line)}.rs-fig figcaption{font-size:13px;color:var(--rs-dim);line-height:1.65;margin-top:.6em}.rs-fig a{border-bottom:none}
+.rs-tl{border-left:2px solid var(--rs-line);margin:1em 0 1.4em;padding-left:1em}.rs-tl>div{margin:.55em 0;font-size:15px}.rs-tl .y{display:inline-block;min-width:6.5em;color:var(--rs-cold);font-family:var(--rs-mono);font-size:13px}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← RSI 资料包</a>
+<a href="../landscape/">RSI 全景</a>
+<a href="../demo/play/">Play</a>
+<a href="../slides/">RSI 幻灯片</a>
+</div>
+</nav>
+<div class="rs-toc">
+<a href="#why">为什么看</a>
+<a href="#loop">钱怎么转</a>
+<a href="#map">资本地图</a>
+<a href="#flow">流回多少</a>
+<a href="#value">估值</a>
+<a href="#exit">退出</a>
+<a href="#public">二级市场</a>
+<a href="#geo">各地</a>
+<a href="#risk">风险</a>
+<a href="#score">云的比分</a>
+</div>
+<main class="rs-wrap">
+<section class="head">
+<h1>跟着算力的钱走 · RSI 的资本视角</h1>
+<p class="dim">从投资人的角度看 RSI(递归自我改进):钱从哪来、流到哪去、估值靠什么撑、怎么退出。整理于 2026-11-18,覆盖到 2026-11-17 的公开资料。</p>
+<div class="lead"><b>一句话结论:</b>RSI 是 2026 年最好卖的融资故事。<b>拿到确定收益的是卖算力的人</b>(NVIDIA、Google、Amazon、Nebius)—— 它们一边投钱,一边用算力合同把钱收回来。VC 买的是一张「如果真做成 RSI」的期权。</div>
+<div class="note"><span class="tag ok">一手</span>= 公司 / 投资人原文、SEC 文件、新闻稿或主流媒体原始报道。<span class="tag">二手</span>= 转述或未核实。<span class="tag top">判断</span>= 这一页作者的看法。人头价、回流比例等是按公开数字粗算的。</div>
+</section>
+<section id="why">
+<h2>⓪ 为什么要看一级市场</h2>
+<p><b>一级市场的数据,用来看「钱和算力流向哪里」,不用来判断「技术到了哪一步」。</b></p>
+<h3>有意义的地方</h3>
+<ul>
+<li><b>早期信号</b>:投资人做过技术尽调、看过内部 demo,才会下几亿到十几亿美元的单。半年里约 10 家实验室拿了几十亿美元,说明顶级投资人真的相信「AI 帮着造 AI」这条路。</li>
+<li><b>会直接变成算力需求</b>:这些公司融资后第一件事,是把大部分钱锁进一家云。一级市场的融资,几个月后就是云厂商的合同。</li>
+<li><b>暴露云厂商的打法</b>:谁「投资 + 算力」一起给,谁只给算力,一看就清楚。</li>
+<li><b>告诉我们什么不值钱</b>:卖通用 agent 自我优化的小公司融不到大钱,因为大厂已经把这一层做成了产品(见 <a href="../landscape/#cloud">RSI 全景 ③</a>)。</li>
+</ul>
+<h3>要小心的地方</h3>
+<ul>
+<li><b>估值 ≠ 技术进展</b>:几十亿美元的估值买的多是团队和「万一先做到」的可能;公开成绩几乎都是公司自报。</li>
+<li><b>数据不全、口径乱</b>:很多数字不公开,媒体之间互相矛盾。讲趋势可以,算精确数字不行。</li>
+<li><b>受热潮影响大</b>:现在正是「RSI 是新的 AGI」的热潮,一年后可能有一部分公司转向或被收购。</li>
+</ul>
+<p>所以这一页的讲法是:<b>谁融了钱 → 钱锁进了哪朵云 → 这些公司需要什么</b>。估值只当「押注」,不当「证据」。</p>
+</section>
+<section id="loop">
+<h2>① 钱是怎么转圈的</h2>
+<ul>
+<li><b>芯片商几乎每家都投</b>:有 NVIDIA 参与的轮次,占 2026 年全球 VC 金额的 <b>27.2%</b>(2025 年是 7.1%)。<span class="tag ok">一手 · PitchBook</span></li>
+<li><b>融资后马上签算力合同</b>:Recursive 融资约两个半月后,和 AWS 签了 4.1 亿美元多年协议;Mirendil 种子轮后 6 周,和 Google Cloud 签了 1 亿美元以上。<span class="tag ok">一手 · Amazon 新闻稿 / TechCrunch</span></li>
+<li><b>投资方常常就是算力卖家</b>:Google 投了 Mirendil、Ineffable、Discovery Loop(Alphabet),这几家的算力也在 Google Cloud。<span class="tag ok">一手</span></li>
+<li><b>头部实验室也一样</b>:Amazon 共投 Anthropic 约 180 亿美元,Google 约 333 亿美元;Anthropic 对两家都有长期 take-or-pay(不管用没用都要付)算力承诺,AWS 这一份约 1100 亿美元。<span class="tag ok">一手 · Reuters</span> <span class="tag">承诺金额:二手解读 S-1</span></li>
+</ul>
+<p class="dim small">这种「卖家先投钱、买家再用钱买卖家的东西」叫<b>循环融资</b>。有真实终端需求时是正常的供应商融资;需求一停,就会「股权缩水 + 合同违约」一起来(Morningstar 的看法)。</p>
+</section>
+<section id="map">
+<h2>② 资本地图:谁投了谁,算力在哪</h2>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>公司</th><th>最近融资 / 估值</th><th>主要投资方</th><th>算力伙伴</th><th>投资方 = 算力卖家?</th></tr>
+<tr><td>Recursive</td><td>6.5 亿美元 @ 46.5 亿</td><td>GV、Greycroft 领投;NVIDIA、AMD Ventures</td><td><b>AWS</b>(4.1 亿,不含投资)</td><td>部分:芯片商入股;AWS 不入股</td></tr>
+<tr><td>Mirendil</td><td>种子 2 亿 @ 10 亿;A 轮 10 亿(11-12,估值未披露)</td><td>a16z、Kleiner Perkins、Clearlake;Google、NVIDIA</td><td><b>Google Cloud</b>(1 亿+)</td><td>是</td></tr>
+<tr><td>Discovery Loop</td><td>首轮未公布;报道在谈约 500 亿估值</td><td>Radical、Khosla 领投;Alphabet 等</td><td>Google(报道)</td><td>是</td></tr>
+<tr><td>Ineffable</td><td>种子 11 亿 @ 51 亿(分两档定价)</td><td>Sequoia、Lightspeed;NVIDIA、Google、英国主权 AI 基金</td><td><b>Google Cloud</b></td><td>是</td></tr>
+<tr><td>Core Automation</td><td>Form D 已售 4.32 亿</td><td>Accel、NVIDIA 等</td><td><b>Nebius</b></td><td>间接(NVIDIA 也投 Nebius)</td></tr>
+<tr><td>Ricursive</td><td>A 轮 3 亿 @ 40 亿</td><td>Lightspeed 领投;Sequoia、NVentures</td><td>未查到</td><td>芯片商入股</td></tr>
+<tr><td>Sakana AI</td><td>B 轮约 2 亿 @ 约 27 亿</td><td>MUFG、Google、Citi 等日本大企业</td><td>Sakura、Google Cloud、Modal</td><td>部分</td></tr>
+<tr><td>超衍、超进化、无界进化(中国)</td><td>天使 / Pre-A,单笔数亿元人民币</td><td>美元基金 + 中关村、深创投、上海未来产业基金等国资</td><td>未公开</td><td>否</td></tr>
+</table></div>
+<p class="dim small">数字来自公司公告和 TechCrunch、Bloomberg、BI、Reuters、Forbes 等报道;估值有冲突的取公司或首发报道口径。</p>
+</section>
+<section id="flow">
+<h2>③ 融到的钱有多少流回了云</h2>
+<ul>
+<li><b>Recursive</b>:4.1 亿 ÷ 6.5 亿 ≈ <b>63%</b> 锁进 AWS。</li>
+<li><b>Mirendil</b>:种子轮约 <b>一半</b> 给了 Google Cloud(TechCrunch 原话「roughly half」)。</li>
+<li><b>粗估</b>:RSI 早期实验室首轮的 <b>50%–65%</b>,一年内会以算力合同锁给某一朵云。<span class="tag top">判断</span></li>
+</ul>
+<p>原因很简单:这类公司的核心成本就是实验算力。Recursive CEO Socher 的说法是「看 agent 数,不看人数」—— 钱主要买算力,不买人。<span class="tag ok">一手 · TechCrunch</span></p>
+</section>
+<section id="value">
+<h2>④ 没有收入,估值靠什么撑</h2>
+<ul>
+<li><b>人头价</b>:估值 ÷ 研究员人数,头部新实验室约每人 1.5 亿到 6 亿美元,和 Anthropic 同一个量级 —— 差别是 Anthropic 有收入。<span class="tag top">粗算</span></li>
+<li><b>分档定价</b>:同一轮钱分几次进、价格不同,新闻标题只报高的那个。Ineffable 两档价格相差几十倍(Forbes 报道约 70 倍,英国 FOI 文件约 52 倍,口径不一)。战略投资方(芯片商、云)对价格不敏感,因为投资会变成它们的收入,常出现在高价档。</li>
+<li><b>「先做成 RSI」的期权</b>:跟投 Recursive 的 USVC 直接写:「我们主要是按『如果它的判断是对的』来估这笔投资。」<span class="tag ok">一手</span></li>
+<li><b>互相对标</b>:几家新实验室的估值互相当参照。Menlo Ventures 的 Venky Ganesan 称之为「反身性」—— 上一轮价格成了下一轮的证据。</li>
+</ul>
+<h3>投资人怎么说</h3>
+<ul>
+<li>看多 —— Kleiner Perkins:「第一次看到模型在做有意义的 AI 研究。不是帮忙,是在做。」GV:「AI 是代码,现在 AI 会写代码。」a16z:「结构上必须有一家独立公司」(大厂条款不让客户用其服务训练竞品)。中关村科学城基金:「RSI 是通往下一代 AI 范式的关键路径。」<span class="tag ok">一手</span></li>
+<li>保留 —— NEA:AI 实验室私有估值 93.6% 集中在 4 家,「这不是一个市场,而是四个名字」。Leonis Capital:2024 年以来 119 家实验室拿了 943 亿美元,只有 16 家披露收入。FutureSearch:「押新实验室的人,其实不相信 RSI 会很快通吃。」<span class="tag ok">一手</span></li>
+</ul>
+</section>
+<section id="exit">
+<h2>⑤ 怎么退出</h2>
+<ul>
+<li><b>IPO</b>:Anthropic 的招股书第一次把 RSI 同时写成<b>护城河</b>(「闭合回路是最重要的结构性优势之一」)和<b>风险因素</b>(可能很快达到「AI 显著加速研发」的门槛)。11-18 定价、11-19 上市。<span class="tag ok">一手 · S-1 / CNBC / WIRED</span></li>
+<li><b>「授权 + 挖人」</b>:大厂不买整家公司,而是付授权费、挖走核心团队。NVIDIA 付 Poolside 60 亿美元授权费并挖走 109 人;按人算约每人 5500 万美元,远低于新实验室每人上亿的入场价 —— 这个「底线」只保护最早、最便宜进场的投资人。<span class="tag top">粗算</span></li>
+<li><b>买家正变成芯片公司</b>:AMD 全股票收购 World Labs,NVIDIA 收购 Hugging Face。<span class="tag ok">一手</span></li>
+<li><b>两头下注</b>:VC 买新实验室,押的是「RSI 不会太快被头部通吃」;芯片商和云不管谁赢都卖算力;公众买 Anthropic,押的是「头部先通吃」。<span class="tag top">判断</span></li>
+</ul>
+</section>
+<section id="public">
+<h2>⑥ 二级市场怎么看</h2>
+<ul>
+<li>公开市场<b>不单独给 RSI 定价</b>,它被打包在「AI 资本开支能不能收回」这一个问题里。没有查到大投行以 RSI 为题的正式研报。<span class="tag top">判断</span></li>
+<li>11 月背景:中期选举后纳指进入修正(11-05 单日跌 5.5%),NVIDIA 11-12 宣布 CEO 交接。<span class="tag ok">一手 · Reuters / NVIDIA</span></li>
+<li>NVIDIA 11-17 财报:季度收入 <b>1158 亿美元</b>,同比 +103%,数据中心 1076 亿;超出预期,盘后小涨,CoreWeave、Nebius 跟涨。<span class="tag ok">一手 · NVIDIA / CNBC</span></li>
+<li>CoreWeave、Nebius 这类 GPU 云收入涨得快,但靠债和客户预付扩张,波动最大。<span class="tag ok">一手 · 财报报道</span></li>
+</ul>
+</section>
+<section id="geo">
+<h2>⑦ 各地的钱</h2>
+<ul>
+<li><b>美国</b>:顶级 VC + NVIDIA / AMD / Google;前三季度 AI 占美国 VC 金额 82.7%。<span class="tag ok">一手 · PitchBook</span></li>
+<li><b>英国</b>:主权 AI 基金和 British Business Bank 投了 Ineffable,引发「纳税人是不是在高价档进场」的争论。模式是「美国 VC 定价 + 本国基金背书 + 美国的云和芯片」。</li>
+<li><b>日本</b>:Sakana 的股东是日本大银行和大企业,加 Google 和美国 VC。</li>
+<li><b>中国</b>:2026 年 7–10 月公开的 RSI 方向融资合计近 6 亿元人民币,全是种子 / 天使轮,出钱的多是美元基金 + 京深沪三地国资。原因:引导基金和国企是 LP 的主力、招商考核、国产算力。投资人的说法是「对标海外数十亿美元,国内数亿元反而便宜」。<span class="tag ok">一手 · 投中网 / 经济观察报 / 虎嗅</span></li>
+</ul>
+</section>
+<section id="risk">
+<h2>⑧ 资本的风险</h2>
+<ul>
+<li><b>监管</b>:美国众议员 Khanna 计划提出法案,在获批前禁止 RSI,要求许可证、驻场审计、kill switch;另有两党的 FRONTIER Act。名字里带「Recursive」的公司会有标题风险。<span class="tag ok">一手</span></li>
+<li><b>集中</b>:估值和合同都集中在少数几家。</li>
+<li><b>算力锁定</b>:首轮一半以上的钱进了一家云的长约,收入不及预期就很难脱身。</li>
+<li><b>验证缺口</b>:成绩多为公司自报;Mirendil 的 A 轮公告只引用自己的测试;METR 评估 Anthropic 时关键证据被涂黑。</li>
+<li><b>循环融资断裂</b>:芯片商换帅、GPU 云高负债,都可能让这个圈转慢。</li>
+<li><b>研究被资本节奏推着走</b>:12–18 个月就要涨估值的钱,会逼实验室把不成熟的研究包装成产品。</li>
+</ul>
+</section>
+<section id="score">
+<h2>⑨ 云厂商的比分 <span class="tag top">判断</span></h2>
+<ul>
+<li><b>按家数</b>:RSI 早期实验室里,Google 约 4–5 家,AWS 1 家(Recursive),Nebius 1–2 家,Microsoft 暂未发现。</li>
+<li><b>按已披露金额</b>:AWS 和 Recursive 的 4.1 亿美元是这个赛道最大的公开单笔;Google 只披露了 Mirendil「1 亿以上」。</li>
+<li><b>按头部实验室</b>:Anthropic 对 AWS 和 Google 的承诺基本是一个量级。</li>
+<li><b>打法差别</b>:Google 在种子 / A 轮就「股权 + 云单 + 最新芯片」一起给;AWS 在 RSI 早期公司目前是「只给算力」。但 GV 领投了 Recursive,算力却给了 AWS —— <b>股权不等于云单,交付能力和合同条款才是关键</b>。</li>
+<li><b>对 SA 的含义</b>:盯住融资新闻,实验室通常在融资后 1–3 个月内选定算力伙伴;它们要的是大量短小并行的实验算力、最新 GPU 或其他加速芯片、毫秒级沙箱、评测算力和实验记录存储(见 <a href="../landscape/#practice">RSI 全景 ④</a>)。</li>
+</ul>
+</section>
+<section id="sources">
+<h2>来源</h2>
+<ul class="small">
+<li><a href="https://press.aboutamazon.com/aws/2026/7/recursive-signs-410-million-multi-year-collaboration-with-aws-to-scale-self-improving-ai" rel="noopener" target="_blank">Recursive 与 AWS 签 4.1 亿美元协议(Amazon 新闻稿)</a> · <a href="https://techcrunch.com/2026/07/28/recursive-superintelligence-signs-400-compute-deal-with-amazon/" rel="noopener" target="_blank">TechCrunch</a> · <a href="https://www.gv.com/news/recursive-superintelligence-self-improving-ai" rel="noopener" target="_blank">GV</a> · <a href="https://unlisted.usvc.com/p/investing-in-recursive" rel="noopener" target="_blank">USVC</a></li>
+<li><a href="https://techcrunch.com/2026/08/06/exclusive-mirendil-inks-100m-google-cloud-deal-to-scale-self-improving-ai/" rel="noopener" target="_blank">Mirendil 与 Google Cloud(TechCrunch)</a> · <a href="https://mirendil.com/news/series-a/" rel="noopener" target="_blank">Mirendil A 轮</a> · <a href="https://a16z.com/announcement/investing-in-mirendil/" rel="noopener" target="_blank">a16z</a> · <a href="https://kleinerperkins.com/perspectives/mirendil-building-the-system-that-builds-systems/" rel="noopener" target="_blank">Kleiner Perkins</a></li>
+<li><a href="https://www.businessinsider.com/jeff-deans-startup-discovery-loop-is-eyeing-a-valuation-2026-9" rel="noopener" target="_blank">Discovery Loop 估值(BI)</a> · <a href="https://radical.vc/articles/our-investment-in-discovery-loop/" rel="noopener" target="_blank">Radical Ventures</a></li>
+<li><a href="https://www.forbes.com/sites/rashishrivastava/2026/06/25/ai-startups-with-no-revenue-are-using-this-tactic-to-supersize-their-valuations/" rel="noopener" target="_blank">Forbes · 分档定价</a> · <a href="https://www.googlecloudpresscorner.com/2026-06-16-Ineffable-Intelligence-Selects-Google-Cloud-To-Power-Its-Superintelligence-Mission" rel="noopener" target="_blank">Ineffable 选 Google Cloud</a></li>
+<li><a href="https://pitchbook.com/news/reports/q4-2026-too-central-to-fail-the-ai-venture-ecosystem-built-around-one-companys-strategy" rel="noopener" target="_blank">PitchBook · NVIDIA 与 AI 风投</a> · <a href="https://www.nea.com/blog/the-ai-neolab-wild-west" rel="noopener" target="_blank">NEA</a> · <a href="https://www.leoniscap.com/research/we-finally-got-our-flying-cars-they%E2%80%99re-called-neolabs" rel="noopener" target="_blank">Leonis Capital</a> · <a href="https://futuresearch.ai/neolab-challengers-forecast/" rel="noopener" target="_blank">FutureSearch</a></li>
+<li><a href="https://techcrunch.com/2026/11/02/anthropic-warns-that-its-very-close-to-rsi-capability-aka-self-building-ai/" rel="noopener" target="_blank">TechCrunch · Anthropic S-1 与 RSI</a> · <a href="https://www.wired.com/story/the-anthropic-ipo-is-also-a-doomsday-primer/" rel="noopener" target="_blank">WIRED</a> · <a href="https://www.cnbc.com/2026/11/16/anthropic-ipo-date-price-range.html" rel="noopener" target="_blank">CNBC · IPO 指南</a> · <a href="https://www.streetinsider.com/Reuters/Factbox-Amazon%2C+Google+set+for+big+windfall+from+Anthropic+IPO/27320945.html" rel="noopener" target="_blank">Reuters factbox</a></li>
+<li><a href="https://newcomer.co/p/sources-poolside-strikes-6-billion" rel="noopener" target="_blank">Poolside 授权 + 挖人(Newcomer)</a> · <a href="https://ir.amd.com/news-events/press-releases/detail/1306/amd-completes-acquisition-of-world-labs" rel="noopener" target="_blank">AMD 收购 World Labs</a> · <a href="https://blogs.nvidia.com/blog/nvidia-to-acquire-hugging-face/" rel="noopener" target="_blank">NVIDIA 收购 Hugging Face</a></li>
+<li><a href="https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-third-quarter-fiscal-2027" rel="noopener" target="_blank">NVIDIA Q3 FY2027 财报</a> · <a href="https://www.cnbc.com/2026/11/18/nvidia-earnings-market-analysis.html" rel="noopener" target="_blank">CNBC 分析</a></li>
+<li><a href="https://www.chinaventure.com.cn/news/80-20261113-394038.html" rel="noopener" target="_blank">投中网</a> · <a href="https://www.eeo.com.cn/2026/1104/1084116.shtml" rel="noopener" target="_blank">经济观察报</a> · <a href="https://www.huxiu.com/article/4901145.html" rel="noopener" target="_blank">虎嗅</a> · <a href="https://www.stcn.com/article/detail/4187353.html" rel="noopener" target="_blank">证券时报</a></li>
+<li><a href="https://thenextweb.com/news/human-control-over-ai-act-khanna-self-improving-ai" rel="noopener" target="_blank">Khanna 法案(TNW)</a> · <a href="https://therecord.media/frontier-act-ai-bill-house-brett-guthrie" rel="noopener" target="_blank">FRONTIER Act</a></li>
+</ul>
+<p class="dim small">AI 整理:由搜索 + 阅读原文整理,数字以原文为准;粗算部分已标注。不构成投资建议。</p>
+</section>
+</main>
+<a data-cur="zh" data-to="en" href="../../en/rsi/capital/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

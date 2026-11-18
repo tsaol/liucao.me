@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Follow the compute money · A capital view of RSI · 2026-11</title>
+<link href="../../../rsi/assets/style.css" rel="stylesheet"/>
+<style>
+:root{--rs-bg:#0B0D12;--rs-bg2:#12151d;--rs-ink:#E6EAF2;--rs-dim:#8A94A6;--rs-cold:#4CC2FF;--rs-warm:#FFB020;--rs-ok:#38D39F;--rs-line:#232a36;
+--rs-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+--rs-mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+body{background:var(--rs-bg)}
+main.rs-wrap{color:var(--rs-ink);font-family:var(--rs-sans);font-size:17px;line-height:1.8;max-width:980px;margin:0 auto;padding:4vh 5vw 12vh}
+main.rs-wrap h1{font-size:36px;line-height:1.25;margin:0 0 .3em}
+main.rs-wrap h2{font-size:24px;margin:0 0 .9em;color:var(--rs-cold)}
+main.rs-wrap h3{font-size:18px;margin:1.6em 0 .6em;color:var(--rs-ink)}
+main.rs-wrap section{border-top:1px solid var(--rs-line);padding:2.4em 0;scroll-margin-top:56px}
+main.rs-wrap section.head{border-top:none;padding-top:0}
+main.rs-wrap p{margin:0 0 1em}
+main.rs-wrap b{color:var(--rs-warm);font-weight:600}
+main.rs-wrap a{color:var(--rs-cold);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.5)}
+main.rs-wrap a:hover{border-bottom-style:solid}
+main.rs-wrap .dim{color:var(--rs-dim)}
+main.rs-wrap .small{font-size:14px}
+main.rs-wrap code{font-family:var(--rs-mono);font-size:.86em;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:4px;padding:0 .3em}
+main.rs-wrap ul{margin:0 0 1em;padding-left:1.3em}
+main.rs-wrap li{margin:.35em 0}
+main.rs-wrap .lead{font-size:21px;line-height:1.6;padding:1em 1.2em;border-left:3px solid var(--rs-warm);background:var(--rs-bg2);border-radius:0 8px 8px 0;margin:1.2em 0}
+main.rs-wrap .note{font-size:14px;color:var(--rs-dim);background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.7em 1em;margin:1em 0}
+.rs-toc{position:sticky;top:0;z-index:5;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--rs-line);display:flex;gap:1.2em;justify-content:center;flex-wrap:wrap;padding:.55em 1em;font-size:14px}
+.rs-toc a{color:var(--rs-dim);text-decoration:none}
+.rs-toc a:hover{color:var(--rs-cold)}
+.rs-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:1.2em 0}
+.rs-card{display:block;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:1em 1.1em;color:var(--rs-ink)!important;border-bottom:1px solid var(--rs-line)!important;transition:border-color .2s}
+.rs-card:hover{border-color:var(--rs-cold)!important}
+.rs-card .k{font-size:13px;color:var(--rs-dim)}
+.rs-card .t{font-size:18px;font-weight:600;margin:.2em 0}
+.rs-card .d{font-size:14px;color:var(--rs-dim);line-height:1.6}
+.rs-q{background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:.2em 1.1em;margin:.8em 0}
+.rs-q summary{cursor:pointer;font-weight:600;padding:.7em 0;list-style:none}
+.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:var(--rs-warm)}
+.rs-q[open] summary::before{content:"− "}
+.rs-q > div{padding:0 0 .8em}
+table.rs-t{width:100%;border-collapse:collapse;font-size:15px;margin:.6em 0 1.2em}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--rs-line);padding:.55em .5em;text-align:left;vertical-align:top}
+table.rs-t th{color:var(--rs-dim);font-weight:500;font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--rs-line);border-radius:999px;padding:0 .6em;color:var(--rs-dim);margin-right:.3em;white-space:nowrap}
+.tag.top{color:var(--rs-warm);border-color:rgba(255,176,32,.5)}
+.tag.ok{color:var(--rs-ok);border-color:rgba(56,211,159,.5)}
+pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7;color:var(--rs-ink)}
+@media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
+@media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
+.rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
+    .rs-fig{margin:1em 0 1.6em}.rs-fig img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;border:1px solid var(--rs-line)}.rs-fig figcaption{font-size:13px;color:var(--rs-dim);line-height:1.65;margin-top:.6em}.rs-fig a{border-bottom:none}
+.rs-tl{border-left:2px solid var(--rs-line);margin:1em 0 1.4em;padding-left:1em}.rs-tl>div{margin:.55em 0;font-size:15px}.rs-tl .y{display:inline-block;min-width:6.5em;color:var(--rs-cold);font-family:var(--rs-mono);font-size:13px}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← RSI Resources</a>
+<a href="../landscape/">RSI Landscape</a>
+<a href="../demo/play/">Play</a>
+<a href="../slides/">RSI slides</a>
+</div>
+</nav>
+<div class="rs-toc">
+<a href="#why">Why it matters</a>
+<a href="#loop">How the money moves</a>
+<a href="#map">Capital map</a>
+<a href="#flow">How much flows back</a>
+<a href="#value">Valuation</a>
+<a href="#exit">Exit</a>
+<a href="#public">Public markets</a>
+<a href="#geo">Various regions</a>
+<a href="#risk">Risks</a>
+<a href="#score">Cloud scorecard</a>
+</div>
+<main class="rs-wrap">
+<section class="head">
+<h1>Follow the compute money · A capital view of RSI</h1>
+<p class="dim">RSI (recursive self-improvement) from an investor's perspective: where the money comes from, where it goes, what supports the valuations, and how investors exit. Compiled 2026-11-18, covering public information through 2026-11-17.</p>
+<div class="lead"><b>Bottom line:</b>RSI is the easiest fundraising story to sell in 2026.<b>The guaranteed returns go to those selling compute</b>(NVIDIA, Google, Amazon, Nebius) — they invest money with one hand and take it back through compute contracts with the other. VCs are buying an option on "if RSI actually works."</div>
+<div class="note"><span class="tag ok">Primary</span>= Company / investor statements, SEC filings, press releases, or original reporting from major media.<span class="tag">Second-hand</span>= Paraphrased or unverified.<span class="tag top">Judgment</span>= This page author's view. Per-head prices, flow-back ratios, etc. are rough calculations based on public figures.</div>
+</section>
+<section id="why">
+<h2>⓪ Why look at private markets</h2>
+<p><b>Private-market data shows where money and compute are flowing, not how far the technology has come.</b></p>
+<h3>Why it matters</h3>
+<ul>
+<li><b>Early signals</b>: Investors only write checks of hundreds of millions to over a billion dollars after technical due diligence and seeing internal demos. About 10 labs raising billions of dollars in half a year shows that top investors genuinely believe in the "AI helping build AI" path.</li>
+<li><b>translates directly into compute demand</b>: The first thing these companies do after raising is lock most of the money into one cloud. Primary-market funding turns into cloud-provider contracts a few months later.</li>
+<li><b>Reveals cloud providers' strategies</b>: It's easy to see who provides “investment + compute” together and who provides only compute.</li>
+<li><b>Tells us what isn't valuable</b>: Small companies selling general-purpose agent self-optimization can't raise big money, because the big players have already turned this layer into products (see <a href="../landscape/#cloud">RSI landscape ③</a>).</li>
+</ul>
+<h3>What to watch out for</h3>
+<ul>
+<li><b>Valuation ≠ technical progress</b>: Multi-billion-dollar valuations mostly buy the team and the chance of "getting there first"; public results are almost all self-reported.</li>
+<li><b>Incomplete data, inconsistent definitions</b>: Many numbers aren't public, and media reports contradict each other. Good enough for discussing trends, not for calculating precise figures.</li>
+<li><b>Highly sensitive to hype</b>: Right now is the peak of the “RSI is the new AGI” hype; within a year, some of these companies may pivot or be acquired.</li>
+</ul>
+<p>So this page's framing is:<b>Who raised money → which cloud the money is locked into → what these companies need</b>. Treat valuations as "bets", not "evidence".</p>
+</section>
+<section id="loop">
+<h2>① How the money goes in circles</h2>
+<ul>
+<li><b>Nearly every chipmaker invests</b>: Rounds with NVIDIA participation, as a share of 2026 global VC dollars: <b>27.2%</b>(7.1% in 2025).<span class="tag ok">Primary source · PitchBook</span></li>
+<li><b>Sign compute contracts right after raising</b>: About two and a half months after its funding round, Recursive signed a $410 million multi-year agreement with AWS; 6 weeks after its seed round, Mirendil signed a deal worth over $100 million with Google Cloud.<span class="tag ok">Primary source · Amazon press release / TechCrunch</span></li>
+<li><b>Investors are often the compute sellers</b>: Google invested in Mirendil, Ineffable, and Discovery Loop (Alphabet), and these companies' compute also runs on Google Cloud.<span class="tag ok">Primary</span></li>
+<li><b>The same goes for top labs</b>: Amazon has invested about $18 billion in Anthropic in total, and Google about $33.3 billion; Anthropic has long-term take-or-pay (pay whether or not it's used) compute commitments to both, with the AWS commitment at about $110 billion.<span class="tag ok">Primary source · Reuters</span> <span class="tag">Committed amounts: secondhand reading of the S-1</span></li>
+</ul>
+<p class="dim small">This pattern, where the seller invests first and the buyer then uses that money to buy the seller's products, is called<b> Circular financing</b>. With real end demand, this is normal vendor financing. Once demand stops, "equity losses + contract defaults" hit together (Morningstar's view).</p>
+</section>
+<section id="map">
+<h2>② Capital map: who invested in whom, and where the compute is</h2>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>Company</th><th> Latest round / valuation</th><th> Key investors</th><th> Compute partner</th><th> Investor = compute seller?</th></tr>
+<tr><td>Recursive</td><td>$650 million @ 4.65 billion</td><td> Led by GV and Greycroft; NVIDIA, AMD Ventures</td><td><b>AWS</b>(410M, excluding investment)</td><td>Partial: chipmakers hold stakes; AWS doesn't invest</td></tr>
+<tr><td>Mirendil</td><td> Seed: 200M @ 1B; Series A: 1B (Nov–Dec, valuation undisclosed)</td><td>a16z, Kleiner Perkins, Clearlake; Google, NVIDIA</td><td><b>Google Cloud</b>(100M+)</td><td>Yes</td></tr>
+<tr><td>Discovery Loop</td><td> First round not disclosed; reportedly in talks at a valuation of about 50 billion</td><td> Led by Radical and Khosla; Alphabet and others</td><td> Google (reported)</td><td>Yes</td></tr>
+<tr><td>Ineffable</td><td> Seed: 1.1B @ 5.1B (two pricing tiers)</td><td>Sequoia, Lightspeed; NVIDIA, Google, UK Sovereign AI fund</td><td><b>Google Cloud</b></td><td> Yes</td></tr>
+<tr><td>Core Automation</td><td> Form D: $432M sold</td><td> Accel, NVIDIA, and others</td><td><b>Nebius</b></td><td> Indirect (NVIDIA also invests in Nebius)</td></tr>
+<tr><td>Ricursive</td><td> Series A $300M @ $4B</td><td> Led by Lightspeed; Sequoia, NVentures</td><td> Not found</td><td> Chipmaker stakes</td></tr>
+<tr><td>Sakana AI</td><td> Series B ~$200M @ ~$2.7B</td><td> MUFG, Google, Citi, and large Japanese corporations</td><td> Sakura, Google Cloud, Modal</td><td> Partial</td></tr>
+<tr><td>Chaoyan, Chaojinhua, Wujie Jinhua (China)</td><td>Angel / Pre-A, several hundred million RMB per round</td><td> USD funds + state-backed capital such as Zhongguancun, Shenzhen Capital Group and the Shanghai Future Industry Fund</td><td> Undisclosed</td><td> No</td></tr>
+</table></div>
+<p class="dim small">Figures come from company announcements and reporting by TechCrunch, Bloomberg, BI, Reuters, Forbes, and others; where valuations conflict, we use the company's figure or the first report.</p>
+</section>
+<section id="flow">
+<h2>③ How much of the money raised flows back to the cloud</h2>
+<ul>
+<li><b>Recursive</b>: 410M ÷ 650M ≈ <b>63%</b> Locked into AWS.</li>
+<li><b>Mirendil</b>: Seed round of about <b>Half</b> went to Google Cloud (TechCrunch's exact words: “roughly half”).</li>
+<li><b>Rough estimate</b>: For early-stage RSI labs, the first round's <b>50%–65%</b>, gets locked to a single cloud through a compute contract within a year.<span class="tag top">Judgment</span></li>
+</ul>
+<p>The reason is simple: the core cost for these companies is experiment compute. As Recursive CEO Socher puts it, "count agents, not headcount." The money mostly buys compute, not people.<span class="tag ok">Primary · TechCrunch</span></p>
+</section>
+<section id="value">
+<h2>④ No revenue: what props up the valuations</h2>
+<ul>
+<li><b>Price per head</b>: Valuation ÷ number of researchers: leading new labs come to about $150 million to $600 million per person, the same order of magnitude as Anthropic — the difference is that Anthropic has revenue.<span class="tag top">Back-of-the-envelope</span></li>
+<li><b>Tiered pricing</b>: The same round comes in several tranches at different prices, and headlines report only the highest. Ineffable's two price tiers differ by dozens of times (Forbes reported about 70x, UK FOI documents about 52x, using different bases). Strategic investors (chipmakers, clouds) are price-insensitive because the investment turns into their revenue, so they often show up in the high-price tranche.</li>
+<li><b>An option on "reaching RSI first"</b>: USVC, which co-invested in Recursive, says it plainly: “We are mainly valuing this investment on the basis of ‘if its thesis is right.’”<span class="tag ok">Primary</span></li>
+<li><b>Benchmarking each other</b>: Several new labs' valuations serve as reference points for each other. Venky Ganesan of Menlo Ventures calls this "reflexivity" — the last round's price becomes the evidence for the next.</li>
+</ul>
+<h3>What investors say</h3>
+<ul>
+<li>Bullish — Kleiner Perkins: “The first time we've seen a model doing meaningful AI research. Not helping. Doing it.” GV: “AI is code, and now AI writes code.” a16z: “Structurally, there has to be an independent company” (big-lab terms bar customers from using their services to train competitors). Zhongguancun Science City Fund: “RSI is the key path to the next AI paradigm.”<span class="tag ok">Primary</span></li>
+<li>Caveats — NEA: 93.6% of private AI lab valuation is concentrated in 4 companies; "this isn't a market, it's four names." Leonis Capital: since 2024, 119 labs have raised $94.3B, and only 16 have disclosed revenue. FutureSearch: "People betting on new labs don't actually believe RSI will be winner-take-all anytime soon."<span class="tag ok">Primary</span></li>
+</ul>
+</section>
+<section id="exit">
+<h2>⑤ How they exit</h2>
+<ul>
+<li><b>IPO</b>: Anthropic's IPO prospectus is the first to describe RSI as both<b> Moat</b>("a closed loop is one of the most important structural advantages") and<b> Risk factors</b>(it may soon reach the "AI significantly accelerates R&amp;D" threshold). Priced 11-18, listed 11-19.<span class="tag ok">Primary source · S-1 / CNBC / WIRED</span></li>
+<li><b>"Licensing + poaching talent"</b>: Big companies don't buy the whole company; instead they pay licensing fees and hire away the core team. NVIDIA paid Poolside $6 billion in licensing fees and hired away 109 people; that's about $55 million per person, far below the $100M+ per-person entry price at new labs — this "floor" only protects the earliest investors who got in cheapest.<span class="tag top">Back-of-the-envelope</span></li>
+<li><b>Buyers are becoming chip companies</b>: AMD acquired World Labs in an all-stock deal, and NVIDIA acquired Hugging Face.<span class="tag ok">Primary</span></li>
+<li><b>Betting on both sides</b>: VCs buying into new labs are betting that "the leaders won't take everything too quickly"; chipmakers and clouds sell compute no matter who wins; the public buying Anthropic is betting that "the leaders take everything first."<span class="tag top">Judgment</span></li>
+</ul>
+</section>
+<section id="public">
+<h2>⑥ How public markets see it</h2>
+<ul>
+<li>Public markets<b> RSI is not priced separately</b>, it is bundled into a single question: "Can AI capex be recouped?" We found no formal research report from a major investment bank focused on RSI.<span class="tag top">Judgment</span></li>
+<li>November context: after the midterm elections the Nasdaq entered a correction (down 5.5% on 11-05 alone), and NVIDIA announced a CEO transition on 11-12.<span class="tag ok">Primary source · Reuters / NVIDIA</span></li>
+<li>NVIDIA 11-17 earnings: quarterly revenue <b>$115.8 billion</b>, up 103% YoY, with data center at 107.6 billion; it beat expectations, the stock rose slightly after hours, and CoreWeave and Nebius followed.<span class="tag ok">Primary source · NVIDIA / CNBC</span></li>
+<li>GPU clouds like CoreWeave and Nebius are growing revenue fast, but they expand on debt and customer prepayments, making them the most volatile.<span class="tag ok">Primary source · Earnings coverage</span></li>
+</ul>
+</section>
+<section id="geo">
+<h2>⑦ Money by region</h2>
+<ul>
+<li><b>US</b>: Top VCs + NVIDIA / AMD / Google; AI accounted for 82.7% of US VC dollars in the first three quarters.<span class="tag ok">Primary source · PitchBook</span></li>
+<li><b>UK</b>: Sovereign AI funds and the British Business Bank invested in Ineffable, sparking debate over whether "taxpayers are coming in at the high-price tranche." The model is "US VC pricing + domestic fund endorsement + US clouds and chips."</li>
+<li><b>Japan</b>: Sakana's shareholders are major Japanese banks and corporations, plus Google and US VCs.</li>
+<li><b>China</b>: Publicly disclosed RSI-focused funding from July to October 2026 totaled nearly RMB 600 million, all seed/angel rounds, mostly from USD funds plus state-owned capital from Beijing, Shenzhen, and Shanghai. Reasons: government guidance funds and SOEs are the main LPs, local investment-attraction targets, and domestic compute. Investors' take: "Compared with billions of dollars overseas, a few hundred million yuan here is actually cheap."<span class="tag ok">Primary source · CVSource / Economic Observer / Huxiu</span></li>
+</ul>
+</section>
+<section id="risk">
+<h2>⑧ Capital risks</h2>
+<ul>
+<li><b>Regulation</b>: US Representative Khanna plans to introduce a bill that would ban RSI until approved and require licenses, on-site audits, and a kill switch. There's also the bipartisan FRONTIER Act. Companies with “Recursive” in their name face headline risk.<span class="tag ok">Primary</span></li>
+<li><b>Concentration</b>: Valuations and contracts are concentrated in a handful of companies.</li>
+<li><b>Compute lock-in</b>: More than half of the first round went into a long-term contract with one cloud. If revenue falls short, it's hard to get out.</li>
+<li><b>Verification gap</b>: Results are mostly self-reported; Mirendil's Series A announcement cites only its own tests; key evidence in METR's evaluation of Anthropic was redacted.</li>
+<li><b>Circular financing breaks down</b>: A leadership change at a chipmaker or heavy debt at GPU clouds could slow this loop down.</li>
+<li><b>Research driven by the pace of capital</b>: Money that needs a higher valuation within 12–18 months pushes labs to package immature research as products.</li>
+</ul>
+</section>
+<section id="score">
+<h2>⑨ Cloud provider scorecard <span class="tag top">Judgment</span></h2>
+<ul>
+<li><b>By number of companies</b>: Among early-stage RSI labs, Google has about 4–5, AWS 1 (Recursive), Nebius 1–2, and Microsoft none found so far.</li>
+<li><b>By disclosed amount</b>: AWS's $410 million deal with Recursive is the largest disclosed single deal in this space; Google has only disclosed "over $100 million" for Mirendil.</li>
+<li><b>By top labs</b>: Anthropic's commitments to AWS and Google are roughly the same order of magnitude.</li>
+<li><b>Differences in approach</b>: Google offers "equity + cloud deal + latest chips" together as early as seed/Series A; at early-stage RSI companies, AWS currently "only provides compute." Yet GV led Recursive's round while the compute went to AWS — <b>Equity doesn't equal cloud contracts; delivery capacity and contract terms are what matter</b>.</li>
+<li><b>What it means for SAs</b>: Watch the funding news. Labs usually pick a compute partner within 1–3 months of raising. They need lots of short, parallel experiment compute, the latest GPUs or other accelerators, millisecond-scale sandboxes, eval compute, and storage for experiment logs (see <a href="../landscape/#practice">RSI landscape ④</a>).</li>
+</ul>
+</section>
+<section id="sources">
+<h2>Source</h2>
+<ul class="small">
+<li><a href="https://press.aboutamazon.com/aws/2026/7/recursive-signs-410-million-multi-year-collaboration-with-aws-to-scale-self-improving-ai" rel="noopener" target="_blank">Recursive signs $410M deal with AWS (Amazon press release)</a> · <a href="https://techcrunch.com/2026/07/28/recursive-superintelligence-signs-400-compute-deal-with-amazon/" rel="noopener" target="_blank">TechCrunch</a> · <a href="https://www.gv.com/news/recursive-superintelligence-self-improving-ai" rel="noopener" target="_blank">GV</a> · <a href="https://unlisted.usvc.com/p/investing-in-recursive" rel="noopener" target="_blank">USVC</a></li>
+<li><a href="https://techcrunch.com/2026/08/06/exclusive-mirendil-inks-100m-google-cloud-deal-to-scale-self-improving-ai/" rel="noopener" target="_blank">Mirendil and Google Cloud (TechCrunch)</a> · <a href="https://mirendil.com/news/series-a/" rel="noopener" target="_blank">Mirendil Series A</a> · <a href="https://a16z.com/announcement/investing-in-mirendil/" rel="noopener" target="_blank">a16z</a> · <a href="https://kleinerperkins.com/perspectives/mirendil-building-the-system-that-builds-systems/" rel="noopener" target="_blank">Kleiner Perkins</a></li>
+<li><a href="https://www.businessinsider.com/jeff-deans-startup-discovery-loop-is-eyeing-a-valuation-2026-9" rel="noopener" target="_blank">Discovery Loop valuation (BI)</a> · <a href="https://radical.vc/articles/our-investment-in-discovery-loop/" rel="noopener" target="_blank">Radical Ventures</a></li>
+<li><a href="https://www.forbes.com/sites/rashishrivastava/2026/06/25/ai-startups-with-no-revenue-are-using-this-tactic-to-supersize-their-valuations/" rel="noopener" target="_blank">Forbes · Tiered pricing</a> · <a href="https://www.googlecloudpresscorner.com/2026-06-16-Ineffable-Intelligence-Selects-Google-Cloud-To-Power-Its-Superintelligence-Mission" rel="noopener" target="_blank">Ineffable picks Google Cloud</a></li>
+<li><a href="https://pitchbook.com/news/reports/q4-2026-too-central-to-fail-the-ai-venture-ecosystem-built-around-one-companys-strategy" rel="noopener" target="_blank">PitchBook · NVIDIA and AI venture capital</a> · <a href="https://www.nea.com/blog/the-ai-neolab-wild-west" rel="noopener" target="_blank">NEA</a> · <a href="https://www.leoniscap.com/research/we-finally-got-our-flying-cars-they%E2%80%99re-called-neolabs" rel="noopener" target="_blank">Leonis Capital</a> · <a href="https://futuresearch.ai/neolab-challengers-forecast/" rel="noopener" target="_blank">FutureSearch</a></li>
+<li><a href="https://techcrunch.com/2026/11/02/anthropic-warns-that-its-very-close-to-rsi-capability-aka-self-building-ai/" rel="noopener" target="_blank">TechCrunch · Anthropic S-1 and RSI</a> · <a href="https://www.wired.com/story/the-anthropic-ipo-is-also-a-doomsday-primer/" rel="noopener" target="_blank">WIRED</a> · <a href="https://www.cnbc.com/2026/11/16/anthropic-ipo-date-price-range.html" rel="noopener" target="_blank">CNBC · IPO guide</a> · <a href="https://www.streetinsider.com/Reuters/Factbox-Amazon%2C+Google+set+for+big+windfall+from+Anthropic+IPO/27320945.html" rel="noopener" target="_blank">Reuters factbox</a></li>
+<li><a href="https://newcomer.co/p/sources-poolside-strikes-6-billion" rel="noopener" target="_blank">Poolside licensing + talent poaching (Newcomer)</a> · <a href="https://ir.amd.com/news-events/press-releases/detail/1306/amd-completes-acquisition-of-world-labs" rel="noopener" target="_blank">AMD acquires World Labs</a> · <a href="https://blogs.nvidia.com/blog/nvidia-to-acquire-hugging-face/" rel="noopener" target="_blank">NVIDIA acquires Hugging Face</a></li>
+<li><a href="https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-third-quarter-fiscal-2027" rel="noopener" target="_blank">NVIDIA Q3 FY2027 earnings</a> · <a href="https://www.cnbc.com/2026/11/18/nvidia-earnings-market-analysis.html" rel="noopener" target="_blank">CNBC analysis</a></li>
+<li><a href="https://www.chinaventure.com.cn/news/80-20261113-394038.html" rel="noopener" target="_blank">ChinaVenture</a> · <a href="https://www.eeo.com.cn/2026/1104/1084116.shtml" rel="noopener" target="_blank">Economic Observer</a> · <a href="https://www.huxiu.com/article/4901145.html" rel="noopener" target="_blank">Huxiu</a> · <a href="https://www.stcn.com/article/detail/4187353.html" rel="noopener" target="_blank">Securities Times</a></li>
+<li><a href="https://thenextweb.com/news/human-control-over-ai-act-khanna-self-improving-ai" rel="noopener" target="_blank">Khanna bill (TNW)</a> · <a href="https://therecord.media/frontier-act-ai-bill-house-brett-guthrie" rel="noopener" target="_blank">FRONTIER Act</a></li>
+</ul>
+<p class="dim small">AI-compiled: gathered via search + reading original sources. Original sources take precedence for figures; rough estimates are marked. Not investment advice.</p>
+</section>
+</main>
+<a data-cur="en" data-to="zh" href="../../../rsi/capital/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

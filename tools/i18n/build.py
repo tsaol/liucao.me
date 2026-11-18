@@ -25,7 +25,7 @@ ZH_PAGES = ['index.html', 'ec2/index.html', 'ec2/graviton/index.html',
     'ec2/graviton/compare/index.html', 'ec2/graviton/monitor/index.html',
     'ec2/graviton/saturation/index.html', 'ec2/graviton/playbook/index.html',
     'ec2/graviton/generations/index.html', 'ec2/numa/index.html', 'ec2/gpu-capacity/index.html', 'aws-gpu/index.html',
-    'rsi/index.html', 'rsi/landscape/index.html', 'rsi/slides/index.html', 'rsi/demo/index.html',
+    'rsi/index.html', 'rsi/landscape/index.html', 'rsi/capital/index.html', 'rsi/slides/index.html', 'rsi/demo/index.html',
     'rsi/demo/run/index.html', 'rsi/demo/papers/index.html', 'rsi/demo/play/index.html',
     'rsi/demo/talk/index.html', 'rsi/demo/script/index.html', 'rsi/demo/script-v2/index.html',
     'rsi/demo/script-play/index.html', 'rsi/demo/static/play-standalone.html']
