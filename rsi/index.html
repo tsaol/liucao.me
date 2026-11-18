@@ -90,6 +90,7 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <a class="rs-card" href="demo/papers/"><div class="k">论文</div><div class="t">demo 背后的论文</div><div class="d">AlphaEvolve、DGM、Shinka 等中文精读</div></a>
 <a class="rs-card" href="landscape/"><div class="k">全景 · 2026-11</div><div class="t">领域进展 + 云厂商竞争</div><div class="d">前沿实验室、Google / 微软 / AWS、行业实践</div></a>
 <a class="rs-card" href="capital/"><div class="k">资本视角 · 2026-11</div><div class="t">跟着算力的钱走</div><div class="d">谁投了谁、钱流回哪朵云、估值和退出</div></a>
+<a class="rs-card" href="alphaevolve/"><div class="k">详解 · 2026-11</div><div class="t">AlphaEvolve 是什么</div><div class="d">怎么工作、做成了什么、企业怎么用、和 RSI 的关系</div></a>
 </div>
 </section>
 <section id="ideas">
@@ -130,6 +131,9 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 </div></details>
 <details class="rs-q"><summary>为什么不直接改模型权重?</summary><div>
 <p>改权重要训练(SageMaker 那一侧),贵、慢,验证更难,也很难回滚;改 harness 只跑推理(Bedrock),便宜,随时能换回来。用厨师的话说:换菜谱随时能换回来,送厨师去进修可退不回来。</p>
+</div></details>
+<details class="rs-q"><summary>AlphaEvolve 是什么?</summary><div>
+<p>Google DeepMind 做的<b>进化式写代码 agent</b>:你给一段种子代码和一个打分程序,它用 Gemini 不停地改代码、给每个新版本打分、留下更好的再接着改,一代代逼近更好的算法。2025-05 发布,2026-07-09 在 Google Cloud 正式商用。它本身不算 RSI(改的是你给的代码,不是它自己),但它是很多 RSI 研究的「引擎」;本场 demo 用的 ShinkaEvolve 是同类的开源方法。详见 <a href="alphaevolve/">AlphaEvolve 详解</a>。</p>
 </div></details>
 </section>
 <section id="videos">

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AlphaEvolve Explained · Evolutionary coding agent · 2026-11</title>
+<link href="../../../rsi/assets/style.css" rel="stylesheet"/>
+<style>
+:root{--rs-bg:#0B0D12;--rs-bg2:#12151d;--rs-ink:#E6EAF2;--rs-dim:#8A94A6;--rs-cold:#4CC2FF;--rs-warm:#FFB020;--rs-ok:#38D39F;--rs-line:#232a36;
+--rs-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+--rs-mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+body{background:var(--rs-bg)}
+main.rs-wrap{color:var(--rs-ink);font-family:var(--rs-sans);font-size:17px;line-height:1.8;max-width:980px;margin:0 auto;padding:4vh 5vw 12vh}
+main.rs-wrap h1{font-size:36px;line-height:1.25;margin:0 0 .3em}
+main.rs-wrap h2{font-size:24px;margin:0 0 .9em;color:var(--rs-cold)}
+main.rs-wrap h3{font-size:18px;margin:1.6em 0 .6em;color:var(--rs-ink)}
+main.rs-wrap section{border-top:1px solid var(--rs-line);padding:2.4em 0;scroll-margin-top:56px}
+main.rs-wrap section.head{border-top:none;padding-top:0}
+main.rs-wrap p{margin:0 0 1em}
+main.rs-wrap b{color:var(--rs-warm);font-weight:600}
+main.rs-wrap a{color:var(--rs-cold);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.5)}
+main.rs-wrap a:hover{border-bottom-style:solid}
+main.rs-wrap .dim{color:var(--rs-dim)}
+main.rs-wrap .small{font-size:14px}
+main.rs-wrap code{font-family:var(--rs-mono);font-size:.86em;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:4px;padding:0 .3em}
+main.rs-wrap ul{margin:0 0 1em;padding-left:1.3em}
+main.rs-wrap li{margin:.35em 0}
+main.rs-wrap .lead{font-size:21px;line-height:1.6;padding:1em 1.2em;border-left:3px solid var(--rs-warm);background:var(--rs-bg2);border-radius:0 8px 8px 0;margin:1.2em 0}
+main.rs-wrap .note{font-size:14px;color:var(--rs-dim);background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.7em 1em;margin:1em 0}
+.rs-toc{position:sticky;top:0;z-index:5;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--rs-line);display:flex;gap:1.2em;justify-content:center;flex-wrap:wrap;padding:.55em 1em;font-size:14px}
+.rs-toc a{color:var(--rs-dim);text-decoration:none}
+.rs-toc a:hover{color:var(--rs-cold)}
+.rs-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:1.2em 0}
+.rs-card{display:block;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:1em 1.1em;color:var(--rs-ink)!important;border-bottom:1px solid var(--rs-line)!important;transition:border-color .2s}
+.rs-card:hover{border-color:var(--rs-cold)!important}
+.rs-card .k{font-size:13px;color:var(--rs-dim)}
+.rs-card .t{font-size:18px;font-weight:600;margin:.2em 0}
+.rs-card .d{font-size:14px;color:var(--rs-dim);line-height:1.6}
+.rs-q{background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:.2em 1.1em;margin:.8em 0}
+.rs-q summary{cursor:pointer;font-weight:600;padding:.7em 0;list-style:none}
+.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:var(--rs-warm)}
+.rs-q[open] summary::before{content:"− "}
+.rs-q > div{padding:0 0 .8em}
+table.rs-t{width:100%;border-collapse:collapse;font-size:15px;margin:.6em 0 1.2em}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--rs-line);padding:.55em .5em;text-align:left;vertical-align:top}
+table.rs-t th{color:var(--rs-dim);font-weight:500;font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--rs-line);border-radius:999px;padding:0 .6em;color:var(--rs-dim);margin-right:.3em;white-space:nowrap}
+.tag.top{color:var(--rs-warm);border-color:rgba(255,176,32,.5)}
+.tag.ok{color:var(--rs-ok);border-color:rgba(56,211,159,.5)}
+pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7;color:var(--rs-ink)}
+@media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
+@media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
+.rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
+    .rs-fig{margin:1em 0 1.6em}.rs-fig img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;border:1px solid var(--rs-line)}.rs-fig figcaption{font-size:13px;color:var(--rs-dim);line-height:1.65;margin-top:.6em}.rs-fig a{border-bottom:none}
+.rs-tl{border-left:2px solid var(--rs-line);margin:1em 0 1.4em;padding-left:1em}.rs-tl>div{margin:.55em 0;font-size:15px}.rs-tl .y{display:inline-block;min-width:6.5em;color:var(--rs-cold);font-family:var(--rs-mono);font-size:13px}
+main.rs-wrap a{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← RSI Resources</a>
+<a href="../landscape/">RSI Landscape</a>
+<a href="../demo/play/">Play</a>
+<a href="../slides/">RSI slides</a>
+</div>
+</nav>
+<div class="rs-toc">
+<a href="#what">What it is</a>
+<a href="#how">How it works</a>
+<a href="#results">What it has achieved</a>
+<a href="#cloud">How enterprises use it</a>
+<a href="#limits">Limitations</a>
+<a href="#rsi">and RSI</a>
+<a href="#open">Open source and AWS</a>
+<a href="#timeline">Timeline</a>
+<a href="#sources">Source</a>
+</div>
+<main class="rs-wrap">
+<section class="head">
+<h1>AlphaEvolve Explained</h1>
+<p class="dim">Google DeepMind's “evolutionary coding agent”: what it is, how it works, what it has achieved, how enterprises use it, its limitations, and how it relates to RSI. Compiled on 2026-11-18.</p>
+<div class="lead"><b>In short:</b>AlphaEvolve uses Gemini <b>Keeps rewriting a piece of code</b>, then uses<b> A scoring program you write</b> Each new version gets scored, and the high scorers are kept and refined further. Like biological evolution, it converges on better algorithms generation by generation. Its strength lies in “<b>Can be scored automatically</b>” problems, such as math, chips, scheduling, and performance optimization.</div>
+<div class="note"><span class="tag ok">Primary</span>= DeepMind / Google original posts, papers, and official repositories.<span class="tag">Second-hand</span>= Paraphrased or unverified.<span class="tag top">Judgment</span>= the views of this page's author. Customer results are as published by the customers and Google themselves.</div>
+</section>
+<section id="what">
+<h2>① What it is</h2>
+<div class="lead">“AlphaEvolve is an LLM-powered<b> Evolutionary coding agent</b>, for general-purpose algorithm discovery and optimization. It combines the creativity of Gemini models with<b> An automated evaluator that verifies answers</b> and combining them, using an evolutionary framework to keep improving the most promising ideas.”</div>
+<p class="dim small">Original: "an evolutionary coding agent powered by large language models for general-purpose algorithm discovery and optimization. AlphaEvolve pairs the creative problem-solving capabilities of our Gemini models with automated evaluators that verify answers…" — <a href="https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" rel="noopener" target="_blank">Google DeepMind,2025-05-14</a></p>
+<ul>
+<li><b>Who built it</b>: The AlphaEvolve team at Google DeepMind (white paper authors include Alexander Novikov, Matej Balog, Pushmeet Kohli, and others).<span class="tag ok">Primary</span></li>
+<li><b>Predecessor</b>: FunSearch (2023) — the first demonstration that large models can write code that discovers new, provably correct knowledge on open scientific problems. FunSearch could only evolve<b> A single function</b>; AlphaEvolve can evolve<b> Entire codebases</b>, writing far more complex algorithms.<span class="tag ok">Primary</span></li>
+<li><b>What problems it's good for</b>: In DeepMind's own words, "domains where progress can be clearly and systematically measured, such as mathematics and computer science." In other words:<b>You can write a program that automatically judges whether an answer is good</b>.<span class="tag ok">Primary</span></li>
+</ul>
+</section>
+<section id="how">
+<h2>② How it works</h2>
+<figure class="rs-fig"><a href="../../../rsi/alphaevolve/img/alphaevolve-fig2.jpg" target="_blank"><img alt="AlphaEvolve Figure 2: expanded view of the discovery process" loading="lazy" src="../../../rsi/alphaevolve/img/alphaevolve-fig2.jpg"/></a>
+<figcaption>The green items above are the four things humans provide: prompt templates and configuration, which models to use, <b>Evaluation code</b>, and an initial program with the editable parts marked. Below are AlphaEvolve's four components and a distributed loop that ultimately outputs the best program.<br/>Source: Novikov et al.,<a href="https://arxiv.org/abs/2506.13131" rel="noopener" target="_blank">AlphaEvolve: A coding agent for scientific and algorithmic discovery</a>(arXiv 2506.13131, 2025-06), Figure 2. Licensed under CC BY-NC-ND 4.0 (original figure unmodified).</figcaption></figure>
+<h3>Four components</h3>
+<ul>
+<li><b>Prompt sampler</b>: Picks a "parent program" and several "inspiration" programs from the program database and assembles them into a prompt for the model.</li>
+<li><b>LLMs ensemble (multiple models used together)</b>: Gemini Flash is fast and cheap, and handles<b> Casting a wide net</b>, generating lots of ideas; Gemini Pro is stronger and handles<b> Deep dive</b>, proposing more insightful changes. The model outputs code<b> Edits (diffs)</b>, not a full rewrite.</li>
+<li><b>Evaluators pool</b>: run and score each new program, optionally on multiple metrics. Evaluation can be tiered: run cheap checks first, and run the expensive full evaluation only if they pass (the whitepaper calls this an evaluation cascade).</li>
+<li><b>Program database</b>: store all programs and scores, and use an evolutionary algorithm to decide which programs the next round starts from — not just picking the best, but also preserving diversity.</li>
+</ul>
+<h3>One loop iteration (pseudocode in the figure)</h3>
+<pre class="rs-f">parent, inspirations = program_db.sample()
+prompt   = prompt_sampler.build(parent, inspirations)
+diff     = llm.generate(prompt)
+child    = apply_diff(parent, diff)
+results  = evaluator.run(child)
+program_db.add(child, results)</pre>
+<p>In your code, you use <code>EVOLVE-BLOCK-START</code> / <code>EVOLVE-BLOCK-END</code> Mark the “editable section”; everything else (e.g., inputs/outputs and the evaluation interface) stays unchanged. Google's skill-optimization tutorial places the text of SKILL.md between these two markers and lets it be modified.<span class="tag ok">Primary</span></p>
+<h3>On Google Cloud: generation runs in the cloud, evaluation runs on your side</h3>
+<ul>
+<li><b>The generation half</b>(prompt sampling, Gemini models, program database) are hosted on Google Cloud.</li>
+<li><b>The evaluation half</b> is run by you, on your own machines or target hardware. In Google's own words: “AlphaEvolve runs in Google Cloud and does not run your code. Its feedback is the scores and explanations your evaluator sends back.”<span class="tag ok">Primary source · Google Cloud blog</span></li>
+<li>So evaluation compute (and how well your evaluator is written) is your responsibility. At scale, you can use Cloud Batch to fan evaluations out to hundreds of machines.</li>
+</ul>
+</section>
+<section id="results">
+<h2>③ What it has achieved</h2>
+<h3>Google's own systems</h3>
+<ul>
+<li><b>Data center scheduling</b>: found a simple, effective scheduling heuristic for Borg that has been in production for over a year,<b>Continuously recovers 0.7% of Google's worldwide compute on average</b>.<span class="tag ok">Primary</span></li>
+<li><b>Gemini training</b>: sped up a key matrix multiplication kernel by 23%,<b>1% reduction in Gemini training time</b> — including the models AlphaEvolve itself is trained on. Kernel optimization went from “weeks of expert work” to “days of automated experiments.”<span class="tag ok">Primary</span></li>
+<li><b>Low-level GPU</b>: Up to 32.5% speedup on the FlashAttention kernel.<span class="tag ok">Primary</span></li>
+<li><b>Chips</b>: proposed a Verilog rewrite that removed unnecessary bits from a matrix multiplication circuit; after rigorous verification, it went into the next-generation TPU. Jeff Dean: “The TPU's brain is helping design the next-generation TPU's body.”<span class="tag ok">Primary</span></li>
+<li><b>Databases and caching</b>: improved Spanner's LSM tree compaction strategy, cutting write amplification by 20%; found a better cache replacement policy, finishing in two days work that used to take months of human effort.<span class="tag ok">Primary source · 2026-05 first-anniversary blog post</span></li>
+</ul>
+<h3>Math</h3>
+<ul>
+<li><b>4×4 complex matrix multiplication with just 48 scalar multiplications</b>, the first improvement in this setting in 56 years, since Strassen's algorithm in 1969.<span class="tag ok">Primary</span></li>
+<li>On 50+ open problems (analysis, geometry, combinatorics, number theory): about <b>75%</b> Matches the best known result, about <b>20%</b> improved on the best known results. Most experiments can be set up in a few hours.<span class="tag ok">Primary</span></li>
+<li>A paper co-authored with Terence Tao and others tested <b>67 problems</b>, matching the best known results on most and improving on several; sometimes it can even generalize from a finite set of examples to a formula that holds for all inputs. It is also combined with Deep Think and AlphaProof for automated proving.<span class="tag ok">Primary source · arXiv 2511.02864</span></li>
+<li>2026-08: Together with researchers from MIT, Columbia, and CMU, pushed the upper bound on the matrix multiplication exponent from ω &lt; 2.371339 to <b>ω &lt; 2.371177</b>.<span class="tag ok">Primary source · arXiv 2608.16884</span></li>
+</ul>
+<figure class="rs-fig"><a href="../../../rsi/alphaevolve/img/alphaevolve-math.jpg" target="_blank"><img alt="AlphaEvolve SOTA-breaking mathematical constructions" loading="lazy" src="../../../rsi/alphaevolve/img/alphaevolve-math.jpg"/></a>
+<figcaption>Some of the results AlphaEvolve improved in analysis, geometry, and combinatorics (left of the arrow is the previous best value; right is what AlphaEvolve found).<br/>Source: same white paper as above (arXiv 2506.13131), overview figure of mathematical results. Licensed under CC BY-NC-ND 4.0 (original figure unmodified).</figcaption></figure>
+<h3>Science</h3>
+<ul>
+<li>Genomics: improved DeepConsensus, a DNA sequencing error-correction model, reducing variant-calling errors by 30% (used by PacBio).</li>
+<li>Power grid: on the optimal power flow problem, the share of feasible solutions found by the neural network rose from 14% to over 88%.</li>
+<li>Quantum: quantum circuits designed for Google's Willow quantum chip, with 10x lower error than conventional optimization.</li>
+<li>Disaster prediction: 5% higher overall prediction accuracy across 20 types of natural hazards.<span class="tag ok">Primary source · 2026-05 first-anniversary blog post</span></li>
+</ul>
+</section>
+<section id="cloud">
+<h2>④ How enterprises can use it</h2>
+<ul>
+<li><b>Timeline</b>: Private preview opened on Google Cloud in 2025-12;<b>Generally available (GA) on 2026-07-09</b>, available to all Google Cloud customers through Gemini Enterprise Agent Platform.<span class="tag ok">Primary</span></li>
+<li><b>The four official steps</b>:
+<ol>
+<li><b>Define</b>: provide a seed algorithm, a problem definition, and background knowledge.</li>
+<li><b>Measure</b>: write a scoring function that scores candidates on one or more metrics, such as correctness, performance, and runtime constraints.</li>
+<li><b>Optimize</b>: have AlphaEvolve generate optimized code against these metrics.</li>
+<li><b>Apply</b>: deploy the final algorithm to production.<span class="tag ok">Primary</span></li>
+</ol></li>
+<li><b>Client library and examples</b>:<a href="https://github.com/Google-Cloud-AI/alphaevolve-on-googlecloud" rel="noopener" target="_blank">Google-Cloud-AI/alphaevolve-on-googlecloud</a>(Apache 2.0), with examples ranging from "pure-Python local evaluation" to "GPU training on GKE"; the quickest way to get started is the circle-packing problem, which runs end to end in about 5 minutes.<span class="tag ok">Primary</span></li>
+<li><b>Default model</b>: Starting 2026-10-26, new experiments use Gemini 4 Argon by default and are billed at Argon token prices.<span class="tag">Secondary · Reposted release notes</span></li>
+<li><b>Large-scale evaluation</b>: AlphaEvolve on Cloud Batch (SC26, 2026-11-13), a blueprint that fans out evaluation of hundreds of candidates across multiple machines, with support for multi-node MPI and Spot.<span class="tag ok">Primary</span></li>
+</ul>
+<h3>Results published by customers</h3>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>Customer</th><th> Problem</th><th> Published results</th></tr>
+<tr><td>BASF</td><td> Global supply chain "digital twin"</td><td>More than 80% relative accuracy improvement over the initial seed model</td></tr>
+<tr><td>Coolblue</td><td> E-commerce 28-day demand forecasting</td><td> About 200 iterations; forecast error (WMAPE) improved by more than 5%</td></tr>
+<tr><td>FM Logistic</td><td> Warehouse picking routes</td><td> A further 10.4% improvement on an already highly optimized baseline, saving workers over 15,000 km of walking</td></tr>
+<tr><td>JetBrains</td><td> IDE performance</td><td> 15–20%+ improvement</td></tr>
+<tr><td>Kinaxis</td><td> Prediction and optimization algorithms</td><td> Key forecast accuracy improved by over 22%, runtime reduced by over 90% (benchmark dataset)</td></tr>
+<tr><td>Klarna</td><td> Large-scale transformer training</td><td> Double the training throughput, with better model quality</td></tr>
+<tr><td>Schrödinger</td><td> Two bottleneck algorithms in molecular simulation</td><td> About 4× speedup</td></tr>
+<tr><td>Google itself</td><td> the agent's SKILL.md</td><td> About 5% improvement after a few iterations</td></tr>
+</table></div>
+<p class="dim small">Sources: the Google Cloud GA blog, individual customer case-study blogs, and the DeepMind one-year anniversary blog. All figures were published by the customers and by Google itself.</p>
+<p><b>A quote from JetBrains sums up its positioning well</b>: "Engineers still own the benchmarks, reviews, and release decisions. What shrinks is the search space."<span class="tag ok">Primary</span></p>
+</section>
+<section id="limits">
+<h2>⑤ Limitations and caveats</h2>
+<ul>
+<li><b>Unusable without a good scoring program</b>. Its ceiling depends on your evaluator. The paper by Tao et al. also notes that AlphaEvolve is not “a general tool for solving all math problems”; it mainly targets problems of the form “construct an object that satisfies certain quantitative properties.”<span class="tag ok">Primary</span></li>
+<li><b>Can game the evaluator</b>. Google's video processing tutorial gives an example: if you only measure speed, the evolutionary loop might simply skip rendering to “get faster,” so you need to add an image quality metric (SSIM) as a gate.<span class="tag ok">Primary</span></li>
+<li><b>Progress isn't smooth</b>. The official repo warns that the best score may stall for many generations and then suddenly jump, so “don't stop early just because it looks stuck”; many candidates will fail, and the failure information is also fed back to the model.<span class="tag ok">Primary</span></li>
+<li><b>The evaluation compute is on your side</b>. Generation is managed, but every candidate has to run in your environment, and at scale this is the main cost — the same as with<a href="../"> This talk</a>'s point that "97.7% of the money goes to evaluation" is the same idea.<span class="tag top">Judgment</span></li>
+<li><b>Tied to Gemini</b>. The managed version uses Gemini; the official open-source minimal implementation (see ⑦) also calls the Gemini API.</li>
+</ul>
+</section>
+<section id="rsi">
+<h2>⑥ Relationship to RSI</h2>
+<ul>
+<li><b>It isn't RSI by itself</b>. In the five-level chart in The Last AI Built by Humans, AlphaEvolve is placed at <b>B0</b>(it only revises its answer repeatedly within a single task) — because what it modifies is the code you give it, not itself (see <a href="../landscape/#what">RSI overview, Figure 5</a>).</li>
+<li><b>But it's close to RSI</b>. DeepMind's original post says it made Gemini training 1% faster, “including the LLMs that AlphaEvolve itself uses”; it is also helping design the next-generation TPU. In other words, <b>Using AI to improve the things that build AI</b> — but between rounds, humans still decide whether and how to use the results.<span class="tag ok">Primary</span> <span class="tag top">Judgment</span></li>
+<li><b>It's the "engine" behind a lot of RSI research</b>: Google uses it to improve agent skills; the open-source ShinkaEvolve and OpenEvolve are used to modify harnesses and training code. The engine is general-purpose,<b>Make the AI itself the thing being improved, and carry the improved result into the next round</b>, does it start moving toward RSI.</li>
+</ul>
+</section>
+<section id="open">
+<h2>⑦ Open-source alternatives, and how to do it on AWS</h2>
+<ul>
+<li><b>Official minimal implementation</b>:<a href="https://github.com/google-deepmind/alphaevolve" rel="noopener" target="_blank">google-deepmind/alphaevolve</a>(released 2026-11-04, Apache 2.0).<code>/src</code> is a minimal implementation with local evaluation (requires Docker and a Gemini API key);<code>/maths</code>, <code>/omega</code> is the Colab with the math results and verification.<span class="tag ok">Primary</span></li>
+<li><b>OpenEvolve</b>:<a href="https://github.com/algorithmicsuperintelligence/openevolve" rel="noopener" target="_blank">algorithmicsuperintelligence/openevolve</a>, billed as "an open-source implementation of AlphaEvolve," with about 7.8k stars and support for models from multiple providers.</li>
+<li><b>ShinkaEvolve</b>:<a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" target="_blank">SakanaAI/ShinkaEvolve</a>, Sakana AI's version, more sample-efficient;<a href="../demo/">This session's demo</a> is what it uses.</li>
+<li><b>On AWS</b> <span class="tag top">Judgment</span>: there is currently no managed service comparable to AlphaEvolve. The equivalent approach is <b>Open-source engine (ShinkaEvolve / OpenEvolve) + models on Bedrock for generation + AWS Batch / EC2 Spot for evaluation</b>, with the same structure as Google's "generation in the cloud, evaluation on your side." That's how the demo's "frozen weights, only the retrieval code changes: 0.42 → 0.94" was run.</li>
+</ul>
+</section>
+<section id="timeline">
+<h2>⑧ Timeline</h2>
+<div class="rs-tl">
+<div><span class="y">2023</span><b>FunSearch</b>: the first time a large model discovered provably correct new knowledge on an open scientific problem (evolving only a single function).</div>
+<div><span class="y">2025-05-14</span><b> Released AlphaEvolve</b>: DeepMind blog; results such as Borg 0.7% and 48 multiplications for 4×4 matrices.</div>
+<div><span class="y">2025-06-16</span><b> Whitepaper</b>: arXiv 2506.13131.</div>
+<div><span class="y">2025-11</span><b> Math paper with Terence Tao and others</b>: 67 problems.</div>
+<div><span class="y">2025-12</span><b> Private preview on Google Cloud</b>.</div>
+<div><span class="y">2026-05-07</span><b> First anniversary</b>: new results in genomics, power grids, quantum, Spanner, TPU design and more; the BASF case study.</div>
+<div><span class="y">2026-07-09</span><b> Generally available (GA) on Google Cloud</b>; the client library is open source.</div>
+<div><span class="y">2026-08</span><b> Matrix multiplication exponent</b> ω &lt; 2.371177.</div>
+<div><span class="y">2026-10-26</span> Default model switched to Gemini 4 Argon (secondhand source).</div>
+<div><span class="y">2026-11-04</span><b> google-deepmind/alphaevolve repo made public</b>(minimal implementation + verification code).</div>
+<div><span class="y">2026-11-05</span> Official tutorial: optimizing an agent skill with AlphaEvolve + Harbor.</div>
+<div><span class="y">2026-11-13</span> SC26: AlphaEvolve on Cloud Batch.</div>
+</div>
+</section>
+<section id="sources">
+<h2>Source</h2>
+<ul class="small">
+<li><a href="https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" rel="noopener" target="_blank">DeepMind · AlphaEvolve: A Gemini-powered coding agent for designing advanced algorithms(2025-05-14)</a></li>
+<li><a href="https://arxiv.org/abs/2506.13131" rel="noopener" target="_blank">Whitepaper · AlphaEvolve: A coding agent for scientific and algorithmic discovery (arXiv 2506.13131, CC BY-NC-ND 4.0)</a></li>
+<li><a href="https://deepmind.google/blog/alphaevolve-impact/" rel="noopener" target="_blank">DeepMind · AlphaEvolve one-year anniversary (2026-05-07)</a></li>
+<li><a href="https://arxiv.org/abs/2511.02864" rel="noopener" target="_blank">Georgiev, Gómez-Serrano, Tao, Wagner · Mathematical exploration and discovery at scale</a> · <a href="https://arxiv.org/abs/2608.16884" rel="noopener" target="_blank">Improving the matrix multiplication exponent with AlphaEvolve</a></li>
+<li><a href="https://cloud.google.com/blog/products/ai-machine-learning/alphaevolve-is-available-for-everyone" rel="noopener" target="_blank">Google Cloud · AlphaEvolve is available for everyone(GA,2026-07-09)</a> · <a href="https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/alphaevolve-on-cloud/" rel="noopener" target="_blank">blog.google</a></li>
+<li><a href="https://cloud.google.com/blog/products/ai-machine-learning/how-basf-manages-thousands-of-supply-chain-decisions-with-alphaevolve" rel="noopener" target="_blank">BASF case study</a> · <a href="https://cloud.google.com/blog/products/ai-machine-learning/schrodinger-alphaevolve-molecular-discovery-accelerates-4x" rel="noopener" target="_blank">Schrödinger case study</a> · <a href="https://cloud.google.com/blog/topics/developers-practitioners/how-to-speed-up-your-video-processing-with-alphaevolve" rel="noopener" target="_blank">Video processing tutorial (split-loop architecture)</a> · <a href="https://cloud.google.com/blog/topics/developers-practitioners/how-to-build-an-agent-skill-optimizer-with-alphaevolve-and-harbor/" rel="noopener" target="_blank">agent skill optimization tutorial</a> · <a href="https://cloud.google.com/blog/topics/hpc/whats-new-in-hpc-and-ai-at-sc26/" rel="noopener" target="_blank">SC26 · Cloud Batch</a></li>
+<li><a href="https://github.com/google-deepmind/alphaevolve" rel="noopener" target="_blank">google-deepmind/alphaevolve</a> · <a href="https://github.com/Google-Cloud-AI/alphaevolve-on-googlecloud" rel="noopener" target="_blank">Google-Cloud-AI/alphaevolve-on-googlecloud</a> · <a href="https://github.com/algorithmicsuperintelligence/openevolve" rel="noopener" target="_blank">OpenEvolve</a> · <a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" target="_blank">ShinkaEvolve</a></li>
+<li><a href="https://www.cloudreleases.io/updates/gcp-857b73e48e6fa0c70e80-gemini-for-business" rel="noopener" target="_blank">Default model changed to Gemini 4 Argon (reposted from release notes)</a></li>
+</ul>
+<p class="dim small">AI-compiled: compiled from searches and reading the original sources; the original sources are authoritative for all figures. Images are original figures from the whitepaper (CC BY-NC-ND 4.0, unmodified); copyright belongs to the original authors.</p>
+</section>
+</main>
+<a data-cur="en" data-to="zh" href="../../../rsi/alphaevolve/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

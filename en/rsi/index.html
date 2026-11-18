@@ -90,6 +90,7 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <a class="rs-card" href="demo/papers/"><div class="k">Paper</div><div class="t"> The paper behind the demo</div><div class="d"> Close readings of AlphaEvolve, DGM, Shinka, and more (in Chinese)</div></a>
 <a class="rs-card" href="landscape/"><div class="k">Landscape · 2026-11</div><div class="t"> Field progress + cloud provider competition</div><div class="d"> Frontier labs, Google / Microsoft / AWS, industry practice</div></a>
 <a class="rs-card" href="capital/"><div class="k">Capital view · 2026-11</div><div class="t"> Follow the compute money</div><div class="d"> Who invested in whom, which cloud the money flows back to, valuations and exits</div></a>
+<a class="rs-card" href="alphaevolve/"><div class="k">Deep dive · 2026-11</div><div class="t"> What is AlphaEvolve</div><div class="d"> How it works, what it has achieved, how enterprises use it, and how it relates to RSI</div></a>
 </div>
 </section>
 <section id="ideas">
@@ -130,6 +131,9 @@ Leakage audit finds answers written into code → straight −1, invalidated</pr
 </div></details>
 <details class="rs-q"><summary>Why not just change the model weights?</summary><div>
 <p>Changing weights requires training (the SageMaker side): expensive, slow, harder to verify, and hard to roll back. Changing the harness only runs inference (Bedrock): cheap, and you can switch back anytime. In chef terms: you can always switch back to an old recipe, but you can't un-send a chef to culinary school.</p>
+</div></details>
+<details class="rs-q"><summary>What is AlphaEvolve?</summary><div>
+<p>Built by Google DeepMind<b> Evolutionary coding agent</b>: You provide a piece of seed code and a scoring program; it uses Gemini to keep modifying the code, score each new version, and keep the better ones to build on, getting closer to a better algorithm generation by generation. Released in 2025-05, generally available on Google Cloud on 2026-07-09. It isn't RSI itself (it modifies the code you give it, not itself), but it's the "engine" behind a lot of RSI research; ShinkaEvolve, used in this session's demo, is a similar open-source method. See <a href="alphaevolve/">AlphaEvolve Explained</a>.</p>
 </div></details>
 </section>
 <section id="videos">

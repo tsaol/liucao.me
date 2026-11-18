@@ -156,7 +156,7 @@ pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);bord
 <p>先说结论:<b>三家都把「agent 自动变好」做成了产品,而且形状几乎一样</b>。差别在三处:有没有自己的「算法发现」引擎、研究和产品接得顺不顺、RSI 创业公司把算力放在谁家。</p>
 <h3>Google / Google Cloud:研究到产品链条最完整</h3>
 <ul>
-<li><b>AlphaEvolve 已 GA</b>(2026-07-09):DeepMind 的进化式代码优化 agent,挂在 Gemini Enterprise Agent Platform 上(Vertex AI 已改名为这个)。你给种子算法和打分函数,它用 Gemini 不断变异、评测、留下更好的版本。早期客户有 BASF、JetBrains、Kinaxis;Schrödinger 用它把分子模拟里两个瓶颈算法提速约 4 倍。<span class="tag ok">一手</span></li>
+<li><b>AlphaEvolve 已 GA</b>(2026-07-09,<a href="../alphaevolve/">详解</a>):DeepMind 的进化式代码优化 agent,挂在 Gemini Enterprise Agent Platform 上(Vertex AI 已改名为这个)。你给种子算法和打分函数,它用 Gemini 不断变异、评测、留下更好的版本。早期客户有 BASF、JetBrains、Kinaxis;Schrödinger 用它把分子模拟里两个瓶颈算法提速约 4 倍。<span class="tag ok">一手</span></li>
 <li><b>默认模型换成 Gemini 4 Argon</b>(10-26 起),按 Argon 的 token 价计费。<span class="tag">二手 · release notes 转载</span></li>
 <li><b>用 AlphaEvolve 改 agent 的 skill</b>(11-05 官方教程):把 SKILL.md 当成「程序」,让 Harbor 在 GKE 上跑真实编码任务来打分,每个候选和基线同时跑、看差值,最后在没见过的任务上复查。几轮迭代提升约 5%。—— 这就是「冻结模型、自动改 skill」的官方做法(按图 5 属于 L2:人定目标和打分,AI 选改法)。<span class="tag ok">一手</span></li>
 <li><b>AlphaEvolve on Cloud Batch</b>(SC26,11-13):一个蓝图把候选评测扇出到几百台机器,包括多节点 MPI,支持 Spot 降成本。<span class="tag ok">一手</span></li>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AlphaEvolve 详解 · 进化式写代码 agent · 2026-11</title>
+<link href="../assets/style.css" rel="stylesheet"/>
+<style>
+:root{--rs-bg:#0B0D12;--rs-bg2:#12151d;--rs-ink:#E6EAF2;--rs-dim:#8A94A6;--rs-cold:#4CC2FF;--rs-warm:#FFB020;--rs-ok:#38D39F;--rs-line:#232a36;
+--rs-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+--rs-mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+body{background:var(--rs-bg)}
+main.rs-wrap{color:var(--rs-ink);font-family:var(--rs-sans);font-size:17px;line-height:1.8;max-width:980px;margin:0 auto;padding:4vh 5vw 12vh}
+main.rs-wrap h1{font-size:36px;line-height:1.25;margin:0 0 .3em}
+main.rs-wrap h2{font-size:24px;margin:0 0 .9em;color:var(--rs-cold)}
+main.rs-wrap h3{font-size:18px;margin:1.6em 0 .6em;color:var(--rs-ink)}
+main.rs-wrap section{border-top:1px solid var(--rs-line);padding:2.4em 0;scroll-margin-top:56px}
+main.rs-wrap section.head{border-top:none;padding-top:0}
+main.rs-wrap p{margin:0 0 1em}
+main.rs-wrap b{color:var(--rs-warm);font-weight:600}
+main.rs-wrap a{color:var(--rs-cold);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.5)}
+main.rs-wrap a:hover{border-bottom-style:solid}
+main.rs-wrap .dim{color:var(--rs-dim)}
+main.rs-wrap .small{font-size:14px}
+main.rs-wrap code{font-family:var(--rs-mono);font-size:.86em;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:4px;padding:0 .3em}
+main.rs-wrap ul{margin:0 0 1em;padding-left:1.3em}
+main.rs-wrap li{margin:.35em 0}
+main.rs-wrap .lead{font-size:21px;line-height:1.6;padding:1em 1.2em;border-left:3px solid var(--rs-warm);background:var(--rs-bg2);border-radius:0 8px 8px 0;margin:1.2em 0}
+main.rs-wrap .note{font-size:14px;color:var(--rs-dim);background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.7em 1em;margin:1em 0}
+.rs-toc{position:sticky;top:0;z-index:5;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--rs-line);display:flex;gap:1.2em;justify-content:center;flex-wrap:wrap;padding:.55em 1em;font-size:14px}
+.rs-toc a{color:var(--rs-dim);text-decoration:none}
+.rs-toc a:hover{color:var(--rs-cold)}
+.rs-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:1.2em 0}
+.rs-card{display:block;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:1em 1.1em;color:var(--rs-ink)!important;border-bottom:1px solid var(--rs-line)!important;transition:border-color .2s}
+.rs-card:hover{border-color:var(--rs-cold)!important}
+.rs-card .k{font-size:13px;color:var(--rs-dim)}
+.rs-card .t{font-size:18px;font-weight:600;margin:.2em 0}
+.rs-card .d{font-size:14px;color:var(--rs-dim);line-height:1.6}
+.rs-q{background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:.2em 1.1em;margin:.8em 0}
+.rs-q summary{cursor:pointer;font-weight:600;padding:.7em 0;list-style:none}
+.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:var(--rs-warm)}
+.rs-q[open] summary::before{content:"− "}
+.rs-q > div{padding:0 0 .8em}
+table.rs-t{width:100%;border-collapse:collapse;font-size:15px;margin:.6em 0 1.2em}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--rs-line);padding:.55em .5em;text-align:left;vertical-align:top}
+table.rs-t th{color:var(--rs-dim);font-weight:500;font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--rs-line);border-radius:999px;padding:0 .6em;color:var(--rs-dim);margin-right:.3em;white-space:nowrap}
+.tag.top{color:var(--rs-warm);border-color:rgba(255,176,32,.5)}
+.tag.ok{color:var(--rs-ok);border-color:rgba(56,211,159,.5)}
+pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7;color:var(--rs-ink)}
+@media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
+@media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
+.rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
+    .rs-fig{margin:1em 0 1.6em}.rs-fig img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;border:1px solid var(--rs-line)}.rs-fig figcaption{font-size:13px;color:var(--rs-dim);line-height:1.65;margin-top:.6em}.rs-fig a{border-bottom:none}
+.rs-tl{border-left:2px solid var(--rs-line);margin:1em 0 1.4em;padding-left:1em}.rs-tl>div{margin:.55em 0;font-size:15px}.rs-tl .y{display:inline-block;min-width:6.5em;color:var(--rs-cold);font-family:var(--rs-mono);font-size:13px}
+main.rs-wrap a{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← RSI 资料包</a>
+<a href="../landscape/">RSI 全景</a>
+<a href="../demo/play/">Play</a>
+<a href="../slides/">RSI 幻灯片</a>
+</div>
+</nav>
+<div class="rs-toc">
+<a href="#what">是什么</a>
+<a href="#how">怎么工作</a>
+<a href="#results">做成了什么</a>
+<a href="#cloud">企业怎么用</a>
+<a href="#limits">局限</a>
+<a href="#rsi">和 RSI</a>
+<a href="#open">开源和 AWS</a>
+<a href="#timeline">时间线</a>
+<a href="#sources">来源</a>
+</div>
+<main class="rs-wrap">
+<section class="head">
+<h1>AlphaEvolve 详解</h1>
+<p class="dim">Google DeepMind 的「进化式写代码 agent」:它是什么、怎么工作、做成了什么、企业怎么用、局限在哪,以及和 RSI 的关系。整理于 2026-11-18。</p>
+<div class="lead"><b>一句话:</b>AlphaEvolve 用 Gemini <b>不停地改一段代码</b>,再用<b>你写的打分程序</b>给每个新版本打分,分高的留下来接着改 —— 像生物进化一样,一代代逼近更好的算法。它强在「<b>能自动打分</b>」的问题上,比如数学、芯片、调度、性能优化。</div>
+<div class="note"><span class="tag ok">一手</span>= DeepMind / Google 原文、论文、官方仓库。<span class="tag">二手</span>= 转述或未核实。<span class="tag top">判断</span>= 这一页作者的看法。客户成绩都是客户和 Google 自己公布的。</div>
+</section>
+<section id="what">
+<h2>① 它是什么</h2>
+<div class="lead">「AlphaEvolve 是一个由大语言模型驱动的<b>进化式写代码 agent</b>,用于通用的算法发现和优化。它把 Gemini 模型的创造力和<b>验证答案的自动评测器</b>结合起来,并用进化框架不断改进最有希望的想法。」</div>
+<p class="dim small">原文:「an evolutionary coding agent powered by large language models for general-purpose algorithm discovery and optimization. AlphaEvolve pairs the creative problem-solving capabilities of our Gemini models with automated evaluators that verify answers…」—— <a href="https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" rel="noopener" target="_blank">Google DeepMind,2025-05-14</a></p>
+<ul>
+<li><b>谁做的</b>:Google DeepMind 的 AlphaEvolve 团队(白皮书作者包括 Alexander Novikov、Matej Balog、Pushmeet Kohli 等)。<span class="tag ok">一手</span></li>
+<li><b>前身</b>:2023 年的 FunSearch —— 第一次证明大模型能写出代码、在开放科学问题上发现可证明正确的新知识。FunSearch 只能进化<b>单个函数</b>;AlphaEvolve 能进化<b>整个代码库</b>,写出复杂得多的算法。<span class="tag ok">一手</span></li>
+<li><b>适合什么问题</b>:DeepMind 的原话是「进步能被清楚、系统地衡量的领域,比如数学和计算机科学」。也就是:<b>能写一个程序,自动判断答案好不好</b>。<span class="tag ok">一手</span></li>
+</ul>
+</section>
+<section id="how">
+<h2>② 它怎么工作</h2>
+<figure class="rs-fig"><a href="img/alphaevolve-fig2.jpg" target="_blank"><img alt="AlphaEvolve Figure 2: expanded view of the discovery process" loading="lazy" src="img/alphaevolve-fig2.jpg"/></a>
+<figcaption>上面绿色是人要提供的四样东西:提示词模板和配置、用哪些模型、<b>评测代码</b>、标好「哪些部分可以改」的初始程序。下面是 AlphaEvolve 的四个部件和一个分布式循环,最后输出最好的程序。<br/>出处:Novikov 等,<a href="https://arxiv.org/abs/2506.13131" rel="noopener" target="_blank">AlphaEvolve: A coding agent for scientific and algorithmic discovery</a>(arXiv 2506.13131,2025-06),Figure 2。授权 CC BY-NC-ND 4.0(原图未改动)。</figcaption></figure>
+<h3>四个部件</h3>
+<ul>
+<li><b>Prompt sampler(提示词采样器)</b>:从程序库里挑一个「父程序」和几个「灵感」程序,拼成给模型的提示词。</li>
+<li><b>LLMs ensemble(多个模型一起用)</b>:Gemini Flash 又快又便宜,负责<b>广撒网</b>,多出想法;Gemini Pro 更强,负责<b>深挖</b>,给出更有见地的改法。模型输出的是对代码的<b>修改(diff)</b>,不是整段重写。</li>
+<li><b>Evaluators pool(评测器)</b>:运行每个新程序并打分,可以有多个指标。评测可以分层:先跑便宜的检查,通过了才跑贵的完整评测(白皮书叫 evaluation cascade)。</li>
+<li><b>Program database(程序库)</b>:存下所有程序和分数,用进化算法决定下一轮从哪些程序出发 —— 不只挑最好的,也保留多样性。</li>
+</ul>
+<h3>一轮循环(图中的伪代码)</h3>
+<pre class="rs-f">父程序, 灵感 = 程序库.抽样()
+提示词     = 提示词采样器.拼(父程序, 灵感)
+修改       = 大模型.生成(提示词)
+子程序     = 应用修改(父程序, 修改)
+结果       = 评测器.运行(子程序)
+程序库.加入(子程序, 结果)</pre>
+<p>你在代码里用 <code>EVOLVE-BLOCK-START</code> / <code>EVOLVE-BLOCK-END</code> 标出「允许改的部分」,其余部分(比如输入输出、评测接口)保持不变。Google 的 skill 优化教程就是把 SKILL.md 的文字放进这两个标记中间,让它改。<span class="tag ok">一手</span></p>
+<h3>在 Google Cloud 上:生成在云上,评测在你那边</h3>
+<ul>
+<li><b>生成这一半</b>(提示词采样、Gemini 模型、程序库)是 Google Cloud 托管的。</li>
+<li><b>评测这一半</b>由你自己跑,在你自己的机器或目标硬件上。官方原话:「AlphaEvolve 在 Google Cloud 里运行,不运行你的代码。它的反馈就是你的评测器送回来的分数和说明。」<span class="tag ok">一手 · Google Cloud 博客</span></li>
+<li>所以评测的算力(以及评测写得好不好)是你的事 —— 大规模时可以用 Cloud Batch 把评测扇出到几百台机器。</li>
+</ul>
+</section>
+<section id="results">
+<h2>③ 它做成了什么</h2>
+<h3>Google 自己的系统</h3>
+<ul>
+<li><b>数据中心调度</b>:给 Borg 找到一个简单有效的调度启发式,已上线一年多,<b>平均持续回收 Google 全球 0.7% 的算力</b>。<span class="tag ok">一手</span></li>
+<li><b>Gemini 训练</b>:把一个关键矩阵乘法 kernel 提速 23%,<b>Gemini 训练时间减少 1%</b> —— 包括训练 AlphaEvolve 自己用的模型。kernel 优化从「专家几周」变成「自动实验几天」。<span class="tag ok">一手</span></li>
+<li><b>GPU 底层</b>:FlashAttention kernel 最高提速 32.5%。<span class="tag ok">一手</span></li>
+<li><b>芯片</b>:提出一个 Verilog 改写,去掉矩阵乘法电路里多余的位,通过严格验证后进入下一代 TPU。Jeff Dean:「TPU 的大脑在帮着设计下一代 TPU 的身体。」<span class="tag ok">一手</span></li>
+<li><b>数据库和缓存</b>:改进 Spanner 的 LSM 树压缩策略,写放大降低 20%;找到更好的缓存替换策略,两天做完以前要几个月人力的工作。<span class="tag ok">一手 · 2026-05 一周年博客</span></li>
+</ul>
+<h3>数学</h3>
+<ul>
+<li><b>4×4 复数矩阵乘法只要 48 次标量乘法</b>,这是 1969 年 Strassen 算法以来,56 年里在这个设定下的第一次改进。<span class="tag ok">一手</span></li>
+<li>在 50 多个开放问题(分析、几何、组合、数论)上:约 <b>75%</b> 追平已知最好结果,约 <b>20%</b> 刷新了已知最好结果。大部分实验几个小时就能搭好。<span class="tag ok">一手</span></li>
+<li>和 Terence Tao 等人合写的论文测了 <b>67 个问题</b>,多数追平、若干刷新,有时还能从有限个例子归纳出对所有输入都成立的公式;并和 Deep Think、AlphaProof 组合做自动证明。<span class="tag ok">一手 · arXiv 2511.02864</span></li>
+<li>2026-08:和 MIT、哥大、CMU 的学者一起,把矩阵乘法指数的上界从 ω &lt; 2.371339 推进到 <b>ω &lt; 2.371177</b>。<span class="tag ok">一手 · arXiv 2608.16884</span></li>
+</ul>
+<figure class="rs-fig"><a href="img/alphaevolve-math.jpg" target="_blank"><img alt="AlphaEvolve SOTA-breaking mathematical constructions" loading="lazy" src="img/alphaevolve-math.jpg"/></a>
+<figcaption>AlphaEvolve 在分析、几何、组合三个方向上刷新的部分结果(箭头左边是原来的最好值,右边是 AlphaEvolve 找到的)。<br/>出处:同上白皮书(arXiv 2506.13131),数学结果总览图。授权 CC BY-NC-ND 4.0(原图未改动)。</figcaption></figure>
+<h3>科学</h3>
+<ul>
+<li>基因组:改进 DNA 测序纠错模型 DeepConsensus,变异检测错误减少 30%(PacBio 在用)。</li>
+<li>电网:最优潮流问题上,神经网络找到可行解的比例从 14% 提到 88% 以上。</li>
+<li>量子:给 Google Willow 量子芯片设计的量子电路,误差比传统优化低 10 倍。</li>
+<li>灾害预测:20 类自然灾害的综合预测准确率提高 5%。<span class="tag ok">一手 · 2026-05 一周年博客</span></li>
+</ul>
+</section>
+<section id="cloud">
+<h2>④ 企业怎么用</h2>
+<ul>
+<li><b>时间线</b>:2025-12 在 Google Cloud 开放私有预览;<b>2026-07-09 正式商用(GA)</b>,所有 Google Cloud 客户都能用,入口在 Gemini Enterprise Agent Platform。<span class="tag ok">一手</span></li>
+<li><b>官方四步</b>:
+<ol>
+<li><b>Define(定义)</b>:给种子算法、问题定义和背景知识。</li>
+<li><b>Measure(衡量)</b>:写打分函数,按正确性、性能、运行约束等一个或多个指标给候选打分。</li>
+<li><b>Optimize(优化)</b>:让 AlphaEvolve 针对这些指标生成优化后的代码。</li>
+<li><b>Apply(应用)</b>:把最终算法部署到生产。<span class="tag ok">一手</span></li>
+</ol></li>
+<li><b>客户端库和示例</b>:<a href="https://github.com/Google-Cloud-AI/alphaevolve-on-googlecloud" rel="noopener" target="_blank">Google-Cloud-AI/alphaevolve-on-googlecloud</a>(Apache 2.0),从「纯 Python 本地评测」到「在 GKE 上跑 GPU 训练」都有例子;最快的入门是填圆问题,约 5 分钟跑通。<span class="tag ok">一手</span></li>
+<li><b>默认模型</b>:2026-10-26 起新实验默认用 Gemini 4 Argon,按 Argon 的 token 价格计费。<span class="tag">二手 · release notes 转载</span></li>
+<li><b>大规模评测</b>:AlphaEvolve on Cloud Batch(SC26,2026-11-13),一个蓝图把几百个候选评测扇出到多台机器,支持多节点 MPI 和 Spot。<span class="tag ok">一手</span></li>
+</ul>
+<h3>客户公布的成绩</h3>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>客户</th><th>问题</th><th>公布的结果</th></tr>
+<tr><td>BASF</td><td>全球供应链「数字孪生」</td><td>比初始种子模型准确度相对提升 80% 以上</td></tr>
+<tr><td>Coolblue</td><td>电商 28 天需求预测</td><td>约 200 轮迭代,预测误差(WMAPE)改善 5% 以上</td></tr>
+<tr><td>FM Logistic</td><td>仓库拣货路径</td><td>在已高度优化的基础上再改进 10.4%,员工少走 1.5 万公里以上</td></tr>
+<tr><td>JetBrains</td><td>IDE 性能</td><td>提升 15–20% 以上</td></tr>
+<tr><td>Kinaxis</td><td>预测和优化算法</td><td>关键预测准确度提升 22% 以上,运行时间减少 90% 以上(基准数据集)</td></tr>
+<tr><td>Klarna</td><td>大型 transformer 训练</td><td>训练吞吐翻倍,同时模型质量更好</td></tr>
+<tr><td>Schrödinger</td><td>分子模拟里的两个瓶颈算法</td><td>约 4 倍提速</td></tr>
+<tr><td>Google 自己</td><td>agent 的 SKILL.md</td><td>几轮迭代提升约 5%</td></tr>
+</table></div>
+<p class="dim small">来源:Google Cloud GA 博客、各客户案例博客、DeepMind 一周年博客。都是客户和 Google 自己公布的数字。</p>
+<p><b>JetBrains 的一句话很能说明它的定位</b>:「工程师仍然掌握基准、评审和发布决定。变小的是搜索空间。」<span class="tag ok">一手</span></p>
+</section>
+<section id="limits">
+<h2>⑤ 局限和要注意的地方</h2>
+<ul>
+<li><b>没有好的打分程序就用不了</b>。它的效果上限取决于你的评测器。Tao 等人的论文也说:AlphaEvolve 不是「解所有数学问题的通用工具」,主要针对「构造一个满足数量性质的对象」这类问题。<span class="tag ok">一手</span></li>
+<li><b>会钻评测的空子</b>。Google 的视频处理教程举了例子:如果只看速度,进化循环可能干脆跳过渲染来「变快」,所以要加画质指标(SSIM)当门槛。<span class="tag ok">一手</span></li>
+<li><b>进度不是平滑的</b>。官方仓库提醒:最好分数可能卡很多代然后突然跳一下,「不要因为看起来卡住就提前停」;很多候选会失败,失败信息也会反馈给模型。<span class="tag ok">一手</span></li>
+<li><b>评测的算力在你这边</b>。生成是托管的,但每个候选都要在你的环境里跑一遍,大规模时这部分是主要成本 —— 和<a href="../">本场分享</a>里「97.7% 的钱花在评测」是同一个道理。<span class="tag top">判断</span></li>
+<li><b>绑定 Gemini</b>。托管版用 Gemini;官方开源的最小实现(见 ⑦)也是调 Gemini API。</li>
+</ul>
+</section>
+<section id="rsi">
+<h2>⑥ 和 RSI 的关系</h2>
+<ul>
+<li><b>它本身不算 RSI</b>。在《The Last AI Built by Humans》的五级图里,AlphaEvolve 被放在 <b>B0</b>(只在一次任务里反复改答案)—— 因为它改的是你给的代码,改进的不是它自己(见 <a href="../landscape/#what">RSI 全景 图 5</a>)。</li>
+<li><b>但它离 RSI 很近</b>。DeepMind 原文写着:它让 Gemini 训练快了 1%,「包括训练 AlphaEvolve 自己所用的大模型」;它也在帮着设计下一代 TPU。也就是 <b>用 AI 改进造 AI 的东西</b> —— 只是每一轮之间还是人在决定用不用、怎么用。<span class="tag ok">一手</span> <span class="tag top">判断</span></li>
+<li><b>它是很多 RSI 研究的「引擎」</b>:Google 用它改 agent 的 skill;开源的 ShinkaEvolve、OpenEvolve 被拿来改 harness、改训练代码。引擎是通用的,<b>把改进的对象换成 AI 自己,并让改好的结果留到下一轮</b>,才往 RSI 走。</li>
+</ul>
+</section>
+<section id="open">
+<h2>⑦ 开源替代,以及在 AWS 上怎么做</h2>
+<ul>
+<li><b>官方最小实现</b>:<a href="https://github.com/google-deepmind/alphaevolve" rel="noopener" target="_blank">google-deepmind/alphaevolve</a>(2026-11-04 公开,Apache 2.0)。<code>/src</code> 是带本地评测的最小实现(需要 Docker 和 Gemini API key);<code>/maths</code>、<code>/omega</code> 是数学结果和验证用的 Colab。<span class="tag ok">一手</span></li>
+<li><b>OpenEvolve</b>:<a href="https://github.com/algorithmicsuperintelligence/openevolve" rel="noopener" target="_blank">algorithmicsuperintelligence/openevolve</a>,自称「AlphaEvolve 的开源实现」,约 7.8k 星,可以接多家模型。</li>
+<li><b>ShinkaEvolve</b>:<a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" target="_blank">SakanaAI/ShinkaEvolve</a>,Sakana AI 的版本,更省样本;<a href="../demo/">本场 demo</a> 用的就是它。</li>
+<li><b>在 AWS 上</b> <span class="tag top">判断</span>:目前没有对标 AlphaEvolve 的托管服务。等价做法是 <b>开源引擎(ShinkaEvolve / OpenEvolve)+ Bedrock 上的模型做生成 + AWS Batch / EC2 Spot 跑评测</b>,结构和 Google 的「生成在云上、评测在你那边」一样。demo 里的「冻结权重,只改检索代码:0.42 → 0.94」就是这么跑的。</li>
+</ul>
+</section>
+<section id="timeline">
+<h2>⑧ 时间线</h2>
+<div class="rs-tl">
+<div><span class="y">2023</span><b>FunSearch</b>:大模型第一次在开放科学问题上发现可证明正确的新知识(只进化单个函数)。</div>
+<div><span class="y">2025-05-14</span><b>发布 AlphaEvolve</b>:DeepMind 博客;Borg 0.7%、4×4 矩阵 48 次乘法等结果。</div>
+<div><span class="y">2025-06-16</span><b>白皮书</b>:arXiv 2506.13131。</div>
+<div><span class="y">2025-11</span><b>和 Terence Tao 等人的数学论文</b>:67 个问题。</div>
+<div><span class="y">2025-12</span><b>Google Cloud 私有预览</b>。</div>
+<div><span class="y">2026-05-07</span><b>一周年</b>:基因组、电网、量子、Spanner、TPU 设计等新成果;BASF 案例。</div>
+<div><span class="y">2026-07-09</span><b>Google Cloud 正式商用(GA)</b>;客户端库开源。</div>
+<div><span class="y">2026-08</span><b>矩阵乘法指数</b> ω &lt; 2.371177。</div>
+<div><span class="y">2026-10-26</span>默认模型换成 Gemini 4 Argon(二手)。</div>
+<div><span class="y">2026-11-04</span><b>google-deepmind/alphaevolve 仓库公开</b>(最小实现 + 验证代码)。</div>
+<div><span class="y">2026-11-05</span>官方教程:用 AlphaEvolve + Harbor 优化 agent skill。</div>
+<div><span class="y">2026-11-13</span>SC26:AlphaEvolve on Cloud Batch。</div>
+</div>
+</section>
+<section id="sources">
+<h2>来源</h2>
+<ul class="small">
+<li><a href="https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" rel="noopener" target="_blank">DeepMind · AlphaEvolve: A Gemini-powered coding agent for designing advanced algorithms(2025-05-14)</a></li>
+<li><a href="https://arxiv.org/abs/2506.13131" rel="noopener" target="_blank">白皮书 · AlphaEvolve: A coding agent for scientific and algorithmic discovery(arXiv 2506.13131,CC BY-NC-ND 4.0)</a></li>
+<li><a href="https://deepmind.google/blog/alphaevolve-impact/" rel="noopener" target="_blank">DeepMind · AlphaEvolve 一周年(2026-05-07)</a></li>
+<li><a href="https://arxiv.org/abs/2511.02864" rel="noopener" target="_blank">Georgiev, Gómez-Serrano, Tao, Wagner · Mathematical exploration and discovery at scale</a> · <a href="https://arxiv.org/abs/2608.16884" rel="noopener" target="_blank">Improving the matrix multiplication exponent with AlphaEvolve</a></li>
+<li><a href="https://cloud.google.com/blog/products/ai-machine-learning/alphaevolve-is-available-for-everyone" rel="noopener" target="_blank">Google Cloud · AlphaEvolve is available for everyone(GA,2026-07-09)</a> · <a href="https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/alphaevolve-on-cloud/" rel="noopener" target="_blank">blog.google</a></li>
+<li><a href="https://cloud.google.com/blog/products/ai-machine-learning/how-basf-manages-thousands-of-supply-chain-decisions-with-alphaevolve" rel="noopener" target="_blank">BASF 案例</a> · <a href="https://cloud.google.com/blog/products/ai-machine-learning/schrodinger-alphaevolve-molecular-discovery-accelerates-4x" rel="noopener" target="_blank">Schrödinger 案例</a> · <a href="https://cloud.google.com/blog/topics/developers-practitioners/how-to-speed-up-your-video-processing-with-alphaevolve" rel="noopener" target="_blank">视频处理教程(split-loop 架构)</a> · <a href="https://cloud.google.com/blog/topics/developers-practitioners/how-to-build-an-agent-skill-optimizer-with-alphaevolve-and-harbor/" rel="noopener" target="_blank">agent skill 优化教程</a> · <a href="https://cloud.google.com/blog/topics/hpc/whats-new-in-hpc-and-ai-at-sc26/" rel="noopener" target="_blank">SC26 · Cloud Batch</a></li>
+<li><a href="https://github.com/google-deepmind/alphaevolve" rel="noopener" target="_blank">google-deepmind/alphaevolve</a> · <a href="https://github.com/Google-Cloud-AI/alphaevolve-on-googlecloud" rel="noopener" target="_blank">Google-Cloud-AI/alphaevolve-on-googlecloud</a> · <a href="https://github.com/algorithmicsuperintelligence/openevolve" rel="noopener" target="_blank">OpenEvolve</a> · <a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" target="_blank">ShinkaEvolve</a></li>
+<li><a href="https://www.cloudreleases.io/updates/gcp-857b73e48e6fa0c70e80-gemini-for-business" rel="noopener" target="_blank">默认模型改为 Gemini 4 Argon(release notes 转载)</a></li>
+</ul>
+<p class="dim small">AI 整理:由搜索 + 阅读原文整理,数字以原文为准。图为白皮书原图(CC BY-NC-ND 4.0,未改动),版权归原作者。</p>
+</section>
+</main>
+<a data-cur="zh" data-to="en" href="../../en/rsi/alphaevolve/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>
