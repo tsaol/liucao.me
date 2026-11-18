@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RSI 完整指南 · 递归自我改进:定义、版图、验证、资本与判断</title>
+<style>*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;color:#2d1b0e;background:#fdf8f0;
+  background-image:radial-gradient(ellipse at top,rgba(255,220,180,.35),transparent 60%),radial-gradient(ellipse at bottom,rgba(240,220,160,.25),transparent 60%);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;font-size:16.5px;line-height:1.75}
+a{color:#b4521a;text-decoration:none;border-bottom:1px dotted rgba(180,82,26,.45)}
+a:hover{border-bottom-style:solid}
+.gtop{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px;padding:10px 22px;background:rgba(253,248,240,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(160,110,60,.22)}
+.gtop a{border:none;color:#6b4423;font-size:14px}.gtop .gt{font-weight:700;font-size:15px;flex:1;text-align:center}
+.gtop .gl{background:#ffd8a6;border:1px solid #e07a3c;border-radius:999px;padding:3px 12px;color:#7a3a0c}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;max-width:1380px;margin:0 auto;padding:0 22px}
+.toc{position:sticky;top:58px;align-self:start;max-height:calc(100vh - 70px);overflow:auto;padding:22px 0 30px}
+.toc .tt{font-size:12px;font-weight:700;letter-spacing:2px;color:#a2471a;margin:0 0 10px 6px}
+.toc a{display:flex;gap:8px;align-items:baseline;border:none;color:#6b4423;font-size:13.5px;line-height:1.45;padding:6px 8px;border-radius:8px}
+.toc a .n{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#c9994e;min-width:20px}
+.toc a:hover{background:rgba(255,216,166,.35)}
+.toc a.on{background:#ffd8a6;color:#7a3a0c;font-weight:700}
+.toc .tnote{font-size:11.5px;color:#9a8068;margin:14px 8px 0}
+main.g{min-width:0;padding:28px 0 60px;overflow-wrap:anywhere}
+.hero{padding:10px 0 18px;border-bottom:1px solid rgba(160,110,60,.22);margin-bottom:10px}
+.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:2px;color:#a2471a}
+.hero h1{font-size:34px;line-height:1.3;margin:8px 0 10px}
+.hero h1 .acc{color:#c2571c}
+.hero .sub{color:#6b4423;max-width:900px}
+.legend2{font-size:13px;color:#6b4423;margin-top:10px}
+.kbox{display:inline-block;background:#e07a3c;color:#fff;font-size:11.5px;font-weight:700;border-radius:4px;padding:0 6px}
+.chapter{padding:34px 0 18px;border-bottom:1px solid rgba(160,110,60,.22)}
+.chead{margin-bottom:12px}
+.chead .cn{display:inline-block;font-size:12px;font-weight:700;letter-spacing:1px;color:#fff;background:#c2571c;border-radius:6px;padding:2px 9px}
+.chead h2{font-size:27px;line-height:1.3;margin:8px 0 4px;color:#2d1b0e}
+.chead .from{font-size:13px;color:#8a6a4a}
+.blk{margin:18px 0 6px}
+.blk>h3{font-size:20px;color:#7a3a0c;margin:22px 0 10px;padding-left:10px;border-left:4px solid #e07a3c}
+.blk h4{font-size:16.5px;margin:18px 0 8px;color:#2d1b0e}
+p{margin:0 0 .9em}
+ul,ol{margin:0 0 1em;padding-left:1.35em}li{margin:.3em 0}
+b,strong{color:#7a3a0c}
+.dim{color:#8a6a4a}.small{font-size:13.5px}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.86em;background:#fff3e2;border:1px solid #f0d6b3;border-radius:4px;padding:0 .3em}
+.lead{font-size:17px;line-height:1.7;padding:.9em 1.1em;border-left:4px solid #e07a3c;background:rgba(255,216,166,.35);border-radius:0 10px 10px 0;margin:1em 0;text-align:left;font-weight:400;color:#2d1b0e}
+.lead b{color:#a2471a}
+.note{font-size:14px;color:#5e4514;background:rgba(255,255,255,.7);border:1px solid rgba(160,110,60,.25);border-radius:10px;padding:.65em 1em;margin:1em 0}
+.tag{display:inline-block;font-size:11.5px;border:1px solid rgba(160,110,60,.4);border-radius:999px;padding:0 .6em;color:#8a6a4a;margin-left:.25em;white-space:nowrap;line-height:1.6;vertical-align:1px;background:#fff}
+.tag.ok{color:#3a5e2e;border-color:#6b9e5a;background:#eef5ea}
+.tag.top{color:#a2471a;border-color:#e07a3c;background:#fff1e0}
+mark{background:rgba(255,176,32,.32);color:inherit;padding:0 .15em;border-radius:3px}
+.key{background:rgba(255,216,166,.28);border:1px solid rgba(224,122,60,.45);border-left:5px solid #e07a3c;border-radius:0 10px 10px 0;padding:.75em 1.1em;margin:.6em 0 1.1em}
+.key .kl{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#e07a3c;border-radius:4px;padding:0 .5em;margin-right:.4em}
+.key ul{margin:.45em 0 0}
+.src{display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#7a5e9e;border:1px solid rgba(122,94,158,.4);border-radius:4px;padding:0 .35em;margin-left:.3em;white-space:nowrap;vertical-align:1px}
+.tw{overflow-x:auto}
+table.rs-t{width:100%;border-collapse:collapse;font-size:14.5px;margin:.6em 0 1.2em;background:rgba(255,255,255,.65);border-radius:10px;overflow:hidden}
+table.rs-t th,table.rs-t td{border-bottom:1px solid rgba(160,110,60,.18);padding:.55em .65em;text-align:left;vertical-align:top}
+table.rs-t th{background:rgba(240,220,190,.6);color:#6b4423;font-weight:600;font-size:13px}
+.rs-fig{margin:1em 0 1.5em}.rs-fig img{display:block;width:100%;max-width:980px;height:auto;border-radius:10px;background:#fff;border:1px solid rgba(160,110,60,.25)}
+.rs-fig figcaption{font-size:13px;color:#7b5a3c;line-height:1.6;margin-top:.5em}.rs-fig a{border:none}
+.rs-tl{border-left:2px solid rgba(160,110,60,.35);margin:1em 0 1.3em;padding-left:1em}.rs-tl>div{margin:.5em 0;font-size:15px}
+.rs-tl .y{display:inline-block;min-width:6.5em;color:#c2571c;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#fff8ee;border:1px solid #f0d6b3;border-radius:10px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7}
+.rs-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:1em 0}
+.rs-card{display:block;background:rgba(255,255,255,.7);border:1px solid rgba(160,110,60,.25)!important;border-radius:12px;padding:.85em 1em;color:#2d1b0e!important}
+.rs-card:hover{border-color:#e07a3c!important}
+.rs-card .k{font-size:12.5px;color:#8a6a4a}.rs-card .t{font-size:16.5px;font-weight:700;margin:.15em 0}.rs-card .d{font-size:13.5px;color:#6b4423;line-height:1.55}
+.rs-q{background:rgba(255,255,255,.7);border:1px solid rgba(160,110,60,.25);border-radius:10px;padding:.15em 1em;margin:.7em 0}
+.rs-q summary{cursor:pointer;font-weight:700;padding:.6em 0;list-style:none}.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:#e07a3c}.rs-q[open] summary::before{content:"− "}.rs-q>div{padding:0 0 .7em}
+.bp{margin-top:18px}
+.gfoot{font-size:12.5px;color:#8a6a4a;margin-top:28px;line-height:1.7}
+@media (max-width:760px){table.rs-t{display:block;overflow-x:auto}}
+@media (max-width:1000px){.layout{grid-template-columns:minmax(0,1fr)}.toc{display:none}.hero h1{font-size:26px}.rs-cards{grid-template-columns:1fr}}
+@media print{.toc,.gtop{display:none}.layout{display:block}.chapter{break-inside:auto}}
+
+.dl{margin:.6em 0}.dlb{display:inline-block;background:#e07a3c;color:#fff!important;border:none;border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px}
+
+/* ---- business big picture components ---- */
+.bp{--bg:#fdf8f0;--ink:#2d1b0e;--muted:#6b4423;--s1-bg:#faf1e0;--s1-card:#f5e3c4;--s1-border:#c9994e;--s1-text:#6b4910;--s2-bg:#ffeed6;--s2-card:#ffd8a6;--s2-border:#e07a3c;--s2-text:#7a3a0c;--s3-bg:#fbe5dc;--s3-card:#f5c8b8;--s3-border:#c47057;--s3-text:#6b2e1e;--s4-bg:#f9efcf;--s4-card:#f0dca0;--s4-border:#b08842;--s4-text:#5e4514;--s5-bg:#e8f0e4;--s5-card:#d4e8cc;--s5-border:#6b9e5a;--s5-text:#3a5e2e;--s6-bg:#e8e4f0;--s6-card:#d4cce8;--s6-border:#7a5e9e;--s6-text:#4a2e6b}
+
+
+
+
+
+.top a{text-decoration:none;color:var(--muted)}
+
+
+.canvas{max-width:1380px;margin:0 auto}
+.sec{margin:26px 0 10px;display:flex;align-items:baseline;gap:12px}
+.sec h2{font-size:18px;margin:0}
+.sec span{font-size:12.5px;color:var(--muted)}
+
+/* reference architecture */
+.ref{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px 14px}
+.lname{border-radius:14px;padding:10px;font-size:13px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.45;background:rgba(255,255,255,.55);border:1px solid rgba(160,110,60,.25);color:var(--muted)}
+.lname small{font-weight:400;font-size:11px;margin-top:3px}
+.scen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.card{border-radius:12px;padding:9px 12px;border:1px solid rgba(0,0,0,.05);box-shadow:0 1px 2px rgba(0,0,0,.04);background:rgba(255,255,255,.65)}
+.card .title{font-size:12.5px;font-weight:600;margin-bottom:2px}
+.card .body{font-size:11px;line-height:1.55;color:#4a3220}
+.loop{display:grid;grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr) 30px minmax(0,1fr) 30px minmax(0,1fr) 30px minmax(0,1fr) 30px minmax(0,1fr);align-items:stretch}
+.cap{border-radius:14px;padding:12px 10px;border:1.5px solid;position:relative}
+.cap .no{font-size:11px;font-weight:700;opacity:.8}
+.cap .t{font-size:13.5px;font-weight:700;margin:2px 0 4px}
+.cap .d{font-size:11px;line-height:1.55}
+.cap .dse{position:absolute;top:-10px;right:10px;font-size:10px;font-weight:700;color:#fff;padding:2px 7px;border-radius:6px}
+.c1{background:var(--s1-bg);border-color:var(--s1-border);color:var(--s1-text)}.c1 .dse{background:var(--s1-border)}
+.c2{background:var(--s4-bg);border-color:var(--s4-border);color:var(--s4-text)}.c2 .dse{background:var(--s4-border)}
+.c3{background:var(--s2-bg);border-color:var(--s2-border);color:var(--s2-text)}.c3 .dse{background:var(--s2-border)}
+.c4{background:var(--s3-bg);border-color:var(--s3-border);color:var(--s3-text)}
+.c5{background:var(--s5-bg);border-color:var(--s5-border);color:var(--s5-text)}
+.c6{background:var(--s6-bg);border-color:var(--s6-border);color:var(--s6-text)}
+.ac{display:flex;align-items:center;justify-content:center}
+.arrow-h{position:relative;width:100%;height:22px}
+.arrow-h::before{content:"";position:absolute;top:50%;left:3px;right:12px;height:2.5px;background:#c09060;border-radius:2px;transform:translateY(-50%)}
+.arrow-h::after{content:"";position:absolute;top:50%;right:1px;border-left:9px solid #c09060;border-top:6px solid transparent;border-bottom:6px solid transparent;transform:translateY(-50%)}
+.back{margin-top:6px;border:1.5px dashed #c09060;border-top:none;border-radius:0 0 14px 14px;height:16px;position:relative}
+.back span{position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);background:var(--bg);padding:0 8px;font-size:11px;color:var(--muted)}
+.bands{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.band{border-radius:12px;padding:9px 12px;font-size:12px;line-height:1.55;background:rgba(255,255,255,.6);border:1px solid rgba(160,110,60,.22)}
+.band b{font-size:12.5px}
+.base{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+/* coverage matrix */
+table.mx{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px;background:rgba(255,255,255,.55);border:1px solid rgba(160,110,60,.25);border-radius:14px;overflow:hidden}
+.mx th,.mx td{padding:7px 8px;border-bottom:1px solid rgba(160,110,60,.15);vertical-align:top;text-align:left}
+.mx thead th{background:rgba(240,220,190,.6);font-size:11.5px;color:var(--muted);text-align:center}
+.mx thead th:first-child,.mx thead th:nth-child(2){text-align:left}
+.mx td.m{text-align:center;font-size:15px;line-height:1;width:64px}
+.mx td.m small{display:block;font-size:10px;color:#7b5a3c;margin-top:3px;line-height:1.3}
+.mx .fam{font-weight:700;font-size:12.5px}
+.mx .fam small{display:block;font-weight:400;font-size:11px;color:#7b5a3c;margin-top:2px}
+.mx .idea{font-size:11.5px;line-height:1.5;min-width:210px}
+.mx .lv{text-align:center;font-weight:700;white-space:nowrap}
+.mx tr.argus td{background:rgba(255,216,166,.55)}
+.mx tr.argus td.fam{color:var(--s2-text)}
+.mx tr.argus.plan td{background:rgba(255,232,200,.55)}
+.f{color:#b8541a}.h{color:#c9994e}.o{color:#cbb9a5}
+.wrap{overflow-x:auto}
+/* map */
+.two{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:14px}
+.box{border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.6);border:1px solid rgba(160,110,60,.22)}
+.box h3{margin:0 0 8px;font-size:15px}
+.box ul{margin:0;padding-left:1.15em;font-size:12.5px;line-height:1.7}
+.map{position:relative;height:340px;margin:28px 6px 28px 36px;border-left:2px solid var(--muted);border-bottom:2px solid var(--muted);
+  background:linear-gradient(90deg,transparent 33.2%,rgba(160,110,60,.12) 33.3%,transparent 33.5%,transparent 66.5%,rgba(160,110,60,.12) 66.6%,transparent 66.8%)}
+.map .ax-x{position:absolute;left:0;right:0;bottom:-24px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.map .ax-y{position:absolute;left:-30px;top:-22px;font-size:11px;color:var(--muted);white-space:nowrap}
+.map .zone{position:absolute;right:4px;top:4px;width:31%;height:40%;border:1.5px dashed #d0602a;border-radius:12px;background:rgba(255,216,166,.25)}
+.map .zone span{position:absolute;right:8px;bottom:6px;font-size:10.5px;color:#a2471a}
+.dot{position:absolute;transform:translate(-50%,-50%);font-size:11px;white-space:nowrap;padding:3px 8px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.14)}
+.dot.a{background:var(--s2-card);border:2px solid var(--s2-border);font-weight:700;color:var(--s2-text)}
+.dot.a.plan{border-style:dashed}
+
+.foot{text-align:center;font-size:11px;color:var(--muted);margin-top:12px;line-height:1.7}
+@media (max-width:1100px){.loop{grid-template-columns:minmax(0,1fr)}.ac{transform:rotate(90deg);height:30px}.ref{grid-template-columns:minmax(0,1fr)}.scen{grid-template-columns:repeat(2,minmax(0,1fr))}.two,.bands,.base{grid-template-columns:minmax(0,1fr)}.map .dot{font-size:10px;padding:2px 5px}}
+table.vs{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;background:rgba(255,255,255,.6);border:1px solid rgba(160,110,60,.25);border-radius:14px;overflow:hidden}
+.vs th,.vs td{padding:9px 12px;border-bottom:1px solid rgba(160,110,60,.15);text-align:left;vertical-align:top;line-height:1.6}
+.vs thead th{background:rgba(240,220,190,.6);color:var(--muted);font-size:12px}
+.vs td:first-child{font-weight:700;white-space:nowrap;color:var(--muted);width:130px}
+.vs td.ar{background:rgba(255,216,166,.35)}
+.vs-sum{margin-top:10px;border-radius:14px;padding:12px 16px;background:linear-gradient(90deg,var(--s2-card),var(--s1-card));border:1.5px solid var(--s2-border);color:var(--s2-text);font-size:13.5px;line-height:1.65}
+table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;background:rgba(255,255,255,.55);border:1px solid rgba(160,110,60,.25);border-radius:14px;overflow:hidden;font-size:12px}
+.pos th{background:rgba(240,220,190,.6);padding:8px 6px;font-size:11.5px;text-align:center;white-space:nowrap}
+.pos th:first-child,.pos th:last-child{text-align:left;color:var(--muted)}
+.pos td{padding:6px 6px;border-bottom:1px solid rgba(160,110,60,.12);vertical-align:middle}
+.pos td.nm{font-weight:700;width:190px;line-height:1.35}.pos td.nm small{display:block;font-weight:400;font-size:10.5px;color:#7b5a3c}
+.pos td.cv{width:62px;padding:6px 3px}
+.pos .bar{display:block;height:16px;border-radius:5px;background:var(--c)}
+.pos .bar.part{background:transparent;border:2px solid var(--c);opacity:.8;background-image:repeating-linear-gradient(135deg,transparent 0 4px,rgba(0,0,0,.07) 4px 6px)}
+.pos td.uq{font-size:11.5px;line-height:1.5;color:#4a3220}
+.pos tr.grp td{background:rgba(250,236,214,.75);font-size:12px;color:var(--muted);padding:7px 10px;border-top:1px solid rgba(160,110,60,.25)}
+.pos tr.grp td b{color:var(--ink)}
+.pos tr.ar td{background:rgba(255,216,166,.5)}.pos tr.ar td.nm{color:var(--s2-text)}
+.pos tr.ar.plan td{background:rgba(255,232,200,.5)}
+.poslegend{display:flex;flex-wrap:wrap;gap:16px;font-size:12px;color:var(--muted);margin:8px 0 0}
+.poslegend .bar{display:inline-block;width:30px;height:12px;border-radius:4px;vertical-align:-1px;margin-right:6px}
+.wrap{overflow-x:auto;max-width:100%}
+
+</style></head><body>
+<header class="gtop"><a class="brand" href="../">← RSI 资料包</a><span class="gt">RSI 完整指南</span><a class="gl" href="../slides/v2/">幻灯片 v2</a></header>
+<div class="layout">
+<nav class="toc"><div class="tt">目录</div><a href="#c1"><span class="n">01</span>发生了什么:2026 年的信号</a><a href="#c2"><span class="n">02</span>RSI 是什么:权威定义和分级</a><a href="#c3"><span class="n">03</span>谁掌握决定:AI4AI 的控制梯子</a><a href="#c4"><span class="n">04</span>业务大图:六块能力,各框架站在哪</a><a href="#c5"><span class="n">05</span>一个例子:AlphaEvolve</a><a href="#c6"><span class="n">06</span>谁来验证,钱花在哪</a><a href="#c7"><span class="n">07</span>三家云厂商:竞争分析</a><a href="#c8"><span class="n">08</span>资本视角:跟着算力的钱走</a><a href="#c9"><span class="n">09</span>行业实践:谁在用,怎么用</a><a href="#c10"><span class="n">10</span>Argus 在哪里</a><a href="#c11"><span class="n">11</span>我的判断(个人观点)</a><a href="#c12"><span class="n">12</span>风险和接下来看什么</a><a href="#c13"><span class="n">13</span>分享材料和 demo</a><a href="#c14"><span class="n">14</span>延伸资料:视频和国内研究</a><a href="#c15"><span class="n">15</span>来源</a><div class="tnote">一页看完全部研究 · 整理于 2026-11-18</div></nav>
+<main class="g">
+<section class="hero"><div class="eyebrow">RSI · 递归自我改进 · 完整指南</div>
+<h1>AI 帮 AI 做研发:<br/><span class="acc">它是什么、谁在做、谁来验证、钱往哪走</span></h1>
+<p class="sub">把 liucao.me/rsi 下的全景、AI4AI 解读、AlphaEvolve、业务大图、资本视角、我的判断和资料包整合成一页,分 15 章,可以从左侧目录跳转。各章内容和原页面一致,原页面链接写在每章标题下。</p>
+<div class="lead"><b>一句话:</b>RSI 已经在发生,但企业今天能用的是它的小版本 —— <b>冻结模型、自动改 harness 和算法</b>。生成已经不稀缺,<b>稀缺的是可信的评测</b>;能自我改进 ≠ 能自我验证。</div>
+<p class="dl"><a class="dlb" download="" href="rsi-guide.html">下载为单个 HTML 文件</a> <span class="dim small">(图片已内嵌,约 3 MB,离线可看)</span></p>
+<div class="legend2"><b>标注说明</b>:<span class="kbox">本章要点</span> 每章开头的关键信息 · <mark>高亮</mark> 核心结论 · <span class="tag ok">一手</span> 读过原文 · <span class="tag">二手</span> 转述 · <span class="tag top">判断</span> 作者观点</div>
+</section>
+<section class="chapter" id="c1"><div class="chead"><span class="cn">第 1 章</span><h2>发生了什么:2026 年的信号</h2><span class="from">原页面:<a href="../landscape/#news">RSI 全景</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>三家前沿实验室都承认「AI 在加速 AI」,但说法克制:METR 估计 Anthropic 约 2 倍(1.3–3 倍),Google 报告「没有显著端到端加速」。</li><li>harness 层的论文大量出现,重点都在「怎么验证」。</li><li>争论和政策同步升温:智能爆炸论文、FRI 预测、美国禁止自我改进 AI 的提案。</li></ul></div><div class="blk" id="landscape-news">
+<h3>这一个月发生了什么(2026-10-15 ~ 11-15)</h3>
+<h4>前沿实验室:都承认「AI 在加速 AI」,但说法很克制</h4>
+<ul>
+<li><b>Google</b>:Sergey Brin 在 Gemini 4 Argon 的圆桌上说,Google「开始踏上 RSI 的跑步机」,研究员和模型一起做下一版模型。但 Google DeepMind 自己的 Argon 安全报告写的是:<b>没有看到显著的端到端 AI 研发加速</b>,风险「目前低」。报告里的数字:生产代码超过 75% 由 AI 写;完全交给 AI 的 PR 从 4 月的 7.5% 涨到 9 月的 11.9%;约 88% 仍需要人反复引导。<span class="tag">二手 · TNW 转述安全报告</span></li>
+<li><b>Anthropic(由 METR 独立评估)</b>:METR 在 2026-08-12 到 10-29 进驻 Anthropic 做了一次高权限评估。结论:截至 10 月,Anthropic 在「定义清楚的任务」上提升模型能力的速度,大约是 2024-03 到 2025-10 的 <b>2 倍</b>(不确定性大,真实值可能在 1.3 到 3 倍之间),而且<b>大部分加速可能来自 Anthropic 大量用 AI 做研发</b>。大部分证据被 Anthropic 涂黑了,METR 自己也说外界只能信它的判断。<span class="tag ok">一手 · METR 2026-11-05</span></li>
+<li><b>OpenAI</b>:9 月说已经达到「自动化研究实习生」的目标(能在人指导下完成几天量的研究任务),下一个目标是 <b>2028 年 3 月做出自动化 AI 研究员</b>。同时明确写:在能安全做到之前,<b>不应该追求完全自主的 RSI</b>。<span class="tag ok">一手 · OpenAI 2026-09-06 / 09-09</span></li>
+<li><b>Recursive(创业公司)</b>:10-21 发布第一个模型 <b>Flint</b>(40B 总参数,每个 token 约 2.5B 激活,Apache 2.0 开源)。公司说数据、训练配方、架构、芯片内核代码几乎都由它的自动研究系统 Eureka Machine 完成,小团队不到 4 个月做完。自测 SWE-bench Verified 74.2%(媒体未独立验证)。联合创始人有 Richard Socher(CEO)、田渊栋、Tim Rocktäschel、Jeff Clune 等 8 人,Peter Norvig 是顾问,估值 46.5 亿美元。<span class="tag ok">一手 · WIRED / TNW / TechCrunch</span></li>
+</ul>
+<h4>研究:harness 层论文爆发,重点都在「怎么验证」</h4>
+<ul>
+<li><b>微软研究院 · Self-HPO</b>:编码 agent 先分析自己的失败、提出新 harness,再在新 harness 下用强化学习更新模型,两步轮流。Qwen3.5-35B-A3B 平均解题率 57.8% → 64.8%;两样一起改的收益大于分开改的收益之和。<span class="tag ok">一手 · 摘要</span></li>
+<li><b>微软研究院 · HarnessMM</b>:让 harness 记住「已经定下来的决定」,别每次工具返回都重新想一遍。HumanEval 上 Codex 成功率不变(90.82%),每题 token 少 29.5%。<span class="tag ok">一手 · 摘要</span></li>
+<li><b>微软研究院等 · Épi</b>:能跨会话持续做研究、靠经验改进方法的 agent,由固定的验证器打分,刷新了 120 项数学纪录。<span class="tag ok">一手 · 摘要</span></li>
+<li><b>NVIDIA · SoL-Pi</b>:在 535 个可执行环境里,AI 研究 agent 观察另一个 agent 的轨迹,提出 152 个 harness 改进想法,只有 4 个活下来;token 少约 45%~49%,得分保留约 94%。关键护栏:<b>能力底线事先定好,被优化的一方看不到也改不了;留出集结果绝不回流</b>。<span class="tag">二手 · Tony Bai 解读</span></li>
+<li><b>Google Research · SwarmEvolve</b>(2611.08483):几百个小 agent 在隐空间里搜索、共享 KV cache,用 Qwen3-8B 在 3 个问题上超过 AlphaEvolve 式搜索。<span class="tag">二手</span></li>
+<li><b>可信 RSI</b>:TRUST(2611.10787)用在线多重假设检验控制「假进化」的比例;另有一篇《大模型时代的可信 RSI》综述(2610.35193);中科院自动化所、美团等也发了 Agent RSI 综述,把方向分成 prompt、记忆、skill、harness 四条线。<span class="tag">二手 · 摘要转述</span></li>
+</ul>
+<h4>争论和政策</h4>
+<ul>
+<li>Hinton、Bengio、OpenAI 首席科学家 Pachocki、微软的 Eric Horvitz 等人合写的论文认为:AI 几年内可能自动化大部分 AI 研发,可能引发「智能爆炸」,政策要尽快跟上。<span class="tag ok">一手 · 摘要</span></li>
+<li>Forecasting Research Institute(11-10):按现在的趋势简单外推,2027–2028 年 AI 可能接手大部分 AI 研发任务;多个前沿模型一起预测,到 2030 年出现「能力一年猛涨」的概率约 40%。<span class="tag ok">一手</span></li>
+<li>Dwarkesh Patel(11-13):认为 RSI 已经开始,和顶尖人类 AI 研究员一样强的 AI 中位数在 2028 年。<span class="tag">二手</span></li>
+<li>美国众议员 Ro Khanna 说要提出法案禁止自我改进 AI;国会里有几份类似提案。<span class="tag">二手</span></li>
+</ul>
+</div></section><section class="chapter" id="c2"><div class="chead"><span class="cn">第 2 章</span><h2>RSI 是什么:权威定义和分级</h2><span class="from">原页面:<a href="../landscape/#what">RSI 全景 ①</a> · <a href="../#ideas">RSI 资料包</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>定义用 Anthropic 的原话:能<mark>完全自主地设计和开发自己继任者</mark>的 AI 系统;「我们还没到那一步」。</li><li><mark>只靠迭代不是 RSI</mark>:改进必须带进下一轮,并让后面的改进变得更好(哈工大综述)。</li><li>五级自主里,今天的云产品停在 L2;AlphaEvolve 被放在 B0。</li></ul></div><div class="blk" id="landscape-what">
+<h3>① RSI 是什么:权威定义和大图</h3>
+<p class="dim small">这一节的定义和图都来自原文,不是这一页自己画的。每张图下面写了出处和授权。</p>
+<h4>定义:Anthropic 的说法</h4>
+<div class="lead">「把这个趋势推到足够远、给足够多的算力,它指向一个能<b>完全自主地设计和开发自己继任者</b>的 AI 系统。这叫<b>递归自我改进</b>。我们还没到那一步,递归自我改进也不是必然的,但它可能比大多数机构准备好的时间来得更早。」</div>
+<p class="dim small">原文:「Taken far enough, and given enough compute, that trend points to an AI system capable of fully autonomously designing and developing its own successor. This is called recursive self-improvement. We are not there yet…」—— <a href="https://www.anthropic.com/institute/recursive-self-improvement" rel="noopener" target="_blank">Anthropic Institute · When AI builds itself</a></p>
+<p>同一页给出了 Anthropic 内部从「人写代码」走到「闭合回路」的时间线(按原文翻译):</p>
+<div class="rs-tl">
+<div><span class="y">2021–2023</span><b>造第一个 Claude</b>:和别的科技公司一样,人在笔记本上写代码、写文档。</div>
+<div><span class="y">2023–2025</span><b>聊天机器人</b>:人用早期聊天机器人帮忙做一部分工作,比如生成短代码片段,再复制到编辑器。</div>
+<div><span class="y">2025–2026</span><b>编程 agent</b>:agent 能自己写和改代码,有时是整个文件。</div>
+<div><span class="y">今天</span><b>自主 agent</b>:agent 能自己跑代码,把几个小时的工作交给别的 agent。</div>
+<div><span class="y">20XX?</span><b>闭合回路</b>:将来 agent 可能强到能自己造模型、训练模型。如果发生,未来的 Claude 可以由 Claude 自己持续改进。</div>
+</div>
+<h4>图 1:最简单的 RSI 回路</h4>
+<figure class="rs-fig"><a href="../landscape/img/fri2026-fig1.jpg" target="_blank"><img alt="An idealized recursive self-improvement loop" loading="lazy" src="../landscape/img/fri2026-fig1.jpg"/></a>
+<figcaption>现有 AI → 做 AI 研发 → 更好的下一代 AI → 再去做 AI 研发。<br/>出处:Forecasting Research Institute,<a href="https://forecastingresearch.org/research/recursive-self-improvement-v1" rel="noopener" target="_blank">How Close is Recursive Self-Improvement? A Review of the Evidence</a>(2026-11-10),Figure 1。版权归原作者,此处引用并注明出处。</figcaption></figure>
+<h4>图 2:为什么可能「越转越快」</h4>
+<figure class="rs-fig"><a href="../landscape/img/chan2026-fig2.jpg" target="_blank"><img alt="Chan et al. 2026 Figure 2" loading="lazy" src="../landscape/img/chan2026-fig2.jpg"/></a>
+<figcaption>机制分两步:(1) AI 越来越会做 AI 研发,等于扩大了「研发人力」;(2) 更大的研发人力造出更好的 AI,又进一步扩大人力 —— 一个递归的反馈回路。论文同时列了四种「摩擦」:收益递减、算力和数据不够、难自动化的任务、耗时的流程(比如长训练)。<br/>出处:Chan, Winter, Barto, Pachocki, Hinton, Horvitz, Bengio, Clark, Clune 等,<a href="https://arxiv.org/abs/2609.36054" rel="noopener" target="_blank">What if automating AI R&amp;D triggers an intelligence explosion?</a>(arXiv 2609.36054,2026),Figure 2。授权 CC BY 4.0。</figcaption></figure>
+<h4>图 3:在「AI for X」里的位置 —— AI for AI</h4>
+<p>放在「AI for X」里看,<b>RSI 属于 X = AI 自己的那一类,学界叫 AI for AI(AI4AI)</b>。AI4AI 综述的定义是:AI 正在改变 AI 本身的开发方式,从设计学习算法、到自动化研究流程和评测;它<b>按「发现循环里三个决定交给谁」</b>来分级 —— 搜索方向、搜索空间、评测信号;并且写明「AI4AI 可能带来递归自我改进」。</p>
+<figure class="rs-fig"><a href="../landscape/img/ai4ai-fig1.jpg" target="_blank"><img alt="AI4AI survey Figure 1" loading="lazy" src="../landscape/img/ai4ai-fig1.jpg"/></a>
+<figcaption>上:AI4AI 代表工作时间线(2016 → 2025 以后,AlphaEvolve、DGM、AI Scientist 都在里面)。左下:控制权逐步交给 AI —— L0 纯人控制 → L1 AI 定方向 → L2 AI 定搜索空间 → L3 AI 定评测。右下:四类对象 —— AI 用来改进<b>学习</b>(更新参数)、<b>推理</b>(参数冻结)、<b>数据</b>、<b>基础设施</b>(软硬件栈)。<br/>出处:Liu, Wang, Hu 等(南开、中关村学院、西安交大、上海交大、南洋理工、新加坡国立、港科大),<a href="https://ai4ai-research.github.io/" rel="noopener" target="_blank">AI4AI: Toward AI-discovered Superintelligence</a>,Figure 1。版权归原作者,此处引用并注明出处。完整解读见 <a href="../ai4ai/">一文读懂 AI4AI</a>。</figcaption></figure>
+<p>和别的 X 比,有两点不一样:<b>回路是闭合的</b>(改的是 AI 自己,改好的接着改下一轮);<b>它会放大所有别的 X</b>(AI 变强,for Science、for Math、for Code 都跟着变强)。图 2 里那条箭头写的就是「Improves &amp; Multiplies」(改进并放大),所以它更像一个「乘数」,而不是又一个应用方向。</p>
+<h4>图 4:怎样才算 RSI,而不只是「多迭代几轮」</h4>
+<figure class="rs-fig"><a href="../landscape/img/hit-rsi-survey-fig3.jpg" target="_blank"><img alt="RSI survey Figure 3" loading="lazy" src="../landscape/img/hit-rsi-survey-fig3.jpg"/></a>
+<figcaption>上:四个阶段 —— 进化(当前产物变好)→ 自进化(被接受的改进留下来、被复用)→ 元进化(改进机制本身也在变)→ RSI(改进跨轮次继承)。中:通用循环 <b>提出 → 反馈 → 优化</b>,每轮决定拒绝、修改、上线还是回滚,并保留版本和验证证据。下:「递归进步」的两条检验 —— 继承下来的改动会改变后面的改进过程;后面的改进在期望上更好。图里那句话:<b>只靠迭代不是 RSI,被接受的改进必须带进后面的改进循环</b>。<br/>出处:Li, Chen, Zhang 等(哈工大深圳、港大、新加坡国立等),<a href="https://lee1003-lee.github.io/Awesome-RSI-Research/" rel="noopener" target="_blank">Towards AI That Improves Itself: A Survey of Recursive Self-Improvement</a>,Figure 3。版权归原作者,此处引用并注明出处。</figcaption></figure>
+<h4>图 5:RSI 的五级自主,和各级的代表系统</h4>
+<figure class="rs-fig"><a href="../landscape/img/last-ai-fig1.jpg" target="_blank"><img alt="The Last AI Built by Humans Figure 1" loading="lazy" src="../landscape/img/last-ai-fig1.jpg"/></a>
+<figcaption>横轴从 B0(只在一次任务里改答案,不算 RSI)到 L5,每一级都列了代表系统(包括 Anthropic、AlphaEvolve、Recursive、Mirendil、DeepSeek、Sakana、HyperAgents 等)。<br/>出处:Tang, Zhou 等(字节跳动、面壁智能、小红书、上海 AI Lab、清华等),<a href="https://arxiv.org/abs/2609.11873" rel="noopener" target="_blank">The Last AI Built by Humans: Toward Genuine Recursive Self-Improvement</a>(arXiv 2609.11873),Figure 1。授权 CC BY-NC-ND 4.0(原图未改动)。</figcaption></figure>
+<p>论文对五级的定义(按原文概括):</p>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>级</th><th>论文定义</th><th>对照今天的云产品 <span class="tag top">判断</span></th></tr>
+<tr><td>L1 执行</td><td>AI 执行人定好的改进流程</td><td>按固定流程跑的评测 / 微调流水线</td></tr>
+<tr><td>L2 策略</td><td>AI 自己选改进手段,目标和验收标准仍由人定</td><td>Foundry Agent Optimizer、AgentCore optimization:人给目标和打分,AI 选改法,改好的配置留下来当新基线</td></tr>
+<tr><td>L3 经验</td><td>AI 自己决定去获取什么经验 / 数据</td><td>自己造任务、造环境的研究系统</td></tr>
+<tr><td>L4 部署</td><td>AI 在真实部署环境里自己适应、改进</td><td>暂无成型的云产品</td></tr>
+<tr><td>L5 元改进</td><td>AI 改进「怎么改进」本身</td><td>HyperAgents 等研究;没有产品</td></tr>
+</table></div>
+<p class="note">注意:图 5 把 <b>AlphaEvolve 放在 B0</b>(只在一次任务里反复改答案,不算 RSI)。因为它改的是你给的算法代码,不是改进它自己;只有把 AlphaEvolve 用来改 AI 自己的东西(比如 Google 用它改训练内核、改 agent 的 skill),而且改好的结果留下来进入下一轮,才往 RSI 靠。这也是图 4 那句话的意思:只靠迭代不是 RSI。</p>
+<p class="dim small">想先看概念和 demo,回到 <a href="../">RSI 资料包</a>;想看 harness 自进化怎么跑,看 <a href="../demo/play/">demo 回放</a>。</p>
+</div><div class="blk" id="hub-ideas">
+<h3>核心概念,一句话版</h3>
+<ul>
+<li><b>RSI(递归自我改进)</b>:AI 改进它自己,再用改好的版本继续改自己。判断标准:改进的对象是不是系统自己。</li>
+<li><b>AI for AI</b>:放在「AI for X」里看,RSI 就是 X 换成 AI 自己的那一种 —— 回路是闭合的,而且会放大所有别的 X(for Science、Math、Code……)。详见 <a href="../landscape/#what">RSI 全景 ①</a>。</li>
+<li><b>哥德尔机 vs 达尔文哥德尔机</b>:前者「先证明有益才改」(像律师),后者「先试再选」(像育种的农民)。</li>
+<li><b>harness</b>:包在模型外面的那一层 —— prompt、代码、工具、检索逻辑。本场只改 harness,模型权重冻结(模型 = 厨师,harness = 菜谱和厨房)。</li>
+<li><b>一轮进化</b>:选亲本 → 变异 → 评测 → 晋升门 → 存回档案库。好的坏的都存,差的版本可能是「踏脚石」。</li>
+<li><b>钱花在哪</b>:一轮约 $856,其中 <b>97.7% 是评测</b>。改菜谱 5 分钟,但每个新菜谱都要请 200 个客人试吃。</li>
+<li><b>结论</b>:能自我改进 ≠ 能自我验证。运动员可以自己练,不能自己当裁判。</li>
+</ul>
+</div></section><section class="chapter" id="c3"><div class="chead"><span class="cn">第 3 章</span><h2>谁掌握决定:AI4AI 的控制梯子</h2><span class="from">原页面:<a href="../ai4ai/">AI4AI 解读</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>衡量研究自主权,<mark>看哪些决定是 AI 做的</mark>,不看执行了多少任务。</li><li>三个决定:方向(D)、空间(S)、评测(E);按 E &gt; S &gt; D 定 L0–L3,判定靠<mark>反事实检验</mark>。</li><li>FunSearch、AlphaEvolve 是 L1;Eureka、Constitutional AI 是 L3,但 <mark>L3 ≠ 全自主</mark>。</li></ul></div><div class="blk" id="ai4ai-s1">
+<h3>一、先分清两件事：「执行流程」和「掌握决定」</h3>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li>衡量研究自主权,<mark>看 AI 做了哪些决定,不看它执行了多少任务</mark>。<span class="src">§1</span></li><li>AI4AI 的硬性条件:AI 要实质参与发现,而不只是执行写好的流程。<span class="src">§2.1</span></li></ul></div>
+<p>AI4AI（AI for AI）就是用 AI 来发现和改进 AI 系统本身。论文把它看作 AI for Science 的分支，只是研究对象换成了 AI 自己。硬性条件是：AI 要<strong>实质参与发现</strong>，而不只是跑写好的流程。</p>
+<p>自动化的范围确实在变大：从超参数搜索、AutoML（自动机器学习）、神经架构搜索，到 FunSearch、AlphaEvolve 自动改程序，再到 prompt 和 agent 结构也能自动优化；The AI Scientist 甚至把想点子、做实验、写报告串成了一条流水线。</p>
+<p>但论文提醒：<strong>自动化范围变大，不等于研究自主权变大</strong>。人可能仍决定研究什么问题、允许改哪里、什么算成功。反过来，也可能人亲手做实验，而 AI 已经在改写「什么算进步」。</p>
+<figure class="rs-fig"><a href="../ai4ai/img/survey-overview.jpg" target="_blank"><img alt="AI4AI 综述总览图" loading="lazy" src="../ai4ai/img/survey-overview.jpg"/></a><figcaption>图1:综述总览。上方是 AI4AI 代表工作的时间线;左下是发现循环的控制权逐步交给 AI(L0 到 L3);右下是四类改进对象。(图源:AI4AI 综述项目页,Figure 1)</figcaption></figure>
+</div><div class="blk" id="ai4ai-s2">
+<h3>二、三个决定，一张责任档案</h3>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li>发现循环里有三个决定:<mark>方向(D)、空间(S)、评测(E)</mark>。<span class="src">§1 · Figure 2</span></li><li>按 <mark>E &gt; S &gt; D</mark> 的优先顺序定级:评测是 AI 定的就是 L3。<span class="src">§3.6</span></li><li>梯子描述的是<mark>控制从哪来,不是能力有多强</mark>。<span class="src">§1 · §3.6</span></li></ul></div>
+<p>论文把 AI 开发看成<strong>发现循环</strong>：提候选改进，评测，再根据反馈选择或修改。循环里有三个关键决定。拿系统性能调优打比方：</p>
+<ul>
+<li><strong>搜索方向（D）</strong>：往哪找。好比先查数据库还是先查网络。</li>
+<li><strong>搜索空间（S）</strong>：能改什么。好比变更白名单：哪些配置项、哪些模块允许动。</li>
+<li><strong>评测信号（E）</strong>：什么算进步。好比验收用的 SLO 和回归测试。</li>
+</ul>
+<figure class="rs-fig"><a href="../ai4ai/img/control-framework.jpg" target="_blank"><img alt="AI4AI 控制框架" loading="lazy" src="../ai4ai/img/control-framework.jpg"/></a><figcaption>图2:控制框架。上面三栏是方向、空间、评测三个控制变量;下面是发现循环:证据来源进入「生成、评测、更新」,再回到迭代改进。(图源:AI4AI 综述 Figure 2)</figcaption></figure>
+<p>每个系统可以记一张<strong>责任档案</strong> ⟨D, S, E⟩。每一项标 H 或 A。注意，<strong>H 不只指人，也包括外部固定的东西</strong><span class="src">§3.5</span>，比如固定的基准测试、固定的评测器；A 指 AI 原创或实质修改的决定。</p>
+<p>按最高的 AI 决定分四级：</p>
+<ul>
+<li><strong>L0 ⟨H, H, H⟩</strong>：三个决定都不是 AI 定的，对照组。</li>
+<li><strong>L1 ⟨A, H, H⟩</strong>：AI 定方向，空间和评测仍由人或外部固定。</li>
+<li><strong>L2 ⟨任意, A, H⟩</strong>：AI 构造或实质修改搜索空间，评测仍由人或外部固定。</li>
+<li><strong>L3 ⟨任意, 任意, A⟩</strong>：AI 提供或实质修改评测信号。</li>
+</ul>
+<p>定级顺序是 <strong>E &gt; S &gt; D</strong>：评测是 AI 定的就是 L3，否则看空间，最后看方向。像告警定级，按最敏感的那项触发，不是看系统整体多强。论文反复强调：<mark><strong>这把梯子描述的是「控制从哪来」，不是「能力有多强」，级别高不代表更好用、更可靠。</strong></mark><span class="src">§3.6</span></p>
+</div><div class="blk" id="ai4ai-s3">
+<h3>三、怎么判断 AI 是不是真的「掌握」了某个决定</h3>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li>定级靠<mark>反事实检验</mark>:换掉 AI 产生的部分,搜索轨迹变不变。<span class="src">§3.6 第 3 步</span></li><li>起源、针对性、因果作用、可修订这四个性质,<mark>只是强度参考,不是定级门槛</mark>。<span class="src">§3.5</span></li></ul></div>
+<p>这是全文最实用的部分，因为很多系统只是「挂名控制」。</p>
+<p><mark><strong>核心工具是反事实检验</strong></mark><span class="src">§3.6 第 3 步</span>：把 AI 产生的部分拿掉或换掉，后续搜索轨迹会不会实质改变？不会，就不算掌握控制。和消融实验、A/B 测试一个道理。</p>
+<p>论文还划了几条边界：</p>
+<ul>
+<li><strong>生成候选不等于控制空间</strong><span class="src">§2.1</span>。在给定菜单里点菜，不等于设计菜单。</li>
+<li><strong>自我修改本身不等于 L2</strong><span class="src">§3.6</span>。改了自己，但改动范围是人划好的，控制空间的还是人。</li>
+<li><strong>没有持续适应，也不抹杀一次性的实质控制</strong><span class="src">§3.6 第 4 步</span>。</li>
+</ul>
+<p>此外，论文用四个性质描述 AI 控制的「强度」：起源（AI 产生，不是人给的）、针对性（根据当前任务证据）、因果作用（换掉结果会变）、可修订（发现不对能改）。它们是<strong>汇报时的参考，不是定级门槛</strong><span class="src">§3.5</span>；二元 H/A 标签会掩盖共享控制，混合来源要如实记录，不能「四舍五入」成全由 AI 控制。</p>
+<p>论文建议每次报告附一份<strong>残余人类控制清单</strong><span class="src">§3.6 第 6 步</span>：人给了哪些种子、模板、原语库、隐藏测试、审批关卡、救援干预和停止规则。评估厂商宣传时，这几乎就是现成的审计清单。</p>
+</div><div class="blk" id="ai4ai-s4">
+<h3>四、几个让人意外的归类</h3>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li><mark>FunSearch、AlphaEvolve 属于 L1</mark>:方向由 AI 引导,空间和评测由人定。<span class="src">§1 · §4.1</span></li><li>STOP、DGM 在固定边界下是<mark>相邻的 L1</mark>。<span class="src">§6.5</span></li><li><mark>L3 不等于全自主</mark>,只有 ⟨A, A, A⟩ 才是三个决定都交给 AI。<span class="src">§3.6</span></li></ul></div>
+<p>用这套方法去量，一些名气很大的系统级别并不高：</p>
+<ul>
+<li><strong>FunSearch、OpenEvolve</strong><span class="src">§4.1</span> 是论文点名的典型 L1。AlphaEvolve 也根据评测历史引导程序搜索，在人划定的编辑范围和人写的评测器里工作，同样放在 L1；若某次部署让 AI 自己定义编辑边界，要记额外的 L2 控制。</li>
+<li><strong>STOP 和达尔文哥德尔机（DGM）</strong> 会反复修改「改进者」或编码 agent 本身，但在论文的固定边界下，是<strong>相邻的 L1 系统</strong><span class="src">§6.5</span>；只有当 AI 产生的评测器或验收规则决定下一次修改时，才算 L3。论文特别提醒：反复自我修改，本身不能证明收益会持续。</li>
+<li><strong>真实的 L2 例子</strong><span class="src">Table 6</span>：S3 让 AI 设计 ViT 架构搜索里「哪些取值是允许的」，即由 AI 来划搜索空间。</li>
+<li><strong>L3 的例子</strong><span class="src">§4.5 · Table 6</span>：Eureka 根据环境结果进化奖励程序，由 AI 来写「什么算好」；论文表格里 Constitutional AI 也标为 L3（AI 产生批评、修订和偏好标签，而宪法条款、有害性规则和基础模型由人固定）。这正好说明，<mark><strong>L3 不等于全自主</strong></mark>，只有 ⟨A, A, A⟩ 才是三个决定都交给了 AI。</li>
+</ul>
+</div><div class="blk" id="ai4ai-s5">
+<h3>五、每一级都可能失败，L3 的风险最特殊</h3>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li><mark>级别越高,不保证系统越好</mark>,每一级都有自己的失败方式。<span class="src">§9</span></li><li>L3 的特殊风险:<mark>评测的错误会变成选择压力</mark>。<span class="src">§9</span></li></ul></div>
+<p>论文的结论很冷静：<mark><strong>级别越高，不保证系统越好</strong></mark><span class="src">§9</span>。</p>
+<ul>
+<li><strong>L1</strong>：有希望的方向，不一定能变成成功的实验。常见四种失败<span class="src">§4.6</span>：被早期结果锚住（永远在第一版上修修补补）、候选档案坍缩（方案池只剩一种思路）、功劳错配（改了十处，把提升算到错的那处）、过拟合固定评测器（专门针对压测脚本优化，真实流量一来就不行）。在严格控制预算和评测的复现实验里，一些精巧的自适应策略甚至会输给随机搜索。</li>
+<li><strong>L2</strong>：更丰富的表示不一定带来更好用的搜索空间，观察到的收益可能只是多采样了几次。</li>
+<li><strong>L3</strong>：特殊之处在于，<mark><strong>评测器本身成了优化回路里可变的一环，评测的错误会变成选择压力</strong></mark><span class="src">§6.5 · §9</span>。在固定候选上表现良好的信号，在持续优化下可能变得不可靠；大模型评委本身有系统性偏差<span class="src">§6.5</span>，比如位置偏差、偏爱自己的输出，多个评委集成也不能消除共享的盲区。</li>
+</ul>
+<figure class="rs-fig"><a href="../ai4ai/img/l3-evaluation-mechanism.jpg" target="_blank"><img alt="AI 构造评测器的机制" loading="lazy" src="../ai4ai/img/l3-evaluation-mechanism.jpg"/></a><figcaption>图3:L3 的机制。人提供任务说明、示例和约束作为锚点;AI 生成或修改测试、判分方式、汇总方式和阈值;评测结果决定选择或训练,产生新证据。底部是独立验证:冻结的外部评测器、留出测试、跨模型或专家检查。(图源:AI4AI 综述项目页)</figcaption></figure>
+<p>所以独立验证几乎是 L3 的底线：<strong>冻结的外部评测器</strong>（锁定版本、被优化的系统看不到也改不了的测试集）、优化过程从没见过的留出测试、跨模型和专家复核。</p>
+</div><div class="blk" id="ai4ai-s6">
+<h3>六、和 RSI 的关系：证据门槛很高</h3>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li>RSI = <mark>改进增强了产生后续改进的能力</mark>。<span class="src">§2.1</span></li><li>证明 RSI 需要<mark>运行前冻结的外部评测器</mark>,且收益跨多代持续。<span class="src">§6.5</span></li><li><mark>RSI 和控制级别是两回事</mark>。<span class="src">§8.1</span></li></ul></div>
+<p>论文对递归自我改进（RSI）的定义是：<mark><strong>对 AI 系统的改进，增强了它产生后续改进的能力</strong></mark><span class="src">§2.1</span>。不是「产品一版比一版好」，而是「生产线本身越来越会造产品」。</p>
+<p>要证明 RSI，门槛很高：要说明第 g+1 代改进了「产出第 g+2 代的机制」；收益要跨多代持续；每一代都要在<strong>运行前就冻结的评测器</strong><span class="src">§6.5</span>下更好；评测器本身要做版本管理，以免把「标准变了」误当成「候选变好了」。</p>
+<p>还有一个反直觉的结论：<mark><strong>RSI 和控制级别是两回事</strong></mark><span class="src">§8.1</span>。由外部评测的回路可能出现递归收益，由 AI 自己评测的回路可能根本没有。更强的任务表现，也不能证明更强的后续自我改进能力。</p>
+</div><div class="blk" id="ai4ai-s7">
+<h3>七、四类改进对象（和级别是两条独立的轴）</h3>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li>「改什么」(四类对象)和「谁做决定」(L0–L3)是<mark>两条独立的轴</mark>。<span class="src">Figure 10</span></li></ul></div>
+<figure class="rs-fig"><a href="../ai4ai/img/applications-overview.jpg" target="_blank"><img alt="AI4AI 应用全景" loading="lazy" src="../ai4ai/img/applications-overview.jpg"/></a><figcaption>图4:按改进对象划分的四个应用族。(图源:AI4AI 综述项目页)</figcaption></figure>
+<p>除了「谁做决定」，论文还按「改的是什么」整理应用。这条轴和 L0 到 L3 互相独立，同一族里的方法级别可以完全不同：</p>
+<ul>
+<li><strong>Learning（学习）</strong>：改会更新模型参数的东西，比如训练流水线、架构、优化器、学习规则、奖励。</li>
+<li><strong>Inference（推理）</strong>：模型参数冻结，改它外面的东西，比如 prompt、工作流、agent 框架、工具库、路由和测试时计算策略。</li>
+<li><strong>Data（数据）</strong>：改训练用的样本、配比、变换和课程。</li>
+<li><strong>Infrastructure（基础设施）</strong>：改训练和推理的软硬件栈，比如 kernel、编译调度、并行方案、加速器和电路。AlphaEvolve 优化 Gemini 训练里的矩阵乘法分块策略、为 TPU 简化一个算术电路，就属于这一类。</li>
+</ul>
+</div><div class="blk" id="ai4ai-s8">
+<h3>八、几个还没有答案的问题</h3>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul><li>值不值得交权,取决于<mark>错误多快被发现、能否撤回、验证多贵、原本要花多少人力</mark>。<span class="src">§8.1</span></li></ul></div>
+<p>论文最后留下的问题，比给出的答案更值得想：</p>
+<ul>
+<li><strong>什么时候值得把控制权交给 AI？</strong><span class="src">§8.1</span> 可能取决于错误多快能被发现、后果能不能撤回、独立验证有多贵、这个决定原本要花人多少精力。研究自主权应该是固定配置，还是随证据和风险调整的授权？</li>
+<li><strong>可表达不等于够得着。</strong> 一门足够强的语言也许已经能表达理想的算法，却没法在现实预算内找到它。好的抽象就像好用的高层 API，让好方案变得「够得着」。AI 能不能做到这一点？</li>
+<li><strong>当评测本身在变，什么才算进步？</strong></li>
+<li><strong>RSI 什么时候会持续，什么时候会饱和？</strong></li>
+</ul>
+</div><div class="blk" id="ai4ai-critique">
+<h3>锐评三则</h3>
+<h4>1. 定级规则清楚,但真要定级很难</h4>
+<p>反事实检验要求「拿掉 AI 产生的部分,看搜索轨迹变不变」,可大多数已发表的系统并没有公开这样的消融实验。论文对 AlphaEvolve、DGM 等系统的归类,主要依据的是论文描述,而不是作者自己做的反事实测试;论文也没有报告不同的人按这套规则定级时,结论有多一致。换句话说,这把尺子本身还没有经过「换一个人来量」的检验。</p>
+<h4>2. 它只回答「谁控制」,不回答「控制得好不好」</h4>
+<p>论文反复强调级别不代表能力,这很诚实,但也意味着对实际选型帮助有限:一个 L3 系统可能比 L1 系统更差。更现实的风险是,这套标签很容易被宣传借用,「我们是 L3」听起来很厉害,而论文自己说的效果证据(独立评测、冻结评测器、跨代收益)反而被省略。读者用它时,最好把「级别」和「效果证据」分成两张表来看。</p>
+<h4>3. 二元标签会把差别很大的系统放进同一格</h4>
+<p>按 E &gt; S &gt; D 的规则,宪法条款由人写死的 Constitutional AI,和一个完全由 AI 自己定义评测标准的系统,都会被记为 L3。论文提供了连续的「控制强度」向量来补救,但同时承认它只是汇报参考,没有经过验证。在 AI 和人共同决定的灰色地带(恰恰是今天最常见的情况),这套框架的区分力还不够。</p>
+<p><em>以上锐评旨在提供批判性视角,帮助读者看到这篇综述的边界。</em></p>
+<p>参考资料:</p>
+<ul class="small"><li><a href="https://ai4ai-research.github.io/" rel="noopener" target="_blank">AI4AI: Toward AI-discovered Superintelligence · 项目页</a> · <a href="https://ai4ai-research.github.io/assets/AI4AI_survey_latest.pdf" rel="noopener" target="_blank">PDF</a></li></ul>
+</div></section><section class="chapter" id="c4"><div class="chead"><span class="cn">第 4 章</span><h2>业务大图:六块能力,各框架站在哪</h2><span class="from">原页面:<a href="../argus/">业务大图</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>一个自我改进系统 = ①定义评测 ②划定范围 ③生成选择 ④执行 ⑤门禁 ⑥上线,加隔离和回放。</li><li><mark>③ 最拥挤,⑤ 最稀缺</mark>:大多数框架优化的是「你给的分数」。</li><li>调研里只有 AgentCore 明确写了报告统计显著性;没有一家把「预算匹配基线」当门禁。</li></ul></div><div class="blk bp"><h3>一、通用业务架构</h3><div class="ref">
+<div class="lname">场景<small>用来做什么</small></div>
+<div class="scen">
+<div class="card"><div class="title">企业软件研发</div><div class="body">从需求到能验收的软件</div></div>
+<div class="card"><div class="title">AI 应用优化</div><div class="body">让已有的 agent 更准、更省</div></div>
+<div class="card"><div class="title">算法与科学发现</div><div class="body">数学、kernel、芯片、调度、预测</div></div>
+<div class="card"><div class="title">自动 AI 研究</div><div class="body">AI 帮着做出下一代 AI</div></div>
+</div>
+<div class="lname">核心闭环<small>六块业务能力</small></div>
+<div>
+<div class="loop">
+<div class="cap c1"><span class="dse">E</span><div class="no">①</div><div class="t">定义目标与评测</div><div class="d">什么算「做完」、什么算「更好」:验收测试、评测集、指标</div></div>
+<div class="ac"><div class="arrow-h"></div></div>
+<div class="cap c2"><span class="dse">S</span><div class="no">②</div><div class="t">划定可改范围</div><div class="d">允许改哪些东西:代码块、提示词、工具描述、skills、团队结构</div></div>
+<div class="ac"><div class="arrow-h"></div></div>
+<div class="cap c3"><span class="dse">D</span><div class="no">③</div><div class="t">生成与选择改动</div><div class="d">往哪个方向改:proposer 写改动,搜索算法挑候选</div></div>
+<div class="ac"><div class="arrow-h"></div></div>
+<div class="cap c4"><div class="no">④</div><div class="t">执行</div><div class="d">把候选真的跑起来:单 agent,或一个多 agent 团队</div></div>
+<div class="ac"><div class="arrow-h"></div></div>
+<div class="cap c5"><div class="no">⑤</div><div class="t">评测与晋升门禁</div><div class="d">证明真的更好:不是运气、不是多花钱、不是钻空子</div></div>
+<div class="ac"><div class="arrow-h"></div></div>
+<div class="cap c6"><div class="no">⑥</div><div class="t">上线与治理</div><div class="d">审批、A/B、版本、回滚;改好的版本进入下一轮</div></div>
+</div>
+<div class="back"><span>下一轮:改好的版本成为新起点</span></div>
+</div>
+<div class="lname">贯穿能力</div>
+<div class="bands">
+<div class="band"><b>隔离与安全</b>:不可信的代码在哪里跑、拿不拿得到凭证、能不能改评测</div>
+<div class="band"><b>观测、记账与回放</b>:每一步做了什么、花了多少钱、能不能回到任一时刻</div>
+</div>
+<div class="lname">基础</div>
+<div class="base">
+<div class="band"><b>模型</b>:Claude、Gemini、GPT、开源模型(多数框架冻结模型,只改外层)</div>
+<div class="band"><b>算力与沙箱</b>:托管 runtime、容器、microVM、批量评测集群</div>
+</div>
+</div></div><div class="blk bp"><h3>二、每个框架站在哪几格</h3><div class="wrap"><table class="pos"><thead><tr><th>框架</th><th style="color:#c9994e">①评测</th><th style="color:#b08842">②范围</th><th style="color:#e07a3c">③生成选择</th><th style="color:#c47057">④执行</th><th style="color:#6b9e5a">⑤门禁</th><th style="color:#7a5e9e">⑥上线</th><th style="color:#8a6a4a">隔离</th><th style="color:#8a6a4a">回放</th><th>它和别人最不一样的地方</th></tr></thead><tbody>
+<tr class="grp"><td colspan="10"><b>进化引擎</b> · 把问题写成「一段可改的代码 + 一个打分函数」,大规模进化搜索;评测交给用户。</td></tr>
+<tr><td class="nm">AlphaEvolve<small>Google Cloud 托管 · GA</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">唯一托管的进化引擎;生成在云上,评测跑在用户自己的环境</td></tr>
+<tr><td class="nm">OpenEvolve<small>开源 · Apache 2.0</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="uq">开源界的标准基线:MAP-Elites + 岛屿种群,全部可设种子复现</td></tr>
+<tr><td class="nm">ShinkaEvolve<small>Sakana · Apache 2.0</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="uq">省样本(新颖性筛选);可选 Slurm + Docker 跑评测,记录成本指标</td></tr>
+<tr><td class="nm">FunSearch<small>DeepMind · 已停更</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">开山之作,但只进化单个函数</td></tr>
+<tr class="grp"><td colspan="10"><b>自修改 agent</b> · 让 agent 改自己的代码,用固定基准挑出更好的版本;少数连「改进器」也一起改。</td></tr>
+<tr><td class="nm">DGM<small>达尔文哥德尔机</small></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#b08842"></span></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="cv"></td><td class="uq">agent 改自己的代码,开放式档案保留「差的」版本当踏脚石;分阶段评测</td></tr>
+<tr><td class="nm">HyperAgents<small>DGM-H · 非商用许可</small></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#b08842"></span></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="cv"></td><td class="uq">连负责改进的 meta agent 本身也改(L2);许可证不能商用</td></tr>
+<tr><td class="nm">STOP<small>微软研究院</small></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#b08842"></span></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="cv"></td><td class="uq">改「改进器」程序本身;论文专门统计了生成代码绕过沙箱的频率</td></tr>
+<tr><td class="nm">ADAS<small>自动设计 agent</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">用代码表示 agent,由 meta agent 搜索新设计;搜索集和测试集分开</td></tr>
+<tr class="grp"><td colspan="10"><b>提示词与流程优化</b> · 把提示词、示例、工作流当成可优化参数,用验证集和反思自动改写。</td></tr>
+<tr><td class="nm">DSPy<small>斯坦福 · MIT</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">把 LM 程序「编译」优化(如 MIPROv2 贝叶斯优化);生态最大</td></tr>
+<tr><td class="nm">GEPA<small>MIT</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">LLM 反思 + 按每道题的帕累托前沿挑候选;验证集用于选择,不是终检</td></tr>
+<tr><td class="nm">AFlow<small>MIT</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="uq">用 MCTS 搜索代码化的工作流;验证集重复跑 5 轮再选</td></tr>
+<tr class="grp"><td colspan="10"><b>云厂商托管优化</b> · 从生产轨迹找失败、自动推荐改法;重点是「安全地上线」。</td></tr>
+<tr><td class="nm">AgentCore optimization<small>AWS · 推荐 / 批量评测 / A/B 已 GA</small></td><td class="cv"><span class="bar part" style="--c:#c9994e"></span></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"><span class="bar part" style="--c:#c47057"></span></td><td class="cv"><span class="bar core" style="--c:#6b9e5a"></span></td><td class="cv"><span class="bar core" style="--c:#7a5e9e"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="uq">调研里唯一明确「报告统计显著性 + 每条推荐都要人批准」;用 configuration bundle 发布</td></tr>
+<tr><td class="nm">Foundry Agent Optimizer<small>微软 · 预览</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"><span class="bar part" style="--c:#c47057"></span></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"><span class="bar core" style="--c:#7a5e9e"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="uq">除了指令和 skills,还会优化模型选择和成本;由人决定发布</td></tr>
+<tr class="grp"><td colspan="10"><b>多 agent 写软件</b> · 按角色或任务树分工,把软件做出来;团队本身不改进自己。</td></tr>
+<tr><td class="nm">MetaGPT<small>MIT</small></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">按 SOP 预设角色流程(产品、架构、工程……)</td></tr>
+<tr><td class="nm">ChatDev<small>Apache 2.0</small></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="cv"></td><td class="uq">角色之间的「聊天链」;可在 Docker 里执行</td></tr>
+<tr><td class="nm">OpenHands<small>MIT</small></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="uq">开源编程 agent 平台,Docker 沙箱 runtime,事件流记录</td></tr>
+<tr><td class="nm">Cursor swarm<small>研究博客 + 产品</small></td><td class="cv"><span class="bar part" style="--c:#c9994e"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">planner 递归拆出 sub-planner,几百个 worker 推同一分支;每轮由 judge 决定是否继续</td></tr>
+<tr><td class="nm">Claude Code agent teams<small>实验功能</small></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="uq">lead + teammates 共享任务列表、互相发消息;默认关闭</td></tr>
+<tr class="grp"><td colspan="10"><b>自动科研</b> · 端到端:想点子、做实验、写结论;部分由 AI 自己评价结果。</td></tr>
+<tr><td class="nm">AI Scientist<small>Sakana · 带使用限制的许可</small></td><td class="cv"><span class="bar part" style="--c:#c9994e"></span></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"><span class="bar part" style="--c:#c47057"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="cv"></td><td class="uq">由 AI 自动审稿给结果打分 —— 部分「评测」交给了 AI(接近 L3)</td></tr>
+<tr><td class="nm">autoresearch<small>Karpathy · 无许可证</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"><span class="bar part" style="--c:#c47057"></span></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">极简:一个 agent 改训练代码,每次固定 5 分钟训练,变好就留</td></tr>
+<tr class="grp"><td colspan="10"><b>评测基础设施</b> · 只负责「把评测可靠地跑起来」:任务格式、并行环境、重复跑、日志。</td></tr>
+<tr><td class="nm">Harbor<small>Terminal-Bench · Apache 2.0</small></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="uq">容器化评测,能并行跑上千个环境(可接 Daytona、Modal)</td></tr>
+<tr><td class="nm">Inspect AI<small>英国 AISI · MIT</small></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="uq">评测框架:沙箱、日志,可把每题重复跑多次</td></tr>
+<tr class="grp"><td colspan="10"><b>Argus</b> · 带严格门禁的 AI 研发试验场(作者的原型)。</td></tr>
+<tr class="ar"><td class="nm">Argus · Swarm<small>已实现</small></td><td class="cv"><span class="bar core" style="--c:#c9994e"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"><span class="bar part" style="--c:#7a5e9e"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="uq">团队只拿到空数据库,分工方式自己设计;规格门禁证明测试是真的;无凭证沙箱 + 签名记账代理</td></tr>
+<tr class="ar plan"><td class="nm">Argus · Evolve<small>方案</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#e07a3c"></span></td><td class="cv"><span class="bar part" style="--c:#c47057"></span></td><td class="cv"><span class="bar core" style="--c:#6b9e5a"></span></td><td class="cv"><span class="bar core" style="--c:#7a5e9e"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="uq">引擎借用,门禁自建:proposer 看不到的 held-out、噪声分布、<b>预算匹配基线</b>(调研里没有别家当门禁)、人审</td></tr>
+</tbody></table></div><div class="poslegend"><span><span class="bar" style="background:#e07a3c"></span>核心能力</span><span><span class="bar" style="border:2px solid #e07a3c;background-image:repeating-linear-gradient(135deg,transparent 0 4px,rgba(0,0,0,.07) 4px 6px)"></span>部分具备</span><span>空白:不做 / 文档未提</span><span><span class="bar" style="background:rgba(255,216,166,.9)"></span>Argus</span></div><p class="foot" style="text-align:left">能力标注依据 2026-11-18 对官方仓库、文档和论文的调研;「文档未提」指调研时读到的 README / 文档里没写。许可证和状态写在框架名下方。</p></div></section><section class="chapter" id="c5"><div class="chead"><span class="cn">第 5 章</span><h2>一个例子:AlphaEvolve</h2><span class="from">原页面:<a href="../alphaevolve/">AlphaEvolve 详解</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>你给种子代码 + 打分函数,Gemini 不停改、评测器打分、好的留下 —— 进化式写代码 agent。</li><li>成果:Borg 回收 0.7% 算力、4×4 复数矩阵 48 次乘法、企业案例提升多在 5%–25% 量级(自报)。</li><li>2026-07 Google Cloud GA;它本身是 L1 / B0,<mark>不是 RSI</mark>,但是很多 RSI 研究的引擎。</li></ul></div><div class="blk" id="alphaevolve-what">
+<h3>① 它是什么</h3>
+<div class="lead">「AlphaEvolve 是一个由大语言模型驱动的<b>进化式写代码 agent</b>,用于通用的算法发现和优化。它把 Gemini 模型的创造力和<b>验证答案的自动评测器</b>结合起来,并用进化框架不断改进最有希望的想法。」</div>
+<p class="dim small">原文:「an evolutionary coding agent powered by large language models for general-purpose algorithm discovery and optimization. AlphaEvolve pairs the creative problem-solving capabilities of our Gemini models with automated evaluators that verify answers…」—— <a href="https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" rel="noopener" target="_blank">Google DeepMind,2025-05-14</a></p>
+<ul>
+<li><b>谁做的</b>:Google DeepMind 的 AlphaEvolve 团队(白皮书作者包括 Alexander Novikov、Matej Balog、Pushmeet Kohli 等)。<span class="tag ok">一手</span></li>
+<li><b>前身</b>:2023 年的 FunSearch —— 第一次证明大模型能写出代码、在开放科学问题上发现可证明正确的新知识。FunSearch 只能进化<b>单个函数</b>;AlphaEvolve 能进化<b>整个代码库</b>,写出复杂得多的算法。<span class="tag ok">一手</span></li>
+<li><b>适合什么问题</b>:DeepMind 的原话是「进步能被清楚、系统地衡量的领域,比如数学和计算机科学」。也就是:<b>能写一个程序,自动判断答案好不好</b>。<span class="tag ok">一手</span></li>
+</ul>
+</div><div class="blk" id="alphaevolve-how">
+<h3>② 它怎么工作</h3>
+<figure class="rs-fig"><a href="../alphaevolve/img/alphaevolve-fig2.jpg" target="_blank"><img alt="AlphaEvolve Figure 2: expanded view of the discovery process" loading="lazy" src="../alphaevolve/img/alphaevolve-fig2.jpg"/></a>
+<figcaption>上面绿色是人要提供的四样东西:提示词模板和配置、用哪些模型、<b>评测代码</b>、标好「哪些部分可以改」的初始程序。下面是 AlphaEvolve 的四个部件和一个分布式循环,最后输出最好的程序。<br/>出处:Novikov 等,<a href="https://arxiv.org/abs/2506.13131" rel="noopener" target="_blank">AlphaEvolve: A coding agent for scientific and algorithmic discovery</a>(arXiv 2506.13131,2025-06),Figure 2。授权 CC BY-NC-ND 4.0(原图未改动)。</figcaption></figure>
+<h4>四个部件</h4>
+<ul>
+<li><b>Prompt sampler(提示词采样器)</b>:从程序库里挑一个「父程序」和几个「灵感」程序,拼成给模型的提示词。</li>
+<li><b>LLMs ensemble(多个模型一起用)</b>:Gemini Flash 又快又便宜,负责<b>广撒网</b>,多出想法;Gemini Pro 更强,负责<b>深挖</b>,给出更有见地的改法。模型输出的是对代码的<b>修改(diff)</b>,不是整段重写。</li>
+<li><b>Evaluators pool(评测器)</b>:运行每个新程序并打分,可以有多个指标。评测可以分层:先跑便宜的检查,通过了才跑贵的完整评测(白皮书叫 evaluation cascade)。</li>
+<li><b>Program database(程序库)</b>:存下所有程序和分数,用进化算法决定下一轮从哪些程序出发 —— 不只挑最好的,也保留多样性。</li>
+</ul>
+<h4>一轮循环(图中的伪代码)</h4>
+<pre class="rs-f">父程序, 灵感 = 程序库.抽样()
+提示词     = 提示词采样器.拼(父程序, 灵感)
+修改       = 大模型.生成(提示词)
+子程序     = 应用修改(父程序, 修改)
+结果       = 评测器.运行(子程序)
+程序库.加入(子程序, 结果)</pre>
+<p>你在代码里用 <code>EVOLVE-BLOCK-START</code> / <code>EVOLVE-BLOCK-END</code> 标出「允许改的部分」,其余部分(比如输入输出、评测接口)保持不变。Google 的 skill 优化教程就是把 SKILL.md 的文字放进这两个标记中间,让它改。<span class="tag ok">一手</span></p>
+<h4>在 Google Cloud 上:生成在云上,评测在你那边</h4>
+<ul>
+<li><b>生成这一半</b>(提示词采样、Gemini 模型、程序库)是 Google Cloud 托管的。</li>
+<li><b>评测这一半</b>由你自己跑,在你自己的机器或目标硬件上。官方原话:「AlphaEvolve 在 Google Cloud 里运行,不运行你的代码。它的反馈就是你的评测器送回来的分数和说明。」<span class="tag ok">一手 · Google Cloud 博客</span></li>
+<li>所以评测的算力(以及评测写得好不好)是你的事 —— 大规模时可以用 Cloud Batch 把评测扇出到几百台机器。</li>
+</ul>
+</div><div class="blk" id="alphaevolve-results">
+<h3>③ 它做成了什么</h3>
+<h4>Google 自己的系统</h4>
+<ul>
+<li><b>数据中心调度</b>:给 Borg 找到一个简单有效的调度启发式,已上线一年多,<b>平均持续回收 Google 全球 0.7% 的算力</b>。<span class="tag ok">一手</span></li>
+<li><b>Gemini 训练</b>:把一个关键矩阵乘法 kernel 提速 23%,<b>Gemini 训练时间减少 1%</b> —— 包括训练 AlphaEvolve 自己用的模型。kernel 优化从「专家几周」变成「自动实验几天」。<span class="tag ok">一手</span></li>
+<li><b>GPU 底层</b>:FlashAttention kernel 最高提速 32.5%。<span class="tag ok">一手</span></li>
+<li><b>芯片</b>:提出一个 Verilog 改写,去掉矩阵乘法电路里多余的位,通过严格验证后进入下一代 TPU。Jeff Dean:「TPU 的大脑在帮着设计下一代 TPU 的身体。」<span class="tag ok">一手</span></li>
+<li><b>数据库和缓存</b>:改进 Spanner 的 LSM 树压缩策略,写放大降低 20%;找到更好的缓存替换策略,两天做完以前要几个月人力的工作。<span class="tag ok">一手 · 2026-05 一周年博客</span></li>
+</ul>
+<h4>数学</h4>
+<ul>
+<li><b>4×4 复数矩阵乘法只要 48 次标量乘法</b>,这是 1969 年 Strassen 算法以来,56 年里在这个设定下的第一次改进。<span class="tag ok">一手</span></li>
+<li>在 50 多个开放问题(分析、几何、组合、数论)上:约 <b>75%</b> 追平已知最好结果,约 <b>20%</b> 刷新了已知最好结果。大部分实验几个小时就能搭好。<span class="tag ok">一手</span></li>
+<li>和 Terence Tao 等人合写的论文测了 <b>67 个问题</b>,多数追平、若干刷新,有时还能从有限个例子归纳出对所有输入都成立的公式;并和 Deep Think、AlphaProof 组合做自动证明。<span class="tag ok">一手 · arXiv 2511.02864</span></li>
+<li>2026-08:和 MIT、哥大、CMU 的学者一起,把矩阵乘法指数的上界从 ω &lt; 2.371339 推进到 <b>ω &lt; 2.371177</b>。<span class="tag ok">一手 · arXiv 2608.16884</span></li>
+</ul>
+<figure class="rs-fig"><a href="../alphaevolve/img/alphaevolve-math.jpg" target="_blank"><img alt="AlphaEvolve SOTA-breaking mathematical constructions" loading="lazy" src="../alphaevolve/img/alphaevolve-math.jpg"/></a>
+<figcaption>AlphaEvolve 在分析、几何、组合三个方向上刷新的部分结果(箭头左边是原来的最好值,右边是 AlphaEvolve 找到的)。<br/>出处:同上白皮书(arXiv 2506.13131),数学结果总览图。授权 CC BY-NC-ND 4.0(原图未改动)。</figcaption></figure>
+<h4>科学</h4>
+<ul>
+<li>基因组:改进 DNA 测序纠错模型 DeepConsensus,变异检测错误减少 30%(PacBio 在用)。</li>
+<li>电网:最优潮流问题上,神经网络找到可行解的比例从 14% 提到 88% 以上。</li>
+<li>量子:给 Google Willow 量子芯片设计的量子电路,误差比传统优化低 10 倍。</li>
+<li>灾害预测:20 类自然灾害的综合预测准确率提高 5%。<span class="tag ok">一手 · 2026-05 一周年博客</span></li>
+</ul>
+</div><div class="blk" id="alphaevolve-cloud">
+<h3>④ 企业怎么用</h3>
+<ul>
+<li><b>时间线</b>:2025-12 在 Google Cloud 开放私有预览;<b>2026-07-09 正式商用(GA)</b>,所有 Google Cloud 客户都能用,入口在 Gemini Enterprise Agent Platform。<span class="tag ok">一手</span></li>
+<li><b>官方四步</b>:
+<ol>
+<li><b>Define(定义)</b>:给种子算法、问题定义和背景知识。</li>
+<li><b>Measure(衡量)</b>:写打分函数,按正确性、性能、运行约束等一个或多个指标给候选打分。</li>
+<li><b>Optimize(优化)</b>:让 AlphaEvolve 针对这些指标生成优化后的代码。</li>
+<li><b>Apply(应用)</b>:把最终算法部署到生产。<span class="tag ok">一手</span></li>
+</ol></li>
+<li><b>客户端库和示例</b>:<a href="https://github.com/Google-Cloud-AI/alphaevolve-on-googlecloud" rel="noopener" target="_blank">Google-Cloud-AI/alphaevolve-on-googlecloud</a>(Apache 2.0),从「纯 Python 本地评测」到「在 GKE 上跑 GPU 训练」都有例子;最快的入门是填圆问题,约 5 分钟跑通。<span class="tag ok">一手</span></li>
+<li><b>默认模型</b>:2026-10-26 起新实验默认用 Gemini 4 Argon,按 Argon 的 token 价格计费。<span class="tag">二手 · release notes 转载</span></li>
+<li><b>大规模评测</b>:AlphaEvolve on Cloud Batch(SC26,2026-11-13),一个蓝图把几百个候选评测扇出到多台机器,支持多节点 MPI 和 Spot。<span class="tag ok">一手</span></li>
+</ul>
+<h4>客户公布的成绩</h4>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>客户</th><th>问题</th><th>公布的结果</th></tr>
+<tr><td>BASF</td><td>全球供应链「数字孪生」</td><td>比初始种子模型准确度相对提升 80% 以上</td></tr>
+<tr><td>Coolblue</td><td>电商 28 天需求预测</td><td>约 200 轮迭代,预测误差(WMAPE)改善 5% 以上</td></tr>
+<tr><td>FM Logistic</td><td>仓库拣货路径</td><td>在已高度优化的基础上再改进 10.4%,员工少走 1.5 万公里以上</td></tr>
+<tr><td>JetBrains</td><td>IDE 性能</td><td>提升 15–20% 以上</td></tr>
+<tr><td>Kinaxis</td><td>预测和优化算法</td><td>关键预测准确度提升 22% 以上,运行时间减少 90% 以上(基准数据集)</td></tr>
+<tr><td>Klarna</td><td>大型 transformer 训练</td><td>训练吞吐翻倍,同时模型质量更好</td></tr>
+<tr><td>Schrödinger</td><td>分子模拟里的两个瓶颈算法</td><td>约 4 倍提速</td></tr>
+<tr><td>Google 自己</td><td>agent 的 SKILL.md</td><td>几轮迭代提升约 5%</td></tr>
+</table></div>
+<p class="dim small">来源:Google Cloud GA 博客、各客户案例博客、DeepMind 一周年博客。都是客户和 Google 自己公布的数字。</p>
+<p><b>JetBrains 的一句话很能说明它的定位</b>:「工程师仍然掌握基准、评审和发布决定。变小的是搜索空间。」<span class="tag ok">一手</span></p>
+</div><div class="blk" id="alphaevolve-limits">
+<h3>⑤ 局限和要注意的地方</h3>
+<ul>
+<li><b>没有好的打分程序就用不了</b>。它的效果上限取决于你的评测器。Tao 等人的论文也说:AlphaEvolve 不是「解所有数学问题的通用工具」,主要针对「构造一个满足数量性质的对象」这类问题。<span class="tag ok">一手</span></li>
+<li><b>会钻评测的空子</b>。Google 的视频处理教程举了例子:如果只看速度,进化循环可能干脆跳过渲染来「变快」,所以要加画质指标(SSIM)当门槛。<span class="tag ok">一手</span></li>
+<li><b>进度不是平滑的</b>。官方仓库提醒:最好分数可能卡很多代然后突然跳一下,「不要因为看起来卡住就提前停」;很多候选会失败,失败信息也会反馈给模型。<span class="tag ok">一手</span></li>
+<li><b>评测的算力在你这边</b>。生成是托管的,但每个候选都要在你的环境里跑一遍,大规模时这部分是主要成本 —— 和<a href="../">本场分享</a>里「97.7% 的钱花在评测」是同一个道理。<span class="tag top">判断</span></li>
+<li><b>绑定 Gemini</b>。托管版用 Gemini;官方开源的最小实现(见 ⑦)也是调 Gemini API。</li>
+</ul>
+</div><div class="blk" id="alphaevolve-rsi">
+<h3>⑥ 和 RSI 的关系</h3>
+<ul>
+<li><b>它本身不算 RSI</b>。在《The Last AI Built by Humans》的五级图里,AlphaEvolve 被放在 <b>B0</b>(只在一次任务里反复改答案)—— 因为它改的是你给的代码,改进的不是它自己(见 <a href="../landscape/#what">RSI 全景 图 5</a>)。</li>
+<li><b>但它离 RSI 很近</b>。DeepMind 原文写着:它让 Gemini 训练快了 1%,「包括训练 AlphaEvolve 自己所用的大模型」;它也在帮着设计下一代 TPU。也就是 <b>用 AI 改进造 AI 的东西</b> —— 只是每一轮之间还是人在决定用不用、怎么用。<span class="tag ok">一手</span> <span class="tag top">判断</span></li>
+<li><b>它是很多 RSI 研究的「引擎」</b>:Google 用它改 agent 的 skill;开源的 ShinkaEvolve、OpenEvolve 被拿来改 harness、改训练代码。引擎是通用的,<b>把改进的对象换成 AI 自己,并让改好的结果留到下一轮</b>,才往 RSI 走。</li>
+</ul>
+</div><div class="blk" id="alphaevolve-open">
+<h3>⑦ 开源替代,以及在 AWS 上怎么做</h3>
+<ul>
+<li><b>官方最小实现</b>:<a href="https://github.com/google-deepmind/alphaevolve" rel="noopener" target="_blank">google-deepmind/alphaevolve</a>(2026-11-04 公开,Apache 2.0)。<code>/src</code> 是带本地评测的最小实现(需要 Docker 和 Gemini API key);<code>/maths</code>、<code>/omega</code> 是数学结果和验证用的 Colab。<span class="tag ok">一手</span></li>
+<li><b>OpenEvolve</b>:<a href="https://github.com/algorithmicsuperintelligence/openevolve" rel="noopener" target="_blank">algorithmicsuperintelligence/openevolve</a>,自称「AlphaEvolve 的开源实现」,约 7.8k 星,可以接多家模型。</li>
+<li><b>ShinkaEvolve</b>:<a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" target="_blank">SakanaAI/ShinkaEvolve</a>,Sakana AI 的版本,更省样本;<a href="../demo/">本场 demo</a> 用的就是它。</li>
+<li><b>在 AWS 上</b> <span class="tag top">判断</span>:目前没有对标 AlphaEvolve 的托管服务。等价做法是 <b>开源引擎(ShinkaEvolve / OpenEvolve)+ Bedrock 上的模型做生成 + AWS Batch / EC2 Spot 跑评测</b>,结构和 Google 的「生成在云上、评测在你那边」一样。demo 里的「冻结权重,只改检索代码:0.42 → 0.94」就是这么跑的。</li>
+</ul>
+</div><div class="blk" id="alphaevolve-timeline">
+<h3>⑧ 时间线</h3>
+<div class="rs-tl">
+<div><span class="y">2023</span><b>FunSearch</b>:大模型第一次在开放科学问题上发现可证明正确的新知识(只进化单个函数)。</div>
+<div><span class="y">2025-05-14</span><b>发布 AlphaEvolve</b>:DeepMind 博客;Borg 0.7%、4×4 矩阵 48 次乘法等结果。</div>
+<div><span class="y">2025-06-16</span><b>白皮书</b>:arXiv 2506.13131。</div>
+<div><span class="y">2025-11</span><b>和 Terence Tao 等人的数学论文</b>:67 个问题。</div>
+<div><span class="y">2025-12</span><b>Google Cloud 私有预览</b>。</div>
+<div><span class="y">2026-05-07</span><b>一周年</b>:基因组、电网、量子、Spanner、TPU 设计等新成果;BASF 案例。</div>
+<div><span class="y">2026-07-09</span><b>Google Cloud 正式商用(GA)</b>;客户端库开源。</div>
+<div><span class="y">2026-08</span><b>矩阵乘法指数</b> ω &lt; 2.371177。</div>
+<div><span class="y">2026-10-26</span>默认模型换成 Gemini 4 Argon(二手)。</div>
+<div><span class="y">2026-11-04</span><b>google-deepmind/alphaevolve 仓库公开</b>(最小实现 + 验证代码)。</div>
+<div><span class="y">2026-11-05</span>官方教程:用 AlphaEvolve + Harbor 优化 agent skill。</div>
+<div><span class="y">2026-11-13</span>SC26:AlphaEvolve on Cloud Batch。</div>
+</div>
+</div></section><section class="chapter" id="c6"><div class="chead"><span class="cn">第 6 章</span><h2>谁来验证,钱花在哪</h2><span class="from">原页面:<a href="../view/#t2">我的判断 · 判断 2</a> · <a href="../#faq">RSI 资料包 · 常见问题</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>「变好了」要过三关:不是运气、不是多花钱、不是钻空子。</li><li>Goodhart:优化器越强越会钻评测的漏洞,<mark>评测成本会随优化能力上涨</mark>。</li><li>本场 demo 估算一轮约 856 美元,<mark>97.7% 花在评测</mark>;只在基线花费大的地方才值得做。</li></ul></div><div class="blk" id="view-t2">
+<h3>判断 2:Goodhart 定律是这个领域的物理定律 —— 评测成本会随优化能力一起上涨</h3>
+<ul>
+<li><b>机制</b>:「指标一旦成了目标,就不再是好指标。」优化器越强,越会找到评测的漏洞。所以评测不是一次性投入,而是一场<b>军备竞赛</b>:优化能力每上一个台阶,评测就要加隐藏题、换题、加约束。评测预算应该跟着优化强度一起涨。</li>
+<li><b>证据</b>:Google 视频教程里,进化循环会「跳过渲染来变快」,只能加画质门槛(SSIM);Weco 测到约 63% 的候选在钻空子;NVIDIA SoL-Pi 要把「能力底线」藏起来,不让被优化的一方看到;字节 HarnessDev 发现 agent 自己的评判几乎预测不了下一轮的提升。</li>
+<li><b>推论</b>:进展会先集中在<b>评测本身很难被骗</b>的领域 —— 数学(形式化证明)、芯片(等价性验证)、kernel(真机计时)。这正是 AlphaEvolve 最硬的成果所在。</li>
+<li><b>对 SA 的意义</b>:可以给客户做一件新的事 ——<b>给评测器做红队</b>,专门找评测的漏洞,像安全团队找系统漏洞一样。评测运维会像安全运维一样,变成持续的工作,而不是项目开始时做一次。</li>
+<li><b>我会错,如果</b>:出现通用、可靠、便宜的自动验证方法,不靠人精心设计也能防刷分。目前没看到迹象。</li>
+</ul>
+</div><div class="blk" id="hub-faq">
+<h3>常见问题:评测、打分和成本</h3>
+<details class="rs-q"><summary>「候选 agent 跑评测」和「LLM 评审 judge」分别是什么?</summary><div>
+<p><b>候选 agent 跑评测 = 考试。</b>每轮改出来的新版本 harness 就是「候选」,它要把测试集里的每道题真的做一遍:读题、调工具、思考、重试,每一步都调大模型。估算一轮 72 次 run × 3.77M token ≈ 2.7 亿 token,按 Bedrock 上 Sonnet 5 的价格约 $836。</p>
+<p><b>LLM 评审 judge = 改卷。</b>没有标准答案的题,另请一个大模型读 agent 的最终答案并打分。它只读最终答案、只写一个分数,所以便宜(约 $12)。有标准答案的题(比如 demo 里的 NDCG@5)可以不用 judge。</p>
+</div></details>
+<details class="rs-q"><summary>NDCG@5 是什么?</summary><div>
+<p>给「搜索结果排得好不好」打分,0 到 1,1 是完美。三点:结果越相关得分越高;排得越靠前越值钱(按 log₂(名次+1) 打折);最后除以「完美排法」的得分。<b>@5</b> = 只看前 5 条。</p>
+<p>一句话版:<b>看前 5 条结果里,对的东西是不是排在最前面。</b>demo 里 BM25 0.42 → LLM 重排 0.94,就是对的商品基本都被排到了最前面。</p>
+</div></details>
+<details class="rs-q"><summary>晋升门的「综合得分」怎么算?</summary><div>
+<p>demo 代码(<code>evolution/evaluate.py</code>)里的实际公式:</p>
+<pre class="rs-f">综合得分 = 0.7 × 公开题得分
+        + 0.2 × 隐藏题 NDCG      ← 从不给模型看,防背答案
+        + 0.1 × 错别字题 NDCG    ← 换个说法再考,防死记
+        − 0.005 × 估算 token(百万) ← 成本罚,防靠多花钱刷分
+
+公开题得分 = 0.3 × 简单 + 0.4 × 中等 + 0.3 × 难 × (简单、中等是否达标)
+泄漏审计发现偷写答案 → 直接 −1,作废</pre>
+<p>像期末总评:平时作业 70% + 闭卷考试 20% + 换题重考 10% − 迟到扣分;抄袭直接零分。成本罚系数很小,demo 里几乎不影响结果。</p>
+</div></details>
+<details class="rs-q"><summary>UBC 是什么公司?</summary><div>
+<p>不是公司,是加拿大<b>不列颠哥伦比亚大学</b>(University of British Columbia,温哥华)。DGM 由东京的 AI 公司 <b>Sakana AI</b> 和 UBC <b>Jeff Clune</b> 的实验室合作完成。</p>
+</div></details>
+<details class="rs-q"><summary>为什么不直接改模型权重?</summary><div>
+<p>改权重要训练(SageMaker 那一侧),贵、慢,验证更难,也很难回滚;改 harness 只跑推理(Bedrock),便宜,随时能换回来。用厨师的话说:换菜谱随时能换回来,送厨师去进修可退不回来。</p>
+</div></details>
+<details class="rs-q"><summary>AlphaEvolve 是什么?</summary><div>
+<p>Google DeepMind 做的<b>进化式写代码 agent</b>:你给一段种子代码和一个打分程序,它用 Gemini 不停地改代码、给每个新版本打分、留下更好的再接着改,一代代逼近更好的算法。2025-05 发布,2026-07-09 在 Google Cloud 正式商用。它本身不算 RSI(改的是你给的代码,不是它自己),但它是很多 RSI 研究的「引擎」;本场 demo 用的 ShinkaEvolve 是同类的开源方法。详见 <a href="../alphaevolve/">AlphaEvolve 详解</a>。</p>
+</div></details>
+</div><div class="blk" id="view-roi">
+<h3>客户算账:什么时候值得做</h3>
+<p><b>关键关系:提升是百分比,成本是绝对值。</b>所以只有在「基线花费足够大」的地方,自动优化才值得做。</p>
+<pre class="rs-f">值得做,当:  基线年花费 × 预期提升% × 能用的年数
+          &gt;  (候选数 × 每个候选的评测成本) + 搭评测 / 仿真的人力 + 上线和维护成本</pre>
+<ul>
+<li><b>同一个百分比,意义完全不同</b>:0.7% 在 Google 全球算力上相当于一大笔钱;对一个每月算力账单 1 万美元的客户,只是每月约 70 美元,搭评测的人力都不够。</li>
+<li><b>评测成本要按「次数」算</b>:公开资料里,一次优化要几十到几千个候选(ShinkaEvolve 约 150 个样本出结果、Coolblue 约 200 轮、Google 的 skill 搜索「几千次 agent 试验」)。如果每个候选都要跑完整的 agent 任务,成本会很快上去;本场 demo 一轮约 856 美元,其中 97.7% 是评测。</li>
+<li><b>一个假设的例子</b> <span class="tag top">假设</span>:某个 agent 每月模型调用花 5 万美元。如果像 HarnessMM 那样把每题 token 降 30%,每月省约 1.5 万美元;做 10 轮优化按 demo 的量级约 8,600 美元。不到一个月就回本 —— <b>前提是质量不降,而这要靠留出集来证明</b>。</li>
+<li><b>反过来的例子</b> <span class="tag top">假设</span>:一个每天只跑几百次、每月花几百美元的内部工具,即使提升 30%,也不值得为它搭评测。</li>
+<li><b>对 SA 的意义</b>:先帮客户把这张账算出来,再决定做不做。最值得做的通常是:<b>花费大、指标清楚、评测便宜、改动能回滚</b>的负载。</li>
+</ul>
+</div></section><section class="chapter" id="c7"><div class="chead"><span class="cn">第 7 章</span><h2>三家云厂商:竞争分析</h2><span class="from">原页面:<a href="../landscape/#cloud">RSI 全景 ③</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>三家都把「agent 自动变好」做成了产品,形状几乎一样:生产轨迹 → 候选改动 → 留出集评测 → 人审 → 上线。</li><li>Google 多一个已 GA 的 AlphaEvolve;微软闭环参考方案最细;AWS 有 AgentCore 评测 + A/B,Recursive 跑在 AWS。</li><li>打法:不和 AlphaEvolve 比引擎,比闭环和中立。</li></ul></div><div class="blk" id="landscape-cloud">
+<h3>③ 三家云厂商:竞争分析</h3>
+<p>先说结论:<b>三家都把「agent 自动变好」做成了产品,而且形状几乎一样</b>。差别在三处:有没有自己的「算法发现」引擎、研究和产品接得顺不顺、RSI 创业公司把算力放在谁家。</p>
+<h4>Google / Google Cloud:研究到产品链条最完整</h4>
+<ul>
+<li><b>AlphaEvolve 已 GA</b>(2026-07-09,<a href="../alphaevolve/">详解</a>):DeepMind 的进化式代码优化 agent,挂在 Gemini Enterprise Agent Platform 上(Vertex AI 已改名为这个)。你给种子算法和打分函数,它用 Gemini 不断变异、评测、留下更好的版本。早期客户有 BASF、JetBrains、Kinaxis;Schrödinger 用它把分子模拟里两个瓶颈算法提速约 4 倍。<span class="tag ok">一手</span></li>
+<li><b>默认模型换成 Gemini 4 Argon</b>(10-26 起),按 Argon 的 token 价计费。<span class="tag">二手 · release notes 转载</span></li>
+<li><b>用 AlphaEvolve 改 agent 的 skill</b>(11-05 官方教程):把 SKILL.md 当成「程序」,让 Harbor 在 GKE 上跑真实编码任务来打分,每个候选和基线同时跑、看差值,最后在没见过的任务上复查。几轮迭代提升约 5%。—— 这就是「冻结模型、自动改 skill」的官方做法(按图 5 属于 L2:人定目标和打分,AI 选改法)。<span class="tag ok">一手</span></li>
+<li><b>AlphaEvolve on Cloud Batch</b>(SC26,11-13):一个蓝图把候选评测扇出到几百台机器,包括多节点 MPI,支持 Spot 降成本。<span class="tag ok">一手</span></li>
+<li><b>Agent Compute Engine</b>(10-22 发布,几个月后预览):给 agent 用的 microVM 沙箱,启动快、空闲自动暂停,官方明确说是为了「agent 循环或评测扫描不等基础设施」。<span class="tag ok">一手</span></li>
+<li><b>RSI 生态</b>:GV(Google Ventures)和 Greycroft 领投了 Recursive;Anthropic 出身的 Mirendil(自我改进 AI)签了 1 亿美元以上的 Google Cloud 算力协议。<span class="tag ok">一手 · TechCrunch</span></li>
+<li><span class="tag top">判断</span>短板:AlphaEvolve 的效果取决于你能不能写出好的打分函数,这一步 Google 帮不了你;深度绑定 Gemini;官方 skill 优化案例的提升只有 5%,说明只改 prompt / skill 的空间有限。</li>
+</ul>
+<h4>微软 / Azure:产品闭环做得细,研究很多但组织在变</h4>
+<ul>
+<li><b>Foundry Agent Optimizer</b>(Build 2026-06-03 发布,当时为私有预览,并说 30 天后进入公开预览):对托管 agent 做「评测基线 → 按失败生成候选 → 同一批任务重评 → 排名 → 一条命令上线」。能优化三样:<b>指令、skill、模型选择</b>。命令是 <code>azd ai agent optimize</code>,官方示例分数 0.60 → 0.92。<span class="tag ok">一手</span></li>
+<li><b>持续优化</b>(09-24):Foundry 把这套叫「hill-climbing」—— 观察、评测、优化、验证、重复,人保持控制。<span class="tag ok">一手</span></li>
+<li><b>闭环参考方案</b>(11-06):生产轨迹 → 人工复核标注 → Agent Optimizer 搜索 → 开 PR 给工程师审 → 留出回归集把关 → 灰度上线。<span class="tag ok">一手 · 微软技术社区</span></li>
+<li><b>MAI(Mustafa Suleyman)</b>:6 月发布 7 个自研模型,说要建「超级智能实验室」和「hill-climbing machine」;10 月发布医疗诊断系统 MAI-DxO(论文发在 Science)。<span class="tag ok">一手</span></li>
+<li><b>研究院</b>:这一个月 Self-HPO、HarnessMM、Épi 都是 harness / 研究 agent 方向;Eric Horvitz 也参与了「智能爆炸」那篇论文。<span class="tag ok">一手</span></li>
+<li><b>组织变化</b>:研究院的 AI Frontiers(约 50 人,做过 AutoGen)9 月并入 MAI,联合创始人 John Langford 11 月离职,公开批评 MAI 只重规模、不重新方法。<span class="tag">二手 · Neowin</span></li>
+<li><span class="tag top">判断</span>短板:没有 AlphaEvolve 那样的「算法发现」托管服务;研究院的 RSI 论文和 Foundry 产品之间没有看到直接的连接。</li>
+</ul>
+<h4>AWS:评测和优化工具齐全,最大的 RSI 创业公司在这里</h4>
+<ul>
+<li><b>AgentCore optimization</b>(2026-05-04 预览,06-17 扩展):从生产轨迹里找出「静默失败」、用户意图和行为路径,自动给出 <b>system prompt 和工具描述</b> 的改进建议,打包成配置,先离线批量评测,再在真实流量上 <b>A/B 测试</b>,赢了才上线。<span class="tag ok">一手</span></li>
+<li><b>AgentCore Evaluations</b>(11-10 新文章):15 个内置评估器,再加托管运行的 DeepEval 和 AutoEval 评估器,轨迹级和会话级都能打分。<span class="tag ok">一手</span></li>
+<li><b>UAEF</b>(11-11):跨 LangGraph、Strands、AgentCore 等框架的统一评测,36 个指标 / 7 个维度,结果存 DynamoDB + S3,给下一轮改进用;电信、医疗、金融 12 家机构用过。<span class="tag ok">一手</span></li>
+<li><b>Recursive 选了 AWS</b>(2026-07-28):多年期 4.1 亿美元协议,AWS 是它自动 AI 研究系统的云服务商。目前最受关注的 RSI 创业公司的研究循环跑在 AWS 上。<span class="tag ok">一手 · Amazon 新闻稿</span></li>
+<li><b>Bedrock 上有 Claude</b>:METR 这次评估的就是 Anthropic,结论是 AI 正在明显加速它的研发;这家的模型能直接在 Bedrock 上用。</li>
+<li><span class="tag top">判断</span>短板:公开资料里没找到对标 AlphaEvolve 的托管「算法发现」服务;AWS 自己在 RSI 方向的研究声量比 Google、微软小。但可以用开源引擎(OpenEvolve、ShinkaEvolve)+ Bedrock + AWS Batch 搭出等价方案 —— <a href="../demo/">本场 demo</a> 就是这么做的。</li>
+</ul>
+<h4>放在一起看</h4>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>维度</th><th>Google Cloud</th><th>Microsoft Azure</th><th>AWS</th></tr>
+<tr><td>自动改 prompt / skill</td><td>AlphaEvolve + Harbor 改 skill(教程)</td><td>Foundry Agent Optimizer:指令、skill、模型</td><td>AgentCore optimization:system prompt、工具描述</td></tr>
+<tr><td>自动改代码 / 算法</td><td><b>AlphaEvolve 托管服务,已 GA</b></td><td>没有托管服务</td><td>没有托管服务,开源引擎 + Bedrock 自建</td></tr>
+<tr><td>上线前怎么验证</td><td>和基线同跑看差值 + 留出任务</td><td>留出回归集 + PR 人审 + 灰度</td><td>离线批量评测 + 线上 A/B</td></tr>
+<tr><td>大规模评测算力</td><td>Cloud Batch 扇出;Agent Compute Engine(待预览)</td><td>—</td><td>AgentCore Runtime;Batch / EC2 自建</td></tr>
+<tr><td>RSI 创业公司</td><td>Mirendil(1 亿美元+);GV 领投 Recursive</td><td>—</td><td><b>Recursive(4.1 亿美元)</b></td></tr>
+<tr><td>自研前沿研究</td><td>DeepMind:AlphaEvolve、SwarmEvolve</td><td>研究院 Self-HPO 等;MAI 偏规模</td><td>声量小</td></tr>
+</table></div>
+<p class="dim small">「—」表示这次在公开资料里没找到,不代表一定没有。</p>
+<p class="note">从投资人的角度看这场竞争(谁投了谁、融资有多少流回哪朵云),见 <a href="../capital/">跟着算力的钱走 · RSI 的资本视角</a>。</p>
+<h4>给 SA 的打法 <span class="tag top">判断</span></h4>
+<ul>
+<li><b>别和 AlphaEvolve 比「谁的进化引擎更强」</b>,要讲「验证和闭环」:AgentCore 的离线评测 + 线上 A/B,正好对上「能自我改进 ≠ 能自我验证」。</li>
+<li><b>模型选择</b>:Bedrock 上能用 Claude 和多家模型,评测时同一套任务换模型对比很方便。</li>
+<li><b>标杆案例</b>:Recursive 把自动 AI 研究跑在 AWS 上,这是目前最有说服力的「RSI 跑在哪」的答案。</li>
+<li><b>遇到客户问 AlphaEvolve</b>:用开源 ShinkaEvolve / OpenEvolve + Bedrock + AWS Batch 演示同样的循环,评测费用可以用 Spot 压下来(本场测算里评测占一轮成本的 97.7%)。</li>
+</ul>
+</div></section><section class="chapter" id="c8"><div class="chead"><span class="cn">第 8 章</span><h2>资本视角:跟着算力的钱走</h2><span class="from">原页面:<a href="../capital/">资本视角</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>一级市场用来看「钱和算力流向哪里」,<mark>估值是押注,不是技术证据</mark>。</li><li>卖算力的人一边投钱、一边用算力合同收回来:Recursive 约 63% 的融资锁进 AWS,Mirendil 种子轮约一半给了 Google Cloud。</li><li>按家数 Google 在 RSI 早期实验室领先;按已披露金额,AWS 的 Recursive 是最大单笔。</li></ul></div><div class="blk" id="capital-why">
+<h3>⓪ 为什么要看一级市场</h3>
+<p><b>一级市场的数据,用来看「钱和算力流向哪里」,不用来判断「技术到了哪一步」。</b></p>
+<h4>有意义的地方</h4>
+<ul>
+<li><b>早期信号</b>:投资人做过技术尽调、看过内部 demo,才会下几亿到十几亿美元的单。半年里约 10 家实验室拿了几十亿美元,说明顶级投资人真的相信「AI 帮着造 AI」这条路。</li>
+<li><b>会直接变成算力需求</b>:这些公司融资后第一件事,是把大部分钱锁进一家云。一级市场的融资,几个月后就是云厂商的合同。</li>
+<li><b>暴露云厂商的打法</b>:谁「投资 + 算力」一起给,谁只给算力,一看就清楚。</li>
+<li><b>告诉我们什么不值钱</b>:卖通用 agent 自我优化的小公司融不到大钱,因为大厂已经把这一层做成了产品(见 <a href="../landscape/#cloud">RSI 全景 ③</a>)。</li>
+</ul>
+<h4>要小心的地方</h4>
+<ul>
+<li><b>估值 ≠ 技术进展</b>:几十亿美元的估值买的多是团队和「万一先做到」的可能;公开成绩几乎都是公司自报。</li>
+<li><b>数据不全、口径乱</b>:很多数字不公开,媒体之间互相矛盾。讲趋势可以,算精确数字不行。</li>
+<li><b>受热潮影响大</b>:现在正是「RSI 是新的 AGI」的热潮,一年后可能有一部分公司转向或被收购。</li>
+</ul>
+<p>所以这一页的讲法是:<b>谁融了钱 → 钱锁进了哪朵云 → 这些公司需要什么</b>。估值只当「押注」,不当「证据」。</p>
+</div><div class="blk" id="capital-loop">
+<h3>① 钱是怎么转圈的</h3>
+<ul>
+<li><b>芯片商几乎每家都投</b>:有 NVIDIA 参与的轮次,占 2026 年全球 VC 金额的 <b>27.2%</b>(2025 年是 7.1%)。<span class="tag ok">一手 · PitchBook</span></li>
+<li><b>融资后马上签算力合同</b>:Recursive 融资约两个半月后,和 AWS 签了 4.1 亿美元多年协议;Mirendil 种子轮后 6 周,和 Google Cloud 签了 1 亿美元以上。<span class="tag ok">一手 · Amazon 新闻稿 / TechCrunch</span></li>
+<li><b>投资方常常就是算力卖家</b>:Google 投了 Mirendil、Ineffable、Discovery Loop(Alphabet),这几家的算力也在 Google Cloud。<span class="tag ok">一手</span></li>
+<li><b>头部实验室也一样</b>:Amazon 共投 Anthropic 约 180 亿美元,Google 约 333 亿美元;Anthropic 对两家都有长期 take-or-pay(不管用没用都要付)算力承诺,AWS 这一份约 1100 亿美元。<span class="tag ok">一手 · Reuters</span> <span class="tag">承诺金额:二手解读 S-1</span></li>
+</ul>
+<p class="dim small">这种「卖家先投钱、买家再用钱买卖家的东西」叫<b>循环融资</b>。有真实终端需求时是正常的供应商融资;需求一停,就会「股权缩水 + 合同违约」一起来(Morningstar 的看法)。</p>
+</div><div class="blk" id="capital-map">
+<h3>② 资本地图:谁投了谁,算力在哪</h3>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>公司</th><th>最近融资 / 估值</th><th>主要投资方</th><th>算力伙伴</th><th>投资方 = 算力卖家?</th></tr>
+<tr><td>Recursive</td><td>6.5 亿美元 @ 46.5 亿</td><td>GV、Greycroft 领投;NVIDIA、AMD Ventures</td><td><b>AWS</b>(4.1 亿,不含投资)</td><td>部分:芯片商入股;AWS 不入股</td></tr>
+<tr><td>Mirendil</td><td>种子 2 亿 @ 10 亿;A 轮 10 亿(11-12,估值未披露)</td><td>a16z、Kleiner Perkins、Clearlake;Google、NVIDIA</td><td><b>Google Cloud</b>(1 亿+)</td><td>是</td></tr>
+<tr><td>Discovery Loop</td><td>首轮未公布;报道在谈约 500 亿估值</td><td>Radical、Khosla 领投;Alphabet 等</td><td>Google(报道)</td><td>是</td></tr>
+<tr><td>Ineffable</td><td>种子 11 亿 @ 51 亿(分两档定价)</td><td>Sequoia、Lightspeed;NVIDIA、Google、英国主权 AI 基金</td><td><b>Google Cloud</b></td><td>是</td></tr>
+<tr><td>Core Automation</td><td>Form D 已售 4.32 亿</td><td>Accel、NVIDIA 等</td><td><b>Nebius</b></td><td>间接(NVIDIA 也投 Nebius)</td></tr>
+<tr><td>Ricursive</td><td>A 轮 3 亿 @ 40 亿</td><td>Lightspeed 领投;Sequoia、NVentures</td><td>未查到</td><td>芯片商入股</td></tr>
+<tr><td>Sakana AI</td><td>B 轮约 2 亿 @ 约 27 亿</td><td>MUFG、Google、Citi 等日本大企业</td><td>Sakura、Google Cloud、Modal</td><td>部分</td></tr>
+<tr><td>超衍、超进化、无界进化(中国)</td><td>天使 / Pre-A,单笔数亿元人民币</td><td>美元基金 + 中关村、深创投、上海未来产业基金等国资</td><td>未公开</td><td>否</td></tr>
+</table></div>
+<p class="dim small">数字来自公司公告和 TechCrunch、Bloomberg、BI、Reuters、Forbes 等报道;估值有冲突的取公司或首发报道口径。</p>
+</div><div class="blk" id="capital-flow">
+<h3>③ 融到的钱有多少流回了云</h3>
+<ul>
+<li><b>Recursive</b>:4.1 亿 ÷ 6.5 亿 ≈ <b>63%</b> 锁进 AWS。</li>
+<li><b>Mirendil</b>:种子轮约 <b>一半</b> 给了 Google Cloud(TechCrunch 原话「roughly half」)。</li>
+<li><b>粗估</b>:RSI 早期实验室首轮的 <b>50%–65%</b>,一年内会以算力合同锁给某一朵云。<span class="tag top">判断</span></li>
+</ul>
+<p>原因很简单:这类公司的核心成本就是实验算力。Recursive CEO Socher 的说法是「看 agent 数,不看人数」—— 钱主要买算力,不买人。<span class="tag ok">一手 · TechCrunch</span></p>
+</div><div class="blk" id="capital-value">
+<h3>④ 没有收入,估值靠什么撑</h3>
+<ul>
+<li><b>人头价</b>:估值 ÷ 研究员人数,头部新实验室约每人 1.5 亿到 6 亿美元,和 Anthropic 同一个量级 —— 差别是 Anthropic 有收入。<span class="tag top">粗算</span></li>
+<li><b>分档定价</b>:同一轮钱分几次进、价格不同,新闻标题只报高的那个。Ineffable 两档价格相差几十倍(Forbes 报道约 70 倍,英国 FOI 文件约 52 倍,口径不一)。战略投资方(芯片商、云)对价格不敏感,因为投资会变成它们的收入,常出现在高价档。</li>
+<li><b>「先做成 RSI」的期权</b>:跟投 Recursive 的 USVC 直接写:「我们主要是按『如果它的判断是对的』来估这笔投资。」<span class="tag ok">一手</span></li>
+<li><b>互相对标</b>:几家新实验室的估值互相当参照。Menlo Ventures 的 Venky Ganesan 称之为「反身性」—— 上一轮价格成了下一轮的证据。</li>
+</ul>
+<h4>投资人怎么说</h4>
+<ul>
+<li>看多 —— Kleiner Perkins:「第一次看到模型在做有意义的 AI 研究。不是帮忙,是在做。」GV:「AI 是代码,现在 AI 会写代码。」a16z:「结构上必须有一家独立公司」(大厂条款不让客户用其服务训练竞品)。中关村科学城基金:「RSI 是通往下一代 AI 范式的关键路径。」<span class="tag ok">一手</span></li>
+<li>保留 —— NEA:AI 实验室私有估值 93.6% 集中在 4 家,「这不是一个市场,而是四个名字」。Leonis Capital:2024 年以来 119 家实验室拿了 943 亿美元,只有 16 家披露收入。FutureSearch:「押新实验室的人,其实不相信 RSI 会很快通吃。」<span class="tag ok">一手</span></li>
+</ul>
+</div><div class="blk" id="capital-exit">
+<h3>⑤ 怎么退出</h3>
+<ul>
+<li><b>IPO</b>:Anthropic 的招股书第一次把 RSI 同时写成<b>护城河</b>(「闭合回路是最重要的结构性优势之一」)和<b>风险因素</b>(可能很快达到「AI 显著加速研发」的门槛)。11-18 定价、11-19 上市。<span class="tag ok">一手 · S-1 / CNBC / WIRED</span></li>
+<li><b>「授权 + 挖人」</b>:大厂不买整家公司,而是付授权费、挖走核心团队。NVIDIA 付 Poolside 60 亿美元授权费并挖走 109 人;按人算约每人 5500 万美元,远低于新实验室每人上亿的入场价 —— 这个「底线」只保护最早、最便宜进场的投资人。<span class="tag top">粗算</span></li>
+<li><b>买家正变成芯片公司</b>:AMD 全股票收购 World Labs,NVIDIA 收购 Hugging Face。<span class="tag ok">一手</span></li>
+<li><b>两头下注</b>:VC 买新实验室,押的是「RSI 不会太快被头部通吃」;芯片商和云不管谁赢都卖算力;公众买 Anthropic,押的是「头部先通吃」。<span class="tag top">判断</span></li>
+</ul>
+</div><div class="blk" id="capital-public">
+<h3>⑥ 二级市场怎么看</h3>
+<ul>
+<li>公开市场<b>不单独给 RSI 定价</b>,它被打包在「AI 资本开支能不能收回」这一个问题里。没有查到大投行以 RSI 为题的正式研报。<span class="tag top">判断</span></li>
+<li>11 月背景:中期选举后纳指进入修正(11-05 单日跌 5.5%),NVIDIA 11-12 宣布 CEO 交接。<span class="tag ok">一手 · Reuters / NVIDIA</span></li>
+<li>NVIDIA 11-17 财报:季度收入 <b>1158 亿美元</b>,同比 +103%,数据中心 1076 亿;超出预期,盘后小涨,CoreWeave、Nebius 跟涨。<span class="tag ok">一手 · NVIDIA / CNBC</span></li>
+<li>CoreWeave、Nebius 这类 GPU 云收入涨得快,但靠债和客户预付扩张,波动最大。<span class="tag ok">一手 · 财报报道</span></li>
+</ul>
+</div><div class="blk" id="capital-geo">
+<h3>⑦ 各地的钱</h3>
+<ul>
+<li><b>美国</b>:顶级 VC + NVIDIA / AMD / Google;前三季度 AI 占美国 VC 金额 82.7%。<span class="tag ok">一手 · PitchBook</span></li>
+<li><b>英国</b>:主权 AI 基金和 British Business Bank 投了 Ineffable,引发「纳税人是不是在高价档进场」的争论。模式是「美国 VC 定价 + 本国基金背书 + 美国的云和芯片」。</li>
+<li><b>日本</b>:Sakana 的股东是日本大银行和大企业,加 Google 和美国 VC。</li>
+<li><b>中国</b>:2026 年 7–10 月公开的 RSI 方向融资合计近 6 亿元人民币,全是种子 / 天使轮,出钱的多是美元基金 + 京深沪三地国资。原因:引导基金和国企是 LP 的主力、招商考核、国产算力。投资人的说法是「对标海外数十亿美元,国内数亿元反而便宜」。<span class="tag ok">一手 · 投中网 / 经济观察报 / 虎嗅</span></li>
+</ul>
+</div><div class="blk" id="capital-risk">
+<h3>⑧ 资本的风险</h3>
+<ul>
+<li><b>监管</b>:美国众议员 Khanna 计划提出法案,在获批前禁止 RSI,要求许可证、驻场审计、kill switch;另有两党的 FRONTIER Act。名字里带「Recursive」的公司会有标题风险。<span class="tag ok">一手</span></li>
+<li><b>集中</b>:估值和合同都集中在少数几家。</li>
+<li><b>算力锁定</b>:首轮一半以上的钱进了一家云的长约,收入不及预期就很难脱身。</li>
+<li><b>验证缺口</b>:成绩多为公司自报;Mirendil 的 A 轮公告只引用自己的测试;METR 评估 Anthropic 时关键证据被涂黑。</li>
+<li><b>循环融资断裂</b>:芯片商换帅、GPU 云高负债,都可能让这个圈转慢。</li>
+<li><b>研究被资本节奏推着走</b>:12–18 个月就要涨估值的钱,会逼实验室把不成熟的研究包装成产品。</li>
+</ul>
+</div><div class="blk" id="capital-score">
+<h3>⑨ 云厂商的比分 <span class="tag top">判断</span></h3>
+<ul>
+<li><b>按家数</b>:RSI 早期实验室里,Google 约 4–5 家,AWS 1 家(Recursive),Nebius 1–2 家,Microsoft 暂未发现。</li>
+<li><b>按已披露金额</b>:AWS 和 Recursive 的 4.1 亿美元是这个赛道最大的公开单笔;Google 只披露了 Mirendil「1 亿以上」。</li>
+<li><b>按头部实验室</b>:Anthropic 对 AWS 和 Google 的承诺基本是一个量级。</li>
+<li><b>打法差别</b>:Google 在种子 / A 轮就「股权 + 云单 + 最新芯片」一起给;AWS 在 RSI 早期公司目前是「只给算力」。但 GV 领投了 Recursive,算力却给了 AWS —— <b>股权不等于云单,交付能力和合同条款才是关键</b>。</li>
+<li><b>对 SA 的含义</b>:盯住融资新闻,实验室通常在融资后 1–3 个月内选定算力伙伴;它们要的是大量短小并行的实验算力、最新 GPU 或其他加速芯片、毫秒级沙箱、评测算力和实验记录存储(见 <a href="../landscape/#practice">RSI 全景 ④</a>)。</li>
+</ul>
+</div></section><section class="chapter" id="c9"><div class="chead"><span class="cn">第 9 章</span><h2>行业实践:谁在用,怎么用</h2><span class="from">原页面:<a href="../landscape/#practice">RSI 全景 ④</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>实验室内部:AI 写大部分代码,但改动仍要人审。</li><li>企业:用在「能打分」的问题上 —— 算法优化、agent 质量、预测、供应链。</li><li>大家收敛出的做法:同时跑基线、留出集只用一次、能力底线写死、成本算进分数、人留在上线这一步。</li></ul></div><div class="blk" id="landscape-practice">
+<h3>④ 行业实践:谁在用,怎么用</h3>
+<h4>实验室内部:AI 写 AI 的代码</h4>
+<ul>
+<li>Google DeepMind:生产代码超过 75% 由 AI 写,但代码改动仍要人审。<span class="tag">二手</span></li>
+<li>OpenAI:研究员整天开多个编码 agent 并行干活;研究方向、取舍、是否上线仍由人决定。<span class="tag ok">一手</span></li>
+<li>OpenAI + Scripps 等:几千个 GPT-Rosalind agent 并行分析几百万个小鼠脑细胞的数据,32 分钟完成,人工估计要几个月到一年。<span class="tag ok">一手</span></li>
+</ul>
+<h4>企业:用在「能打分」的问题上</h4>
+<ul>
+<li>算法和代码优化:Schrödinger(分子模拟约 4 倍提速)、BASF、JetBrains、Kinaxis(供应链)用 AlphaEvolve。<span class="tag ok">一手</span></li>
+<li>agent 质量:电信、医疗、金融 12 家机构用 UAEF 在上线前比较 agent 版本。<span class="tag ok">一手</span></li>
+<li>医疗:微软 MAI-DxO 在急诊常见病例上的诊断准确率是医生的 1.7 倍(微软自己的评测)。<span class="tag ok">一手</span></li>
+</ul>
+<h4>大家收敛出来的做法</h4>
+<pre class="rs-f">生产轨迹 ──→ 找失败 / 抽样成数据集(人复核标注)
+          ──→ 生成候选改动(prompt、skill、工具、代码、模型选择)
+          ──→ 和基线同时跑同一批任务,看差值
+          ──→ 留出集复查(搜索过程从没见过的题)
+          ──→ 能力底线 + 成本上限 都过了才算赢
+          ──→ PR 人审 / 灰度 / A/B ──→ 上线,成为新基线</pre>
+<p>落地清单(来自 Google 教程、微软参考方案、AWS 文章、NVIDIA SoL-Pi 和本场 demo):</p>
+<ul>
+<li><b>先有评测,再谈自我改进</b>。没有可信的分数,优化器只会学会刷分。</li>
+<li><b>候选和基线同时跑</b>,比差值,不比绝对分 —— agent 分数噪声很大,Google 发现延迟就能解释大部分分差。</li>
+<li><b>留出集只用一次</b>,结果不回流给优化器。</li>
+<li><b>能力底线事先写死</b>,被优化的一方看不到、改不了;防止「早收工、跳过验证」这种省 token 的作弊。</li>
+<li><b>成本也算进分数</b>:评测是最贵的部分。</li>
+<li><b>人留在上线这一步</b>:三家产品都把「开 PR / 人审 / 灰度」放在最后。</li>
+</ul>
+</div></section><section class="chapter" id="c10"><div class="chead"><span class="cn">第 10 章</span><h2>Argus 在哪里</h2><span class="from">原页面:<a href="../argus/">业务大图 · 三、四</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>Argus 不做模型,也不重造进化引擎;位置在 <mark>④执行 + ⑤门禁 + ⑥上线 + 隔离 + 回放</mark>。</li><li>和 OpenEvolve 是互补:它回答「怎么找到更好的版本」,Argus 回答「怎么证明真的更好并安全用起来」。</li><li>定位图的右上角(改进对象是 AI 自己、验证又严格)目前很空。</li></ul></div><div class="blk bp"><h3>三、Argus 在哪里</h3><div class="lead">Argus 不做模型,也不重造进化引擎;它的位置是 <b>④执行 + ⑤门禁 + ⑥上线 + 隔离 + 回放</b> 这一段 —— 一个「带严格门禁的 AI 研发试验场」</div><div class="two" style="margin-top:12px">
+<div class="box">
+<h3>定位图</h3>
+<div class="map">
+<div class="ax-y">↑ 验证更严格(held-out、统计、预算、审批)</div>
+<div class="zone"><span>目前很空的位置</span></div>
+<div class="dot" style="left:16%;top:86%">多 agent 写软件</div>
+<div class="dot" style="left:16%;top:66%">进化引擎</div>
+<div class="dot" style="left:26%;top:52%">AlphaEvolve + Harbor</div>
+<div class="dot a" style="left:18%;top:28%">Argus Swarm</div>
+<div class="dot" style="left:50%;top:62%">提示词优化</div>
+<div class="dot" style="left:52%;top:36%">云厂商托管优化</div>
+<div class="dot a plan" style="left:52%;top:14%">Argus Evolve</div>
+<div class="dot" style="left:78%;top:74%">自修改 agent</div>
+<div class="dot" style="left:84%;top:56%">自动科研</div>
+<div class="dot a plan" style="left:84%;top:16%">Argus 打通后</div>
+<div class="ax-x"><span>外部产品 / 代码</span><span>别的 agent</span><span>AI 自己</span></div>
+</div>
+<div style="font-size:11.5px;color:var(--muted);line-height:1.6">横轴:改进的对象。纵轴:验证的严格程度。实心 = 已实现,虚线 = 方案。位置是定性判断。</div>
+</div>
+<div class="box">
+<h3>看图要点</h3>
+<ul>
+<li><b>每个流派管的是不同的块</b>:进化引擎和提示词优化管 ③,多 agent 框架管 ④,云厂商管 ⑤⑥,评测基础设施管 ④⑤ 的「跑起来」。</li>
+<li><b>③ 最拥挤,⑤ 最稀缺</b>:大多数框架优化的是「你给的分数」,很少同时处理噪声、预算和捷径。调研里只有 AgentCore 明确写了报告统计显著性;没有一家把「预算匹配基线」当门禁。</li>
+<li><b>隔离普遍偏弱</b>:多数开源项目只有 Docker 或一段「会执行不可信代码」的警告;「沙箱里没有凭证 + 模型调用走签名记账代理」在调研里没看到别家这样做。</li>
+<li><b>多 agent 协作的思路不同</b>:MetaGPT / ChatDev 是预设角色流程,Cursor 和 Claude Code 给任务树或任务列表,Argus 只给空数据库让团队自己设计 —— 这是它的实验特点。</li>
+<li><b>Argus 的定位</b>:④⑤⑥ + 隔离 + 回放的集成;③ 借用开源引擎(OpenEvolve、ShinkaEvolve、GEPA 等,注意许可证);和云厂商托管优化最接近,但门禁更严、而且能把自己的团队当作改进对象(右上角)。</li>
+</ul>
+</div>
+</div></div><div class="blk bp"><h3>四、Argus 和 OpenEvolve 的区别</h3><table class="vs">
+<thead><tr><th>对比项</th><th>OpenEvolve</th><th>Argus</th></tr></thead>
+<tbody>
+<tr><td>覆盖哪几块</td><td>核心是 <b>③ 生成与选择改动</b>;① 打分函数和 ② 可改的代码块由用户提供;④⑤⑥ 基本不管</td><td class="ar">核心是 <b>④ 执行、⑤ 评测与晋升门禁、⑥ 上线与治理</b>,加上隔离和回放;③ 借用开源引擎</td></tr>
+<tr><td>改什么</td><td>一段代码(用 EVOLVE-BLOCK 标记),支持多种语言</td><td class="ar">agent 的提示词、工具描述、skills(清单规定可改范围);之后还要改自己团队的工作方式</td></tr>
+<tr><td>怎么生成和挑选</td><td>多个模型生成 diff;MAP-Elites + 岛屿种群、分层评测、错误反馈、全部可设种子复现</td><td class="ar">Claude Code 读失败轨迹后修改,必须写明依据和风险;选父代方法简单,计划借用引擎</td></tr>
+<tr><td>怎么算「更好」</td><td>你给的打分函数分数更高</td><td class="ar">要证明三件事:不是运气(重复跑出噪声分布)、不是多花钱(预算匹配基线)、不是钻空子(proposer 看不到的 held-out + 逐条查退化);最后人工批准</td></tr>
+<tr><td>在哪里跑</td><td>默认在用户自己可信的环境;提供 Docker 镜像,文档未讲不可信代码的隔离</td><td class="ar">沙箱里没有凭证;模型调用走代理签名、按 agent 记账;守卫和判分双容器防作弊</td></tr>
+<tr><td>单个还是团队</td><td>一个搜索循环</td><td class="ar">还有 Swarm:一群 agent 自己组织起来写软件</td></tr>
+<tr><td>上线</td><td>输出最好的程序,由用户自己处理</td><td class="ar">审批、版本、一键回滚;全程可回放</td></tr>
+<tr><td>成熟度</td><td>成熟开源项目,Apache 2.0,v0.4.1(2026-11-02),约 7.8k 星,被很多论文引用</td><td class="ar">私有原型:Swarm 已实测,Evolve 只有方案</td></tr>
+</tbody>
+</table><div class="vs-sum"><b>两者不是二选一,而是互补:</b>OpenEvolve 回答「怎么找到更好的版本」,Argus 回答「怎么证明它真的更好,并且安全地用起来」。合理的分工是<b>引擎借用 OpenEvolve,门禁、隔离和回放用 Argus 自己的</b>。</div></div></section><section class="chapter" id="c11"><div class="chead"><span class="cn">第 11 章</span><h2>我的判断(个人观点)</h2><span class="from">原页面:<a href="../view/">我的判断</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>核心论点:RSI 改变的是「改进」的成本结构 —— 受限于评测器质量和评测算力。</li><li><mark>价值迁移到评测器</mark>;算力形状变成评测长尾;落地顺序由验证成本决定;平台竞争在可审计的改动和中立。</li><li>7 条带判定标准的预测,2027-05 中期回顾,2027-11 打分。</li></ul></div><div class="blk" id="view-bias">
+<h3>先说证据的局限</h3>
+<ul>
+<li><b>企业案例有幸存者偏差</b>:BASF、Coolblue、FM Logistic 这些数字都是客户和 Google 自己公布的成功案例。失败、放弃的项目不会被公开,所以真实的平均提升很可能比公开案例低。</li>
+<li><b>前沿实验室的关键数据大多不公开</b>:METR 评估 Anthropic 时,最关键的证据被涂黑了;各家「AI 写了多少代码」都是自报。</li>
+<li><b>评测成本的数字样本很少</b>:本页反复用到的「一轮约 856 美元、97.7% 花在评测」来自本场 demo 的一次测算,不是行业统计。方向我有把握,具体比例因场景而异。</li>
+</ul>
+</div><div class="blk" id="view-t1">
+<h3>判断 1:价值正在从「模型」迁移到「评测器」</h3>
+<ul>
+<li><b>机制</b>:在「冻结模型、自动改代码 / harness」的循环里,三个部件有两个可以替换 —— 生成模型可以换(Gemini、Claude、开源),进化引擎是开源的(OpenEvolve、ShinkaEvolve 和 AlphaEvolve 结构相同)。<b>换不掉的是客户自己的评测器、留出集和历史轨迹</b>,因为它们写下了「这家公司认为什么是更好」。</li>
+<li><b>长期看也是这样</b>:AI4AI 综述把控制权分三步交给 AI —— 先交出搜索方向,再交出搜索空间,<b>最后才交出评测信号</b>。今天所有产品都停在评测权还在人手里。所以未来几年,人的杠杆会集中在「定义什么是好」上。</li>
+<li><b>证据</b>:AlphaEvolve 官方设计是「生成在 Google Cloud,评测在客户那边」,并明说「不运行你的代码」;BASF 项目的关键一步,是先用三年历史数据定义「模拟和现实有多接近」这个分数;JetBrains:「工程师仍然掌握基准、评审和发布决定。」</li>
+<li><b>对 SA 的意义</b>:客户粘性不在「用谁的模型生成」,而在<b>评测在哪里跑、轨迹和留出集存在哪里</b>。帮客户把评测器、数据集、轨迹建在他自己的账号里,比推任何一个模型都持久。SA 最值得练、也最值得教给客户的能力,是<b>设计评测</b>:选指标、做留出集、防刷分、算评测成本。</li>
+<li><b>我会错,如果</b>:平台开始提供「行业标准评测集」并让客户依赖(评测器被平台化);或者 AI 能可靠地自己定评测(AI4AI 的 L3)—— 那就是真正的 RSI,本页大部分判断都要重写。</li>
+</ul>
+</div><div class="blk" id="view-t3">
+<h3>判断 3:算力需求的形状在变 —— 从「训练峰值」到「评测长尾」</h3>
+<ul>
+<li><b>机制</b>:每一轮进化都要把几十到几千个候选各跑一遍。这些任务<b>小、短、高度并行、可以被打断、每个都要隔离</b>,而且很多是 CPU 任务(编译、仿真、跑测试)。冷启动时间、按秒计费、Spot 能不能拿到、隔离够不够强,会比「有多少张 GPU」更重要。</li>
+<li><b>证据</b>:Google 的 skill 优化一次搜索就跑了「几千次 agent 试验」,每次一个容器;Coolblue 用了约 200 轮迭代;Google 专门做了给 agent 用的 microVM 服务(Agent Compute Engine,强调「评测扫描不等基础设施」),又把 AlphaEvolve 接到 Cloud Batch 扇出几百个评测。沙箱成了单独的生意(据报 Modal 的沙箱业务年化约 3 亿美元,<span class="tag">二手</span>)。</li>
+<li><b>一个反直觉的地方</b>:RSI 第一批商业成果几乎都是<b>省算力</b>(Borg 回收 0.7%、Gemini 训练快 1%、FlashAttention 快 32.5%、HarnessMM 每题 token 少 30%–88%)。单个任务更便宜了,但历史上效率提升往往带来更多使用。所以对云来说,它既减少某些负载的账单,又创造新的评测负载。</li>
+<li><b>对 SA 的意义</b>:RSI 类负载的架构评审,要问的不是「训练集群多大」,而是「一万个十秒钟的隔离任务怎么调度、多少钱、多快起来」。现有的小粒度原语(轻量虚拟机、Batch、Spot、无服务器)是隐藏的竞争力。主动帮客户把某些负载做省,比等竞争对手来做好。</li>
+<li><b>我会错,如果</b>:评测越来越多地由「学出来的验证模型」完成(在 GPU 上打分,不真跑代码),需求形状会回到 GPU 推理。</li>
+</ul>
+</div><div class="blk" id="view-t4">
+<h3>判断 4:落地顺序由「验证的成本和速度」决定,不是由「AI 在哪最聪明」决定</h3>
+<ul>
+<li><b>机制</b>:一个问题能不能被自动改进,看两件事:<b>打一次分要多少钱</b>、<b>多久能知道结果</b>。大致排序:kernel / 编译(秒级、精确)→ 数学(形式化)→ 调度、路径、排产(有仿真器)→ 预测(要回测、要等真实数据)→ 产品体验(几周、噪声大)。</li>
+<li><b>证据</b>:Jeff Dean 说「无限加速不现实」,因为实验需要物理时间;AlphaEvolve 的企业案例几乎都是有仿真或回测的问题(BASF 供应链孪生、FM Logistic 路径、Kinaxis 和 Coolblue 预测)。</li>
+<li><b>推论</b>:<b>仿真器和数字孪生是前置条件</b>。BASF 的第一步不是优化,是建一个能和历史数据对上的数字孪生。所以 RSI 会拉动仿真和 HPC 需求 —— Google 在超算大会 SC26 上推 AlphaEvolve,就是这个信号。</li>
+<li><b>对 SA 的意义</b>:挑客户先问「你有没有仿真器 / 回测 / 自动化测试」。没有的,第一个项目是帮他建仿真或评测,而不是直接上优化。这也是 HPC 和数据平台最自然的切入点。</li>
+<li><b>我会错,如果</b>:基础模型能可靠地「预测实验结果」,替代真实仿真。目前这类预测还不可靠。</li>
+</ul>
+</div><div class="blk" id="view-t5">
+<h3>判断 5:平台竞争不在「引擎」,而在「可审计的改动」和「中立」</h3>
+<ul>
+<li><b>机制 1 —— 企业买的是治理</b>:企业怕的不是改得不够好,而是<b>改坏了不知道、出了事说不清</b>。所以三家产品都把循环包装成人在环路:离线评测、A/B、开 PR 给人审、回归集把关、灰度上线。真正的产品是改动的治理:版本、来源、谁批准的、怎么回滚。</li>
+<li><b>机制 2 —— 中立是结构性优势</b>:前沿实验室的条款不让客户用其服务训练竞品(a16z 投 Mirendil 的理由就是「结构上必须有一家独立公司」)。同理,不绑定自家模型的平台更适合让第三方跑 RSI 循环。</li>
+<li><b>证据</b>:微软参考方案「生产轨迹 → 人工标注 → 优化 → PR 人审 → 留出回归集 → 灰度」;AWS AgentCore「离线批量评测 + 线上 A/B,赢了才上线」;Recursive 把研究循环放在 AWS。<b>反证</b>:Google Cloud 11 月已经说自己是唯一同时提供三家主要闭源模型的大云,中立在被追平;但托管 AlphaEvolve 仍只用 Gemini。</li>
+<li><b>对 SA 的意义</b>:不要讲成 AI 新功能,要讲成<b>「给 agent 和算法的 CI/CD」</b>,接进客户已有的代码评审、审批和变更管理。中立要讲具体:同一套评测、同一批任务,换模型对比只改一个参数;评测和轨迹留在客户账号里。</li>
+<li><b>我会错,如果</b>:企业开始接受「无人审批的自动上线」,竞争会回到「谁的优化效果更好」;或者托管 AlphaEvolve 开放第三方模型,中立的差异消失。</li>
+</ul>
+</div><div class="blk" id="view-t6">
+<h3>判断 6:资本在给 RSI 的算力需求做看涨期权,对 SA 来说窗口短</h3>
+<ul>
+<li><b>机制</b>:新实验室融到的钱,相当大一部分会在一年内变成某一朵云的长期算力合同(Recursive 约 63%、Mirendil 种子轮约一半)。云签这些合同,等于押注「RSI 研究会持续消耗大量算力」。研究顺利,需求继续涨;不顺,公司会转向或被收购,合同会被重谈。</li>
+<li><b>证据</b>:Recursive 融资约两个半月后签下 AWS 4.1 亿美元多年协议;Mirendil 种子轮后 6 周签下 Google Cloud 1 亿美元以上。已披露的大单都是多年期、单一云。</li>
+<li><b>对 SA 的意义</b>:融资新闻就是需求信号,决定往往在融资后 1–3 个月内做出。<span class="tag top">推测</span>一旦评测和数据流水线建在某朵云上,迁移成本会很高,所以这个窗口接近一次性 —— 这一点我没有直接证据,是根据「评测器和轨迹是核心资产」(判断 1)推出来的。</li>
+<li><b>我会错,如果</b>:实验室普遍采用多云、可迁移的架构,或者把算力当纯商品随时换。</li>
+</ul>
+</div><div class="blk" id="view-against">
+<h3>反方论证:我可能完全错的两种情景</h3>
+<h4>情景 A:RSI 在企业里「熄火」</h4>
+<ul>
+<li><b>会怎样</b>:评测成本涨得比收益快(判断 2 的军备竞赛输了);大多数企业问题没有便宜的仿真器(判断 4 的门槛太高);公开案例之外的项目大多做不出可上线的提升。自动优化变成少数大公司、少数场景的工具,就像今天的运筹优化一样小众。</li>
+<li><b>早期信号</b>:2027 年的新案例仍集中在同一批明星客户;客户 PoC 停在评测阶段做不下去;托管服务的价格开始大幅下调却没带来更多案例。</li>
+<li><b>即使这样,什么还成立</b>:评测和仿真本身仍然有价值(质量保障、回归测试、变更治理);判断 1 和判断 4 在「没有 RSI」的世界里也大体成立。</li>
+</ul>
+<h4>情景 B:前沿实验室把一切吸走</h4>
+<ul>
+<li><b>会怎样</b>:如果头部实验室先做到接近全自动的 AI 研发,它们会把「自动优化」直接做进模型和 agent 里,作为免费功能;企业的 L2 工具和新实验室都失去意义,评测标准也由模型厂商来定。</li>
+<li><b>早期信号</b>:模型厂商的 API 里出现「自带自我优化」的 agent;Anthropic 上市后的披露显示内部已远超 2 倍加速;新实验室开始被大量收购或「授权 + 挖人」(见预测 5)。</li>
+<li><b>即使这样,什么还成立</b>:企业自己的评测器和数据仍然不能外包(判断 1);跑这些模型和评测的算力仍然需要云(判断 3)。变化最大的是判断 5 和判断 6。</li>
+</ul>
+</div><div class="blk" id="view-bets">
+<h3>可以被打分的预测(到 2027-11-18)</h3>
+<div class="tw" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="rs-t">
+<tr><th>#</th><th>预测</th><th>概率</th><th>判定标准</th></tr>
+<tr><td>1</td><td>微软或 AWS 至少一家推出托管的「进化式算法 / 代码优化」服务</td><td>65%</td><td>官方宣布(预览或正式版均可)一个服务:用户给种子代码和打分函数,服务用大模型迭代改代码。只改 prompt / skill 的不算。</td></tr>
+<tr><td>2</td><td>公开企业案例的提升仍以个位数到两位数百分比为主</td><td>75%</td><td>2027 年内 Google、微软、AWS 官方博客公布的自动优化客户案例里,超过一半的主要指标提升在 5%–25%,且不到四分之一声称「翻倍」以上。</td></tr>
+<tr><td>3</td><td>至少一家大云推出单独计费的 agent 评测沙箱 / 批量评测产品</td><td>70%</td><td>有独立的产品名和价格页,用途明确写着运行 agent 或代码评测的隔离环境。</td></tr>
+<tr><td>4</td><td>出现一次因自动优化「钻评测空子」导致的公开生产事故</td><td>55%</td><td>主流科技媒体(TechCrunch、The Verge、WIRED 等)或公司自己的事后报告中,明确说是自动优化 / 自我改进循环让指标变好但实际行为变差,并影响了真实用户。</td></tr>
+<tr><td>5</td><td>至少一家估值 40 亿美元以上的 RSI 新实验室被收购、被「授权 + 挖人」或明显转向</td><td>50%</td><td>样本为 Recursive、Mirendil、Discovery Loop、Ineffable、Core Automation、Ricursive;「明显转向」指公开宣布放弃自我改进作为主要方向。</td></tr>
+<tr><td>6</td><td>美国通过一部直接限制「自我改进 AI」的联邦法律</td><td>10%</td><td>参众两院通过并由总统签署;只是提案或委员会通过不算。</td></tr>
+<tr><td>7</td><td>有企业公开宣布在生产中采用「无人审批、自动上线」的自我改进循环</td><td>25%</td><td>非实验、非演示;公司官方说明改动不经人审即上线到真实用户。</td></tr>
+</table></div>
+<p class="dim small">这些是作者的主观概率,目的是让判断可以被检验。2027-05 做中期回顾,2027-11 正式打分并公开结果。</p>
+</div><div class="blk" id="view-unsure">
+<h3>我最没把握的地方</h3>
+<ul>
+<li><b>前沿实验室内部到底多快</b>:关键数据大多不公开。如果内部已经接近 L3,「企业停在 L2」的判断会很快过时。</li>
+<li><b>评测会不会被模型「学会」</b>:如果出现可靠的学习型验证器,判断 1、2、3 都要改。</li>
+<li><b>中国区</b>:本土 RSI 公司和大厂的算力、技术路线公开信息很少,相关判断主要靠推测。</li>
+</ul>
+<p class="dim small">欢迎指出哪条判断有问题,或者给出反例。</p>
+</div></section><section class="chapter" id="c12"><div class="chead"><span class="cn">第 12 章</span><h2>风险和接下来看什么</h2><span class="from">原页面:<a href="../landscape/#risk">RSI 全景 ⑤⑥</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>自我评判不可靠、刷分和泄漏、透明度不足、人在哪一步介入、监管提案。</li><li>接下来看:微软 / AWS 会不会推出托管的算法发现服务;评测算力和沙箱会不会成为单独的产品。</li></ul></div><div class="blk" id="landscape-risk">
+<h3>⑤ 风险和没解决的问题</h3>
+<ul>
+<li><b>自我评判不可靠</b>:有研究(如字节 Seed 的 Self-Developing Agents,见<a href="../#china">资料包 · 国内成果</a>)发现 agent 对自己「下一轮能不能变好」的判断几乎预测不了结果,必须靠外部验证器。</li>
+<li><b>刷分和泄漏</b>:优化器会找评测的漏洞,所以要隐藏题、换说法重考、泄漏审计。</li>
+<li><b>透明度</b>:最关键的证据(实验室内部的加速数据)大多不公开,METR 的评估里大部分证据被涂黑。</li>
+<li><b>人在哪一步介入</b>:SoL-Pi 论文自己也承认,开放循环里目标和实现的漂移,可能在人发现之前就已经积累。</li>
+<li><b>政策</b>:美国已有禁止自我改进 AI 的提案;OpenAI 呼吁建立「什么时候该慢下来或停下」的共同标准。</li>
+</ul>
+</div><div class="blk" id="landscape-trend">
+<h3>⑥ 接下来看什么 <span class="tag top">判断</span></h3>
+<ul>
+<li><b>自动改 prompt / skill 会变成标配</b>:「从轨迹自动改 prompt / skill」三家都有了,接下来拼的是评测质量和使用门槛。</li>
+<li><b>自动改代码 / 算法是下一个战场</b>:Google 有 AlphaEvolve,微软和 AWS 暂时没有对应的托管服务,看它们会不会补上。</li>
+<li><b>评测算力是新的卖点</b>:评测占了 RSI 的大部分成本,能便宜、安全、大规模地跑 agent 沙箱的云更有优势(Google 已经推出 Agent Compute Engine)。</li>
+<li><b>RSI 创业公司的算力订单</b>:Recursive 在 AWS、Mirendil 在 Google Cloud,这类订单会越来越多。</li>
+<li><b>要看的指标</b>:实验室公布的「完全交给 AI 的 PR 比例」、METR 这类第三方评估、Epoch 能力指数是否出现「一年猛涨」。</li>
+</ul>
+</div></section><section class="chapter" id="c13"><div class="chead"><span class="cn">第 13 章</span><h2>分享材料和 demo</h2><span class="from">原页面:<a href="../">RSI 资料包</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>两套幻灯片:9 月的 7 页版和 11 月的 22 页 v2(按 N 看讲稿)。</li><li>demo:冻结权重,只改检索代码,0.42 → 0.94;它是 L1 的 harness 自进化,还不是 RSI。</li></ul></div><div class="blk" id="hub-talk">
+<h3>这场分享</h3>
+<p>7 页幻灯片,约 10 分钟,面向 Solutions Architects。主线:<b>定义 → 达尔文哥德尔机 → 领域地图 → harness 级 RSI → AWS 上怎么跑 → 钱花在哪 → demo</b>。</p>
+<div class="rs-cards">
+<a class="rs-card" href="../slides/"><div class="k">幻灯片</div><div class="t">RSI · for SAs</div><div class="d">7 页,方向键翻页</div></a>
+<a class="rs-card" href="../slides/v2/"><div class="k">幻灯片 v2 · 2026-11</div><div class="t">RSI · 给 SA 的内部分享</div><div class="d">22 页:信号、定义、业务大图、验证、判断与落地;按 N 看讲稿</div></a>
+<a class="rs-card" href="../demo/play/"><div class="k">demo</div><div class="t">harness 自进化回放</div><div class="d">冻结权重,只改搜索代码:0.42 → 0.94 → 0.93</div></a>
+<a class="rs-card" href="../demo/papers/"><div class="k">论文</div><div class="t">demo 背后的论文</div><div class="d">AlphaEvolve、DGM、Shinka 等中文精读</div></a>
+<a class="rs-card" href="../landscape/"><div class="k">全景 · 2026-11</div><div class="t">领域进展 + 云厂商竞争</div><div class="d">前沿实验室、Google / 微软 / AWS、行业实践</div></a>
+<a class="rs-card" href="../capital/"><div class="k">资本视角 · 2026-11</div><div class="t">跟着算力的钱走</div><div class="d">谁投了谁、钱流回哪朵云、估值和退出</div></a>
+<a class="rs-card" href="../alphaevolve/"><div class="k">详解 · 2026-11</div><div class="t">AlphaEvolve 是什么</div><div class="d">怎么工作、做成了什么、企业怎么用、和 RSI 的关系</div></a>
+<a class="rs-card" href="../ai4ai/"><div class="k">论文解读 · 2026-11</div><div class="t">一文读懂 AI4AI</div><div class="d">方向、空间、评测三个决定和 L0–L3 控制梯子</div></a>
+<a class="rs-card" href="../argus/"><div class="k">业务大图 · 2026-11</div><div class="t">AI 自动研发:各框架和 Argus 的位置</div><div class="d">六块业务能力 · 7 类框架的思路和覆盖 · 定位图</div></a>
+<a class="rs-card" href="../view/"><div class="k">判断 · 2026-11</div><div class="t">站在 SA 的角度看 RSI</div><div class="d">6 条判断 + 反方论证 + 客户算账 + 可打分的预测(个人观点)</div></a>
+</div>
+</div></section><section class="chapter" id="c14"><div class="chead"><span class="cn">第 14 章</span><h2>延伸资料:视频和国内研究</h2><span class="from">原页面:<a href="../#videos">RSI 资料包 ④⑤⑥</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>推荐视频(Schmidhuber、DGM、ShinkaEvolve、Kirsch 等),以及国内的 harness 自进化和自我验证研究。</li><li>国内主力同样在 harness / agent 层和好验证的领域(数学、代码、芯片)。</li></ul></div><div class="blk" id="hub-videos">
+<h3>④ 推荐视频</h3>
+<p class="note">下面的判断来自视频的频道、标题、简介和开头字幕,<b>视频本身没有完整看过</b>。YouTube 链接都已核对能打开;B 站在整理用的机器上打不开,只核对了标题、UP 主和日期。</p>
+<h4>如果只看三个</h4>
+<ol>
+<li><a href="https://www.youtube.com/watch?v=voczu4I3_xQ" rel="noopener" target="_blank">Gödel Machine — Jürgen Schmidhuber</a> <span class="dim small">· Serious Science · 12 分钟</span> —— 发明者本人讲理论根</li>
+<li><a href="https://www.youtube.com/watch?v=a1L0frpDE4k" rel="noopener" target="_blank">Darwin Gödel Machine (DGM) Explained Intuitively</a> <span class="dim small">· neuralkian · 24 分钟</span> —— 对应 p2</li>
+<li><a href="https://www.youtube.com/watch?v=dAOIer_1INo" rel="noopener" target="_blank">ShinkaEvolve(Robert Lange)</a> <span class="dim small">· AutoML Seminars</span> —— demo 用的就是 Shinka 引擎</li>
+</ol>
+<h4>中文(B 站)</h4>
+<table class="rs-t">
+<tr><th>视频</th><th>说明</th></tr>
+<tr><td><span class="tag top">首推</span><a href="https://www.bilibili.com/video/BV1YRVy6nEzT/" rel="noopener" target="_blank">递归式自我提升:回顾和展望 · ICLR 2026 · Louis Kirsch</a><div class="dim small">至高机器智能 · 2026-06</div></td><td>从元学习讲到 LLM 科学家 agent,提出「Fitness Monotonic Execution」来解决无人监督时自我改进的<b>验证和安全</b>问题 —— 和本场结论最贴</td></tr>
+<tr><td><span class="tag">开场故事</span><a href="https://www.bilibili.com/video/BV1DY7C6nEWM/" rel="noopener" target="_blank">再访田渊栋:46.5 亿美金估值的 RSI,与 AI 自进化</a><div class="dim small">硅谷101 · 2026-06</div></td><td>田渊栋的新实验室就叫 Recursive Superintelligence(也简称 RSI)。偏行业、路线和职业,技术不深</td></tr>
+<tr><td><a href="https://www.bilibili.com/video/BV1kUcMz1E81/" rel="noopener" target="_blank">Agent 自进化≠自我刷题,突破口是「自己造环境」?</a><div class="dim small">ModelScope 官方 · 2026-02 · 6 位学者圆桌</div></td><td>翟云鹏主持,5 位自进化方向论文的一作,讨论 7 个议题:怎么定义自进化、反馈信号、怎么评估、工业怎么落地等</td></tr>
+<tr><td><a href="https://www.bilibili.com/video/BV1wgqDBuE4b/" rel="noopener" target="_blank">阿里 AgentEvolver:自提问-自导航-自归因</a><div class="dim small">唐国梁Tommy · 2025-12</div></td><td>论文讲解。讲的是用强化学习训练模型,属于「改权重」,不在本场范围</td></tr>
+</table>
+<h4>英文(YouTube)</h4>
+<table class="rs-t">
+<tr><th>主题</th><th>视频</th></tr>
+<tr><td>系统课程</td><td><a href="https://www.youtube.com/watch?v=6YnLB0XbTnI" rel="noopener" target="_blank">Stanford CS329A Self-Improving AI Agents · Part 1</a> <span class="dim small">· Stanford Online,一整门课</span></td></tr>
+<tr><td>哥德尔机</td><td><a href="https://www.youtube.com/watch?v=voczu4I3_xQ" rel="noopener" target="_blank">Gödel Machine — Schmidhuber</a> <span class="dim small">· 12 分钟</span>;<a href="https://www.youtube.com/watch?v=3FIo6evmweo" rel="noopener" target="_blank">Lex Fridman #11 · Schmidhuber</a> <span class="dim small">· 长访谈</span></td></tr>
+<tr><td>DGM / Jeff Clune</td><td><a href="https://www.youtube.com/watch?v=a1L0frpDE4k" rel="noopener" target="_blank">DGM Explained Intuitively</a>;<a href="https://www.youtube.com/watch?v=mw5WIDGRLnA" rel="noopener" target="_blank">Don't invent faster horses — Prof. Jeff Clune</a> <span class="dim small">· MLST,2 小时</span></td></tr>
+<tr><td>改代码 / harness</td><td><a href="https://www.youtube.com/watch?v=RovcBFlfXpQ" rel="noopener" target="_blank">Adam Kalai — STOP</a> <span class="dim small">· 作者本人,27 分钟</span>;<a href="https://www.youtube.com/watch?v=C5EyZAYlW7E" rel="noopener" target="_blank">ADAS with Shengran Hu</a> <span class="dim small">· TWIML,59 分钟</span>;<a href="https://www.youtube.com/watch?v=T6HLeCiUyI0" rel="noopener" target="_blank">The Future of AI (From Harness to RSI)</a> <span class="dim small">· Discover AI</span></td></tr>
+<tr><td>AlphaEvolve</td><td><a href="https://www.youtube.com/watch?v=vC9nAosXrJw" rel="noopener" target="_blank">MLST 独家访谈</a> <span class="dim small">· 论文发布当天</span>;<a href="https://www.youtube.com/watch?v=Z4uF6cVly8o" rel="noopener" target="_blank">AI Coffee Break 讲解</a></td></tr>
+<tr><td>Sakana 引擎</td><td><a href="https://www.youtube.com/watch?v=dAOIer_1INo" rel="noopener" target="_blank">ShinkaEvolve</a>;<a href="https://www.youtube.com/watch?v=CFewReJ1Eyo" rel="noopener" target="_blank">The AI Scientist</a> <span class="dim small">· 都是 Robert Lange 主讲</span></td></tr>
+<tr><td>大图景 / 风险</td><td><a href="https://www.youtube.com/watch?v=rlIDnS5ddQI" rel="noopener" target="_blank">Anthropic &amp; recursive self-improvement</a> <span class="dim small">· MIT Technology Review</span>;<a href="https://www.youtube.com/watch?v=-RXD4bTuFTo" rel="noopener" target="_blank">Ryan Greenblatt — What happens once AI can automate AI research?</a> <span class="dim small">· Dwarkesh Patel</span></td></tr>
+</table>
+</div><div class="blk" id="hub-china">
+<h3>⑤ 国内研究成果</h3>
+<p class="note">论文的单位和摘要已在 arXiv 原文第一页核对。标 <span class="tag">二手</span> 的数字来自新闻、项目页或公众号,没有读到原文实验表。</p>
+<h4>1. Harness / agent 自进化 <span class="tag top">和本场最接近</span></h4>
+<ul>
+<li><b>上海 AI Lab · Self-Harness</b> <a href="https://arxiv.org/abs/2606.09498" rel="noopener" target="_blank">2606.09498</a> <span class="dim small">2026-06</span><br/>弱点挖掘 → 提出改动 → 回归测试通过才接受。Terminal-Bench 2.0 隐藏题:MiniMax M2.5 40.5% → 61.9%,Qwen3.5-35B-A3B 23.8% → 38.1%,GLM-5 42.9% → 57.1%。</li>
+<li><b>字节 Seed 等 · HarnessDev</b> <a href="https://arxiv.org/abs/2609.01437" rel="noopener" target="_blank">2609.01437</a> <span class="dim small">2026-09</span><br/>测模型能不能自己搭 harness、再自己进化。结论偏冷静:有提升但不稳定,迁移到新任务有限。同项目 <a href="https://self-developing-agents.github.io/" rel="noopener" target="_blank">Self-Developing Agents</a> 还说:自我评判几乎预测不了下一轮提升,宣称的最终版本只有 2/9 在隐藏题上真的最好 <span class="tag">二手</span></li>
+<li><b>华为 · HarnessEvolve</b> <a href="https://arxiv.org/abs/2609.00829" rel="noopener" target="_blank">2609.00829</a> <span class="dim small">2026-09</span><br/>参考轨迹找错因;质量门(防泄露、防提示词膨胀)+ 性能门;最后用 held-out 选版本 —— 和本场的「晋升门」几乎一样。</li>
+<li><b>阿里通义 · AgentEvolver</b> <a href="https://arxiv.org/abs/2511.10395" rel="noopener" target="_blank">2511.10395</a> <span class="tag ok">开源</span> 自提问、自导航、自归因。</li>
+<li><b>SE-Agent</b> <a href="https://arxiv.org/abs/2508.02085" rel="noopener" target="_blank">2508.02085</a>(清华、阶跃星辰、北大、中科院等):SWE-bench Verified 上 Claude-3.7-Sonnet 40.6% → 61.2% <span class="tag">二手</span></li>
+</ul>
+<h4>2. 算法与代码发现(AlphaEvolve 一类)</h4>
+<ul>
+<li><b>南京大学 + 华为诺亚 · 自进化算法设计 agent</b> <a href="https://arxiv.org/abs/2609.38757" rel="noopener" target="_blank">2609.38757</a>(钱超团队):解决进化搜索中途「卡住不动」。</li>
+<li><b>百度 · LoongFlow</b> <a href="https://github.com/baidu-baige/LoongFlow" rel="noopener" target="_blank">GitHub</a> <span class="tag ok">开源</span> 仓库自称 11 个几何/代数题超过已知最佳 <span class="tag">二手</span></li>
+<li><b>字节 Seed + 清华 AIR · CUDA Agent</b> <span class="tag ok">开源</span> 自动写 CUDA 内核,KernelBench 上比 torch.compile 几何平均快 2.11 倍 <span class="tag">二手</span></li>
+</ul>
+<h4>3. 数学(最好验证,最适合自我改进)</h4>
+<ul>
+<li><b>DeepSeek · DeepSeekMath-V2</b> <a href="https://arxiv.org/abs/2511.22570" rel="noopener" target="_blank">2511.22570</a> <span class="tag ok">开源</span><br/>核心就是<b>自我验证</b>:先训可靠的证明检查器,再用它奖励生成器。IMO 2025、CMO 2024 金牌级,Putnam 2024 118/120。</li>
+<li><b>北大北京国际数学研究中心</b>:AI 自主解决安德森猜想,约 1.9 万行 Lean 形式化验证,号称国内首次 <span class="dim small">(新华网 2026-04-07)</span></li>
+<li><b>MiniMax · MaxProof</b>:生成式验证 + 强化学习做证明进化,IMO 2025、USAMO 2026 超金牌线 <span class="tag">二手</span></li>
+</ul>
+<h4>4. 芯片</h4>
+<ul><li><b>中科院计算所 + 软件所 · 启蒙 QiMeng</b> <a href="https://arxiv.org/abs/2506.05007" rel="noopener" target="_blank">2506.05007</a>:处理器芯片软硬件全自动设计;2024 年已有全自动设计的「启蒙 1 号」。</li></ul>
+<h4>5. 科学发现</h4>
+<ul>
+<li><b>上海 AI Lab · Intern·Agent 1.5 / 书生 Intern-Discovery</b>(2026-02):生成 → 验证 → 进化;荧光蛋白优化周期缩短到 6 小时 <span class="tag">二手</span></li>
+<li><b>华为(与莱顿、格罗宁根大学)· SwarmRSI</b> <a href="https://arxiv.org/abs/2610.20431" rel="noopener" target="_blank">2610.20431</a> <span class="dim small">2026-10-14</span>:一群科研 agent 互相变异、重组。</li>
+</ul>
+<h4>6. 世界模型 / 游戏</h4>
+<ul><li><b>UCL + 华为诺亚伦敦 · Memento 3</b> <a href="https://arxiv.org/abs/2610.11794" rel="noopener" target="_blank">2610.11794</a>:LLM 冻结,只改外部「规则手册 + 代码世界模型」,代码要通过精确回放验证才收;ARC-AGI-3 上 25 个游戏全部通关。</li></ul>
+<h4>7. 综述</h4>
+<ul><li><a href="https://arxiv.org/abs/2507.21046" rel="noopener" target="_blank">A Survey of Self-Evolving Agents</a>(2507.21046):上海交大、港中文、港科大(广州)等与 CMU、普林斯顿等合写。</li></ul>
+</div><div class="blk" id="hub-trend">
+<h3>⑥ 一句话趋势</h3>
+<div class="lead">国内主力也在 <b>harness / agent 层(冻结权重)</b> 和 <b>好验证的领域(数学、代码、芯片)</b>。最新几篇(字节 HarnessDev、华为 HarnessEvolve、DeepSeekMath-V2)都把重点放在 <b>「怎么验证」</b> 上 —— 和本场「能自我改进 ≠ 能自我验证」一致。</div>
+</div></section><section class="chapter" id="c15"><div class="chead"><span class="cn">第 15 章</span><h2>来源</h2><span class="from">原页面:<a href="../ai4ai/#critique">AI4AI 解读的参考资料</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>各章内容的原始出处;每张图的出处和授权写在图下方。</li></ul></div><div class="blk" id="landscape-sources">
+<h3>RSI 全景的来源</h3>
+<h4>定义和大图(第 ① 节)</h4>
+<ul class="small">
+<li><a href="https://www.anthropic.com/institute/recursive-self-improvement" rel="noopener" target="_blank">Anthropic Institute · When AI builds itself</a>(定义 + 时间线)</li>
+<li><a href="https://forecastingresearch.org/research/recursive-self-improvement-v1" rel="noopener" target="_blank">Forecasting Research Institute · How Close is RSI?</a>(图 1)</li>
+<li><a href="https://arxiv.org/abs/2609.36054" rel="noopener" target="_blank">Chan et al. · What if automating AI R&amp;D triggers an intelligence explosion?</a>(图 2,CC BY 4.0)</li>
+<li><a href="https://ai4ai-research.github.io/" rel="noopener" target="_blank">AI4AI: Toward AI-discovered Superintelligence</a>(图 3,<a href="https://ai4ai-research.github.io/assets/AI4AI_survey_latest.pdf" rel="noopener" target="_blank">PDF</a>)</li>
+<li><a href="https://lee1003-lee.github.io/Awesome-RSI-Research/" rel="noopener" target="_blank">Towards AI That Improves Itself: A Survey of RSI</a>(图 4,<a href="https://lee1003-lee.github.io/Awesome-RSI-Research/assets/rsi-survey.pdf" rel="noopener" target="_blank">PDF</a>)</li>
+<li><a href="https://arxiv.org/abs/2609.11873" rel="noopener" target="_blank">The Last AI Built by Humans: Toward Genuine RSI</a>(图 5,CC BY-NC-ND 4.0)</li>
+</ul>
+<h4>前沿实验室和争论</h4>
+<ul class="small">
+<li><a href="https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/" rel="noopener" target="_blank">METR · Independent Assessment of AI R&amp;D Acceleration at Anthropic(2026-11-05)</a></li>
+<li><a href="https://openai.com/index/research-acceleration-view-inside-openai/" rel="noopener" target="_blank">OpenAI · Research acceleration: The view inside OpenAI(2026-09-06)</a></li>
+<li><a href="https://openai.com/index/ai-policy-window/" rel="noopener" target="_blank">OpenAI · The AI policy window is open(2026-09-09)</a></li>
+<li><a href="https://thenextweb.com/news/sergey-brin-gemini-recursive-self-improvement-safety-report" rel="noopener" target="_blank">TNW · Sergey Brin says Gemini now helps build the next Gemini(2026-10-17)</a></li>
+<li><a href="https://www.wired.com/story/recursive-self-improvement-flint-latest-model-scary-good/" rel="noopener" target="_blank">WIRED · Recursive 与 Flint(2026-10-21)</a> · <a href="https://thenextweb.com/news/recursive-flint-local-coding-model-eureka-machine" rel="noopener" target="_blank">TNW(2026-10-23)</a> · <a href="https://techcrunch.com/2026/05/14/what-happens-when-ai-starts-building-itself/" rel="noopener" target="_blank">TechCrunch 采访 Socher</a></li>
+<li><a href="https://www.microsoft.com/en-us/research/publication/what-if-automating-ai-rd-triggers-an-intelligence-explosion/" rel="noopener" target="_blank">What if automating AI R&amp;D triggers an intelligence explosion?</a></li>
+<li><a href="https://forecastingresearch.org/research/recursive-self-improvement-v1" rel="noopener" target="_blank">Forecasting Research Institute · How Close is RSI?(2026-11-10)</a></li>
+<li><a href="https://dl.acm.org/doi/full/10.1145/3849084" rel="noopener" target="_blank">CACM · Is Recursive Self-Improvement Really Here?(2026-10-16)</a></li>
+<li><a href="https://www.rdworldonline.com/as-ai-bubble-talk-grows-dwarkesh-patel-predicts-recursive-self-improvement-will-set-off-an-ai-research-explosion/" rel="noopener" target="_blank">R&amp;D World · Dwarkesh Patel(2026-11-14)</a></li>
+</ul>
+<h4>Google</h4>
+<ul class="small">
+<li><a href="https://cloud.google.com/blog/products/ai-machine-learning/alphaevolve-is-available-for-everyone" rel="noopener" target="_blank">AlphaEvolve is available for everyone(2026-07-09)</a> · <a href="https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/alphaevolve-on-cloud/" rel="noopener" target="_blank">blog.google</a></li>
+<li><a href="https://cloud.google.com/blog/products/ai-machine-learning/schrodinger-alphaevolve-molecular-discovery-accelerates-4x" rel="noopener" target="_blank">Schrödinger 用 AlphaEvolve 提速 4 倍</a></li>
+<li><a href="https://cloud.google.com/blog/topics/developers-practitioners/how-to-build-an-agent-skill-optimizer-with-alphaevolve-and-harbor/" rel="noopener" target="_blank">Agent skill optimizer with AlphaEvolve and Harbor(2026-11-05)</a></li>
+<li><a href="https://cloud.google.com/blog/topics/hpc/whats-new-in-hpc-and-ai-at-sc26/" rel="noopener" target="_blank">What's new in HPC and AI at SC26(2026-11-13)</a></li>
+<li><a href="https://cloud.google.com/blog/topics/ai-infrastructure/introducing-agent-compute-engine-and-expanded-agent-governance/" rel="noopener" target="_blank">Introducing Agent Compute Engine(2026-10-22)</a></li>
+<li><a href="https://cloud.google.com/blog/topics/developers-practitioners/io26-news-for-agent-developers-on-google-cloud/" rel="noopener" target="_blank">I/O '26:Vertex AI 演进为 Gemini Enterprise Agent Platform</a></li>
+<li><a href="https://techcrunch.com/2026/08/06/exclusive-mirendil-inks-100m-google-cloud-deal-to-scale-self-improving-ai/" rel="noopener" target="_blank">TechCrunch · Mirendil 与 Google Cloud(2026-08-06)</a></li>
+<li><a href="https://arxiv.org/abs/2611.08483" rel="noopener" target="_blank">SwarmEvolve(arXiv 2611.08483)</a></li>
+</ul>
+<h4>微软</h4>
+<ul class="small">
+<li><a href="https://devblogs.microsoft.com/foundry/agent-optimizer-build2026/" rel="noopener" target="_blank">Introducing Agent Optimizer in Foundry Agent Service(2026-06-03)</a></li>
+<li><a href="https://azure.microsoft.com/en-us/blog/ship-agents-faster-with-expanded-model-choice-voice-agents-and-continuous-optimization/" rel="noopener" target="_blank">Foundry continuous optimization(2026-09-24)</a></li>
+<li><a href="https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/improve-production-agents-with-closed-loop-evaluations-in-microsoft-foundry/4569762" rel="noopener" target="_blank">Closed-loop evaluations in Microsoft Foundry(2026-11-06)</a></li>
+<li><a href="https://microsoft.ai/news/building-a-hillclimbing-machine-launching-seven-new-mai-models/" rel="noopener" target="_blank">MAI · Building a hill-climbing machine(2026-06-02)</a> · <a href="https://microsoft.ai/news/building-medical-superintelligence/" rel="noopener" target="_blank">Building Medical Superintelligence(2026-10-22)</a></li>
+<li><a href="https://www.microsoft.com/en-us/research/publication/self-evolving-coding-agents-via-harness-policy-optimization/" rel="noopener" target="_blank">Self-HPO</a> · <a href="https://www.microsoft.com/en-us/research/publication/harnessmm-recursive-self-improvement-for-harness-token-efficiency/" rel="noopener" target="_blank">HarnessMM</a> · <a href="https://www.microsoft.com/en-us/research/publication/epi-towards-a-persistent-self-improving-agent-for-autonomous-research/" rel="noopener" target="_blank">Épi</a></li>
+<li><a href="https://www.neowin.net/news/microsoft-ai-frontiers-co-founder-quits-criticizes-companys-ai-strategy/" rel="noopener" target="_blank">Neowin · AI Frontiers 联合创始人离职(2026-11-13)</a></li>
+</ul>
+<h4>AWS</h4>
+<ul class="small">
+<li><a href="https://aws.amazon.com/blogs/machine-learning/introducing-agent-quality-optimization-in-agentcore-now-in-preview/" rel="noopener" target="_blank">Introducing agent quality optimization in AgentCore(2026-05-04)</a> · <a href="https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-bedrock-agentcore-new-optimization-capabilities/" rel="noopener" target="_blank">What's New(2026-06)</a></li>
+<li><a href="https://aws.amazon.com/blogs/machine-learning/optimizing-agent-system-prompts-with-amazon-bedrock-agentcore/" rel="noopener" target="_blank">Optimizing agent system prompts with AgentCore(2026-09-16)</a></li>
+<li><a href="https://aws.amazon.com/blogs/machine-learning/the-agent-evaluation-playbook-built-in-deepeval-and-autoeval-on-agentcore/" rel="noopener" target="_blank">The agent evaluation playbook(2026-11-10)</a></li>
+<li><a href="https://aws.amazon.com/blogs/machine-learning/uaef-a-framework-agnostic-system-for-closed-loop-evaluation-of-ai-agents/" rel="noopener" target="_blank">UAEF(2026-11-11)</a></li>
+<li><a href="https://press.aboutamazon.com/aws/2026/7/recursive-signs-410-million-multi-year-collaboration-with-aws-to-scale-self-improving-ai" rel="noopener" target="_blank">Recursive 与 AWS 签 4.1 亿美元协议(2026-07-28)</a></li>
+</ul>
+<h4>其他研究</h4>
+<ul class="small">
+<li><a href="https://tonybai.com/2026/11/01/rsi-harness-nvidia-sol-pi-recursive-self-improvement-agent/" rel="noopener" target="_blank">Tony Bai · NVIDIA SoL-Pi 解读</a></li>
+<li><a href="https://openai.com/index/scaling-ai-research-for-complex-biological-data/" rel="noopener" target="_blank">OpenAI · 几千个 agent 分析生物数据(2026-10-21)</a></li>
+<li><a href="https://arxiv.org/abs/2611.10787" rel="noopener" target="_blank">TRUST(2611.10787)</a> · <a href="https://arxiv.org/abs/2610.35193" rel="noopener" target="_blank">Trustworthy RSI 综述(2610.35193)</a> · <a href="https://feng.ifeng.com/c/8y4K87rZxdz" rel="noopener" target="_blank">中科院自动化所等 RSI 综述(报道)</a></li>
+</ul>
+<p class="dim small">AI 整理:资料由搜索 + 阅读原文整理,数字以原文为准。第 ① 节的图均为原文图片,版权归原作者;未注明 CC 授权的图仅作引用介绍,如有不妥请联系删除。发现错误欢迎指出。</p>
+</div><div class="blk" id="alphaevolve-sources">
+<h3>AlphaEvolve 的来源</h3>
+<ul class="small">
+<li><a href="https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" rel="noopener" target="_blank">DeepMind · AlphaEvolve: A Gemini-powered coding agent for designing advanced algorithms(2025-05-14)</a></li>
+<li><a href="https://arxiv.org/abs/2506.13131" rel="noopener" target="_blank">白皮书 · AlphaEvolve: A coding agent for scientific and algorithmic discovery(arXiv 2506.13131,CC BY-NC-ND 4.0)</a></li>
+<li><a href="https://deepmind.google/blog/alphaevolve-impact/" rel="noopener" target="_blank">DeepMind · AlphaEvolve 一周年(2026-05-07)</a></li>
+<li><a href="https://arxiv.org/abs/2511.02864" rel="noopener" target="_blank">Georgiev, Gómez-Serrano, Tao, Wagner · Mathematical exploration and discovery at scale</a> · <a href="https://arxiv.org/abs/2608.16884" rel="noopener" target="_blank">Improving the matrix multiplication exponent with AlphaEvolve</a></li>
+<li><a href="https://cloud.google.com/blog/products/ai-machine-learning/alphaevolve-is-available-for-everyone" rel="noopener" target="_blank">Google Cloud · AlphaEvolve is available for everyone(GA,2026-07-09)</a> · <a href="https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/alphaevolve-on-cloud/" rel="noopener" target="_blank">blog.google</a></li>
+<li><a href="https://cloud.google.com/blog/products/ai-machine-learning/how-basf-manages-thousands-of-supply-chain-decisions-with-alphaevolve" rel="noopener" target="_blank">BASF 案例</a> · <a href="https://cloud.google.com/blog/products/ai-machine-learning/schrodinger-alphaevolve-molecular-discovery-accelerates-4x" rel="noopener" target="_blank">Schrödinger 案例</a> · <a href="https://cloud.google.com/blog/topics/developers-practitioners/how-to-speed-up-your-video-processing-with-alphaevolve" rel="noopener" target="_blank">视频处理教程(split-loop 架构)</a> · <a href="https://cloud.google.com/blog/topics/developers-practitioners/how-to-build-an-agent-skill-optimizer-with-alphaevolve-and-harbor/" rel="noopener" target="_blank">agent skill 优化教程</a> · <a href="https://cloud.google.com/blog/topics/hpc/whats-new-in-hpc-and-ai-at-sc26/" rel="noopener" target="_blank">SC26 · Cloud Batch</a></li>
+<li><a href="https://github.com/google-deepmind/alphaevolve" rel="noopener" target="_blank">google-deepmind/alphaevolve</a> · <a href="https://github.com/Google-Cloud-AI/alphaevolve-on-googlecloud" rel="noopener" target="_blank">Google-Cloud-AI/alphaevolve-on-googlecloud</a> · <a href="https://github.com/algorithmicsuperintelligence/openevolve" rel="noopener" target="_blank">OpenEvolve</a> · <a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" target="_blank">ShinkaEvolve</a></li>
+<li><a href="https://www.cloudreleases.io/updates/gcp-857b73e48e6fa0c70e80-gemini-for-business" rel="noopener" target="_blank">默认模型改为 Gemini 4 Argon(release notes 转载)</a></li>
+</ul>
+<p class="dim small">AI 整理:由搜索 + 阅读原文整理,数字以原文为准。图为白皮书原图(CC BY-NC-ND 4.0,未改动),版权归原作者。</p>
+</div><div class="blk" id="capital-sources">
+<h3>资本视角的来源</h3>
+<ul class="small">
+<li><a href="https://press.aboutamazon.com/aws/2026/7/recursive-signs-410-million-multi-year-collaboration-with-aws-to-scale-self-improving-ai" rel="noopener" target="_blank">Recursive 与 AWS 签 4.1 亿美元协议(Amazon 新闻稿)</a> · <a href="https://techcrunch.com/2026/07/28/recursive-superintelligence-signs-400-compute-deal-with-amazon/" rel="noopener" target="_blank">TechCrunch</a> · <a href="https://www.gv.com/news/recursive-superintelligence-self-improving-ai" rel="noopener" target="_blank">GV</a> · <a href="https://unlisted.usvc.com/p/investing-in-recursive" rel="noopener" target="_blank">USVC</a></li>
+<li><a href="https://techcrunch.com/2026/08/06/exclusive-mirendil-inks-100m-google-cloud-deal-to-scale-self-improving-ai/" rel="noopener" target="_blank">Mirendil 与 Google Cloud(TechCrunch)</a> · <a href="https://mirendil.com/news/series-a/" rel="noopener" target="_blank">Mirendil A 轮</a> · <a href="https://a16z.com/announcement/investing-in-mirendil/" rel="noopener" target="_blank">a16z</a> · <a href="https://kleinerperkins.com/perspectives/mirendil-building-the-system-that-builds-systems/" rel="noopener" target="_blank">Kleiner Perkins</a></li>
+<li><a href="https://www.businessinsider.com/jeff-deans-startup-discovery-loop-is-eyeing-a-valuation-2026-9" rel="noopener" target="_blank">Discovery Loop 估值(BI)</a> · <a href="https://radical.vc/articles/our-investment-in-discovery-loop/" rel="noopener" target="_blank">Radical Ventures</a></li>
+<li><a href="https://www.forbes.com/sites/rashishrivastava/2026/06/25/ai-startups-with-no-revenue-are-using-this-tactic-to-supersize-their-valuations/" rel="noopener" target="_blank">Forbes · 分档定价</a> · <a href="https://www.googlecloudpresscorner.com/2026-06-16-Ineffable-Intelligence-Selects-Google-Cloud-To-Power-Its-Superintelligence-Mission" rel="noopener" target="_blank">Ineffable 选 Google Cloud</a></li>
+<li><a href="https://pitchbook.com/news/reports/q4-2026-too-central-to-fail-the-ai-venture-ecosystem-built-around-one-companys-strategy" rel="noopener" target="_blank">PitchBook · NVIDIA 与 AI 风投</a> · <a href="https://www.nea.com/blog/the-ai-neolab-wild-west" rel="noopener" target="_blank">NEA</a> · <a href="https://www.leoniscap.com/research/we-finally-got-our-flying-cars-they%E2%80%99re-called-neolabs" rel="noopener" target="_blank">Leonis Capital</a> · <a href="https://futuresearch.ai/neolab-challengers-forecast/" rel="noopener" target="_blank">FutureSearch</a></li>
+<li><a href="https://techcrunch.com/2026/11/02/anthropic-warns-that-its-very-close-to-rsi-capability-aka-self-building-ai/" rel="noopener" target="_blank">TechCrunch · Anthropic S-1 与 RSI</a> · <a href="https://www.wired.com/story/the-anthropic-ipo-is-also-a-doomsday-primer/" rel="noopener" target="_blank">WIRED</a> · <a href="https://www.cnbc.com/2026/11/16/anthropic-ipo-date-price-range.html" rel="noopener" target="_blank">CNBC · IPO 指南</a> · <a href="https://www.streetinsider.com/Reuters/Factbox-Amazon%2C+Google+set+for+big+windfall+from+Anthropic+IPO/27320945.html" rel="noopener" target="_blank">Reuters factbox</a></li>
+<li><a href="https://newcomer.co/p/sources-poolside-strikes-6-billion" rel="noopener" target="_blank">Poolside 授权 + 挖人(Newcomer)</a> · <a href="https://ir.amd.com/news-events/press-releases/detail/1306/amd-completes-acquisition-of-world-labs" rel="noopener" target="_blank">AMD 收购 World Labs</a> · <a href="https://blogs.nvidia.com/blog/nvidia-to-acquire-hugging-face/" rel="noopener" target="_blank">NVIDIA 收购 Hugging Face</a></li>
+<li><a href="https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-third-quarter-fiscal-2027" rel="noopener" target="_blank">NVIDIA Q3 FY2027 财报</a> · <a href="https://www.cnbc.com/2026/11/18/nvidia-earnings-market-analysis.html" rel="noopener" target="_blank">CNBC 分析</a></li>
+<li><a href="https://www.chinaventure.com.cn/news/80-20261113-394038.html" rel="noopener" target="_blank">投中网</a> · <a href="https://www.eeo.com.cn/2026/1104/1084116.shtml" rel="noopener" target="_blank">经济观察报</a> · <a href="https://www.huxiu.com/article/4901145.html" rel="noopener" target="_blank">虎嗅</a> · <a href="https://www.stcn.com/article/detail/4187353.html" rel="noopener" target="_blank">证券时报</a></li>
+<li><a href="https://thenextweb.com/news/human-control-over-ai-act-khanna-self-improving-ai" rel="noopener" target="_blank">Khanna 法案(TNW)</a> · <a href="https://therecord.media/frontier-act-ai-bill-house-brett-guthrie" rel="noopener" target="_blank">FRONTIER Act</a></li>
+</ul>
+<p class="dim small">AI 整理:由搜索 + 阅读原文整理,数字以原文为准;粗算部分已标注。不构成投资建议。</p>
+</div></section>
+<footer class="gfoot">个人整理,不代表任何雇主立场;数据均来自公开来源,出处见各章。图片版权归原作者,未注明 CC 授权的仅作引用介绍。</footer>
+</main></div>
+<script>
+const links=[...document.querySelectorAll('.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-20% 0px -70% 0px'});
+secs.forEach(s=>s&&io.observe(s));
+</script>
+<a data-cur="zh" data-to="en" href="../../en/rsi/guide/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body></html>
