@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI4AI Explained · Paper Walkthrough · 2026-11</title>
+<link href="../../../rsi/assets/style.css" rel="stylesheet"/>
+<style>
+:root{--rs-bg:#0B0D12;--rs-bg2:#12151d;--rs-ink:#E6EAF2;--rs-dim:#8A94A6;--rs-cold:#4CC2FF;--rs-warm:#FFB020;--rs-ok:#38D39F;--rs-line:#232a36;
+--rs-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+--rs-mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+body{background:var(--rs-bg)}
+main.rs-wrap{color:var(--rs-ink);font-family:var(--rs-sans);font-size:17px;line-height:1.8;max-width:980px;margin:0 auto;padding:4vh 5vw 12vh}
+main.rs-wrap h1{font-size:36px;line-height:1.25;margin:0 0 .3em}
+main.rs-wrap h2{font-size:24px;margin:0 0 .9em;color:var(--rs-cold)}
+main.rs-wrap h3{font-size:18px;margin:1.6em 0 .6em;color:var(--rs-ink)}
+main.rs-wrap section{border-top:1px solid var(--rs-line);padding:2.4em 0;scroll-margin-top:56px}
+main.rs-wrap section.head{border-top:none;padding-top:0}
+main.rs-wrap p{margin:0 0 1em}
+main.rs-wrap b{color:var(--rs-warm);font-weight:600}
+main.rs-wrap a{color:var(--rs-cold);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.5)}
+main.rs-wrap a:hover{border-bottom-style:solid}
+main.rs-wrap .dim{color:var(--rs-dim)}
+main.rs-wrap .small{font-size:14px}
+main.rs-wrap code{font-family:var(--rs-mono);font-size:.86em;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:4px;padding:0 .3em}
+main.rs-wrap ul{margin:0 0 1em;padding-left:1.3em}
+main.rs-wrap li{margin:.35em 0}
+main.rs-wrap .lead{font-size:21px;line-height:1.6;padding:1em 1.2em;border-left:3px solid var(--rs-warm);background:var(--rs-bg2);border-radius:0 8px 8px 0;margin:1.2em 0}
+main.rs-wrap .note{font-size:14px;color:var(--rs-dim);background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.7em 1em;margin:1em 0}
+.rs-toc{position:sticky;top:0;z-index:5;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--rs-line);display:flex;gap:1.2em;justify-content:center;flex-wrap:wrap;padding:.55em 1em;font-size:14px}
+.rs-toc a{color:var(--rs-dim);text-decoration:none}
+.rs-toc a:hover{color:var(--rs-cold)}
+.rs-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:1.2em 0}
+.rs-card{display:block;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:1em 1.1em;color:var(--rs-ink)!important;border-bottom:1px solid var(--rs-line)!important;transition:border-color .2s}
+.rs-card:hover{border-color:var(--rs-cold)!important}
+.rs-card .k{font-size:13px;color:var(--rs-dim)}
+.rs-card .t{font-size:18px;font-weight:600;margin:.2em 0}
+.rs-card .d{font-size:14px;color:var(--rs-dim);line-height:1.6}
+.rs-q{background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:.2em 1.1em;margin:.8em 0}
+.rs-q summary{cursor:pointer;font-weight:600;padding:.7em 0;list-style:none}
+.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:var(--rs-warm)}
+.rs-q[open] summary::before{content:"− "}
+.rs-q > div{padding:0 0 .8em}
+table.rs-t{width:100%;border-collapse:collapse;font-size:15px;margin:.6em 0 1.2em}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--rs-line);padding:.55em .5em;text-align:left;vertical-align:top}
+table.rs-t th{color:var(--rs-dim);font-weight:500;font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--rs-line);border-radius:999px;padding:0 .6em;color:var(--rs-dim);margin-right:.3em;white-space:nowrap}
+.tag.top{color:var(--rs-warm);border-color:rgba(255,176,32,.5)}
+.tag.ok{color:var(--rs-ok);border-color:rgba(56,211,159,.5)}
+pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7;color:var(--rs-ink)}
+@media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
+@media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
+.rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
+    .rs-fig{margin:1em 0 1.6em}.rs-fig img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;border:1px solid var(--rs-line)}.rs-fig figcaption{font-size:13px;color:var(--rs-dim);line-height:1.65;margin-top:.6em}.rs-fig a{border-bottom:none}
+.rs-tl{border-left:2px solid var(--rs-line);margin:1em 0 1.4em;padding-left:1em}.rs-tl>div{margin:.55em 0;font-size:15px}.rs-tl .y{display:inline-block;min-width:6.5em;color:var(--rs-cold);font-family:var(--rs-mono);font-size:13px}
+main.rs-wrap a{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← RSI Resources</a>
+<a href="../view/">My take</a>
+<a href="../landscape/">RSI Landscape</a>
+<a href="../demo/play/">Play</a>
+<a href="../slides/">RSI slides</a>
+</div>
+</nav>
+<div class="rs-toc">
+<a href="#s1">Executing vs. deciding</a>
+<a href="#s2">The three decisions</a>
+<a href="#s3">How to tell</a>
+<a href="#s4">Surprising classifications</a>
+<a href="#s5">Failure modes at each level</a>
+<a href="#s6">and RSI</a>
+<a href="#s7">Four types of targets</a>
+<a href="#s8">Open questions</a>
+<a href="#summary">Summary</a>
+<a href="#critique">Critique</a>
+</div>
+<main class="rs-wrap">
+<section class="head">
+<h1>AI4AI Explained: When AI Helps AI Do Research, Who Actually Calls the Shots?</h1>
+<p class="dim">Paper review · AI4AI: Toward AI-discovered Superintelligence (Nankai University, Zhongguancun Academy, Xi'an Jiaotong University, Shanghai Jiao Tong University, Nanyang Technological University, National University of Singapore, HKUST, 2026-10). Written following ai-writing's paper review workflow: source extraction → first draft → polishing → review against the original → revision → Kimi polishing → critique → removing AI tone. Compiled on 2026-11-18.</p>
+<p>Many systems now claim that "AI is doing its own research": automatically modifying code, running experiments, and writing papers. But when the pipeline finishes, is the AI really in charge?</p>
+<p>Researchers from Nankai University, Zhongguancun Academy, Xi'an Jiaotong University, Shanghai Jiao Tong University, Nanyang Technological University, the National University of Singapore and HKUST co-authored an 80-page survey, "AI4AI: Toward AI-discovered Superintelligence", citing 336 references. Their answer is blunt:<strong>Research autonomy is measured not by how many tasks the AI executes, but by which decisions the AI makes.</strong></p>
+<div class="note">Original:<a href="https://ai4ai-research.github.io/" rel="noopener" target="_blank">Project page</a> · <a href="https://ai4ai-research.github.io/assets/AI4AI_survey_latest.pdf" rel="noopener" target="_blank">PDF</a>. All images are from the original paper and project page; copyright belongs to the original authors, reproduced here with attribution. Related:<a href="../landscape/#what">RSI overview ①</a>(Figure 1 in this article also appears there), <a href="../alphaevolve/">AlphaEvolve Explained</a>.</div>
+</section>
+<section id="s1">
+<h2>I. First, separate two things: “running the process” and “owning the decisions”</h2>
+<p>AI4AI (AI for AI) means using AI to discover and improve AI systems themselves. The paper treats it as a branch of AI for Science, with AI itself as the object of study. The hard requirement: AI must<strong> Substantive participation in discovery</strong>, rather than just running a pre-written workflow.</p>
+<p>The scope of automation is indeed growing: from hyperparameter search, AutoML (automated machine learning), and neural architecture search, to FunSearch and AlphaEvolve automatically modifying programs, to automatic optimization of prompts and agent structures. The AI Scientist even chains ideation, experimentation, and report writing into a single pipeline.</p>
+<p>But the paper cautions:<strong>Wider automation doesn't mean greater research autonomy</strong>. Humans may still decide which problems to study, what may be changed, and what counts as success. Conversely, a human may run the experiments by hand while AI is already rewriting “what counts as progress.”</p>
+<figure class="rs-fig"><a href="../../../rsi/ai4ai/img/survey-overview.jpg" target="_blank"><img alt="AI4AI survey overview diagram" loading="lazy" src="../../../rsi/ai4ai/img/survey-overview.jpg"/></a><figcaption>Figure 1: Overview of the survey. Top: a timeline of representative AI4AI work; bottom left: control of the discovery loop gradually handed to AI (L0 to L3); bottom right: the four types of improvement targets. (Source: AI4AI survey project page, Figure 1)</figcaption></figure>
+</section>
+<section id="s2">
+<h2>2. Three decisions, one accountability record</h2>
+<p>The paper views AI development as<strong> Discovery loop</strong>: propose candidate improvements, evaluate them, then select or modify based on feedback. The loop involves three key decisions. Taking system performance tuning as an analogy:</p>
+<ul>
+<li><strong>Search direction (D)</strong>: where to look. Think of deciding whether to check the database or the network first.</li>
+<li><strong>Search space (S)</strong>: what can be changed. Think of a change allowlist that specifies which config items and modules may be touched.</li>
+<li><strong>Evaluation signal (E)</strong>: what counts as progress. Think of the SLOs and regression tests used for acceptance.</li>
+</ul>
+<figure class="rs-fig"><a href="../../../rsi/ai4ai/img/control-framework.jpg" target="_blank"><img alt="AI4AI control framework" loading="lazy" src="../../../rsi/ai4ai/img/control-framework.jpg"/></a><figcaption>Figure 2: The control framework. The top three columns are the three control variables: direction, space and evaluation; below is the discovery loop: evidence sources feed into "generate, evaluate, update," which loops back into iterative improvement. (Source: AI4AI survey, Figure 2)</figcaption></figure>
+<p>Each system can keep one<strong> Accountability record</strong> ⟨D, S, E⟩. Each is labeled H or A. Note that<strong> H means not just humans, but also anything fixed externally</strong>, such as a fixed benchmark or a fixed evaluator; A means a decision the AI originated or substantially modified.</p>
+<p>Four levels, based on the highest decision made by AI:</p>
+<ul>
+<li><strong>L0 ⟨H, H, H⟩</strong>: none of the three decisions is made by the AI. This is the control group.</li>
+<li><strong>L1 ⟨A, H, H⟩</strong>: the AI sets the direction, while the space and evaluation are still fixed by humans or externally.</li>
+<li><strong>L2 ⟨any, A, H⟩</strong>: the AI constructs or substantially modifies the search space, while evaluation is still fixed by humans or externally.</li>
+<li><strong>L3 ⟨any, any, A⟩</strong>: the AI supplies or substantially modifies the evaluation signal.</li>
+</ul>
+<p>The order for assigning a level is <strong>E &gt; S &gt; D</strong>: if the AI sets the evaluation, it's L3. Otherwise, look at the space, and finally the direction. As with alert severity classification, the level is triggered by the most sensitive item, not by how capable the system is overall. The paper repeatedly stresses:<strong>This ladder describes "where control comes from", not "how capable the system is". A higher level doesn't mean more useful or more reliable.</strong></p>
+</section>
+<section id="s3">
+<h2>III. How to tell whether AI really “owns” a decision</h2>
+<p>This is the most practical part of the paper, because many systems have only "nominal control".</p>
+<p><strong>The core tool is the counterfactual test</strong>: if you remove or replace the AI-generated part, does the subsequent search trajectory change substantially? If not, it doesn't count as control. It's the same idea as ablation studies and A/B tests.</p>
+<p>The paper also draws a few boundaries:</p>
+<ul>
+<li><strong>Generating candidates is not the same as controlling the space</strong>. Ordering from a given menu is not the same as designing the menu.</li>
+<li><strong>Self-modification alone doesn't make a system L2</strong>. It modifies itself, but within a scope drawn by humans, so humans still control the space.</li>
+<li><strong>Lack of ongoing adaptation doesn't erase one-off substantive control</strong>.</li>
+</ul>
+<p>In addition, the paper uses four properties to describe the "strength" of AI control: origin (produced by the AI, not given by humans), specificity (based on evidence from the current task), causal role (swapping out the result changes the outcome), and revisability (it can be corrected if found wrong). They are<strong> A reference for reporting, not a threshold for assigning levels</strong>; binary H/A labels can hide shared control, so mixed provenance should be recorded accurately rather than “rounded up” to full AI control.</p>
+<p>The paper recommends attaching to each report a<strong> Residual human control checklist</strong>: which seeds, templates, primitive libraries, hidden tests, approval gates, rescue interventions, and stopping rules humans provided. When evaluating vendor claims, this is practically a ready-made audit checklist.</p>
+</section>
+<section id="s4">
+<h2>4. Some surprising classifications</h2>
+<p>Measured this way, some well-known systems don't rank very high:</p>
+<ul>
+<li><strong>FunSearch, OpenEvolve</strong> is the paper's named example of a typical L1. AlphaEvolve also steers program search based on evaluation history, working within an edit scope set by humans and an evaluator written by humans, so it is also placed at L1; if a deployment lets AI define the edit boundaries itself, an additional L2 control should be recorded.</li>
+<li><strong>STOP and the Darwin Gödel Machine (DGM)</strong> repeatedly modifies the "improver" or the coding agent itself, but within the paper's fixed boundaries, it is<strong> Adjacent L1 systems</strong>; it counts as L3 only when an AI-generated evaluator or acceptance rule determines the next modification. The paper specifically warns that repeated self-modification does not by itself prove that gains will persist.</li>
+<li><strong>Real L2 examples</strong>: S3 has the AI design “which values are allowed” in a ViT architecture search, meaning the AI defines the search space.</li>
+<li><strong>L3 examples</strong>: Eureka evolves reward programs based on environment results, so the AI writes “what counts as good.” The paper's table also labels Constitutional AI as L3: the AI generates critiques, revisions, and preference labels, while the constitutional principles, harmfulness rules, and base model are fixed by humans. This illustrates that<strong> L3 is not full autonomy</strong>, and only ⟨A, A, A⟩ means all three decisions are handed to the AI.</li>
+</ul>
+</section>
+<section id="s5">
+<h2>5. Every level can fail, and the risks at L3 are the most distinctive</h2>
+<p>The paper's conclusion is sober:<strong>A higher level doesn't guarantee a better system</strong>.</p>
+<ul>
+<li><strong>L1</strong>: a promising direction doesn't necessarily turn into a successful experiment. There are four common failures: anchoring on early results (endlessly patching the first version), candidate archive collapse (the solution pool narrows to a single idea), credit misassignment (changing ten things and crediting the gain to the wrong one), and overfitting to a fixed evaluator (optimizing specifically for the load-test script, then failing once real traffic arrives). In replication experiments with strictly controlled budgets and evaluation, some sophisticated adaptive strategies even lose to random search.</li>
+<li><strong>L2</strong>: a richer representation doesn't necessarily yield a more useful search space, and observed gains may simply come from sampling a few more times.</li>
+<li><strong>L3</strong>: what makes it special is that<strong> The evaluator itself becomes a mutable part of the optimization loop, and evaluation errors turn into selection pressure</strong>. Signals that work well on a fixed set of candidates can become unreliable under sustained optimization. LLM judges have systematic biases of their own, such as position bias and favoring their own outputs, and ensembles of judges cannot remove shared blind spots.</li>
+</ul>
+<figure class="rs-fig"><a href="../../../rsi/ai4ai/img/l3-evaluation-mechanism.jpg" target="_blank"><img alt="How AI builds evaluators" loading="lazy" src="../../../rsi/ai4ai/img/l3-evaluation-mechanism.jpg"/></a><figcaption>Figure 3: How L3 works. Humans provide task descriptions, examples and constraints as anchors; AI generates or modifies the tests, scoring methods, aggregation methods and thresholds; evaluation results drive selection or training and produce new evidence. At the bottom is independent verification: frozen external evaluators, held-out tests, and cross-model or expert checks. (Source: AI4AI survey project page)</figcaption></figure>
+<p>So independent verification is essentially the baseline requirement for L3:<strong>Frozen external evaluator</strong> (locked versions, test sets the optimized system can neither see nor modify), held-out tests never seen during optimization, and cross-model and expert review.</p>
+</section>
+<section id="s6">
+<h2>6. Relation to RSI: a high bar for evidence</h2>
+<p>The paper defines recursive self-improvement (RSI) as:<strong>Improvements to an AI system that enhance its ability to produce further improvements</strong>. Not “each product version is better than the last,” but “the production line itself keeps getting better at making products.”</p>
+<p>The bar for demonstrating RSI is high: you must show that generation g+1 improved "the mechanism that produces generation g+2"; gains must persist across multiple generations; and each generation must be checked against<strong> Evaluators frozen before the run</strong> is better under it; the evaluator itself should be version-controlled, so that "the standard changed" isn't mistaken for "the candidate got better."</p>
+<p>Another counterintuitive conclusion:<strong>RSI and control level are two different things</strong>. Loops evaluated externally may show recursive gains, while loops evaluated by the AI itself may show none at all. Better task performance does not prove better ability to keep improving itself.</p>
+</section>
+<section id="s7">
+<h2>VII. Four kinds of improvement targets (an axis independent of the level)</h2>
+<figure class="rs-fig"><a href="../../../rsi/ai4ai/img/applications-overview.jpg" target="_blank"><img alt="AI4AI application landscape" loading="lazy" src="../../../rsi/ai4ai/img/applications-overview.jpg"/></a><figcaption>Figure 4: Four application families grouped by improvement target. (Source: AI4AI survey project page)</figcaption></figure>
+<p>Beyond "who makes the decision", the paper also organizes applications by "what gets modified". This axis is independent of L0 to L3, and methods in the same family can sit at completely different levels:</p>
+<ul>
+<li><strong>Learning</strong>: modifies what updates the model parameters, such as training pipelines, architectures, optimizers, learning rules, and rewards.</li>
+<li><strong>Inference</strong>: model parameters are frozen, and what changes is everything around them, such as prompts, workflows, agent frameworks, tool libraries, routing, and test-time compute strategies.</li>
+<li><strong>Data</strong>: modifies the training samples, mixtures, transformations, and curricula.</li>
+<li><strong>Infrastructure</strong>: modifies the hardware and software stack for training and inference, such as kernels, compiler scheduling, parallelism schemes, accelerators, and circuits. AlphaEvolve's optimization of the matrix-multiplication tiling strategy in Gemini training and its simplification of an arithmetic circuit for TPUs both fall into this category.</li>
+</ul>
+</section>
+<section id="s8">
+<h2>8. Some questions that remain unanswered</h2>
+<p>The questions the paper leaves open at the end are more worth thinking about than the answers it gives:</p>
+<ul>
+<li><strong>When is it worth handing control to AI?</strong> may depend on how quickly errors can be caught, whether the consequences can be undone, how costly independent verification is, and how much human effort the decision would otherwise take. Should research autonomy be a fixed setting, or a delegation that adjusts with evidence and risk?</li>
+<li><strong>Expressible doesn't mean reachable.</strong> A sufficiently expressive language may already be able to express the ideal algorithm, yet still be unable to find it within a realistic budget. Good abstractions are like well-designed high-level APIs: they put good solutions “within reach.” Can AI do this?</li>
+<li><strong>When the evaluation itself keeps changing, what counts as progress?</strong></li>
+<li><strong>When does RSI keep going, and when does it saturate?</strong></li>
+</ul>
+</section>
+<section id="summary">
+<h2>Summary</h2>
+<p>The survey's biggest contribution is changing the question: not "how much has AI automated", but "which decisions does the AI make, and would replacing them change the outcome". Three variables (direction, space, evaluation), the L0 to L3 ladder, plus the counterfactual test and the residual human control checklist let us tell apart systems that look similar. It also reminds us that a higher level doesn't mean better, and that once AI starts helping define "what counts as progress", an external evaluator it can neither see nor modify is the bottom line for the whole enterprise.</p>
+</section>
+<section id="critique">
+<h2>Three critiques</h2>
+<h3>1. The rating rules are clear, but actually assigning a level is hard</h3>
+<p>A counterfactual test asks you to "remove the AI-generated parts and see whether the search trajectory changes," but most published systems haven't released such ablations. The paper's classification of systems like AlphaEvolve and DGM is based mainly on how their papers describe them, not on counterfactual tests the authors ran themselves; the paper also doesn't report how consistent the results are when different people assign levels using these rules. In other words, the ruler itself hasn't yet passed the "have someone else measure" test.</p>
+<h3>2. It only answers “who controls,” not “how well they control”</h3>
+<p>The paper repeatedly stresses that level doesn't indicate capability. That's honest, but it also means limited help for real-world system selection: an L3 system may be worse than an L1 system. A more practical risk is that these labels are easily co-opted for marketing. "We're L3" sounds impressive, while the evidence of effectiveness the paper itself calls for (independent evaluation, frozen evaluators, cross-generation gains) gets left out. Readers should keep "level" and "evidence of effectiveness" in two separate tables.</p>
+<h3>3. Binary labels put very different systems in the same box</h3>
+<p>Under the E &gt; S &gt; D rule, Constitutional AI, whose constitutional principles are hard-coded by humans, and a system where AI defines the evaluation criteria entirely on its own would both be rated L3. The paper offers a continuous "control intensity" vector as a remedy, but admits it is only a reporting aid and hasn't been validated. In the gray zone where AI and humans decide together (which is exactly the most common case today), the framework doesn't yet distinguish well enough.</p>
+<p><em>The critique above is meant to offer a critical perspective and help readers see the limits of this survey.</em></p>
+<p>References:</p>
+<ul class="small"><li><a href="https://ai4ai-research.github.io/" rel="noopener" target="_blank">AI4AI: Toward AI-discovered Superintelligence · Project Page</a> · <a href="https://ai4ai-research.github.io/assets/AI4AI_survey_latest.pdf" rel="noopener" target="_blank">PDF</a></li></ul>
+</section>
+<p class="dim small">AI-assisted: written from the original paper through extraction, multi-model review and human checking. The original paper is authoritative.</p>
+</main>
+<a data-cur="en" data-to="zh" href="../../../rsi/ai4ai/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>
