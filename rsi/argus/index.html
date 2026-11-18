@@ -27,14 +27,14 @@ h1{text-align:center;font-size:30px;font-weight:700;margin:0 0 6px}
 .sec span{font-size:12.5px;color:var(--muted)}
 .lead{border-radius:14px;padding:12px 18px;text-align:center;font-size:14.5px;font-weight:600;background:linear-gradient(90deg,var(--s2-card),var(--s1-card));border:1.5px solid var(--s2-border);color:var(--s2-text)}
 /* reference architecture */
-.ref{display:grid;grid-template-columns:150px 1fr;gap:10px 14px}
+.ref{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px 14px}
 .lname{border-radius:14px;padding:10px;font-size:13px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.45;background:rgba(255,255,255,.55);border:1px solid rgba(160,110,60,.25);color:var(--muted)}
 .lname small{font-weight:400;font-size:11px;margin-top:3px}
-.scen{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.scen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .card{border-radius:12px;padding:9px 12px;border:1px solid rgba(0,0,0,.05);box-shadow:0 1px 2px rgba(0,0,0,.04);background:rgba(255,255,255,.65)}
 .card .title{font-size:12.5px;font-weight:600;margin-bottom:2px}
 .card .body{font-size:11px;line-height:1.55;color:#4a3220}
-.loop{display:grid;grid-template-columns:1fr 34px 1fr 34px 1fr 34px 1fr 34px 1fr 34px 1fr;align-items:stretch}
+.loop{display:grid;grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr) 30px minmax(0,1fr) 30px minmax(0,1fr) 30px minmax(0,1fr) 30px minmax(0,1fr);align-items:stretch}
 .cap{border-radius:14px;padding:12px 10px;border:1.5px solid;position:relative}
 .cap .no{font-size:11px;font-weight:700;opacity:.8}
 .cap .t{font-size:13.5px;font-weight:700;margin:2px 0 4px}
@@ -52,10 +52,10 @@ h1{text-align:center;font-size:30px;font-weight:700;margin:0 0 6px}
 .arrow-h::after{content:"";position:absolute;top:50%;right:1px;border-left:9px solid #c09060;border-top:6px solid transparent;border-bottom:6px solid transparent;transform:translateY(-50%)}
 .back{margin-top:6px;border:1.5px dashed #c09060;border-top:none;border-radius:0 0 14px 14px;height:16px;position:relative}
 .back span{position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);background:var(--bg);padding:0 8px;font-size:11px;color:var(--muted)}
-.bands{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bands{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 .band{border-radius:12px;padding:9px 12px;font-size:12px;line-height:1.55;background:rgba(255,255,255,.6);border:1px solid rgba(160,110,60,.22)}
 .band b{font-size:12.5px}
-.base{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.base{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 /* coverage matrix */
 table.mx{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px;background:rgba(255,255,255,.55);border:1px solid rgba(160,110,60,.25);border-radius:14px;overflow:hidden}
 .mx th,.mx td{padding:7px 8px;border-bottom:1px solid rgba(160,110,60,.15);vertical-align:top;text-align:left}
@@ -73,7 +73,7 @@ table.mx{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px;b
 .f{color:#b8541a}.h{color:#c9994e}.o{color:#cbb9a5}
 .wrap{overflow-x:auto}
 /* map */
-.two{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
+.two{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:14px}
 .box{border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.6);border:1px solid rgba(160,110,60,.22)}
 .box h3{margin:0 0 8px;font-size:15px}
 .box ul{margin:0;padding-left:1.15em;font-size:12.5px;line-height:1.7}
@@ -88,7 +88,29 @@ table.mx{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px;b
 .dot.a.plan{border-style:dashed}
 .legend{margin-top:12px;display:flex;justify-content:center;flex-wrap:wrap;gap:16px;padding:10px 16px;border:1px solid rgba(160,110,60,.2);border-radius:12px;background:rgba(255,255,255,.55);font-size:12px;color:var(--muted)}
 .foot{text-align:center;font-size:11px;color:var(--muted);margin-top:12px;line-height:1.7}
-@media (max-width:1100px){.loop{grid-template-columns:1fr}.ac{transform:rotate(90deg);height:30px}.ref{grid-template-columns:1fr}.scen{grid-template-columns:repeat(2,1fr)}.two,.bands,.base{grid-template-columns:1fr}}
+@media (max-width:1100px){.loop{grid-template-columns:minmax(0,1fr)}.ac{transform:rotate(90deg);height:30px}.ref{grid-template-columns:minmax(0,1fr)}.scen{grid-template-columns:repeat(2,minmax(0,1fr))}.two,.bands,.base{grid-template-columns:minmax(0,1fr)}.map .dot{font-size:10px;padding:2px 5px}}
+table.vs{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;background:rgba(255,255,255,.6);border:1px solid rgba(160,110,60,.25);border-radius:14px;overflow:hidden}
+.vs th,.vs td{padding:9px 12px;border-bottom:1px solid rgba(160,110,60,.15);text-align:left;vertical-align:top;line-height:1.6}
+.vs thead th{background:rgba(240,220,190,.6);color:var(--muted);font-size:12px}
+.vs td:first-child{font-weight:700;white-space:nowrap;color:var(--muted);width:130px}
+.vs td.ar{background:rgba(255,216,166,.35)}
+.vs-sum{margin-top:10px;border-radius:14px;padding:12px 16px;background:linear-gradient(90deg,var(--s2-card),var(--s1-card));border:1.5px solid var(--s2-border);color:var(--s2-text);font-size:13.5px;line-height:1.65}
+table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;background:rgba(255,255,255,.55);border:1px solid rgba(160,110,60,.25);border-radius:14px;overflow:hidden;font-size:12px}
+.pos th{background:rgba(240,220,190,.6);padding:8px 6px;font-size:11.5px;text-align:center;white-space:nowrap}
+.pos th:first-child,.pos th:last-child{text-align:left;color:var(--muted)}
+.pos td{padding:6px 6px;border-bottom:1px solid rgba(160,110,60,.12);vertical-align:middle}
+.pos td.nm{font-weight:700;width:190px;line-height:1.35}.pos td.nm small{display:block;font-weight:400;font-size:10.5px;color:#7b5a3c}
+.pos td.cv{width:62px;padding:6px 3px}
+.pos .bar{display:block;height:16px;border-radius:5px;background:var(--c)}
+.pos .bar.part{background:transparent;border:2px solid var(--c);opacity:.8;background-image:repeating-linear-gradient(135deg,transparent 0 4px,rgba(0,0,0,.07) 4px 6px)}
+.pos td.uq{font-size:11.5px;line-height:1.5;color:#4a3220}
+.pos tr.grp td{background:rgba(250,236,214,.75);font-size:12px;color:var(--muted);padding:7px 10px;border-top:1px solid rgba(160,110,60,.25)}
+.pos tr.grp td b{color:var(--ink)}
+.pos tr.ar td{background:rgba(255,216,166,.5)}.pos tr.ar td.nm{color:var(--s2-text)}
+.pos tr.ar.plan td{background:rgba(255,232,200,.5)}
+.poslegend{display:flex;flex-wrap:wrap;gap:16px;font-size:12px;color:var(--muted);margin:8px 0 0}
+.poslegend .bar{display:inline-block;width:30px;height:12px;border-radius:4px;vertical-align:-1px;margin-right:6px}
+.wrap{overflow-x:auto;max-width:100%}
 </style>
 </head>
 <body>
@@ -133,33 +155,43 @@ table.mx{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px;b
 <div class="band"><b>算力与沙箱</b>:托管 runtime、容器、microVM、批量评测集群</div>
 </div>
 </div>
-<div class="sec"><h2>二、不同框架的思路和位置</h2><span>● 核心能力 · ◐ 部分具备 · ○ 不做或文档未提(不等于一定没有)</span></div>
-<div class="wrap">
-<table class="mx">
-<thead><tr><th>流派</th><th>思路</th><th>①评测</th><th>②范围</th><th>③生成选择</th><th>④执行</th><th>⑤门禁</th><th>⑥上线</th><th>隔离</th><th>观测回放</th><th>级别*</th></tr></thead>
-<tbody>
-<tr><td class="fam">进化引擎<small>AlphaEvolve · OpenEvolve · ShinkaEvolve · FunSearch · CodeEvolve</small></td><td class="idea">把问题写成「一段可改的代码 + 一个打分函数」,大规模进化搜索。评测交给用户。</td>
-<td class="m o">○<small>用户写</small></td><td class="m o">○<small>人标代码块</small></td><td class="m f">●<small>岛、MAP-Elites</small></td><td class="m o">○</td><td class="m o">○<small>文档未提</small></td><td class="m o">○</td><td class="m h">◐<small>部分有 Docker</small></td><td class="m h">◐</td><td class="lv">L1</td></tr>
-<tr><td class="fam">自修改 agent<small>DGM · HGM · HyperAgents · STOP · ADAS</small></td><td class="idea">让 agent 改自己的代码,用固定基准挑出更好的版本;少数连「改进器」也一起改。</td>
-<td class="m o">○<small>固定基准</small></td><td class="m h">◐<small>部分改改进器</small></td><td class="m f">●<small>archive、树搜索</small></td><td class="m o">○</td><td class="m h">◐<small>分阶段评测</small></td><td class="m o">○</td><td class="m h">◐<small>Docker + 警告</small></td><td class="m o">○</td><td class="lv">L1–L2</td></tr>
-<tr><td class="fam">提示词与流程优化<small>DSPy · GEPA · TextGrad · AFlow</small></td><td class="idea">把提示词、示例、工作流当成可优化参数,用验证集和反思自动改写。</td>
-<td class="m o">○</td><td class="m o">○</td><td class="m f">●<small>帕累托、贝叶斯、MCTS</small></td><td class="m o">○</td><td class="m h">◐<small>验证集选候选</small></td><td class="m o">○</td><td class="m o">○</td><td class="m h">◐</td><td class="lv">L1</td></tr>
-<tr><td class="fam">云厂商托管优化<small>AgentCore optimization · Foundry Agent Optimizer · AlphaEvolve + Harbor</small></td><td class="idea">从生产轨迹找失败,自动推荐改法;重点在「安全地上线」。</td>
-<td class="m h">◐<small>内置 + 自定义评估器</small></td><td class="m o">○<small>提示词、工具描述</small></td><td class="m f">●<small>reflector</small></td><td class="m h">◐<small>托管 runtime</small></td><td class="m f">●<small>AgentCore 报统计显著性</small></td><td class="m f">●<small>人批准、A/B、版本</small></td><td class="m f">●</td><td class="m f">●</td><td class="lv">L1</td></tr>
-<tr><td class="fam">多 agent 写软件<small>MetaGPT · ChatDev · OpenHands · CrewAI · Cursor swarm · Claude Code agent teams</small></td><td class="idea">按角色或任务树分工,把软件做出来;团队本身不改进自己。</td>
-<td class="m h">◐<small>Cursor 有 judge</small></td><td class="m o">—</td><td class="m o">—</td><td class="m f">●<small>角色流程、任务树</small></td><td class="m o">○</td><td class="m o">○</td><td class="m h">◐<small>部分 Docker</small></td><td class="m h">◐</td><td class="lv">L0</td></tr>
-<tr><td class="fam">自动科研<small>AI Scientist · autoresearch · SoL-Pi</small></td><td class="idea">端到端:想点子、做实验、写结论;部分由 AI 自己评价结果。</td>
-<td class="m h">◐<small>AI 审稿 / 固定指标</small></td><td class="m o">○</td><td class="m f">●</td><td class="m h">◐<small>跑实验</small></td><td class="m h">◐<small>算力对等</small></td><td class="m o">○</td><td class="m h">◐<small>建议容器</small></td><td class="m h">◐</td><td class="lv">L1–L3</td></tr>
-<tr><td class="fam">评测基础设施<small>Harbor · Inspect AI</small></td><td class="idea">只负责「把评测可靠地跑起来」:任务格式、并行环境、重复跑、日志。</td>
-<td class="m h">◐<small>任务格式</small></td><td class="m o">—</td><td class="m o">—</td><td class="m f">●<small>并行环境</small></td><td class="m h">◐<small>重复跑</small></td><td class="m o">○</td><td class="m f">●</td><td class="m f">●</td><td class="lv">—</td></tr>
-<tr class="argus"><td class="fam">Argus · Swarm<small>已实现</small></td><td class="idea">团队只拿到一个空数据库,<b>分工方式自己设计</b>;planner 写验收,规格门禁证明测试是真的。</td>
-<td class="m f">●<small>规格门禁</small></td><td class="m o">—</td><td class="m o">—</td><td class="m f">●<small>自组织团队</small></td><td class="m h">◐<small>批准版测试</small></td><td class="m h">◐<small>迭代轮次</small></td><td class="m f">●<small>无凭证 + 代理</small></td><td class="m f">●<small>全程回放</small></td><td class="lv">L0</td></tr>
-<tr class="argus plan"><td class="fam">Argus · Evolve<small>方案</small></td><td class="idea">引擎借用,<b>门禁自建</b>:proposer 看不到的 held-out、噪声分布、预算匹配基线、逐条退化、人审。</td>
-<td class="m o">○<small>人定并冻结</small></td><td class="m o">○<small>清单</small></td><td class="m h">◐<small>借用引擎</small></td><td class="m h">◐</td><td class="m f">●<small>含预算匹配基线</small></td><td class="m f">●<small>审批、回滚</small></td><td class="m f">●</td><td class="m f">●</td><td class="lv">L1</td></tr>
-</tbody>
-</table>
-</div>
-<p class="foot" style="text-align:left">* 级别按 AI4AI 综述的控制来源分级(作者判断):L0 不做自我改进;L1 AI 定方向;L2 AI 定可改范围;L3 AI 定评测。「文档未提」指调研时读到的 README / 文档里没写。</p>
+<div class="sec"><h2>二、每个框架站在哪几格</h2><span>颜色和上面的六块能力一一对应 · 实心 = 核心 · 斜纹 = 部分具备 · 空白 = 不做或文档未提(不等于一定没有)</span></div>
+<div class="wrap"><table class="pos"><thead><tr><th>框架</th><th style="color:#c9994e">①评测</th><th style="color:#b08842">②范围</th><th style="color:#e07a3c">③生成选择</th><th style="color:#c47057">④执行</th><th style="color:#6b9e5a">⑤门禁</th><th style="color:#7a5e9e">⑥上线</th><th style="color:#8a6a4a">隔离</th><th style="color:#8a6a4a">回放</th><th>它和别人最不一样的地方</th></tr></thead><tbody>
+<tr class="grp"><td colspan="10"><b>进化引擎</b> · 把问题写成「一段可改的代码 + 一个打分函数」,大规模进化搜索;评测交给用户。</td></tr>
+<tr><td class="nm">AlphaEvolve<small>Google Cloud 托管 · GA</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">唯一托管的进化引擎;生成在云上,评测跑在用户自己的环境</td></tr>
+<tr><td class="nm">OpenEvolve<small>开源 · Apache 2.0</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="uq">开源界的标准基线:MAP-Elites + 岛屿种群,全部可设种子复现</td></tr>
+<tr><td class="nm">ShinkaEvolve<small>Sakana · Apache 2.0</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="uq">省样本(新颖性筛选);可选 Slurm + Docker 跑评测,记录成本指标</td></tr>
+<tr><td class="nm">FunSearch<small>DeepMind · 已停更</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">开山之作,但只进化单个函数</td></tr>
+<tr class="grp"><td colspan="10"><b>自修改 agent</b> · 让 agent 改自己的代码,用固定基准挑出更好的版本;少数连「改进器」也一起改。</td></tr>
+<tr><td class="nm">DGM<small>达尔文哥德尔机</small></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#b08842"></span></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="cv"></td><td class="uq">agent 改自己的代码,开放式档案保留「差的」版本当踏脚石;分阶段评测</td></tr>
+<tr><td class="nm">HyperAgents<small>DGM-H · 非商用许可</small></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#b08842"></span></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="cv"></td><td class="uq">连负责改进的 meta agent 本身也改(L2);许可证不能商用</td></tr>
+<tr><td class="nm">STOP<small>微软研究院</small></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#b08842"></span></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="cv"></td><td class="uq">改「改进器」程序本身;论文专门统计了生成代码绕过沙箱的频率</td></tr>
+<tr><td class="nm">ADAS<small>自动设计 agent</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">用代码表示 agent,由 meta agent 搜索新设计;搜索集和测试集分开</td></tr>
+<tr class="grp"><td colspan="10"><b>提示词与流程优化</b> · 把提示词、示例、工作流当成可优化参数,用验证集和反思自动改写。</td></tr>
+<tr><td class="nm">DSPy<small>斯坦福 · MIT</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">把 LM 程序「编译」优化(如 MIPROv2 贝叶斯优化);生态最大</td></tr>
+<tr><td class="nm">GEPA<small>MIT</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">LLM 反思 + 按每道题的帕累托前沿挑候选;验证集用于选择,不是终检</td></tr>
+<tr><td class="nm">AFlow<small>MIT</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="uq">用 MCTS 搜索代码化的工作流;验证集重复跑 5 轮再选</td></tr>
+<tr class="grp"><td colspan="10"><b>云厂商托管优化</b> · 从生产轨迹找失败、自动推荐改法;重点是「安全地上线」。</td></tr>
+<tr><td class="nm">AgentCore optimization<small>AWS · 推荐 / 批量评测 / A/B 已 GA</small></td><td class="cv"><span class="bar part" style="--c:#c9994e"></span></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"><span class="bar part" style="--c:#c47057"></span></td><td class="cv"><span class="bar core" style="--c:#6b9e5a"></span></td><td class="cv"><span class="bar core" style="--c:#7a5e9e"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="uq">调研里唯一明确「报告统计显著性 + 每条推荐都要人批准」;用 configuration bundle 发布</td></tr>
+<tr><td class="nm">Foundry Agent Optimizer<small>微软 · 预览</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"><span class="bar part" style="--c:#c47057"></span></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"><span class="bar core" style="--c:#7a5e9e"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="uq">除了指令和 skills,还会优化模型选择和成本;由人决定发布</td></tr>
+<tr class="grp"><td colspan="10"><b>多 agent 写软件</b> · 按角色或任务树分工,把软件做出来;团队本身不改进自己。</td></tr>
+<tr><td class="nm">MetaGPT<small>MIT</small></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">按 SOP 预设角色流程(产品、架构、工程……)</td></tr>
+<tr><td class="nm">ChatDev<small>Apache 2.0</small></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="cv"></td><td class="uq">角色之间的「聊天链」;可在 Docker 里执行</td></tr>
+<tr><td class="nm">OpenHands<small>MIT</small></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="uq">开源编程 agent 平台,Docker 沙箱 runtime,事件流记录</td></tr>
+<tr><td class="nm">Cursor swarm<small>研究博客 + 产品</small></td><td class="cv"><span class="bar part" style="--c:#c9994e"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">planner 递归拆出 sub-planner,几百个 worker 推同一分支;每轮由 judge 决定是否继续</td></tr>
+<tr><td class="nm">Claude Code agent teams<small>实验功能</small></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="uq">lead + teammates 共享任务列表、互相发消息;默认关闭</td></tr>
+<tr class="grp"><td colspan="10"><b>自动科研</b> · 端到端:想点子、做实验、写结论;部分由 AI 自己评价结果。</td></tr>
+<tr><td class="nm">AI Scientist<small>Sakana · 带使用限制的许可</small></td><td class="cv"><span class="bar part" style="--c:#c9994e"></span></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"><span class="bar part" style="--c:#c47057"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="cv"></td><td class="uq">由 AI 自动审稿给结果打分 —— 部分「评测」交给了 AI(接近 L3)</td></tr>
+<tr><td class="nm">autoresearch<small>Karpathy · 无许可证</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#e07a3c"></span></td><td class="cv"><span class="bar part" style="--c:#c47057"></span></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="uq">极简:一个 agent 改训练代码,每次固定 5 分钟训练,变好就留</td></tr>
+<tr class="grp"><td colspan="10"><b>评测基础设施</b> · 只负责「把评测可靠地跑起来」:任务格式、并行环境、重复跑、日志。</td></tr>
+<tr><td class="nm">Harbor<small>Terminal-Bench · Apache 2.0</small></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar part" style="--c:#8a6a4a"></span></td><td class="uq">容器化评测,能并行跑上千个环境(可接 Daytona、Modal)</td></tr>
+<tr><td class="nm">Inspect AI<small>英国 AISI · MIT</small></td><td class="cv"></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="uq">评测框架:沙箱、日志,可把每题重复跑多次</td></tr>
+<tr class="grp"><td colspan="10"><b>Argus</b> · 带严格门禁的 AI 研发试验场(作者的原型)。</td></tr>
+<tr class="ar"><td class="nm">Argus · Swarm<small>已实现</small></td><td class="cv"><span class="bar core" style="--c:#c9994e"></span></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar core" style="--c:#c47057"></span></td><td class="cv"><span class="bar part" style="--c:#6b9e5a"></span></td><td class="cv"><span class="bar part" style="--c:#7a5e9e"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="uq">团队只拿到空数据库,分工方式自己设计;规格门禁证明测试是真的;无凭证沙箱 + 签名记账代理</td></tr>
+<tr class="ar plan"><td class="nm">Argus · Evolve<small>方案</small></td><td class="cv"></td><td class="cv"></td><td class="cv"><span class="bar part" style="--c:#e07a3c"></span></td><td class="cv"><span class="bar part" style="--c:#c47057"></span></td><td class="cv"><span class="bar core" style="--c:#6b9e5a"></span></td><td class="cv"><span class="bar core" style="--c:#7a5e9e"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="cv"><span class="bar core" style="--c:#8a6a4a"></span></td><td class="uq">引擎借用,门禁自建:proposer 看不到的 held-out、噪声分布、<b>预算匹配基线</b>(调研里没有别家当门禁)、人审</td></tr>
+</tbody></table></div>
+<div class="poslegend"><span><span class="bar" style="background:#e07a3c"></span>核心能力</span><span><span class="bar" style="border:2px solid #e07a3c;background-image:repeating-linear-gradient(135deg,transparent 0 4px,rgba(0,0,0,.07) 4px 6px)"></span>部分具备</span><span>空白:不做 / 文档未提</span><span><span class="bar" style="background:rgba(255,216,166,.9)"></span>Argus</span></div>
+<p class="foot" style="text-align:left">能力标注依据 2026-11-18 对官方仓库、文档和论文的调研;「文档未提」指调研时读到的 README / 文档里没写。许可证和状态写在框架名下方。</p>
 <div class="sec"><h2>三、Argus 在哪里</h2><span>作者判断</span></div>
 <div class="lead">Argus 不做模型,也不重造进化引擎;它的位置是 <b>④执行 + ⑤门禁 + ⑥上线 + 隔离 + 回放</b> 这一段 —— 一个「带严格门禁的 AI 研发试验场」</div>
 <div class="two" style="margin-top:12px">
@@ -193,10 +225,22 @@ table.mx{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px;b
 </ul>
 </div>
 </div>
-<div class="legend">
-<span><b class="f">●</b> 核心能力</span><span><b class="h">◐</b> 部分具备</span><span><b class="o">○</b> 不做 / 文档未提</span><span>— 不适用</span>
-<span><span style="display:inline-block;width:22px;height:12px;border-radius:3px;background:rgba(255,216,166,.8);vertical-align:-1px;margin-right:6px"></span>Argus 所在</span>
-</div>
+<div class="sec" id="vs-openevolve"><h2>四、Argus 和 OpenEvolve 的区别</h2><span>对照上面的六块能力</span></div>
+<table class="vs">
+<thead><tr><th>对比项</th><th>OpenEvolve</th><th>Argus</th></tr></thead>
+<tbody>
+<tr><td>覆盖哪几块</td><td>核心是 <b>③ 生成与选择改动</b>;① 打分函数和 ② 可改的代码块由用户提供;④⑤⑥ 基本不管</td><td class="ar">核心是 <b>④ 执行、⑤ 评测与晋升门禁、⑥ 上线与治理</b>,加上隔离和回放;③ 借用开源引擎</td></tr>
+<tr><td>改什么</td><td>一段代码(用 EVOLVE-BLOCK 标记),支持多种语言</td><td class="ar">agent 的提示词、工具描述、skills(清单规定可改范围);之后还要改自己团队的工作方式</td></tr>
+<tr><td>怎么生成和挑选</td><td>多个模型生成 diff;MAP-Elites + 岛屿种群、分层评测、错误反馈、全部可设种子复现</td><td class="ar">Claude Code 读失败轨迹后修改,必须写明依据和风险;选父代方法简单,计划借用引擎</td></tr>
+<tr><td>怎么算「更好」</td><td>你给的打分函数分数更高</td><td class="ar">要证明三件事:不是运气(重复跑出噪声分布)、不是多花钱(预算匹配基线)、不是钻空子(proposer 看不到的 held-out + 逐条查退化);最后人工批准</td></tr>
+<tr><td>在哪里跑</td><td>默认在用户自己可信的环境;提供 Docker 镜像,文档未讲不可信代码的隔离</td><td class="ar">沙箱里没有凭证;模型调用走代理签名、按 agent 记账;守卫和判分双容器防作弊</td></tr>
+<tr><td>单个还是团队</td><td>一个搜索循环</td><td class="ar">还有 Swarm:一群 agent 自己组织起来写软件</td></tr>
+<tr><td>上线</td><td>输出最好的程序,由用户自己处理</td><td class="ar">审批、版本、一键回滚;全程可回放</td></tr>
+<tr><td>成熟度</td><td>成熟开源项目,Apache 2.0,v0.4.1(2026-11-02),约 7.8k 星,被很多论文引用</td><td class="ar">私有原型:Swarm 已实测,Evolve 只有方案</td></tr>
+</tbody>
+</table>
+<div class="vs-sum"><b>两者不是二选一,而是互补:</b>OpenEvolve 回答「怎么找到更好的版本」,Argus 回答「怎么证明它真的更好,并且安全地用起来」。合理的分工是<b>引擎借用 OpenEvolve,门禁、隔离和回放用 Argus 自己的</b>。</div>
+<div class="legend"><span>定位图:横轴 = 改进的对象,纵轴 = 验证的严格程度</span><span><span style="display:inline-block;width:22px;height:12px;border-radius:999px;background:#ffd8a6;border:2px solid #e07a3c;vertical-align:-1px;margin-right:6px"></span>Argus(实线已实现,虚线为方案)</span><span>位置为作者判断</span></div>
 <p class="foot">各流派只列代表项目,不代表完整市场。能力标注依据 2026-11-18 对官方仓库、文档和论文的调研;Argus 是作者的原型项目(私有)。相关:<a href="../ai4ai/">AI4AI 解读(D/S/E 框架出处)</a> · <a href="../landscape/">RSI 全景</a> · <a href="../alphaevolve/">AlphaEvolve 详解</a> · <a href="../view/">我的判断</a></p>
 </div>
 <a data-cur="zh" data-to="en" href="../../en/rsi/argus/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
