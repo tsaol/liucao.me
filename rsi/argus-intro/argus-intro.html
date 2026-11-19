@@ -335,7 +335,7 @@ figure.ch .cnote{font-size:12px;color:var(--ink3);margin:2px 4px 0}
 <li><b>它的扩展实验本身就是 RSI 争论的一手数据</b>:「AI 研发人力能不能线性扩展」——这里测到了收益递减、协调开销和规划瓶颈。<span class="tag top">判断</span></li>
 <li><b>和同类框架比</b>:最接近 Evolve 的是 AgentCore optimization(改的对象几乎一样);最接近 Swarm 的是 Cursor 的 planner / worker 模式。逐个框架的对照见 <a href="https://liucao.me/rsi/argus/">业务大图</a>。</li>
 </ul>
-<p>相关页面:<a href="https://liucao.me/rsi/argus/">业务大图:各框架和 Argus 的位置</a> · <a href="https://liucao.me/rsi/guide/#c10">RSI 完整指南 · 第 10 章</a> · <a href="https://liucao.me/rsi/ai4ai/">AI4AI 解读</a></p></div></section><section class="chapter" id="a14"><div class="chead rv"><span class="big">14</span><div><span class="cn">CHAPTER 14</span><h2>已知限制和路线图</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>原型,只在作者自己的 AWS 账号里部署过;一次只能跑一个运行。</li><li>路线图:进化模块、暂停 / 恢复、扩展曲线实验、讲解模式。</li></ul></div><div class="blk rv"><h3>已知限制</h3>
+<p>相关页面:<a href="https://liucao.me/rsi/argus/">业务大图:各框架和 Argus 的位置</a> · <a href="https://liucao.me/rsi/guide/#c10">RSI 完整指南 · 第 10 章</a> · <a href="https://liucao.me/rsi/paper/ai4ai/">AI4AI 解读</a></p></div></section><section class="chapter" id="a14"><div class="chead rv"><span class="big">14</span><div><span class="cn">CHAPTER 14</span><h2>已知限制和路线图</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>原型,只在作者自己的 AWS 账号里部署过;一次只能跑一个运行。</li><li>路线图:进化模块、暂停 / 恢复、扩展曲线实验、讲解模式。</li></ul></div><div class="blk rv"><h3>已知限制</h3>
 <ul>
 <li>AgentCore 会话最长 8 小时;会话之间靠数据库和 git 恢复进度,超长运行需要换新会话接着干。</li>
 <li>hub 重启后会自动接管正在运行的运行,但重启那一刻正在进行的模型请求会被中断,那次请求的费用不会被记账;规划 / 门禁阶段被打断时需要重新开始。</li>

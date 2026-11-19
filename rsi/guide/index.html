@@ -237,7 +237,7 @@ table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;b
 <h4>图 3:在「AI for X」里的位置 —— AI for AI</h4>
 <p>放在「AI for X」里看,<b>RSI 属于 X = AI 自己的那一类,学界叫 AI for AI(AI4AI)</b>。AI4AI 综述的定义是:AI 正在改变 AI 本身的开发方式,从设计学习算法、到自动化研究流程和评测;它<b>按「发现循环里三个决定交给谁」</b>来分级 —— 搜索方向、搜索空间、评测信号;并且写明「AI4AI 可能带来递归自我改进」。</p>
 <figure class="rs-fig"><a href="../landscape/img/ai4ai-fig1.jpg" target="_blank"><img alt="AI4AI survey Figure 1" loading="lazy" src="../landscape/img/ai4ai-fig1.jpg"/></a>
-<figcaption>上:AI4AI 代表工作时间线(2016 → 2025 以后,AlphaEvolve、DGM、AI Scientist 都在里面)。左下:控制权逐步交给 AI —— L0 纯人控制 → L1 AI 定方向 → L2 AI 定搜索空间 → L3 AI 定评测。右下:四类对象 —— AI 用来改进<b>学习</b>(更新参数)、<b>推理</b>(参数冻结)、<b>数据</b>、<b>基础设施</b>(软硬件栈)。<br/>出处:Liu, Wang, Hu 等(南开、中关村学院、西安交大、上海交大、南洋理工、新加坡国立、港科大),<a href="https://ai4ai-research.github.io/" rel="noopener" target="_blank">AI4AI: Toward AI-discovered Superintelligence</a>,Figure 1。版权归原作者,此处引用并注明出处。完整解读见 <a href="../ai4ai/">一文读懂 AI4AI</a>。</figcaption></figure>
+<figcaption>上:AI4AI 代表工作时间线(2016 → 2025 以后,AlphaEvolve、DGM、AI Scientist 都在里面)。左下:控制权逐步交给 AI —— L0 纯人控制 → L1 AI 定方向 → L2 AI 定搜索空间 → L3 AI 定评测。右下:四类对象 —— AI 用来改进<b>学习</b>(更新参数)、<b>推理</b>(参数冻结)、<b>数据</b>、<b>基础设施</b>(软硬件栈)。<br/>出处:Liu, Wang, Hu 等(南开、中关村学院、西安交大、上海交大、南洋理工、新加坡国立、港科大),<a href="https://ai4ai-research.github.io/" rel="noopener" target="_blank">AI4AI: Toward AI-discovered Superintelligence</a>,Figure 1。版权归原作者,此处引用并注明出处。完整解读见 <a href="../paper/ai4ai/">一文读懂 AI4AI</a>。</figcaption></figure>
 <p>和别的 X 比,有两点不一样:<b>回路是闭合的</b>(改的是 AI 自己,改好的接着改下一轮);<b>它会放大所有别的 X</b>(AI 变强,for Science、for Math、for Code 都跟着变强)。图 2 里那条箭头写的就是「Improves &amp; Multiplies」(改进并放大),所以它更像一个「乘数」,而不是又一个应用方向。</p>
 <h4>图 4:怎样才算 RSI,而不只是「多迭代几轮」</h4>
 <figure class="rs-fig"><a href="../landscape/img/hit-rsi-survey-fig3.jpg" target="_blank"><img alt="RSI survey Figure 3" loading="lazy" src="../landscape/img/hit-rsi-survey-fig3.jpg"/></a>
@@ -267,13 +267,13 @@ table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;b
 <li><b>钱花在哪</b>:一轮约 $856,其中 <b>97.7% 是评测</b>。改菜谱 5 分钟,但每个新菜谱都要请 200 个客人试吃。</li>
 <li><b>结论</b>:能自我改进 ≠ 能自我验证。运动员可以自己练,不能自己当裁判。</li>
 </ul>
-</div></section><section class="chapter" id="c3"><div class="chead"><span class="cn">第 3 章</span><h2>谁掌握决定:AI4AI 的控制梯子</h2><span class="from">原页面:<a href="../ai4ai/">AI4AI 解读</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>衡量研究自主权,<mark>看哪些决定是 AI 做的</mark>,不看执行了多少任务。</li><li>三个决定:方向(D)、空间(S)、评测(E);按 E &gt; S &gt; D 定 L0–L3,判定靠<mark>反事实检验</mark>。</li><li>FunSearch、AlphaEvolve 是 L1;Eureka、Constitutional AI 是 L3,但 <mark>L3 ≠ 全自主</mark>。</li></ul></div><div class="blk" id="ai4ai-s1">
+</div></section><section class="chapter" id="c3"><div class="chead"><span class="cn">第 3 章</span><h2>谁掌握决定:AI4AI 的控制梯子</h2><span class="from">原页面:<a href="../paper/ai4ai/">AI4AI 解读</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>衡量研究自主权,<mark>看哪些决定是 AI 做的</mark>,不看执行了多少任务。</li><li>三个决定:方向(D)、空间(S)、评测(E);按 E &gt; S &gt; D 定 L0–L3,判定靠<mark>反事实检验</mark>。</li><li>FunSearch、AlphaEvolve 是 L1;Eureka、Constitutional AI 是 L3,但 <mark>L3 ≠ 全自主</mark>。</li></ul></div><div class="blk" id="ai4ai-s1">
 <h3>一、先分清两件事：「执行流程」和「掌握决定」</h3>
 <div class="key"><span class="kl">要点</span>本节关键信息<ul><li>衡量研究自主权,<mark>看 AI 做了哪些决定,不看它执行了多少任务</mark>。<span class="src">§1</span></li><li>AI4AI 的硬性条件:AI 要实质参与发现,而不只是执行写好的流程。<span class="src">§2.1</span></li></ul></div>
 <p>AI4AI（AI for AI）就是用 AI 来发现和改进 AI 系统本身。论文把它看作 AI for Science 的分支，只是研究对象换成了 AI 自己。硬性条件是：AI 要<strong>实质参与发现</strong>，而不只是跑写好的流程。</p>
 <p>自动化的范围确实在变大：从超参数搜索、AutoML（自动机器学习）、神经架构搜索，到 FunSearch、AlphaEvolve 自动改程序，再到 prompt 和 agent 结构也能自动优化；The AI Scientist 甚至把想点子、做实验、写报告串成了一条流水线。</p>
 <p>但论文提醒：<strong>自动化范围变大，不等于研究自主权变大</strong>。人可能仍决定研究什么问题、允许改哪里、什么算成功。反过来，也可能人亲手做实验，而 AI 已经在改写「什么算进步」。</p>
-<figure class="rs-fig"><a href="../ai4ai/img/survey-overview.jpg" target="_blank"><img alt="AI4AI 综述总览图" loading="lazy" src="../ai4ai/img/survey-overview.jpg"/></a><figcaption>图1:综述总览。上方是 AI4AI 代表工作的时间线;左下是发现循环的控制权逐步交给 AI(L0 到 L3);右下是四类改进对象。(图源:AI4AI 综述项目页,Figure 1)</figcaption></figure>
+<figure class="rs-fig"><a href="../paper/ai4ai/img/survey-overview.jpg" target="_blank"><img alt="AI4AI 综述总览图" loading="lazy" src="../paper/ai4ai/img/survey-overview.jpg"/></a><figcaption>图1:综述总览。上方是 AI4AI 代表工作的时间线;左下是发现循环的控制权逐步交给 AI(L0 到 L3);右下是四类改进对象。(图源:AI4AI 综述项目页,Figure 1)</figcaption></figure>
 </div><div class="blk" id="ai4ai-s2">
 <h3>二、三个决定，一张责任档案</h3>
 <div class="key"><span class="kl">要点</span>本节关键信息<ul><li>发现循环里有三个决定:<mark>方向(D)、空间(S)、评测(E)</mark>。<span class="src">§1 · Figure 2</span></li><li>按 <mark>E &gt; S &gt; D</mark> 的优先顺序定级:评测是 AI 定的就是 L3。<span class="src">§3.6</span></li><li>梯子描述的是<mark>控制从哪来,不是能力有多强</mark>。<span class="src">§1 · §3.6</span></li></ul></div>
@@ -283,7 +283,7 @@ table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;b
 <li><strong>搜索空间（S）</strong>：能改什么。好比变更白名单：哪些配置项、哪些模块允许动。</li>
 <li><strong>评测信号（E）</strong>：什么算进步。好比验收用的 SLO 和回归测试。</li>
 </ul>
-<figure class="rs-fig"><a href="../ai4ai/img/control-framework.jpg" target="_blank"><img alt="AI4AI 控制框架" loading="lazy" src="../ai4ai/img/control-framework.jpg"/></a><figcaption>图2:控制框架。上面三栏是方向、空间、评测三个控制变量;下面是发现循环:证据来源进入「生成、评测、更新」,再回到迭代改进。(图源:AI4AI 综述 Figure 2)</figcaption></figure>
+<figure class="rs-fig"><a href="../paper/ai4ai/img/control-framework.jpg" target="_blank"><img alt="AI4AI 控制框架" loading="lazy" src="../paper/ai4ai/img/control-framework.jpg"/></a><figcaption>图2:控制框架。上面三栏是方向、空间、评测三个控制变量;下面是发现循环:证据来源进入「生成、评测、更新」,再回到迭代改进。(图源:AI4AI 综述 Figure 2)</figcaption></figure>
 <p>每个系统可以记一张<strong>责任档案</strong> ⟨D, S, E⟩。每一项标 H 或 A。注意，<strong>H 不只指人，也包括外部固定的东西</strong><span class="src">§3.5</span>，比如固定的基准测试、固定的评测器；A 指 AI 原创或实质修改的决定。</p>
 <p>按最高的 AI 决定分四级：</p>
 <ul>
@@ -325,7 +325,7 @@ table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;b
 <li><strong>L2</strong>：更丰富的表示不一定带来更好用的搜索空间，观察到的收益可能只是多采样了几次。</li>
 <li><strong>L3</strong>：特殊之处在于，<mark><strong>评测器本身成了优化回路里可变的一环，评测的错误会变成选择压力</strong></mark><span class="src">§6.5 · §9</span>。在固定候选上表现良好的信号，在持续优化下可能变得不可靠；大模型评委本身有系统性偏差<span class="src">§6.5</span>，比如位置偏差、偏爱自己的输出，多个评委集成也不能消除共享的盲区。</li>
 </ul>
-<figure class="rs-fig"><a href="../ai4ai/img/l3-evaluation-mechanism.jpg" target="_blank"><img alt="AI 构造评测器的机制" loading="lazy" src="../ai4ai/img/l3-evaluation-mechanism.jpg"/></a><figcaption>图3:L3 的机制。人提供任务说明、示例和约束作为锚点;AI 生成或修改测试、判分方式、汇总方式和阈值;评测结果决定选择或训练,产生新证据。底部是独立验证:冻结的外部评测器、留出测试、跨模型或专家检查。(图源:AI4AI 综述项目页)</figcaption></figure>
+<figure class="rs-fig"><a href="../paper/ai4ai/img/l3-evaluation-mechanism.jpg" target="_blank"><img alt="AI 构造评测器的机制" loading="lazy" src="../paper/ai4ai/img/l3-evaluation-mechanism.jpg"/></a><figcaption>图3:L3 的机制。人提供任务说明、示例和约束作为锚点;AI 生成或修改测试、判分方式、汇总方式和阈值;评测结果决定选择或训练,产生新证据。底部是独立验证:冻结的外部评测器、留出测试、跨模型或专家检查。(图源:AI4AI 综述项目页)</figcaption></figure>
 <p>所以独立验证几乎是 L3 的底线：<strong>冻结的外部评测器</strong>（锁定版本、被优化的系统看不到也改不了的测试集）、优化过程从没见过的留出测试、跨模型和专家复核。</p>
 </div><div class="blk" id="ai4ai-s6">
 <h3>六、和 RSI 的关系：证据门槛很高</h3>
@@ -336,7 +336,7 @@ table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;b
 </div><div class="blk" id="ai4ai-s7">
 <h3>七、四类改进对象（和级别是两条独立的轴）</h3>
 <div class="key"><span class="kl">要点</span>本节关键信息<ul><li>「改什么」(四类对象)和「谁做决定」(L0–L3)是<mark>两条独立的轴</mark>。<span class="src">Figure 10</span></li></ul></div>
-<figure class="rs-fig"><a href="../ai4ai/img/applications-overview.jpg" target="_blank"><img alt="AI4AI 应用全景" loading="lazy" src="../ai4ai/img/applications-overview.jpg"/></a><figcaption>图4:按改进对象划分的四个应用族。(图源:AI4AI 综述项目页)</figcaption></figure>
+<figure class="rs-fig"><a href="../paper/ai4ai/img/applications-overview.jpg" target="_blank"><img alt="AI4AI 应用全景" loading="lazy" src="../paper/ai4ai/img/applications-overview.jpg"/></a><figcaption>图4:按改进对象划分的四个应用族。(图源:AI4AI 综述项目页)</figcaption></figure>
 <p>除了「谁做决定」，论文还按「改的是什么」整理应用。这条轴和 L0 到 L3 互相独立，同一族里的方法级别可以完全不同：</p>
 <ul>
 <li><strong>Learning（学习）</strong>：改会更新模型参数的东西，比如训练流水线、架构、优化器、学习规则、奖励。</li>
@@ -954,7 +954,7 @@ table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;b
 <a class="rs-card" href="../landscape/"><div class="k">全景 · 2026-11</div><div class="t">领域进展 + 云厂商竞争</div><div class="d">前沿实验室、Google / 微软 / AWS、行业实践</div></a>
 <a class="rs-card" href="../capital/"><div class="k">资本视角 · 2026-11</div><div class="t">跟着算力的钱走</div><div class="d">谁投了谁、钱流回哪朵云、估值和退出</div></a>
 <a class="rs-card" href="../alphaevolve/"><div class="k">详解 · 2026-11</div><div class="t">AlphaEvolve 是什么</div><div class="d">怎么工作、做成了什么、企业怎么用、和 RSI 的关系</div></a>
-<a class="rs-card" href="../ai4ai/"><div class="k">论文解读 · 2026-11</div><div class="t">一文读懂 AI4AI</div><div class="d">方向、空间、评测三个决定和 L0–L3 控制梯子</div></a>
+<a class="rs-card" href="../paper/ai4ai/"><div class="k">论文解读 · 2026-11</div><div class="t">一文读懂 AI4AI</div><div class="d">方向、空间、评测三个决定和 L0–L3 控制梯子</div></a>
 <a class="rs-card" href="../argus/"><div class="k">业务大图 · 2026-11</div><div class="t">AI 自动研发:各框架和 Argus 的位置</div><div class="d">六块业务能力 · 7 类框架的思路和覆盖 · 定位图</div></a>
 <a class="rs-card" href="../argus-intro/"><div class="k">介绍 · 2026-11</div><div class="t">Argus 百眼:AI 团队自己写软件</div><div class="d">怎么工作、防作弊和安全、2–128 人实验结论、Evolve 方案</div></a>
 <a class="rs-card" href="../view/"><div class="k">判断 · 2026-11</div><div class="t">站在 SA 的角度看 RSI</div><div class="d">6 条判断 + 反方论证 + 客户算账 + 可打分的预测(个人观点)</div></a>
@@ -1024,7 +1024,7 @@ table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;b
 </div><div class="blk" id="hub-trend">
 <h3>⑥ 一句话趋势</h3>
 <div class="lead">国内主力也在 <b>harness / agent 层(冻结权重)</b> 和 <b>好验证的领域(数学、代码、芯片)</b>。最新几篇(字节 HarnessDev、华为 HarnessEvolve、DeepSeekMath-V2)都把重点放在 <b>「怎么验证」</b> 上 —— 和本场「能自我改进 ≠ 能自我验证」一致。</div>
-</div></section><section class="chapter" id="c15"><div class="chead"><span class="cn">第 15 章</span><h2>来源</h2><span class="from">原页面:<a href="../ai4ai/#critique">AI4AI 解读的参考资料</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>各章内容的原始出处;每张图的出处和授权写在图下方。</li></ul></div><div class="blk" id="landscape-sources">
+</div></section><section class="chapter" id="c15"><div class="chead"><span class="cn">第 15 章</span><h2>来源</h2><span class="from">原页面:<a href="../paper/ai4ai/#critique">AI4AI 解读的参考资料</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>各章内容的原始出处;每张图的出处和授权写在图下方。</li></ul></div><div class="blk" id="landscape-sources">
 <h3>RSI 全景的来源</h3>
 <h4>定义和大图(第 ① 节)</h4>
 <ul class="small">

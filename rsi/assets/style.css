@@ -260,6 +260,8 @@ a { color: var(--accent); text-decoration: none; }
 @media (max-width: 600px) {
     .nav { padding: 0.85rem 1rem; }
     .nav .links a { padding: 0.4rem 0.6rem; font-size: 0.85rem; }
+    .nav { gap: 0.5rem; }
+    .nav .links { flex-wrap: wrap; justify-content: flex-end; row-gap: 0.15rem; min-width: 0; }
     .hero { padding-top: 3.5rem; }
 }
 
