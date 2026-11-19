@@ -386,7 +386,7 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="cards3">
 <div class="cardx pp"><div class="t">复旦 · 桂韬、姜育刚等</div><div class="k">AHE</div><div class="d">把 coding agent 的 harness 拆成七类组件(七个固定挂载点),按「哪里出错」映射到「哪里可改」。<mark>最接近我们 Harvey 实验的做法</mark>。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2604.25850">AHE</a></div></div>
 <div class="cardx pp"><div class="t">字节 Seed 等</div><div class="k">HarnessDev</div><div class="d">测模型能不能自己搭 harness、再自己进化。结论偏冷静:有提升但不稳定,迁移到新任务有限;自我评判几乎预测不了下一轮提升。<b>适合用来泼冷水</b>。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2609.01437">HarnessDev</a></div></div>
-<div class="cardx pp"><div class="t">字节、清华、上海 AI Lab 等 35 人</div><div class="k">The Last AI Built by Humans</div><div class="d">给 RSI 分五级自主(L1–L5),今天的云产品停在 L2,AlphaEvolve 被放在 B0。<b>拿来给自己定坐标</b>。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2609.11873">Last AI</a></div></div>
+<div class="cardx pp"><div class="t">字节、清华、上海 AI Lab 等 35 人</div><div class="k">The Last AI Built by Humans</div><div class="d">给 RSI 分五级自主(L1–L5),今天的云产品停在 L2,AlphaEvolve 被放在 B0。<b>拿来给自己定坐标</b>。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2609.11873">Last AI</a> · <a href="../paper/lastai/">中文解读</a></div></div>
 </div></div>
 <div class="blk rv"><h3>先立坐标:三篇必读综述</h3>
 <div class="cards3">
@@ -399,7 +399,7 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <li><b>入门(1 小时)</b>:autoresearch 的 README;Lilian Weng 的 Harness Engineering 长文。</li>
 <li><b>每条线读一篇代表作</b>:A 线读 DGM,B 线读 AlphaEvolve,C 线读 Meta-Harness。三篇读完,三条线就都串起来了。</li>
 <li><b>对标我们</b>:AHE(harness 怎么拆)、ShinkaEvolve(引擎怎么用)。</li>
-<li><b>定坐标</b>:上面两篇综述(2607.13104、2607.07663)、Last AI(分级)、<a href="../paper/ai4ai/">AI4AI 解读</a>(看「谁做决定」而不是「谁执行」)。</li>
+<li><b>定坐标</b>:上面两篇综述(2607.13104、2607.07663)、Last AI(分级,<a href="../paper/lastai/">中文解读</a>)、<a href="../paper/ai4ai/">AI4AI 解读</a>(看「谁做决定」而不是「谁执行」)。</li>
 <li><b>泼冷水</b>:HarnessDev;以及 Phantom Gains(未训练的模型也会因为批处理伪影「凭空变强」)。</li>
 </ol>
 <p class="dim small">作者和机构都按 arXiv 页面核对过。更全的论文表见 <a href="../demo/papers/">Papers</a> 和 <a href="../guide/">RSI 全景长文</a>。</p></div></section><section class="chapter" id="c5"><div class="chead rv"><span class="big">06</span><div><span class="cn">CHAPTER 06</span><h2>三个场景:哪里的「验」越可信,哪里先落地</h2><span class="tchip">⏱ 10:30–18:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>Infra:指标最客观。coding agent 自己诊断并调配置,decode 吞吐 +86%。</li><li>Agent:Harvey 法律 agent 81.5% → 89.5%,<mark>门真的拦下过泄漏和花钱买分</mark>。</li><li>Software:128 个 agent 一起写软件;<mark>最好的组织方式取决于产品的耦合度</mark>。但现在改的是软件,还不是工厂本身。</li></ul></div>

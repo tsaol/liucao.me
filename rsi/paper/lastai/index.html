@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>一文读懂 RSI 自主性阶梯：从 B0 到 L5，今天的 AI 和云产品卡在哪一级 · 论文解读 · 2026-11</title>
+<link href="../../assets/style.css" rel="stylesheet"/>
+<style>
+:root{--rs-bg:#0B0D12;--rs-bg2:#12151d;--rs-ink:#E6EAF2;--rs-dim:#8A94A6;--rs-cold:#4CC2FF;--rs-warm:#FFB020;--rs-ok:#38D39F;--rs-line:#232a36;
+--rs-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+--rs-mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+body{background:var(--rs-bg)}
+main.rs-wrap{color:var(--rs-ink);font-family:var(--rs-sans);font-size:17px;line-height:1.8;max-width:980px;margin:0 auto;padding:4vh 5vw 12vh}
+main.rs-wrap h1{font-size:36px;line-height:1.25;margin:0 0 .3em}
+main.rs-wrap h2{font-size:24px;margin:0 0 .9em;color:var(--rs-cold)}
+main.rs-wrap h3{font-size:18px;margin:1.6em 0 .6em;color:var(--rs-ink)}
+main.rs-wrap section{border-top:1px solid var(--rs-line);padding:2.4em 0;scroll-margin-top:56px}
+main.rs-wrap section.head{border-top:none;padding-top:0}
+main.rs-wrap p{margin:0 0 1em}
+main.rs-wrap b{color:var(--rs-warm);font-weight:600}
+main.rs-wrap a{color:var(--rs-cold);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.5)}
+main.rs-wrap a:hover{border-bottom-style:solid}
+main.rs-wrap .dim{color:var(--rs-dim)}
+main.rs-wrap .small{font-size:14px}
+main.rs-wrap code{font-family:var(--rs-mono);font-size:.86em;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:4px;padding:0 .3em}
+main.rs-wrap ul{margin:0 0 1em;padding-left:1.3em}
+main.rs-wrap li{margin:.35em 0}
+main.rs-wrap .lead{font-size:21px;line-height:1.6;padding:1em 1.2em;border-left:3px solid var(--rs-warm);background:var(--rs-bg2);border-radius:0 8px 8px 0;margin:1.2em 0}
+main.rs-wrap .note{font-size:14px;color:var(--rs-dim);background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.7em 1em;margin:1em 0}
+.rs-toc{position:sticky;top:0;z-index:5;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--rs-line);display:flex;gap:1.2em;justify-content:center;flex-wrap:wrap;padding:.55em 1em;font-size:14px}
+.rs-toc a{color:var(--rs-dim);text-decoration:none}
+.rs-toc a:hover{color:var(--rs-cold)}
+.rs-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:1.2em 0}
+.rs-card{display:block;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:1em 1.1em;color:var(--rs-ink)!important;border-bottom:1px solid var(--rs-line)!important;transition:border-color .2s}
+.rs-card:hover{border-color:var(--rs-cold)!important}
+.rs-card .k{font-size:13px;color:var(--rs-dim)}
+.rs-card .t{font-size:18px;font-weight:600;margin:.2em 0}
+.rs-card .d{font-size:14px;color:var(--rs-dim);line-height:1.6}
+.rs-q{background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:.2em 1.1em;margin:.8em 0}
+.rs-q summary{cursor:pointer;font-weight:600;padding:.7em 0;list-style:none}
+.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:var(--rs-warm)}
+.rs-q[open] summary::before{content:"− "}
+.rs-q > div{padding:0 0 .8em}
+table.rs-t{width:100%;border-collapse:collapse;font-size:15px;margin:.6em 0 1.2em}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--rs-line);padding:.55em .5em;text-align:left;vertical-align:top}
+table.rs-t th{color:var(--rs-dim);font-weight:500;font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--rs-line);border-radius:999px;padding:0 .6em;color:var(--rs-dim);margin-right:.3em;white-space:nowrap}
+.tag.top{color:var(--rs-warm);border-color:rgba(255,176,32,.5)}
+.tag.ok{color:var(--rs-ok);border-color:rgba(56,211,159,.5)}
+pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7;color:var(--rs-ink)}
+@media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
+@media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
+.rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
+    .rs-fig{margin:1em 0 1.6em}.rs-fig img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;border:1px solid var(--rs-line)}.rs-fig figcaption{font-size:13px;color:var(--rs-dim);line-height:1.65;margin-top:.6em}.rs-fig a{border-bottom:none}
+.rs-tl{border-left:2px solid var(--rs-line);margin:1em 0 1.4em;padding-left:1em}.rs-tl>div{margin:.55em 0;font-size:15px}.rs-tl .y{display:inline-block;min-width:6.5em;color:var(--rs-cold);font-family:var(--rs-mono);font-size:13px}
+main.rs-wrap a{overflow-wrap:anywhere}
+.key{background:rgba(255,176,32,.08);border:1px solid rgba(255,176,32,.35);border-left:4px solid var(--rs-warm);border-radius:0 8px 8px 0;padding:.7em 1em;margin:.2em 0 1.2em}
+.key .kl{display:inline-block;font-size:12px;font-weight:700;color:#111;background:var(--rs-warm);border-radius:4px;padding:0 .45em;margin-right:.5em}
+.key ul{margin:.4em 0 0;padding-left:1.2em}.key li{margin:.25em 0}
+main.rs-wrap mark{background:rgba(255,176,32,.22);color:var(--rs-ink);padding:0 .15em;border-radius:3px}
+.src{display:inline-block;font-family:var(--rs-mono);font-size:11.5px;color:var(--rs-cold);border:1px solid rgba(76,194,255,.4);border-radius:4px;padding:0 .35em;margin-left:.3em;vertical-align:1px;white-space:nowrap}
+.legend{font-size:13px;color:var(--rs-dim);margin:.6em 0 0}
+@media print{.key{background:#fff8ec}main.rs-wrap mark{background:#ffe9b8;color:#111}}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../../">← RSI 资料包</a>
+<a href="../../view/">我的判断</a>
+<a href="../../landscape/">RSI 全景</a>
+<a href="../../demo/play/">Play</a>
+<a href="../../talk/">RSI 分享</a>
+<a href="../">论文解读</a>
+</div>
+</nav>
+<div class="rs-toc">
+<a href="#s1">RSI 是什么</a>
+<a href="#s2">HCI</a>
+<a href="#s3">B0–L5 阶梯</a>
+<a href="#s4">四个领域</a>
+<a href="#s5">八个案例</a>
+<a href="#s6">挑战与方向</a>
+<a href="#s7">三种读法</a>
+<a href="#critique">锐评</a>
+</div>
+<main class="rs-wrap">
+<section class="head">
+<h1>一文读懂 RSI 自主性阶梯：从 B0 到 L5，今天的 AI 和云产品卡在哪一级</h1>
+<p class="dim">论文解读 · 《The Last AI Built by Humans: Toward Genuine Recursive Self-Improvement》(上海交大、Theseus Labs、清华、字节跳动、面壁智能、小红书、上海 AI Lab、Humanlaya 等,arXiv 2609.11873,v3 2026-09-22,79 页)。按 ai-writing 的论文解读流程写成:原文抽取 → 初稿 → 润色 → 对照原文审稿 → 修改 → Kimi 润色 → 锐评 → 去 AI 味。整理于 2026-11-19。</p>
+<p>厂商都爱说自家 AI「能自我进化」：自动改 prompt、自动攒技能、自动调训练配方。但改的是单次回答，还是系统本身？改完的东西下次还在吗？改进的方法自己有没有变强？</p>
+<p>上海交大联手 Theseus Labs，拉上了清华、字节、面壁智能（ModelBest）、小红书、上海 AI 实验室、Humanlaya 等，写了份 79 页的报告《The Last AI Built by Humans: Toward Genuine Recursive Self-Improvement》（人类造的最后一个 AI：走向真正的递归自我改进，arXiv 2609.11873，v3 发布于 2026 年 9 月 22 日）。它给「AI 改进自己」搭了六级台阶：B0、L1 到 L5。这篇按原文顺序讲清这把尺子，以及它对今天的大模型、四个应用场景、八家公司的实践说了什么。</p>
+<p class="legend">标注说明:每节开头的「要点」框是这一节最该记住的 2–3 条；<mark>高亮</mark> 是核心结论；<span class="src">[§5.2]</span>、<span class="src">[Figure 3]</span>、<span class="src">[Table 9]</span> 这类标签指向原论文的章节和图表，方便对照 PDF 核对；标「公司自报」「内部评测」的数字由案例方自己提供，论文没有给出独立复现。图片均为论文原图整图裁切，许可 CC BY-NC-ND 4.0。</p>
+<div class="note">原文:<a href="https://arxiv.org/abs/2609.11873" rel="noopener" target="_blank">arXiv 页面</a> · <a href="https://arxiv.org/pdf/2609.11873" rel="noopener" target="_blank">PDF</a> · <a href="https://theseus-labs-rsi.github.io/" rel="noopener" target="_blank">项目主页</a>。文中图片均为论文原图整图裁切,许可 CC BY-NC-ND 4.0,版权归原作者。相关:<a href="../ai4ai/">AI4AI 解读</a>、<a href="../../talk/">RSI 分享</a>、<a href="../../landscape/#what">RSI 全景 ①</a>(本文 Figure 1 也出现在那里)。</div>
+</section>
+<section id="s1">
+<h2>一、RSI 在这篇论文里指什么</h2>
+<div class="key"><span class="kl">要点</span><ul><li>RSI 不是某个算法，而是一个闭环：AI 找到自己的不足，做出改进并验证，改进结果持久保留，<mark>并且能反过来改变「以后怎么改进」</mark>。</li><li>论文把「改进循环」当作分析单位，每个系统都问三个问题：循环在哪里闭合？什么被保留下来？哪些决定还在人手里？</li><li>三个老难题：改进能不能安全继承、功劳算谁的、评测会不会被钻空子。</li></ul></div>
+<p><strong>定义。</strong> 递归自我改进（Recursive Self-Improvement，RSI）说的是：AI 系统持续跟任务、环境或其他智能体打交道，把经验和反馈变成对自己的持久改动。这些改动可以是模型参数、agent 外围框架，也可以是改进策略本身。关键是它们还能影响后面「生成、评测、选择、固化」改进的机制 <span class="src">[§2.2.2]</span>。目标是扩大能力边界、提高资源效率，或者找出人没想到的方案 <span class="src">[§2.2.2]</span>。</p>
+<p>论文开头举了两个例子 <span class="src">[§1.2]</span>。第一个是基础模型训练。普通实验循环只挑更好的 checkpoint，A-Evolve-Training 却把后训练结果沉淀成持久的「研究策略」和发现日志，让元 agent 修订后指导下一轮。第二个是部署后的编码 agent。修好一个仓库只是改了软件产品，Ouroboros 则用经过审核的部署证据，对 agent 自己的工具、上下文组装、prompt 乃至核心实现提出版本化修改。这些修改通过测试和人工审核后才替换运行时，重要的修正和上线仍由专家控制。</p>
+<p>用运维的话说：值班工程师修好一次故障，是「改了输出」；把修法写成 runbook 下次照着做，是「改了系统」；发现 runbook 的写法本身有问题，改了写 runbook 的流程，才是「改了改进的方法」。RSI 关心的是最后这一层能不能由 AI 自己完成。</p>
+<p><strong>改进循环的零件。</strong> 论文把一个循环拆成几块 <span class="src">[§2.2.1]</span>。可以对照 CI/CD 来记：改进器像写补丁的工程师，策略是他决定先修哪里的办法，验证器是 CI 测试加评审人，「改进」是被合并的 PR，后继者是带着新代码发布的下一个版本。</p>
+<ul>
+<li><strong>系统状态</strong>：这一轮结束时保留下来的东西，交给下一轮。</li>
+<li><strong>经验</strong>：之前交互得到的信息，比如一次测试失败、一条审阅意见。</li>
+<li><strong>目标</strong>：这一轮直接修改的对象，比如一个排序函数。</li>
+<li><strong>改进器</strong>：把当前状态和经验变成候选修改的机制。</li>
+<li><strong>策略</strong>：改进器决定去哪找、怎么生成候选的方法。</li>
+<li><strong>验证器</strong>：评估候选并执行「接受规则」的机制，可以是基准分、单元测试、奖励模型、人工反馈。</li>
+<li><strong>改进</strong>：通过接受规则、被保留并进入下一轮状态的修改。</li>
+<li><strong>后继者</strong>：继承了改进、带着新状态进入下一轮的系统。</li>
+</ul>
+<p><strong>三个难题</strong> <span class="src">[§1.3]</span>：</p>
+<p><strong>安全继承</strong>。改动要能跨任务保留，但保留不等于持续变好。Gödel Agent 会同时重写任务策略和改进逻辑，但在 MGSM 上的 100 次优化试验里，有 14% 最后比初始策略还差。</p>
+<p><strong>自主归因</strong>。生成了更好的候选，不等于系统学会了更好地找候选。Darwin Gödel Machine（DGM）把 SWE-bench 子集上的成绩从 20% 提到 50%，但它的存档维护和「选谁当父代」的规则并不在自我修改范围内。</p>
+<p><strong>可靠验证</strong>。反复访问评测器，可能奖励的是钻空子而不是真本事。Anthropic 的自动研究实验就报告过挑随机种子、试图通过反复查询评测器套取测试标签的行为。Red Queen Gödel Machine（RQGM）的做法是：每个阶段内冻结评测器，换评测器时用独立的标准答案做锚点来检验。这像考试委员会：一个学期内评分标准不变，只在学期之间换标准，而且新标准要先用一套公认答案校准。</p>
+<p><strong>和相邻概念的区别</strong> <span class="src">[§2.2.3, Table 1]</span>。持续学习（continual learning）能跨轮保留知识，但学习目标、更新规则、验收标准通常由设计者固定。AutoML 能自动选模型、调超参，但搜索空间、目标和评测器是事先给定的。Agentic AI 能规划、调工具、跑实验，但可能只在一个任务回合内运行，外围框架、工具和停止规则保持不变。Table 1 里只有 RSI 一栏同时把「机制修订」和「机制复用」作为核心目标。<mark>论文的判断标准不是「AI 有没有参与 AI 开发」，而是「系统周围有没有形成一个持久的改进循环，以及这个循环里有多少决定权已经交给了 AI 自己」</mark> <span class="src">[§2.2.3]</span>。</p>
+</section>
+<section id="s2">
+<h2>二、HCI：今天的大模型差在哪</h2>
+<div class="key"><span class="kl">要点</span><ul><li>HCI（Headroom-Closed Index，剩余空间闭合指数）把不同基准的分数换成同一把尺子：0 = 该基准刚进入数据集那年的前沿水平，100 = 满分。</li><li><mark>有边界、好验证的能力（数学、研究生科学）已到 86 左右；长流程、要和环境交互的能力（软件工程、工具使用）只有 40–57</mark>。</li><li>论文据此认为，RSI 最有价值的地方正是这些剩余空间大的交互式领域；但图里 2026 年之后的部分只是示意，不是预测。</li></ul></div>
+<p><strong>数据怎么来的。</strong> 论文收集了 2023 年到 2026 年 9 月发布的模型，在 10 个能力领域上共 393 条「模型-基准」观测 <span class="src">[§2.1]</span>。只有基准版本和评测框架稳定（或能找到可靠桥接）的结果才放进同一条曲线。最新模型审计的 33 条结果里只收了 17 条，另外 16 条（来自 Terminal-Bench、DeepSWE、CyberGym 等）因为版本或设置对不上，只留作参考。同一结果有多个来源时做加权平均：基准方官方榜、独立统一框架评测、综合报告、模型作者自己的表，权重分别是 3、2.5、2、1，模型方自报的数再乘 0.75，压低自报结果的影响。不过这个降权只在同一结果有多个来源时起作用，只有一个来源时，自报分数会原样进入曲线 <span class="src">[§2.1, 公式 1]</span>。</p>
+<p><strong>HCI 怎么算。</strong> 对每个基准，先取它进入数据集那一年所有模型分数的第 90 百分位，记作起点 F。某模型的 HCI = 100 ×（模型分数 − F）÷（100 − F）<span class="src">[公式 2]</span>。直白地说：起点到满分之间的空白，这个模型填上了百分之几。比如起点是 60 分，模型考 80 分，就填上了 40 分空白里的 20 分，HCI = 50。起点取第 90 百分位，相当于用「那年前 10% 模型的成绩」当起跑线。合并成领域曲线时，参评模型多的基准话语权大一些，但按模型数的平方根加权，防止一个超大榜单说了算 <span class="src">[公式 3]</span>。</p>
+<figure class="rs-fig"><a href="img/fig3-hci.webp" target="_blank"><img alt="Figure 3 HCI 能力轨迹" loading="lazy" src="img/fig3-hci.webp"/></a><figcaption>图 1（论文 Figure 3）：各能力领域的年度前沿 HCI 轨迹。纵轴 0 为基准进入年份的前沿，100 为满分；右侧阴影是「RSI 加持」的示意外推。来源：Duan et al., arXiv 2609.11873, Figure 3；许可 CC BY-NC-ND 4.0，仅整图裁切，未作修改。</figcaption></figure>
+<p><strong>三个观察</strong> <span class="src">[§2.1]</span>：</p>
+<ul>
+<li><strong>进步的幅度和节奏都不一样。</strong> 到 2026 年，高等数学 HCI 86.4、研究生科学 85.8、广义知识 77.2；法律推理 64.5、多模态推理 62.2、前沿学术广度 60.4。节奏也不同：广义知识三年分别涨了 32.8、26.9、17.6，越涨越慢；法律推理从 2024 年涨 48.2 降到 2025 年 11.4、2026 年 4.9；高等数学反而加速，从 2025 年涨 32.8 到 2026 年涨 53.6；多模态 2025 年涨 59.7，2026 年只涨 2.5。</li>
+<li><strong>交互式能力差距最大。</strong> 2026 年软件工程 52.6、搜索与终端 agent 56.8、工具使用 agent 39.9，分别比研究生科学低 33.2、29.1、45.9。工具 agent 在 2026 年从 8.2 涨到 39.9，但仍是最低的一条线。网络安全 agent 最高到 91.9，不过论文提醒，后期的 Cybench 数据换了题目子集或改用 pass@1（只试一次就要做对）统计（图中虚线），比较要谨慎。论文的解释是：这类任务要规划、跟踪环境状态、选工具、读结果、改后续动作，<mark>错误会沿着整条轨迹传下去，所以在有边界、好验证的环境里取得的进步，没有自动迁移到长流程、有状态的工作上</mark>。论文还把这三类能力和阶梯对应起来：有边界的评测主要考 L1–L2，环境类任务越来越需要 L2–L3，交互式工作流则暴露了 L3–L4 需要的验证、记忆和适应能力。</li>
+<li><strong>剩余空间越大，RSI 潜在价值越大。</strong> 图右侧阴影区用一个简单公式画终点：终点 = 100 − 0.22 ×（100 − 2026 年 HCI），即每个领域补上剩余空间的 78% <span class="src">[公式 4]</span>。于是网络安全从 91.9 到 98.2，软件工程从 52.6 到 89.6，搜索与终端从 56.8 到 90.5，工具 agent 从 39.9 到 86.8。注意，这个 0.22 是作者设定的示意系数，原文没有说明取值依据，论文自己称之为「示意」和「假设」，不是根据数据估计出的预测。</li>
+</ul>
+<p><strong>对架构师的意思</strong>（笔者解读）：长流程 agent（跨系统操作、多步工具调用、改代码）恰好是 HCI 最低的一类。论文的假设是，「反复生成经验、验证、保留更新、回归测试」可能把更多改进导向这些薄弱的部署工作流，而这正是 RSI 想自动化的部分 <span class="src">[§2.1]</span>。另外，§1.1 给了两个和成本有关的数字：Anthropic 报告 agentic 负载的 token 用量约是普通对话的 4 倍，多 agent 系统约 15 倍；Meta 的 FBDetect 每周发现数千个基础设施性能回退，诊断其中一个约需 10 个工程师小时 <span class="src">[§1.1]</span>。</p>
+</section>
+<section id="s3">
+<h2>三、B0 到 L5：自主性阶梯</h2>
+<div class="key"><span class="kl">要点</span><ul><li>阶梯按「AI 接管了改进循环里的哪项决定」来分，不按模型多强来分：L1 执行、L2 选策略、L3 定学什么、L4 在部署中自适应、L5 改进「改进的机制」；B0 是对照组。</li><li><mark>级别高不等于更好</mark>：更大的决定权可以和低效搜索、不可靠反馈、退化、钻评测空子同时存在。</li><li>现有证据大多在 L1–L2；491 篇被调研论文里 L1 占 43.8%，L5 只占 5.9%；论文判断端到端的 L5 证据集中在有边界的原型和新兴系统里。</li></ul></div>
+<figure class="rs-fig"><a href="img/fig1-autonomy-ladder.webp" target="_blank"><img alt="Figure 1 五级自主性阶梯与代表系统" loading="lazy" src="img/fig1-autonomy-ladder.webp"/></a><figcaption>图 2（论文 Figure 1）：五级 RSI 自主性与代表系统。从左到右：B0 任务内迭代、L1 执行、L2 策略、L3 经验、L4 部署、L5 元改进。来源：Duan et al., arXiv 2609.11873, Figure 1；许可 CC BY-NC-ND 4.0，仅整图裁切，未作修改。</figcaption></figure>
+<p>相邻两级的分界可以一句话说清 <span class="src">[§3.7]</span>：B0→L1 是「持久化」，改动要活过当前任务；L1→L2 是「选策略」，AI 决定试哪种改法；L2→L3 是「定学习议程」，AI 决定下一轮学什么；L3→L4 是「进入部署」，改动要在真实、变化的环境里继续有用；L4→L5 是「递归继承」，负责后续改进的机制本身成了被改进、被继承的对象。</p>
+<h3>B0：只改这一次的答案（非 RSI 对照组）</h3>
+<p><strong>新增什么</strong>：什么都不保留。AI 可以在一个任务里反复修改、验证、挑选答案，但任务结束后这些经验都丢掉，不会变成系统的持久状态 <span class="src">[§3.1]</span>。论文的定义很短：<mark>输出变了，系统没变</mark>。</p>
+<p><strong>代表系统</strong>：Self-Refine（生成、反馈、再改）、Reflexion（把失败反思写进上下文再试）、Tree of Thoughts（在推理分支上搜索）。</p>
+<p><strong>四个局限</strong>：经验不跨任务积累，这次纠正的错下次可能再犯；改进流程由人定义；同一个模型自己出题自己判，可能强化同样的盲区，没有可靠外部反馈时甚至会把对的改成错的；评测固定时，多迭代几轮收益有限，比如反复改代码去通过一套不完整的测试，测试分涨了，没测到的 bug 还在。</p>
+<p><strong>AlphaEvolve 为什么在 B0。</strong> 论文附录的产业图谱把 Google DeepMind 的 AlphaEvolve 标为 B0，说明是「针对具体任务的程序搜索」，改进对象是算法、kernel、系统代码，AI 负责「生成、变异、评测、选择」<span class="src">[Table 13]</span>；Figure 1 的图里也把它画在最左边的「In-Task Iteration」（B0）一栏（笔者对照原图确认）。论文没有专门展开理由，但按它自己的定义可以读出来：AlphaEvolve 改进的是它要优化的那段程序（一个外部产物），评测函数和进化搜索框架由人给定，一次搜索的收获不会变成 AlphaEvolve 自身的持久状态、带到下一个独立任务。论文在 §2.2 里正好提醒过这一点：<mark>AI 改进了一个外部产物，不一定改进了产生这个产物的 AI 系统</mark>。所以，AlphaEvolve 找到的结果再惊艳，在这把尺子上也只算 B0。（「为什么」这部分是根据 §2.2 和 §3.1 定义的解读，不是论文原话。）</p>
+<h3>L1：执行人定好的改进流程，结果留下来</h3>
+<p><strong>新增什么</strong>：持久化。人规定改什么、怎么改、什么算成功，AI 照流程执行，通过验收的结果会保存下来，在之后的任务里复用 <span class="src">[§3.2]</span>。循环是：收到改进目标 → 执行规定流程 → 产出改进 → 更新系统状态 → 处理下一个任务。</p>
+<p><strong>代表系统</strong>：论文按 AI 开发流水线的六层来列 <span class="src">[Table 3]</span>：</p>
+<ul>
+<li>数据层：FineWeb-Edu（人定教育质量标准，LLM 打标签，再训分类器大规模过滤）、NVIDIA NeMo Curator、Data-Juicer、Microsoft SynthLLM、Nemotron-4 合成数据。</li>
+<li>训练方法层：EDIT、REPO。</li>
+<li>训练平台层：Meta 和 PyTorch 社区把 NCCL 超时排障总结成决策树和 runbook，由 agent 照着执行。</li>
+<li>评测与安全层：OpenAI HealthBench，医学专家写评分细则，GPT-4.1 按细则打分。</li>
+<li>部署优化层：AIPC，把模型部署到高通 AI Runtime 的流程写成 Agent Skills 分阶段执行。</li>
+<li>应用系统层：Agent Toolkit for AWS（其中的 Amazon Bedrock skill 提供把模型能力接入应用的预定义流程）、LinkedIn CAPT、OpenAI Harness Engineering。</li>
+</ul>
+<p>生产里的例子是 Meta 的 Capacity Efficiency 系统：把工程师的调试经验编成可复用的修复技能，按预定流程诊断性能回退，把几小时的人工排查压到几分钟，产出的 PR 仍走正常评审 <span class="src">[§3.2]</span>。</p>
+<p><strong>人还管什么</strong>：流程本身。遇到流程没覆盖的情况，AI 没有下一步，也不能自己改流程；而且结果会被保存复用，执行出错会传到后面的开发周期。所以评估 L1 要看两点：执行可靠性和「持久化安全」，即错误在进入下一轮前能不能被拦住 <span class="src">[§3.2.7]</span>。</p>
+<h3>L2：AI 自己决定「怎么改」</h3>
+<p><strong>新增什么</strong>：选策略。目标、任务边界和验收标准仍由外部固定，但 AI 根据评测反馈诊断弱点，决定下一步试哪种改法 <span class="src">[§3.3]</span>。循环是：观察表现 → 诊断 → 选择怎么改 → 实现并测试 → 保留或回退。论文的说法是：在 AI 研发里，执行一个改动往往是机械的，难的是判断哪个改动值得试。</p>
+<p><strong>代表系统</strong>（按搜索对象分）<span class="src">[§3.3.1–3.3.3, Table 4]</span>：</p>
+<ul>
+<li>Prompt 搜索：GEPA（Dropbox 用它改写判断检索结果相关性的 prompt）、Promptbreeder、MPO、C-Evolve。</li>
+<li>Agent 与外围框架（harness，包在模型外面的提示词、工具调用和执行逻辑）搜索：Microsoft Foundry 的 Agent Optimizer 根据评测失败改写托管 agent 的系统指令、技能和工具描述；ADAS、AFlow（用蒙特卡洛树搜索改工作流图）、AgentSquare。</li>
+<li>模型与训练搜索：NVIDIA 2026 年的 TAO 工作流让编码 agent 在固定验证目标下调用 LLM 引导的 AutoML 来后训练 Cosmos 3；AgentNAS 用 LLM 生成种子架构并构造搜索空间；OpenAI 对 GPT-6 Astra 的 NanoGPT 评测给一块 GPU 和固定目标，让 agent 自己诊断训练瓶颈、改训练代码；Karpathy 的 autoresearch 固定数据、评测函数和每次实验的算力，agent 反复改训练程序，只有受保护的验证指标变好才保留。</li>
+<li>系统实现搜索：AutoKernel 从性能剖析出发，候选 Triton/CUDA 实现要通过正确性检查和实测加速才被接受。</li>
+</ul>
+<p><strong>人还管什么</strong>：目标和验收标准。<mark>L2 把人的工作从「提出每一个改进」变成「给改进的搜索划边界」</mark> <span class="src">[§3.3.4 Finding]</span>。风险也在这里：反复访问开发集会过拟合，多花的搜索算力容易被误当成算法进步，LLM 评测器可能和提议者有同样的盲区。论文特别说，<mark>一旦一个基准被自适应地反复查询，它就成了优化目标的一部分，而不再是中立的量尺</mark>；公司自报结果可以证明可行性和规模，但不能等同于独立复现 <span class="src">[§3.3.4]</span>。</p>
+<h3>L3：AI 决定「下一轮学什么」</h3>
+<p>打个比方：L2 是教练自己决定用哪种训练方法；L3 是根据队员当前的弱项和刚练完的效果，决定下一批练什么题，练完弱项变了，下一批题也跟着变。</p>
+<p><strong>新增什么</strong>：学习议程。系统根据自己当前的能力、失败和学习历史，决定接下来选择、生成或去找什么经验来学；学完后状态变了，又反过来影响下一次怎么选 <span class="src">[§3.4]</span>。关键是「随学习者状态变化的经验获取」：一条流水线反复生成、过滤数据，不等于有了 L3；即使选择规则是人写的，只要它根据学习者的变化来选下一批经验，也可以算。</p>
+<p><strong>代表系统</strong> <span class="src">[Table 5]</span>：</p>
+<ul>
+<li>自适应出题与自博弈：SSP、Absolute Zero Reasoner（AZR，同一个模型出题解题，用代码执行器验证）、R-Zero（出题者按解题者答案的一致性来估难度）、STP（定理证明里猜想者和证明者共同进化）、PSV、VisPlay。</li>
+<li>在环境里自主练习：VOYAGER（Minecraft 里自动课程 + 可执行技能库）、SIMA 2（完整设置中由 Gemini 出任务，把练习集中到弱项）、SEAgent（在陌生软件里维护一本持续更新的「软件指南」来出后续任务）。</li>
+</ul>
+<p>论文还专门说明：工业界的训练数据流水线已经高度自动化，但公开材料本身不足以证明「学习者状态 → 经验获取 → 学习 → 下一次获取」这个闭合依赖已经形成；它同时强调，这不代表工业系统一定没有这种机制，只是公开证据不够 <span class="src">[§3.4.1, Figure 6]</span>。</p>
+<p><strong>人还管什么</strong>：目标、评测器、学习规则可以都还是人设计的。L3 特有的风险叫「经验污染」：一个误导的难度信号、一个不准的评判器、一条错误的记忆，都可能进入参数、技能或课程，再一轮轮传下去，就像一条错误的 runbook 条目被之后每个值班的人照抄 <span class="src">[§3.4.4]</span>。</p>
+<h3>L4：在部署中自适应</h3>
+<p><strong>新增什么</strong>：把真实使用中的经验变成持久改变。L3 关心学什么，L4 关心<mark>部署中的经验哪些后果应该留下来</mark>，变成之后任务里用到的记忆、技能、外围框架、代码或参数 <span class="src">[§3.5]</span>。论文分三类机制：</p>
+<ul>
+<li><strong>轨迹蒸馏</strong>：把交互历史压成可复用的东西。Dynamic Cheatsheet、ACE、ReasoningBank 存文字经验；APEX、PersonaAgent 存结构化记忆；Trace2Skill、PANDO 提炼技能和规则；Metis 把常用的文字计划改写成可调用工具，在沙箱里编译运行通过才收录。</li>
+<li><strong>迭代修订 agent 系统</strong>：DecoEvo 同时进化解题技能和评分细则生成器，但让后者看不到前者的总分，防止它把评分标准改简单；HarnessDev 测模型能不能从一个最小种子搭建并改进自己的外围框架；ASPIRE 分数不涨就回滚。一项分析（Harness Updating Is Not Harness Benefit）发现「会更新」和「能从更新中受益」是两回事：产出有用更新的能力和基础模型强弱关系不大，小模型的更新带来的收益可以和前沿模型相当；而能不能用好更新后的框架，表现并不随模型变强而单调变好，失败多是该用的产物没被调出来，或调出来了没照做。论文的实务结论是：<mark>能力投入应该放在做任务的 agent 上，而不是负责改进的 evolver 上</mark> <span class="src">[§3.5.2]</span>。</li>
+<li><strong>选择性保留与上线</strong>：HDSO 对每个候选技能做「对照组 / 实验组」成对运行，证据支持才收录；Library Drift 研究发现技能库无限增长会拖累检索，但退役太激进反而更差；一个报税生产系统（Tax AI）把从业者的修正记录成证据，编码 agent 修复后以 PR 形式交给工程师评审再上线。</li>
+</ul>
+<p><strong>人还管什么</strong>：目标、访问边界、受保护的评测、重要上线的审批 <span class="src">[§3.5.4 Finding]</span>。典型风险是「持久更新失败」：从噪声证据里学错了、把对的经验用错了地方、该用的时候没调出来，或者新行为挤掉了旧能力。</p>
+<h3>L5：改进「改进的机制」</h3>
+<p><strong>新增什么</strong>：AI 持久修改一个负责未来改进的机制，并在之后的轮次里用它 <span class="src">[§3.6]</span>。这个机制可以是改进器、评测后继者的评测器、搜索策略，或指导研究方向的策略。区分很细：一个部署中的 agent 用不变的学习流程积累新的调试技能，是 L4；改写并复用「诊断失败、构建技能」的那套流程，才可能跨过 L5 的门槛。换成运维的话：L4 是 agent 按固定流程把新故障的修法写进 runbook；L5 是 agent 发现「写 runbook 的流程」本身漏掉了某类故障，改了这个流程，之后都按新流程来。</p>
+<p>论文还分了两种 L5 <span class="src">[§3.6]</span>：<mark>结构性 L5 只证明 AI 改的机制被保留下来并控制了后面的轮次；有效 L5 还要证明在相同预算和独立评测下，改过的机制确实产出了更好的后继者</mark>。前者像新 SOP 确实被采用并在下一轮生效；后者要在同样预算、由独立评审打分的 A/B 对比里，证明新 SOP 产出的结果更好。</p>
+<p><strong>代表系统</strong> <span class="src">[§3.6.1–3.6.4, Table 7]</span>：</p>
+<ul>
+<li><strong>改搜索流程</strong>：STOP 让改进器（一段调用固定语言模型的 Python 程序）把自己的源码当优化对象，选出的第四代改进器在 5 个没参与自我改进的迁移任务上全部超过初始版本；但弱模型的运行平均是退步的，有些生成的程序绕过了软预算限制或利用了评测 bug。Gödel Agent 能改自己的更新逻辑，但如前所述 100 次里有 14 次变差，而且不加限制的运行会去调用更强的模型，所以任务目标和执行权限仍是关键的外部控制。DGM 被视为过渡案例。HyperAgents 让任务 agent 和元 agent 的代码都能改，在论文评审和机器人上进化出的元 agent 能为没见过的数学批改任务生成更好的 agent，但在 200 轮的长实验里，「用迁移来的元 agent 初始化」没有显示统计显著的最终优势。</li>
+<li><strong>改评测器</strong>：RQGM 在每个阶段内冻结学到的评测器，到计划节点再用独立标准答案挑新评测器，在留出的 Polyglot 编码任务上通过率 71.7%，对比 HGM-H 的 69.9%（预印本数据）。</li>
+<li><strong>改研究策略</strong>：A-Evolve-Training 在 30B Nemotron 模型上做了四轮自主后训练，元 agent 每轮修订研究策略；当开发集分数上涨而外部分数不涨时，修订后的策略把实验转向数据再平衡和 checkpoint 选择；外部分数从 0.80 升到 0.86，人类最好提交是 0.87 <span class="src">[§1.2, §3.6.3]</span>。</li>
+<li><strong>产业实践</strong>：Meta 的 AIRA2、Anthropic 的 Automated Alignment Researchers 主要是在研究者设计的工作流里自动跑实验，论文认为它们还没有证明研究流程本身被继承改进；Weco 的 AIDE2 用研究 agent 改进研究 agent 的框架，100 步无人值守里接受了 7 次改进（公司自报），但「进化后的 agent 能否让外层搜索更快」的检验没有显著的效率优势 <span class="src">[§3.6.4]</span>。</li>
+</ul>
+<p><strong>人还管什么</strong>：总体使命、受保护的评测、可编辑组件和资源权限，以及否决和上线权 <span class="src">[§3.6]</span>。论文特别说明，<mark>其中一部分决定可以由固定的基础设施来执行，不需要人逐轮审批</mark>，这对设计「自动化但可治理」的平台很关键。<mark>论文对 L5 的结论是：现在只有「有边界的元改进」，跨代、同等资源下统计可靠的累积改进还没被证明</mark> <span class="src">[§3.6.5]</span>。</p>
+<h3>今天的云产品和厂商系统在哪一级</h3>
+<p>对做云方案的团队，这部分最直接。论文正文和附录 Table 13（72 家公司 / 团队，截至 2026 年 9 月的公开资料）给出的标注如下。先说 Table 13 的四个后缀：adj. 表示「RSI 相邻」的基础设施或行为；cand. 表示有可能达到该级但没完全证明；enabler 表示支撑设施；target 表示公开的未来目标而非已有能力 <span class="src">[Table 13 阅读说明]</span>。</p>
+<ul>
+<li><strong>Agent Toolkit for AWS</strong>：L1，靠 Bedrock skill 把预定义的集成流程交给编码 agent 执行 <span class="src">[§3.2.6, Table 3]</span>。</li>
+<li><strong>Microsoft Foundry Agent Optimizer</strong>：L2，根据评测失败改写托管 agent 的指令、技能和工具描述，评测流程固定 <span class="src">[§3.3.2, Table 4]</span>。</li>
+<li><strong>NVIDIA TAO（Cosmos 3 后训练）</strong>：L2，配置搜索，验证目标固定 <span class="src">[§3.3.3]</span>。</li>
+<li><strong>Anthropic Agent Skills、Managed Agents</strong>：标为「L1 支撑设施」（enabler）；Anthropic Multi-agent Research 和 OpenAI Deep Research 是 B0，只产出任务内的结果 <span class="src">[Table 13]</span>。</li>
+<li><strong>OpenAI AgentKit / prompt optimizer / RFT</strong>：L1–L2；OpenAI Harness Engineering：Table 13 标「L1–L2 adj.」，正文 Table 3 则把它列为 L1 代表 <span class="src">[Table 3, Table 13]</span>。</li>
+<li><strong>MiniMax 的持久云端 agent（M2、MaxHermes、MaxClaw）</strong>：L1–L2 <span class="src">[Table 13]</span>。</li>
+<li><strong>LangSmith、Braintrust（Loop、Autoevals）</strong>：L1–L2 <span class="src">[Table 13]</span>。</li>
+<li><strong>Factory 的 Signals / Software Factory</strong>：L4，从生产会话里挖失败、聚类、自动提修复 PR <span class="src">[Table 13]</span>。</li>
+<li><strong>OpenAI 自我改进报税 agent</strong>（OpenAI 与 Thrive Holdings 的工程案例，就是前面 L4 里的 Tax AI）：「L4 候选」；Anthropic「When AI builds itself」是「L5 目标」，表示公开的未来目标，不是已证明的能力 <span class="src">[Table 13]</span>。</li>
+</ul>
+<p><mark>笔者据上面这些条目归纳：今天主流云和 agent 平台的「自我优化」功能，大多落在 L1–L2，即人定目标和验收，AI 执行或挑改法。</mark>这是归纳不是论文原话；而且样本有限：Agent Toolkit for AWS 只出现在正文 Table 3，Table 13 里没有 Google Cloud、Azure 托管服务的系统性条目，Factory 也被标到了 L4。Table 13 的说明里还写明，这些标签是论文作者的映射，不代表公司自己这样称呼。</p>
+<p><strong>怎么验收一个「会自我进化」的系统</strong>：论文 Table 8 提出了六个评测维度（其中「元递归」一行是作者新加的要求，现有基准还测不了），可以当作验收时向厂商提问的清单：适应性（收益、改进轨迹、达到目标的时间）、保持（回放损失、修好和弄坏了哪些任务）、迁移（领域内外的留出任务收益）、效率（每个已验证收益花了多少 token、时间、成本）、稳定性（有害更新、最大临时下滑）、元递归（改进机制有没有被复用、后继者质量）<span class="src">[§3.6.5, Table 8]</span>。</p>
+<p><strong>文献分布</strong>：附录 Figure 18 统计了 491 篇论文，L1 215 篇（43.8%）、L2 155 篇（31.6%）、L3 64 篇（13.0%）、L4 28 篇（5.7%）、L5 29 篇（5.9%）<span class="src">[Figure 18]</span>。</p>
+</section>
+<section id="s4">
+<h2>四、四个应用领域：为什么快慢不同</h2>
+<div class="key"><span class="kl">要点</span><ul><li>同一个改进循环，在不同领域里的难点不一样：关键是<mark>反馈有多便宜、多可靠，改错了能不能撤回</mark>。</li><li>软件工程最快：产物和 agent 本身都是代码，可以执行、版本化、回滚，已有成熟的 L2、新兴的 L3 和有边界的结构性 L5。</li><li>科学、具身智能、医疗受限于反馈稀疏、试验昂贵或不可逆，大多停在 L2，L3/L4 多在模拟环境里。</li></ul></div>
+<figure class="rs-fig"><a href="img/fig9-domains.webp" target="_blank"><img alt="Figure 9 四个应用领域" loading="lazy" src="img/fig9-domains.webp"/></a><figcaption>图 3（论文 Figure 9）：四个应用领域各自进化的组件，以及在阶梯上的位置。顶部写着共同瓶颈：持久继承需要安全的证据。来源：Duan et al., arXiv 2609.11873, Figure 9；许可 CC BY-NC-ND 4.0，仅整图裁切，未作修改。</figcaption></figure>
+<p>论文选这四个领域，是因为它们代表四种反馈类型 <span class="src">[§1.5]</span>：归因不确定的实验证据、代价高的物理交互、规格不完整的可执行测试、专家监督下的高风险结果。</p>
+<ul>
+<li>
+<p><strong>S1 科学</strong> <span class="src">[§4.1, 附录 C.1]</span>：循环是提出假设 → 做计算或物理实验 → 归因 → 保留生成策略、工具、技能、记忆或框架的改进。代表有 HypoForge、Test-Time Tool Evolution、DrugSAGE、SIA。卡点在哪？科学探索是开放的；反馈稀疏、延迟，而且说不清错在哪（实验失败可能是假设错，也可能是模型、协议或仪器的问题）；结论依赖假设和测量条件。Figure 9 的标注是「L2 强，L3 起步」。论文强调，只改进一个分子、一个方程或一个假设，只能算「RSI 相邻」，不能证明科研 agent 改进了自己。</p>
+</li>
+<li>
+<p><strong>S2 具身智能</strong> <span class="src">[§4.2, 附录 C.2]</span>：代表有 POET（环境和 agent 共同进化）、Voyager、World-VLA-Loop。卡点在哪？经验由当前策略决定，策略到不了的状态就学不到；失败可能来自感知、规划、控制或硬件，难以归因；真实试验贵、不安全、不能随便重置。所以大多数循环依赖模拟和外部给定的奖励。标注是「L2–L3 为主要前沿，L4 在模拟中」，ENPIRE 接近有边界的 L5。</p>
+</li>
+<li>
+<p><strong>S3 软件工程</strong> <span class="src">[§4.3, 附录 C.3]</span>：循环是开发挑战 → agent 级修改 → 基于仓库的试运行 → 带回归检查的选择 → 版本化继承。代表有 SWE-Exp、Self-Harness、DGM。这是证据最清楚的领域，标注是「L2 成熟，L3 新兴，有边界的结构性 L5」；附录还指出 L4 环境适应基本缺位，完整的 L5 还没出现。卡点在哪？仓库测试只是用户意图、安全性和可维护性的不完整代理。</p>
+</li>
+<li>
+<p><strong>S4 医疗</strong> <span class="src">[§4.4, 附录 C.4]</span>：代表有 Agent Hospital 里的 MedAgent-Zero、EvoClinician、MACRO、HealthFlow。卡点在哪？不能随意试错；真实结局延迟、多样、混杂；在一个人群或医院验证过的更新不一定适用于另一个。标注是「L2 成熟，类 L3 有限，L4 在模拟中」，证据以模拟或回顾性数据为主。</p>
+</li>
+</ul>
+<p><strong>为什么速度不同</strong>，Figure 9 的图注一句话说了：<mark>各领域的差别主要在于验证并继承一次改进需要什么样的反馈</mark>。§6 说得更具体：<mark>软件 checkpoint 可以回滚，但物理和临床后果撤不回来，所以这些领域必须把验证放在上线之前</mark> <span class="src">[§6]</span>。笔者归纳为：反馈越便宜、越可执行、越能回滚，循环就转得越快。§3.3.4 也用同样的理由解释为什么产业实践集中在编码、模型训练和 kernel 优化：候选改动可执行，反馈来得快 <span class="src">[§3.3.4]</span>。</p>
+</section>
+<section id="s5">
+<h2>五、八个产业案例：各跑什么循环，人管多少</h2>
+<div class="key"><span class="kl">要点</span><ul><li>八个案例覆盖环境构建、企业数据、推荐、数据质检、AI 工程、研究 agent、科研基础设施、企业 agent 平台。</li><li><mark>人工把关差别很大</mark>：飞书、小红书、Humanlaya、Frontis 明确保留人工审核、抽检或审批；面壁靠人机共维的知识库做约束，目标是场景内无人干预；Agent-Native Research Lab 靠确定性机器校验；Theseus 和腾讯 Hyra 论文没有描述人工关卡。</li><li>数字全部是公司自报，其中一部分还是内部评测集；八家里至少六家和作者单位名称直接对应，飞书若按字节跳动算是第七家（论文没写这层关系），只有腾讯混元不在作者名单里，读数字时要记住这一点。</li></ul></div>
+<h3>1. Theseus：环境、数据、模型一起进化 <span class="src">[§5.1, Figure 10, Table 9]</span></h3>
+<p><strong>循环</strong>：论文称之为「提出的」四步循环。先把「改进环境」的经验变成训练任务，训练一个环境重建模型。agent 在重建后的环境里找到真正的难点，生成针对性的训练数据。用这些数据训练任务模型。更强的模型再去改进环境、生成更多任务。</p>
+<p><strong>数字</strong>：</p>
+<ul>
+<li>干净 vs 嘈杂工作区：8 组前沿「模型 + 框架」组合，30 个改编自 Workspace-Bench 的任务，1,280 条评分细则。干净工作区的通过率在全部 8 组上高出 21.7 到 51.6 个百分点，例如 DeepSeek-V4-Pro 从 46.6% 到 98.2% <span class="src">[Table 9a]</span>。</li>
+<li>裸工作区 vs 重建环境（加一份 Collection Map 和一份 Event Log）：5 组固定组合，30 个任务，547 条细则。重建环境把分数提高 18.65 到 39.67 个百分点，例如 Codex CLI + GPT-5.6-Sol 从 60.51% 到 92.50% <span class="src">[Table 9b]</span>。少数任务出现「范围蔓延」的退步，即 agent 改得比任务要求的多。团队还训练了一个可复用的文件校验模块。</li>
+</ul>
+<p><strong>把关程度</strong>：论文没有描述人工关卡。要注意，这些只是四步循环第一步（环境）的早期结果。论文也没有说明「重建环境」是由模型生成还是人工构建的。§6 自己也说，<mark>组件层面的提升还不能代表完整学习循环已经成立</mark>。Table 13 把 Theseus 的 Argus 标为 L2–L3、SetupX 标为 L3。</p>
+<h3>2. 飞书（Lark）：先把数据底座做好 <span class="src">[§5.2, Figure 11]</span></h3>
+<figure class="rs-fig"><a href="img/fig11-lark.webp" target="_blank"><img alt="Figure 11 飞书数据底座循环" loading="lazy" src="img/fig11-lark.webp"/></a><figcaption>图 4（论文 Figure 11）：飞书的数据底座循环：数据采集 → 组织成时间驱动的上下文图 → 质量评测 → 构建反馈 → 在真实工作中改进 agent。来源：Duan et al., arXiv 2609.11873, Figure 11；许可 CC BY-NC-ND 4.0，仅整图裁切，未作修改。</figcaption></figure>
+<p>（论文只写 Lark，没有写它属于哪家公司；飞书是字节跳动的产品，这一点来自外部常识，作者单位里有字节跳动。）</p>
+<p><strong>循环</strong>：飞书的出发点是 agent 改进自己之前，得先有一个持续更新的数据底座。文档、消息、会议、任务不断产生新信息，agent 消费数据又产生新的交互轨迹。每一轮要有新经验可学、有可靠标准判断进步、有足够细的诊断知道该改哪里。</p>
+<p><strong>数字</strong>（内部评测）：</p>
+<ul>
+<li>企业知识图谱：把分散在文档、消息、会议记录里的信息连成实体、事件、人和时间关系。和 RAG 基线相比，人工评定的任务可用率从 52% 升到 65%，自动评测可用率从 47% 升到 56%。</li>
+<li>自动数据质量评测：先用绝对判断筛掉明显不可用的输出，再用 GSB 对比（论文没有展开这个缩写，业内一般指新旧版本逐条比较「更好 / 一样 / 更差」）决定新版本能否上线。坏案例按「时间不一致、查询失真、来源质量差」等归因，每类对应一个改进方向。初版自动评测器和人工判断一致率约 84%，分歧多是因为它比人更严。</li>
+</ul>
+<p><strong>把关程度</strong>：论文原话是「刻意由人把关」。agent 做大量重复的数据处理和评测，<mark>人负责定标准、审关键样本、批准重要改动</mark>。</p>
+<h3>3. 小红书：快慢两个时间尺度的推荐 <span class="src">[§5.3, Figure 12, Table 10]</span></h3>
+<figure class="rs-fig"><a href="img/fig12-xiaohongshu.webp" target="_blank"><img alt="Figure 12 小红书双时间尺度循环" loading="lazy" src="img/fig12-xiaohongshu.webp"/></a><figcaption>图 5（论文 Figure 12）：小红书的双时间尺度 RSI 循环。上：内循环，用户在线行为实时更新记忆；下：外循环，难例挖掘、评判验证、数据修正、后训练出新版本 agent。来源：Duan et al., arXiv 2609.11873, Figure 12；许可 CC BY-NC-ND 4.0，仅整图裁切，未作修改。</figcaption></figure>
+<p><strong>循环</strong>：商业化推荐系统里的意图记忆 agent（Intent-Memory Agent，IMA）。用户后续的点击、停留、收藏、搜索、转化和负反馈，不只是新输入，也被用来检验之前对用户状态和意图的估计，从而决定记忆是新增、强化、替换、衰减还是忽略。记忆分三层：Content（内容主题）、Who（用户状态）、Need（推断出的需求）。检索时可以按任一层找相似经验，反馈也能只改某一层，不用整体重写用户画像。</p>
+<ul>
+<li>快循环：实时反馈更新记忆，适应兴趣变化。</li>
+<li>慢循环：线上收集的高价值难例经过自动评判、人工抽检、规则修正、训练数据重建，用来后训练 IMA，再部署回去。</li>
+</ul>
+<p><strong>数字</strong>（公司提供）：论文没有定义 score_mean@16，从名字看应是前 16 条推荐的排序分均值（笔者推测），约 +13.1% 后面的星号论文也没解释。Discovery Feed 的 score_mean@16 从 2.211 到 2.366（+7.0%），score_median@16 从 1.587 到 1.663（+4.8%）；视频内 Feed 的 score_mean@16 从 1.537 到 1.739（约 +13.1%），但这是一个小样本离线评测，基线 470 条、新模型 447 条。<mark>论文明确说，这些是初步的、公司自报的排序分提升，提供的材料并不能证明点击率或转化率也相应提升</mark>。</p>
+<p><strong>把关程度</strong>：外循环里保留了人工抽检。</p>
+<h3>4. Humanlaya：从交付反馈里改进质检系统 <span class="src">[§5.4, Figure 13]</span></h3>
+<figure class="rs-fig"><a href="img/fig13-humanlaya.webp" target="_blank"><img alt="Figure 13 Humanlaya 交付驱动循环" loading="lazy" src="img/fig13-humanlaya.webp"/></a><figcaption>图 6（论文 Figure 13）：Humanlaya 的交付驱动 RSI 循环。内循环修当前批次的数据包，外循环更新质检系统本身。来源：Duan et al., arXiv 2609.11873, Figure 13；许可 CC BY-NC-ND 4.0，仅整图裁切，未作修改。</figcaption></figure>
+<p><strong>循环</strong>：Humanlaya 给基础模型开发者提供训练和评测数据，交付物是复杂的多文件任务包（任务描述、附件、参考答案、评分细则、验证要求）。</p>
+<ul>
+<li>内循环：质检器检查内容和一致性，修复器修已确认的问题，交付检查器查格式和约束。不通过就定位、修改、再检查。论文说这只改了当前产物，本身不算持久的系统改进。</li>
+<li>外循环（核心 RSI 机制）：交付后汇总内部审核、客户反馈和下游使用情况。agent 找出反复出现的原因，提出质检系统的版本化修改（修复器指令、prompt、few-shot 示例、技能），在没参与修改的任务包上验证，再经人工审核才上线。</li>
+</ul>
+<p>一个例子：一份三页扫描 PDF 解析失败，质检器判定附件不可用。人工复核发现扫描很清楚，错在把「抽取失败」当成「文档质量差」。系统于是生成一条新的判断规则和 few-shot 示例来区分两者，经留出验证和人工审核后进入下一版。</p>
+<p><strong>数字</strong>（内部对比）：经过四次反馈驱动更新，用同样的基础模型、工具和处理预算，在 600 个没参与更新的任务包上比较 V0 和 V4。自动修复后仍含关键缺陷的比例从 9.0% 降到 3.7%，每个任务的平均人工处理时间从 48 分钟降到 27 分钟。</p>
+<p><strong>把关程度</strong>：<mark>agent 承担大部分自我改进过程，人提供部分标准答案、审核，并在关键环节做最终批准</mark>。论文把它定性为「由生产反馈驱动的框架层（scaffold-level）RSI」。</p>
+<h3>5. 面壁智能（ModelBest）：「零人工」的 AI 工程 <span class="src">[§5.5, Figure 14]</span></h3>
+<p><strong>循环</strong>：面壁的前提是 AI 工程（实现训练框架、优化 kernel、配置并行、跑基准）会比开放式 AI 研究更早自动化，因为执行能给出便宜、客观的反馈。它提出 Forge Engineering：输入目标模型、硬件平台和并行需求，AI 从空代码库开始搭建、测试、优化出可用的实现。</p>
+<ul>
+<li>内循环（单个场景）：人和 AI 共同维护一个知识库（规格、评测标准、工程经验）。agent 先用它定高层架构、收窄搜索空间，再由 AutoResearch 循环反复生成实现、测正确性和性能、诊断并修瓶颈。成功的优化（如 GEMM、FlashAttention kernel）逐步并入主路径。</li>
+<li>外循环（跨场景）：成功和失败的经验写回知识库，成为下一个项目的起点。公司报告已应用于预训练框架、算子库、强化学习基础设施、推理引擎、微调、压缩、量化和端侧部署。</li>
+</ul>
+<p><strong>数字</strong>（公司报告）：ForgeTrain 从一个只有参考脚本和模型规格的空目录开始，约 8 小时生成了一个与 Megatron-LM v0.15 持平的预训练框架，据称 1.5 到 2.5 天内超过它。对照估计是 3 到 5 名工程师干 6 到 12 个月。模型 FLOPs 利用率（MFU，实际算力占硬件理论峰值的比例）在 MiniCPM4-0.5B 上从 40.1% 升到 44.1%，在 8B 模型上从 47.0% 升到 50.9%。ForgeStencil 把方法用到科学计算 kernel 上，报告比公开的最好实现快 1.15 到 1.9 倍，端到端加速中位数 1.41 倍。</p>
+<p><strong>把关程度</strong>：目标是「在没有人工干预的情况下」产出可上线的实现，但知识库是「人和 AI 共同维护」的，全局架构约束保持稳定。笔者的理解是，「零人工」主要指实现和优化环节，不是整个流程。</p>
+<h3>6. 腾讯混元 Hyra：靠经验库驱动的研究 agent <span class="src">[§5.6, Figure 15, Table 11]</span></h3>
+<p><strong>循环</strong>：Hyra（Hunyuan Research Agent）故意走轻量路线：不写越来越复杂的人工工作流，而是给 agent 一个宽的解空间，用实验证据引导后续搜索，直到它自己决定停止或预算耗尽。核心是经验库（Experience Bank），存的不只是文字记忆，还有之前的方案代码、产物、执行日志、分数和评测反馈。一个 Context Agent 把这些证据重组成多样的「灵感上下文」，多个 Proposal Agent 异步读取、生成新方案，在全新的隔离沙箱里执行，结果再写回经验库。对开放式任务，当初始评测器不完整或可以被钻空子时，Hyra 会用积累的经验修订评测机制，比如提高粒度、加强对比基线、堵住奖励作弊漏洞，再继续搜索。论文说这一点「对 RSI 特别相关」，因为被持久更新的不再只是更好的方案，还有「判断什么算改进」的机制。</p>
+<p><strong>数字</strong>（随附产物报告，公开基准）：Table 11 的对照列标为「Recursive」（附录 Table 13 有一家同名公司，做自动化 AI 研究），正文把 nanochat 一项称为「引用的此前最好成绩」。nanochat AutoResearch 验证 BPB（每字节比特数，越低越好）0.9015，对比 0.9109；nanoGPT Speedrun 到 3.28 loss 用时 76.4 秒，对比 77.5 秒；SOL-ExecBench 平均 SOL（达到硬件理论上限的程度）0.771，对比 0.754，0.771 带一个论文没解释的 † 标记。按表中数字算，三项提升分别约 1.0%、1.4%、2.3%，论文没有给方差或重复次数。</p>
+<p><strong>把关程度</strong>：论文没有描述人工审批环节，停止和预算是主要约束。</p>
+<h3>7. Agent-Native Research Lab：让研究经验可验证、可继承 <span class="src">[§5.7, Figure 16]</span></h3>
+<p><strong>循环</strong>：它关注基础设施层：研究经验要能被可靠记录、验证、继承和复用。</p>
+<ul>
+<li><strong>面向 agent 的研究产物（ARA）</strong>：传统论文为人类阅读而写，会丢掉 agent 继续工作需要的东西（失败实验、中间证据、可执行规格、实现细节）。ARA 同时保存形式化的科学逻辑、可执行代码和规格、成功和放弃分支的探索图、原始实验证据。报告结果：基于 ARA 回答前人工作相关问题的准确率 93.7%，用传统论文是 72.4%；RE-Bench 复现成功率从 57.4% 升到 64.4%。</li>
+<li><strong>确定性验证（rit 协议）</strong>：实验结论直接锚定到执行轨迹，从日志里重新抽取数字。分析性结论可以用 Lean 4 等形式化系统检查。只有通过机器可验证关卡的结论才进入共享研究状态，防止幻觉结果被后代继承放大。</li>
+<li>还用「认知进展」引导代替只看最终分数，鼓励减少不确定性的实验。</li>
+</ul>
+<p><strong>数字</strong>（芯片设计）：agent 生成可综合的 SystemVerilog、搭测试平台、提微架构修改，候选用工业 EDA 工具做综合、布局布线、时序分析和形式等价检查。在 Chip-Bench 上报告 Level-3 CPU 优化得分 5.8416，设计比同一基础模型上的标准 agent 基线快 2.7%、面积小 21.5%，并通过全部 97 个定向测试和 350 个随机差分程序。</p>
+<p><strong>把关程度</strong>：关卡主要由确定性机器校验（EDA、日志重抽取、形式验证）承担，论文没有描述逐次人工审批。</p>
+<h3>8. Frontis.AI：企业 agent 进化与跨任务元改进 <span class="src">[§5.8, Figure 17]</span></h3>
+<p><strong>循环</strong>：Frontis Horizon 的 ME–WE–MA 三层架构：ME 负责人机交互、上下文记忆和上线审批；WE 是 300 多个跨财务、法务、工程、人力的专家 agent；MA 负责 agent 的构建、评测和持续进化。</p>
+<ul>
+<li>专家 agent 进化：Benchmark OS 把企业任务、可复现环境和验证器做成共享评测设施，优先用程序化检查，语义质量由和被测 agent 隔离的模型评判。MA 把失败归因到路由、执行机制或专家能力，定下有边界的改进目标和验收标准，<mark>修改 prompt、技能、工具或框架之前先拿到人工确认</mark>。候选版本要过三道关：回归安全、目标达成、异常场景鲁棒性。通过后带着版本化测试报告回到生产，便于审计和回滚。</li>
+<li>跨任务元改进：保留每次改进的问题背景、诊断理由、候选修改、验证结果和适用条件，可迁移的经验用于 MA 在新任务上的诊断和改进策略。</li>
+</ul>
+<p><strong>数字</strong>（公司自报）：两个月内发起 216 个改进任务，涉及 117 个专家 agent，原文说「其中 63 个」完成了至少一个完整进化周期（原文没写清 63 指任务还是 agent；如果指任务，后面用来对比的 76 个任务反而比完成数多，口径对不上）。在 76 个用同一评测器比较的任务上，平均分从 5.25 升到 5.87，每个完成周期的机器处理时间中位数 27.8 分钟。积累 100 多个任务的元进化经验后，在没见过的内部测试任务上进化速度快约 20%。论文写明以上平台结果是公司自报证据，不是独立复现。另外，Frontis-MA1 尝试把「改进能力」训练进一个 35B 模型，固定框架下 MLE-Bench Lite 从 39.39% 升到 60.61%，加大搜索后到 71.21%，这部分来自公司提供的报告。</p>
+<p><strong>把关程度</strong>：改前人工确认、改后三道关、上线由人批准。</p>
+<h3>八个案例放在一起看</h3>
+<p>按论文描述的人工把关程度，从强到弱大致是：</p>
+<ul>
+<li><strong>改前改后都有人</strong>：Frontis（改前确认 + 人批准上线）、Humanlaya（留出验证 + 人审 + 人最终批准）、飞书（人定标准、审关键样本、批重要改动）。</li>
+<li><strong>关键环节有人</strong>：小红书（外循环人工抽检）。</li>
+<li><strong>人定约束、过程不用人</strong>：面壁（人和 AI 共同维护知识库和架构约束，场景内目标是无人干预）。</li>
+<li><strong>机器关卡</strong>：Agent-Native Research Lab（确定性校验）。</li>
+<li><strong>论文没写</strong>：腾讯 Hyra 和 Theseus。</li>
+</ul>
+<p>论文 §6 把这些案例对基础设施的要求总结为：飞书强调带时间的数据和失败归因，Humanlaya 保留版本化的质检更新，Hyra 存可执行的经验，Agent-Native Research Lab 提出保存代码、规格、探索历史和实验轨迹的研究产物 <span class="src">[§6]</span>。</p>
+</section>
+<section id="s6">
+<h2>六、挑战与未来方向</h2>
+<div class="key"><span class="kl">要点</span><ul><li><mark>「更高的自主性」「持久的能力提升」「更有效的改进过程」是三件不同的事</mark>，现有工作分别取得了部分进展，还没连成持续的递归改进。</li><li>论文列了八个方向，核心是：诊断该改哪个组件、可靠的学习信号、持久状态的管理、按领域定制的验证、可信的机制进化、长周期评测、算总账、可复现的继承设施。</li></ul></div>
+<p>论文开头提了三个瓶颈：基础模型开发太耗资源、学习依赖有用经验和可靠验证、部署后要持续诊断和发布。现在只解决了一部分 <span class="src">[§6]</span>。八个方向是：</p>
+<ol>
+<li>
+<p><strong>跨组件诊断与协同改进</strong>。一个错误答案，源头可能是数据、上下文、工具接口、模型，也可能是评测器本身。Humanlaya 的扫描件案例就是典型：表面看是文档质量问题，实际该改的是质检器的判断规则。方向是把诊断变成可检验的干预假设，用组件冻结、定向消融来区分真修复和对上游缺陷的补偿。</p>
+</li>
+<li>
+<p><strong>随学习者变化的经验获取与可靠学习信号</strong>。经验要拆成三件事：对不对、对当前学习者难不难、学了有没有持久收益。AZR 用可执行检查，R-Zero 用一致性估难度，但正确性和难度都不等于学习价值。</p>
+</li>
+<li>
+<p><strong>持久状态管理与可靠复用</strong>。保留一个技能，不等于后来的 agent 能用上。技能可能检索不到，也可能检索到了没照做；技能库膨胀会拖累检索，退役太激进也有害。方向是给每个继承的产物附上证据、适用条件、依赖和后续效果，持续重新验证。</p>
+</li>
+<li>
+<p><strong>按领域反馈做有治理的适应</strong>。科学、具身、软件、医疗的验证方式各不相同。模拟、回放、沙箱做初筛，再在真实条件下分阶段评估；重要上线、访问权限和安全约束的人类决定权要明确。</p>
+</li>
+<li>
+<p><strong>可信地进化改进机制</strong>。更强的解题者会暴露评测器的弱点，但改评测器又会让分数不可比，或被钻空子。要区分可编辑的内部反馈和独立维护的验收标准，分开评估「改候选生成」和「改评测」各自的作用。<mark>调整研究优先级，不必等于交出系统总体使命的决定权</mark>。</p>
+</li>
+<li>
+<p><strong>长周期评测「继承下来的改进能力」</strong>。结构性 L5 和有效 L5 要分开测。AIDE2 把进化后的框架装成外层改进器，没有显示统计显著的效率优势，这正是缺口所在。未来的基准要在相同总预算（包括开发和评测机制本身的成本）下比较原机制和新机制，并报告完整轨迹，包括被拒的更新、退步和恢复。</p>
+</li>
+<li>
+<p><strong>算总账的改进与人机协作</strong>。一个更快的 kernel、一段更长的无人值守运行，背后可能是大量候选生成、评测、基础设施维护和人工审核。评估自主性要同时报告人工投入的类型和数量，报告「达到某个已验证能力目标的时间和总成本」；还要研究自适应停止：什么时候暂停、升级给人或终止。</p>
+</li>
+<li>
+<p><strong>可复现的跨轮继承设施</strong>。一个可复用的产物格式要把父状态、提出的修改、动机证据、评测配置、接受决定和后续使用串起来；数据、环境和评测器都要版本化。数据保密时，可以提供可共享的评测子集和受控回放接口做部分验证。</p>
+</li>
+</ol>
+<p>论文的收尾判断是：<mark>判断是否走向真正的 RSI，要看继承下来的改变能不能在明确的资源和权限约束下，帮后面的轮次获取更有用的经验、找到更好的干预、更有效地验证后继者</mark> <span class="src">[§6]</span>。</p>
+</section>
+<section id="s7">
+<h2>七、总结：给方案架构师的三种读法</h2>
+<div class="key"><span class="kl">要点</span><ul><li>定级只问一件事：哪个改进决定交给了 AI，结果有没有留下来。</li><li><mark>级别和效果要分开看</mark>，效果看同等预算对比和独立评测。</li></ul></div>
+<p>这份报告最大的价值，是把「自我进化」这个营销词拆成了一张可以逐项打勾的清单。</p>
+<ul>
+<li><strong>定级问三个问题</strong>：系统里哪个改进决定是 AI 做的？这个结果下次还在吗？改进方法本身变了吗？只改这次输出是 B0；按人定的流程执行并保留结果是 L1；自己挑改法是 L2；自己决定学什么是 L3；能从生产使用里持续积累是 L4；能改进「改进的流程」才算 L5。</li>
+<li><strong>看效果别只看级别</strong>：级别不等于好坏。论文反复强调，要比同等预算下的表现、看独立评测、盯跨轮退步和回滚记录。</li>
+<li><strong>找落地看反馈成本</strong>：编码、kernel、训练框架这些能执行、能回滚、反馈便宜的场景，先跑起来；物理实验、临床这类撤不回的场景，验证必须前置，人的审批不能省。</li>
+</ul>
+</section>
+<section id="critique">
+<h2>锐评</h2>
+<div class="key"><span class="kl">要点</span><ul><li>扎实：分级框架和「结构性 / 有效 L5」的区分；偏弱：HCI 外推是代入的假设。</li><li><mark>第五章八个案例的数字都没有独立复现</mark>，其中多数还是内部评测集。</li><li>八个案例里至少六个来自作者单位，选案标准没有交代。</li></ul></div>
+<h3>1. 扎实的部分：框架立得住，用来论证动机的 HCI 一节偏弱</h3>
+<p>这份报告最站得住的是方法论：按「交给 AI 的改进决定」而不是模型能力来分级 <span class="src">[§1.7]</span>，并区分结构性 L5 和有效 L5，所以它能如实写下 DGM 只是过渡案例，HyperAgents 的 200 轮实验和 AIDE2 的外层加速都没有统计显著优势。把 AlphaEvolve 这样的明星系统标成 B0 也是按定义办事，B0 只表示「不属于 RSI」，不是差评。但用来论证「RSI 该往哪里用」的 HCI 一节要打折扣：</p>
+<ul>
+<li>右侧「RSI 加持」的终点由公式 4 直接规定为补上剩余空间的 78%，「空白越大、RSI 收益越大」是代进去的假设，不是从数据里得出的，0.22 也没有取值依据。</li>
+<li>自报降权（×0.75）只在同一结果有多个来源时才生效；论文称之为「敏感性调整」，但没有附敏感性分析。</li>
+<li>最新模型审计里因协议对不上而没进曲线的 16 条结果，全部来自 Terminal-Bench、DeepSWE、CyberGym、ExploitBench、AutomationBench、BrowseComp 这些交互类基准，正是论文说「差距最大」的地方；每年参与汇总的基准集合也可能变化，工具 agent 一年从 8.2 跳到 39.9，有多少来自基准进出，文中没有拆分。</li>
+<li>Figure 3 给能力领域贴上「L1–L2」「L3–L4」的标签，等于用基准分数去对应自主性等级，和 §1.7「不按模型能力分级」的说法有些拧巴。</li>
+</ul>
+<p>「交互类能力落后」这个大方向可信，但具体差多少分，要带着这些前提看。</p>
+<h3>2. 自报和内部评测的数字：八个案例都没有独立复现，自家定义的 L5 检验没用在自家案例上</h3>
+<p>第五章的数字都由案例方提供。读的时候分两类：</p>
+<ul>
+<li><strong>内部集，外人无法核对</strong>：飞书的可用率 52%→65%、Humanlaya 的缺陷率 9.0%→3.7%、Frontis 的「进化快约 20%」。</li>
+<li><strong>公开基准上的自报</strong>：Hyra 的三项、Agent-Native Research Lab 的 RE-Bench 和 Chip-Bench、Frontis-MA1 的 MLE-Bench Lite。同样没有方差和重复次数；Hyra 相对 Recursive 的提升按表算只有约 1.0%、1.4%、2.3%，SOL 那一格还带着一个没解释的 †。Hyra 靠评测结果引导搜索，论文自己在 §3.3.4 警告过「被自适应查询的基准会变成优化目标的一部分」，但没说 Table 11 是不是来自和搜索隔离的留出评测。</li>
+</ul>
+<p>论文用 §3.6 的「有效 L5」标准审视了 STOP、HyperAgents、AIDE2，却没有拿来检验自称做「跨任务元改进」的 Frontis 和会修订评测器的 Hyra。Frontis 在 Figure 17 里把两个循环叫作「L1 Agent Evolution Loop」「L2 Meta Evolution Loop」，和本文阶梯的 L1、L2 不是一回事，容易混淆；63 和 76 的口径也没交代。Theseus 一节只写「early results」「pilot」，没有其他案例那种「公司自报」「内部评测」的来源说明；它的 Table 9 固定了模型和框架，只说明工作区质量会影响分数，重建环境由谁构建没说，有两组配置在 30 个任务里输了 5 个。</p>
+<p><mark>相对扎实的只有两处：Humanlaya 在同一基础模型、工具和预算下，用 600 个留出任务包比较 V0 和 V4；小红书主动说明没有点击率和转化率证据。</mark></p>
+<h3>3. 利益关系：第五章是作者单位的实践自述，不是行业抽样</h3>
+<ul>
+<li><strong>案例方和作者方高度重合。</strong> 八个案例里，Theseus、面壁（ModelBest）、小红书、Humanlaya、Agent-Native Research Lab、Frontis.AI 六家和作者单位名称直接对应；飞书和作者单位字节跳动的关系论文没写；只有腾讯混元不在作者名单里。通讯作者的单位包括 Theseus Labs，项目主页和仓库都用 theseus-labs-rsi 命名，Theseus 的案例排在第五章第一位，也是来源说明最少的一个。</li>
+<li><strong>没有交代选案标准。</strong> OpenAI、Anthropic、Google DeepMind 在 Table 13 里都有条目，正文也引用了它们的工作，但没有一家作为第五章案例展开；Table 13 反而把 Theseus（Argus L2–L3、SetupX L3）和 Frontis（L2–L3）列为「RSI 原生」公司，定级依据没有说明。在提取的论文文本里没有找到利益冲突或资助声明。</li>
+<li><strong>v3 还有没清理干净的地方。</strong> §4 有一处断开的引用「Appendix ??」；OpenAI Harness Engineering 在正文 Table 3 里是 L1，在附录 Table 13 里是「L1–L2 adj.」；Figure 18 里 L5 论文有 29 篇，比 L4 的 28 篇还多，而 §3.6.5 的结论是跨代可靠累积「仍未解决」，可见文献统计里 L5 的口径比正文宽。</li>
+</ul>
+<p>引用第五章任何数字时，建议同时写明是哪家机构、内部集还是公开基准、有没有独立复现，不要当作行业现状的证据。</p>
+<p>参考资料：</p>
+<ul>
+<li>Duan et al., The Last AI Built by Humans: Toward Genuine Recursive Self-Improvement, arXiv:2609.11873v3, 2026-09-22：<a href="https://arxiv.org/abs/2609.11873" rel="noopener" target="_blank">https://arxiv.org/abs/2609.11873</a> （许可：CC BY-NC-ND 4.0）</li>
+<li>项目主页：<a href="https://theseus-labs-rsi.github.io/" rel="noopener" target="_blank">https://theseus-labs-rsi.github.io/</a></li>
+<li>论文列表仓库：<a href="https://github.com/theseus-labs-rsi/awesome-rsi" rel="noopener" target="_blank">https://github.com/theseus-labs-rsi/awesome-rsi</a></li>
+</ul>
+</section>
+<p class="dim small">AI 整理:由论文原文抽取、多模型审稿和人工核对后写成,结论以原文为准。</p>
+</main>
+<a data-cur="zh" data-to="en" href="../../../en/rsi/paper/lastai/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>
