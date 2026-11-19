@@ -2,117 +2,139 @@
 
 <html lang="zh-CN"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Argus 百眼 · 让 AI 团队自己写软件,并且看得见、证得明</title>
-<style>*{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:64px}
-body{margin:0;color:#2d1b0e;background:#fdf8f0;
-  background-image:radial-gradient(ellipse at top,rgba(255,220,180,.35),transparent 60%),radial-gradient(ellipse at bottom,rgba(240,220,160,.25),transparent 60%);
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;font-size:16.5px;line-height:1.75}
-a{color:#b4521a;text-decoration:none;border-bottom:1px dotted rgba(180,82,26,.45)}
-a:hover{border-bottom-style:solid}
-.gtop{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px;padding:10px 22px;background:rgba(253,248,240,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(160,110,60,.22)}
-.gtop a{border:none;color:#6b4423;font-size:14px}.gtop .gt{font-weight:700;font-size:15px;flex:1;text-align:center}
-.gtop .gl{background:#ffd8a6;border:1px solid #e07a3c;border-radius:999px;padding:3px 12px;color:#7a3a0c}
-.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;max-width:1380px;margin:0 auto;padding:0 22px}
-.toc{position:sticky;top:58px;align-self:start;max-height:calc(100vh - 70px);overflow:auto;padding:22px 0 30px}
-.toc .tt{font-size:12px;font-weight:700;letter-spacing:2px;color:#a2471a;margin:0 0 10px 6px}
-.toc a{display:flex;gap:8px;align-items:baseline;border:none;color:#6b4423;font-size:13.5px;line-height:1.45;padding:6px 8px;border-radius:8px}
-.toc a .n{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#c9994e;min-width:20px}
-.toc a:hover{background:rgba(255,216,166,.35)}
-.toc a.on{background:#ffd8a6;color:#7a3a0c;font-weight:700}
-.toc .tnote{font-size:11.5px;color:#9a8068;margin:14px 8px 0}
-main.g{min-width:0;padding:28px 0 60px;overflow-wrap:anywhere}
-.hero{padding:10px 0 18px;border-bottom:1px solid rgba(160,110,60,.22);margin-bottom:10px}
-.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:2px;color:#a2471a}
-.hero h1{font-size:34px;line-height:1.3;margin:8px 0 10px}
-.hero h1 .acc{color:#c2571c}
-.hero .sub{color:#6b4423;max-width:900px}
-.legend2{font-size:13px;color:#6b4423;margin-top:10px}
-.kbox{display:inline-block;background:#e07a3c;color:#fff;font-size:11.5px;font-weight:700;border-radius:4px;padding:0 6px}
-.chapter{padding:34px 0 18px;border-bottom:1px solid rgba(160,110,60,.22)}
-.chead{margin-bottom:12px}
-.chead .cn{display:inline-block;font-size:12px;font-weight:700;letter-spacing:1px;color:#fff;background:#c2571c;border-radius:6px;padding:2px 9px}
-.chead h2{font-size:27px;line-height:1.3;margin:8px 0 4px;color:#2d1b0e}
-.chead .from{font-size:13px;color:#8a6a4a}
-.blk{margin:18px 0 6px}
-.blk>h3{font-size:20px;color:#7a3a0c;margin:22px 0 10px;padding-left:10px;border-left:4px solid #e07a3c}
-.blk h4{font-size:16.5px;margin:18px 0 8px;color:#2d1b0e}
-p{margin:0 0 .9em}
-ul,ol{margin:0 0 1em;padding-left:1.35em}li{margin:.3em 0}
-b,strong{color:#7a3a0c}
-.dim{color:#8a6a4a}.small{font-size:13.5px}
-code{font-family:ui-monospace,Menlo,monospace;font-size:.86em;background:#fff3e2;border:1px solid #f0d6b3;border-radius:4px;padding:0 .3em}
-.lead{font-size:17px;line-height:1.7;padding:.9em 1.1em;border-left:4px solid #e07a3c;background:rgba(255,216,166,.35);border-radius:0 10px 10px 0;margin:1em 0;text-align:left;font-weight:400;color:#2d1b0e}
-.lead b{color:#a2471a}
-.note{font-size:14px;color:#5e4514;background:rgba(255,255,255,.7);border:1px solid rgba(160,110,60,.25);border-radius:10px;padding:.65em 1em;margin:1em 0}
-.tag{display:inline-block;font-size:11.5px;border:1px solid rgba(160,110,60,.4);border-radius:999px;padding:0 .6em;color:#8a6a4a;margin-left:.25em;white-space:nowrap;line-height:1.6;vertical-align:1px;background:#fff}
-.tag.ok{color:#3a5e2e;border-color:#6b9e5a;background:#eef5ea}
-.tag.top{color:#a2471a;border-color:#e07a3c;background:#fff1e0}
-mark{background:rgba(255,176,32,.32);color:inherit;padding:0 .15em;border-radius:3px}
-.key{background:rgba(255,216,166,.28);border:1px solid rgba(224,122,60,.45);border-left:5px solid #e07a3c;border-radius:0 10px 10px 0;padding:.75em 1.1em;margin:.6em 0 1.1em}
-.key .kl{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#e07a3c;border-radius:4px;padding:0 .5em;margin-right:.4em}
-.key ul{margin:.45em 0 0}
-.src{display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#7a5e9e;border:1px solid rgba(122,94,158,.4);border-radius:4px;padding:0 .35em;margin-left:.3em;white-space:nowrap;vertical-align:1px}
+<style>:root{--bg:#0b1016;--bg2:#111821;--bg3:#16202c;--line:#223041;--ink:#e8edf3;--ink2:#b7c2cf;--ink3:#7f8da0;--amb:#ffb020;--amb2:#ff8a3c;--cy:#4cc2ff;--ok:#38d39f;--mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:62px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;font-size:16.5px;line-height:1.75}
+a{color:var(--cy);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.45)}a:hover{border-bottom-style:solid}
+b,strong{color:#fff}
+/* top bar */
+.gtop{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:18px;padding:10px 24px;background:rgba(11,16,22,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.gtop a{border:none;color:var(--ink2);font-size:14px}.gtop .gt{flex:1;text-align:center;font-size:14px;color:var(--ink2);letter-spacing:1px}.gtop .gt b{color:var(--amb);letter-spacing:3px}
+.gtop .gl{border:1px solid rgba(255,176,32,.5);border-radius:999px;padding:3px 12px;color:var(--amb)}
+/* hero */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+  background:radial-gradient(900px 420px at 18% 10%,rgba(255,138,60,.20),transparent 60%),radial-gradient(800px 400px at 85% 30%,rgba(76,194,255,.16),transparent 60%),var(--bg)}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(76,194,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(76,194,255,.07) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 75%)}
+.hin{position:relative;max-width:1180px;margin:0 auto;padding:64px 28px 54px}
+.eye{position:absolute;right:28px;top:46px;width:200px;height:200px;filter:drop-shadow(0 0 28px rgba(255,138,60,.45))}
+.eye .ring{fill:none;stroke:rgba(255,176,32,.35);stroke-width:1.2;stroke-dasharray:3 7;transform-origin:60px 60px}
+.eye .r1{animation:spin 26s linear infinite}.eye .r2{stroke:rgba(76,194,255,.35);animation:spin 18s linear infinite reverse}
+.eye .lid{fill:rgba(255,255,255,.04);stroke:#ffb020;stroke-width:2}
+.eye .iris{animation:look 7s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes look{0%,100%{transform:translate(0,0)}20%{transform:translate(-9px,-2px)}45%{transform:translate(8px,2px)}70%{transform:translate(2px,-3px)}}
+.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:3px;color:var(--amb)}
+.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.15;margin:14px 0 14px;letter-spacing:-.5px;max-width:860px}
+.grad{background:linear-gradient(90deg,#ffd27a,#ff8a3c 45%,#4cc2ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:18px;color:var(--ink2);max-width:820px}.hero .sub b{color:var(--amb)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:30px 0 26px;max-width:980px}
+.kpi{background:linear-gradient(180deg,rgba(22,32,44,.9),rgba(17,24,33,.9));border:1px solid var(--line);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;height:2px;width:100%;background:linear-gradient(90deg,var(--amb2),transparent)}
+.kn{font-family:var(--mono);font-size:clamp(26px,3.4vw,40px);font-weight:700;color:#fff;line-height:1.1;text-shadow:0 0 22px rgba(255,176,32,.35)}
+.kl2{font-size:13.5px;color:var(--ink3);margin-top:6px}
+.hcta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;border:none;background:linear-gradient(90deg,var(--amb),var(--amb2));color:#1a0d00!important;font-weight:800;border-radius:999px;padding:9px 20px;font-size:14.5px;box-shadow:0 6px 24px rgba(255,138,60,.35)}
+.btn.ghost{background:transparent;color:var(--ink)!important;border:1px solid var(--line);box-shadow:none}
+/* layout */
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:34px;max-width:1380px;margin:0 auto;padding:0 24px}
+.toc{position:sticky;top:60px;align-self:start;max-height:calc(100vh - 70px);overflow:auto;padding:26px 0 30px}
+.toc .tt{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;color:var(--ink3);margin:0 0 10px 8px}
+.toc a{display:flex;gap:9px;align-items:baseline;border:none;border-left:2px solid transparent;color:var(--ink3);font-size:13.5px;line-height:1.45;padding:6px 10px}
+.toc a .n{font-family:var(--mono);font-size:11px;color:#4b5a6d}
+.toc a:hover{color:var(--ink)}
+.toc a.on{color:#fff;border-left-color:var(--amb);background:linear-gradient(90deg,rgba(255,176,32,.12),transparent)}.toc a.on .n{color:var(--amb)}
+main.g{min-width:0;padding:30px 0 70px;overflow-wrap:anywhere}
+/* chapters */
+.chapter{padding:54px 0 16px;border-bottom:1px solid var(--line)}
+.chead{display:flex;align-items:center;gap:18px;margin-bottom:14px}
+.chead .big{font-family:var(--mono);font-size:64px;font-weight:800;line-height:1;background:linear-gradient(180deg,rgba(255,176,32,.9),rgba(255,138,60,.15));-webkit-background-clip:text;background-clip:text;color:transparent}
+.chead .cn{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;color:var(--ink3)}
+.chead h2{font-size:28px;line-height:1.3;margin:4px 0 0;color:#fff}
+.blk{margin:16px 0 8px}
+.blk>h3,.blk h3{font-size:19px;color:#fff;margin:26px 0 12px;display:flex;align-items:center;gap:10px}
+.blk h3::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--amb);box-shadow:0 0 10px var(--amb)}
+p{margin:0 0 .9em;color:var(--ink2)}ul,ol{margin:0 0 1em;padding-left:1.35em;color:var(--ink2)}li{margin:.35em 0}
+.dim{color:var(--ink3)}.small{font-size:13.5px}
+code{font-family:var(--mono);font-size:.85em;background:var(--bg3);border:1px solid var(--line);border-radius:5px;padding:0 .35em;color:#ffd27a}
+mark{background:linear-gradient(transparent 55%,rgba(255,176,32,.38) 55%);color:#fff;padding:0 .1em}
+.lead{font-size:17px;padding:1em 1.2em;border:1px solid rgba(255,176,32,.35);border-left:4px solid var(--amb);background:linear-gradient(90deg,rgba(255,176,32,.10),rgba(17,24,33,.6));border-radius:0 12px 12px 0;margin:.5em 0 1em;color:var(--ink)}
+.lead b{color:var(--amb)}
+.note{font-size:14px;color:var(--ink2);background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:.7em 1em;margin:1em 0}
+.legend2{font-size:13px;color:var(--ink3);margin:.4em 0 0}
+.kbox{display:inline-block;background:var(--amb);color:#1a0d00;font-size:11.5px;font-weight:800;border-radius:4px;padding:0 6px}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.5px;border:1px solid var(--line);border-radius:999px;padding:0 .6em;color:var(--ink3);margin-left:.3em;white-space:nowrap;line-height:1.7;vertical-align:2px}
+.tag.ok{color:var(--ok);border-color:rgba(56,211,159,.5);background:rgba(56,211,159,.08)}
+.tag.top{color:var(--amb);border-color:rgba(255,176,32,.5);background:rgba(255,176,32,.08)}
+.key{background:linear-gradient(135deg,rgba(255,176,32,.10),rgba(76,194,255,.05));border:1px solid rgba(255,176,32,.35);border-radius:14px;padding:.9em 1.2em;margin:.4em 0 1.2em;box-shadow:0 0 0 1px rgba(255,176,32,.05),0 10px 30px rgba(0,0,0,.25)}
+.key .kl{display:inline-block;font-size:11.5px;font-weight:800;color:#1a0d00;background:var(--amb);border-radius:4px;padding:0 .5em}
+.key ul{margin:.5em 0 0;color:var(--ink)}
 .tw{overflow-x:auto}
-table.rs-t{width:100%;border-collapse:collapse;font-size:14.5px;margin:.6em 0 1.2em;background:rgba(255,255,255,.65);border-radius:10px;overflow:hidden}
-table.rs-t th,table.rs-t td{border-bottom:1px solid rgba(160,110,60,.18);padding:.55em .65em;text-align:left;vertical-align:top}
-table.rs-t th{background:rgba(240,220,190,.6);color:#6b4423;font-weight:600;font-size:13px}
-.rs-fig{margin:1em 0 1.5em}.rs-fig img{display:block;width:100%;max-width:980px;height:auto;border-radius:10px;background:#fff;border:1px solid rgba(160,110,60,.25)}
-.rs-fig figcaption{font-size:13px;color:#7b5a3c;line-height:1.6;margin-top:.5em}.rs-fig a{border:none}
-.rs-tl{border-left:2px solid rgba(160,110,60,.35);margin:1em 0 1.3em;padding-left:1em}.rs-tl>div{margin:.5em 0;font-size:15px}
-.rs-tl .y{display:inline-block;min-width:6.5em;color:#c2571c;font-family:ui-monospace,Menlo,monospace;font-size:13px}
-pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#fff8ee;border:1px solid #f0d6b3;border-radius:10px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7}
-.rs-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:1em 0}
-.rs-card{display:block;background:rgba(255,255,255,.7);border:1px solid rgba(160,110,60,.25)!important;border-radius:12px;padding:.85em 1em;color:#2d1b0e!important}
-.rs-card:hover{border-color:#e07a3c!important}
-.rs-card .k{font-size:12.5px;color:#8a6a4a}.rs-card .t{font-size:16.5px;font-weight:700;margin:.15em 0}.rs-card .d{font-size:13.5px;color:#6b4423;line-height:1.55}
-.rs-q{background:rgba(255,255,255,.7);border:1px solid rgba(160,110,60,.25);border-radius:10px;padding:.15em 1em;margin:.7em 0}
-.rs-q summary{cursor:pointer;font-weight:700;padding:.6em 0;list-style:none}.rs-q summary::-webkit-details-marker{display:none}
-.rs-q summary::before{content:"+ ";color:#e07a3c}.rs-q[open] summary::before{content:"− "}.rs-q>div{padding:0 0 .7em}
-.bp{margin-top:18px}
-.gfoot{font-size:12.5px;color:#8a6a4a;margin-top:28px;line-height:1.7}
-@media (max-width:760px){table.rs-t{display:block;overflow-x:auto}}
-@media (max-width:1000px){.layout{grid-template-columns:minmax(0,1fr)}.toc{display:none}.hero h1{font-size:26px}.rs-cards{grid-template-columns:1fr}}
-@media print{.toc,.gtop{display:none}.layout{display:block}.chapter{break-inside:auto}}
-
-.dl{margin:.6em 0}.dlb{display:inline-block;background:#e07a3c;color:#fff!important;border:none;border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px}
-
-.cards2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:.8em 0 1.2em}
-.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:.8em 0 1.2em}
-.cards4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:.8em 0 1.2em}
-.cardx{background:rgba(255,255,255,.75);border:1.5px solid rgba(201,153,78,.6);border-radius:12px;padding:.8em 1em}
-.cardx.plan{border-style:dashed;border-color:#e07a3c;background:rgba(255,238,214,.6)}
-.cardx .k{font-size:12px;font-weight:700;letter-spacing:1px;color:#a2471a}
-.cardx .t{font-size:16.5px;font-weight:700;margin:.15em 0 .25em}
-.cardx .d{font-size:14px;color:#5e4514;line-height:1.6}
-.flowx{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:.8em 0 1.2em}
-.flowx .st{background:rgba(255,255,255,.75);border:1.5px solid rgba(201,153,78,.6);border-radius:12px;padding:.7em .8em;position:relative}
-.flowx .st.gate{border:2px solid #b4521a;background:#fff3e2}
-.flowx .st .n{width:26px;height:26px;border-radius:50%;background:#e07a3c;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:6px}
-.flowx .st b{display:block;font-size:15px;margin-bottom:3px}
-.flowx .st p{font-size:13px;line-height:1.55;margin:0;color:#5e4514}
-.flowx .st:not(:last-child)::after{content:"";position:absolute;right:-9px;top:50%;border-left:8px solid #c9994e;border-top:6px solid transparent;border-bottom:6px solid transparent;transform:translateY(-50%)}
-@media (max-width:1000px){.flowx{grid-template-columns:repeat(2,minmax(0,1fr))}.flowx .st::after{display:none}.cards3,.cards4{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:600px){.cards2,.cards3,.cards4{grid-template-columns:1fr}}
+table.rs-t{width:100%;border-collapse:separate;border-spacing:0;font-size:14px;margin:.6em 0 1.1em;background:var(--bg2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--line);padding:.6em .75em;text-align:left;vertical-align:top;color:var(--ink2)}
+table.rs-t th{background:var(--bg3);color:var(--ink3);font-weight:600;font-size:12.5px;letter-spacing:.5px}
+table.rs-t tr:last-child td{border-bottom:none}
+table.rs-t td b{color:var(--amb)}
+pre.rs-f{font-family:var(--mono);font-size:13.5px;background:#0a0f15;border:1px solid var(--line);border-radius:12px;padding:1em 1.2em;overflow-x:auto;line-height:1.75;color:#9fe3c6}
+/* cards & flow */
+.cards2,.cards3,.cards4{display:grid;gap:14px;margin:.9em 0 1.3em}
+.cards2{grid-template-columns:repeat(2,minmax(0,1fr))}.cards3{grid-template-columns:repeat(3,minmax(0,1fr))}.cards4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.cardx{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:1em 1.1em;transition:transform .25s,border-color .25s,box-shadow .25s}
+.cardx:hover{transform:translateY(-3px);border-color:rgba(255,176,32,.5);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.cardx.plan{border-style:dashed;border-color:rgba(76,194,255,.45)}
+.cardx .k{font-family:var(--mono);font-size:11.5px;letter-spacing:2px;color:var(--amb)}
+.cardx .t{font-size:17px;font-weight:700;margin:.2em 0 .3em;color:#fff}.cardx .d{font-size:14px;color:var(--ink2);line-height:1.6}
+.flowx{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:.9em 0 1.3em}
+.flowx .st{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:.8em .85em;position:relative}
+.flowx .st.gate{border-color:rgba(255,176,32,.65);box-shadow:0 0 24px rgba(255,176,32,.15) inset}
+.flowx .st .n{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--amb),var(--amb2));color:#1a0d00;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:8px;font-family:var(--mono)}
+.flowx .st b{display:block;font-size:15px;margin-bottom:4px}.flowx .st p{font-size:13px;line-height:1.55;margin:0}
+.flowx .st:not(:last-child)::after{content:"";position:absolute;right:-12px;top:50%;width:12px;height:2px;background:linear-gradient(90deg,var(--amb),transparent);box-shadow:0 0 8px var(--amb)}
+/* charts */
+.charts2,.charts4{display:grid;gap:14px;margin:.9em 0 1.4em}
+.charts2{grid-template-columns:repeat(2,minmax(0,1fr))}.charts4{grid-template-columns:repeat(4,minmax(0,1fr))}
+figure.ch{margin:0;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 12px 10px}
+figure.ch figcaption{font-size:13.5px;font-weight:700;color:#fff;margin:0 0 2px 4px}
+figure.ch figcaption span{font-weight:400;color:var(--ink3);font-size:12px;margin-left:6px}
+figure.ch svg{width:100%;height:auto;display:block}
+figure.ch .grid{stroke:#1d2a39;stroke-width:1}figure.ch .axis{stroke:#3a4a5e;stroke-width:1}
+figure.ch .bar{cursor:pointer;transition:opacity .2s,filter .2s;transform-box:fill-box;transform-origin:bottom}
+figure.ch .bar:hover{filter:brightness(1.25) drop-shadow(0 0 6px rgba(255,255,255,.25))}
+figure.ch .val{fill:#e8edf3;font-size:12.5px;font-weight:700;text-anchor:middle;font-family:var(--mono)}
+figure.ch .lab{fill:#9aa8b8;font-size:12px;text-anchor:middle}
+figure.ch .cnote{font-size:12px;color:var(--ink3);margin:2px 4px 0}
+.rv.in figure.ch .bar,figure.ch.rv.in .bar{animation:grow .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.lgd{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--ink2);margin:.6em 0 0}
+.lgd i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.tip{position:fixed;z-index:50;pointer-events:none;opacity:0;transition:opacity .12s;background:rgba(10,15,21,.95);border:1px solid rgba(255,176,32,.5);color:#fff;font-size:13px;padding:5px 10px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.4);font-family:var(--mono)}
+/* reveal */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}.rv.in{opacity:1;transform:none}
+.gfoot{font-size:12.5px;color:var(--ink3);margin-top:30px}
+.dl,.dlb{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+@media (max-width:1100px){.eye{display:none}.charts4{grid-template-columns:repeat(2,minmax(0,1fr))}.flowx{grid-template-columns:repeat(3,minmax(0,1fr))}.flowx .st::after{display:none}}
+@media (max-width:1000px){.layout{grid-template-columns:minmax(0,1fr)}.toc{display:none}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cards3,.cards4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.charts2,.charts4,.cards2,.cards3,.cards4,.flowx{grid-template-columns:1fr}.chead .big{font-size:44px}table.rs-t{display:block;overflow-x:auto}}
+@media print{.toc,.gtop,.eye,.hgrid{display:none}.rv{opacity:1;transform:none}body{background:#fff;color:#111}}
 </style></head><body>
-<header class="gtop"><a class="brand" href="../">← RSI 资料包</a><span class="gt">Argus 百眼 · 介绍</span><a class="gl" href="../argus/">业务大图</a></header>
+<header class="gtop"><a class="brand" href="../">← RSI 资料包</a><span class="gt"><b>ARGUS</b> · 百眼</span><a class="gl" href="../argus/">业务大图 →</a></header>
+<div class="hero"><div class="hgrid"></div><div class="hin">
+<svg aria-hidden="true" class="eye" viewbox="0 0 120 120"><defs><radialgradient cx="50%" cy="50%" id="ir" r="50%"><stop offset="0" stop-color="#ffd27a"></stop><stop offset=".55" stop-color="#ff9a3c"></stop><stop offset="1" stop-color="#7a2e08"></stop></radialgradient></defs>
+<circle class="ring r1" cx="60" cy="60" r="56"></circle><circle class="ring r2" cx="60" cy="60" r="46"></circle>
+<path class="lid" d="M14 60 Q60 18 106 60 Q60 102 14 60 Z"></path><g class="iris"><circle cx="60" cy="60" fill="url(#ir)" r="19"></circle><circle cx="60" cy="60" fill="#0b1016" r="8"></circle><circle cx="54" cy="54" fill="#fff" opacity=".85" r="3"></circle></g></svg>
+<div class="eyebrow">ARGUS AGENT · PROTOTYPE · 2026-11</div>
+<h1>让一群 AI agent<br/><span class="grad">自己组织起来写软件</span></h1>
+<p class="sub">只有<b>做不了假</b>的测试说了算 · 每一步都<b>看得见、能回放</b> · 在 AgentCore 上跑到 <b>128 人</b></p>
+<div class="kpis"><div class="kpi rv"><div class="kn" data-count="128">128</div><div class="kl2">个 worker 同时开发</div></div><div class="kpi rv"><div class="kn" data-count="640">640</div><div class="kl2">条验收,全部通过</div></div><div class="kpi rv"><div class="kn" data-count="0.25">≤ $0.25</div><div class="kl2">美元以内 / 每条验收</div></div><div class="kpi rv"><div class="kn" data-count="0">0</div><div class="kl2">次 Bedrock 限流</div></div></div>
+<div class="hcta"><a class="btn" href="#a8">看 128 人实验 ↓</a><a class="btn ghost" download="" href="argus-intro.html">下载单个 HTML</a></div>
+</div></div>
 <div class="layout">
-<nav class="toc"><div class="tt">目录</div><a href="#a1"><span class="n">01</span>Argus 是什么,为什么做</a><a href="#a2"><span class="n">02</span>它怎么工作:一次运行的流程</a><a href="#a3"><span class="n">03</span>团队怎么协作:只给一个空数据库</a><a href="#a4"><span class="n">04</span>判分与防作弊</a><a href="#a5"><span class="n">05</span>安全模型:为什么 agent 碰不到凭证</a><a href="#a6"><span class="n">06</span>全程可回放:控制室</a><a href="#a7"><span class="n">07</span>实验一:从 2 人到 30 人</a><a href="#a8"><span class="n">08</span>实验二:128 人 · 电商平台(模块独立)</a><a href="#a9"><span class="n">09</span>实验三:128 人 · 工作流审批引擎(模块高度耦合)</a><a href="#a10"><span class="n">10</span>总结论,以及证据的局限</a><a href="#a11"><span class="n">11</span>从实验里长出来的两个机制</a><a href="#a12"><span class="n">12</span>Evolve:让 agent 在严格门禁下自己变好(方案)</a><a href="#a13"><span class="n">13</span>和 RSI、OpenEvolve 以及其他框架的关系</a><a href="#a14"><span class="n">14</span>已知限制和路线图</a><a href="#a15"><span class="n">15</span>资料来源</a><div class="tnote">原型项目 · 整理于 2026-11-19</div></nav>
+<nav class="toc"><div class="tt">CONTENTS</div><a href="#a1"><span class="n">01</span>Argus 是什么,为什么做</a><a href="#a2"><span class="n">02</span>它怎么工作:一次运行的流程</a><a href="#a3"><span class="n">03</span>团队怎么协作:只给一个空数据库</a><a href="#a4"><span class="n">04</span>判分与防作弊</a><a href="#a5"><span class="n">05</span>安全模型:为什么 agent 碰不到凭证</a><a href="#a6"><span class="n">06</span>全程可回放:控制室</a><a href="#a7"><span class="n">07</span>实验一:从 2 人到 30 人</a><a href="#a8"><span class="n">08</span>实验二:128 人 · 电商平台(模块独立)</a><a href="#a9"><span class="n">09</span>实验三:128 人 · 工作流审批引擎(模块高度耦合)</a><a href="#a10"><span class="n">10</span>总结论,以及证据的局限</a><a href="#a11"><span class="n">11</span>从实验里长出来的两个机制</a><a href="#a12"><span class="n">12</span>Evolve:让 agent 在严格门禁下自己变好(方案)</a><a href="#a13"><span class="n">13</span>和 RSI、OpenEvolve 以及其他框架的关系</a><a href="#a14"><span class="n">14</span>已知限制和路线图</a><a href="#a15"><span class="n">15</span>资料来源</a></nav>
 <main class="g">
-<section class="hero"><div class="eyebrow">Argus Agent · 百眼 · 原型</div>
-<h1>让一群 AI agent 自己组织起来写软件<br/><span class="acc">只有做不了假的测试说了算,每一步都能回放</span></h1>
-<p class="sub">Argus 是一个原型:planner 写规格和验收测试,1 个 lead + N 个 worker 在各自的沙箱里自己分工开发,判分器只认批准版本的测试。我们用它在 AgentCore 上跑了从 2 人到 128 人的团队实验。下一步是 Evolve 模块:让 agent 在严格门禁下自己变好。</p>
-<div class="lead"><b>最重要的实验结论:</b>人多更快但收益递减;<b>没有一种组织方式永远最好,取决于产品的耦合度</b> —— 模块独立时让团队自组织更好,模块高度耦合时需要一个统一负责的 lead;而规模越大,<b>规划和规格质量</b>越是瓶颈。</div>
-<div class="tw"><table class="rs-t">
-<tr><th>关键数字(实测)</th><th></th></tr>
-<tr><td>最大规模</td><td>128 个 worker,640 条验收,13–38 分钟全部通过</td></tr>
-<tr><td>每条验收的成本</td><td>约 0.07–0.25 美元(Claude Opus 5.5)</td></tr>
-<tr><td>Bedrock 限流</td><td>130 多个 agent 并发时为 0</td></tr>
-<tr><td>作弊尝试</td><td>改测试、强制推送、找仓库文件、关守卫:全部被挡住</td></tr>
-</table></div>
-<p class="dl"><a class="dlb" download="" href="argus-intro.html">下载为单个 HTML 文件</a></p>
-<div class="legend2"><b>标注</b>:<span class="kbox">本章要点</span> 每章关键信息 · <mark>高亮</mark> 核心结论 · <span class="tag ok">实测</span> 来自运行数据 · <span class="tag top">判断</span> 作者推断</div>
-</section>
-<section class="chapter" id="a1"><div class="chead"><span class="cn">第 1 章</span><h2>Argus 是什么,为什么做</h2></div><div class="key"><span class="kl">本章要点</span><ul><li>让<mark>一群 AI 编程 agent 自己组织起来写出真实的软件</mark>,只有「做不了假」的验收测试说了算,全程录像可回放。</li><li>名字来自希腊神话里的百眼巨人 Argus Panoptes:什么都看得见。</li><li>它是<mark>原型</mark>:用来验证想法,不是生产系统;运行会产生真实的模型费用。</li></ul></div><div class="blk"><h3>一句话</h3>
+<div class="lead rv"><b>最重要的实验结论:</b>人多更快但收益递减;<b>没有一种组织方式永远最好,取决于产品的耦合度</b> —— 模块独立时让团队自组织更好,模块高度耦合时需要一个统一负责的 lead;规模越大,<b>规划和规格质量</b>越是瓶颈。</div>
+<div class="legend2 rv"><span class="kbox">本章要点</span> 每章关键信息 · <mark>高亮</mark> 核心结论 · <span class="tag ok">实测</span> 来自运行数据 · <span class="tag top">判断</span> 作者推断 · 图表悬停看数值</div>
+<section class="chapter" id="a1"><div class="chead rv"><span class="big">01</span><div><span class="cn">CHAPTER 01</span><h2>Argus 是什么,为什么做</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>让<mark>一群 AI 编程 agent 自己组织起来写出真实的软件</mark>,只有「做不了假」的验收测试说了算,全程录像可回放。</li><li>名字来自希腊神话里的百眼巨人 Argus Panoptes:什么都看得见。</li><li>它是<mark>原型</mark>:用来验证想法,不是生产系统;运行会产生真实的模型费用。</li></ul></div><div class="blk rv"><h3>一句话</h3>
 <div class="lead">把一个小团队(1 个 lead + N 个 worker)关进一间只有一块空白板的屋子,说「把这个软件做出来,怎么分工你们自己定」。<b>Argus 就是这间屋子,加上一面单向玻璃。</b></div>
 <h3>想回答的三个问题</h3>
 <ul>
@@ -124,7 +146,7 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <div class="cards2">
 <div class="cardx"><div class="k">模块一 · 已实现</div><div class="t">Swarm 蜂群写软件</div><div class="d">需求 → 规格和验收测试 → 规格门禁 → 团队自组织开发 → 判分 → 迭代。本页第 2–11 章。</div></div>
 <div class="cardx plan"><div class="k">模块二 · 方案</div><div class="t">Evolve 自进化</div><div class="d">让一个已有的 agent 在严格门禁下自己变好;之后把 Swarm 自己的工作方式当作进化对象。本页第 12 章。</div></div>
-</div></div></section><section class="chapter" id="a2"><div class="chead"><span class="cn">第 2 章</span><h2>它怎么工作:一次运行的流程</h2></div><div class="key"><span class="kl">本章要点</span><ul><li>流程:<mark>规划 → 规格门禁 → 批准 → 团队开发 → 判分 → 下一轮修订</mark>。</li><li>规格门禁:planner 写的测试在空脚手架上<mark>必须全部失败</mark>,证明测试是真的。</li><li>每一轮的新测试先失败、旧测试不许退步。</li></ul></div><div class="blk"><h3>六步</h3>
+</div></div></section><section class="chapter" id="a2"><div class="chead rv"><span class="big">02</span><div><span class="cn">CHAPTER 02</span><h2>它怎么工作:一次运行的流程</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>流程:<mark>规划 → 规格门禁 → 批准 → 团队开发 → 判分 → 下一轮修订</mark>。</li><li>规格门禁:planner 写的测试在空脚手架上<mark>必须全部失败</mark>,证明测试是真的。</li><li>每一轮的新测试先失败、旧测试不许退步。</li></ul></div><div class="blk rv"><h3>六步</h3>
 <div class="flowx">
 <div class="st"><div class="n">1</div><b>规划</b><p>planner 根据一段需求写产品规格 SPEC.md 和验收测试;规模大时由 1 个总 planner + 若干模块 planner 并行写</p></div>
 <div class="st gate"><div class="n">2</div><b>规格门禁</b><p>每个验收项都要有测试;脚手架能启动;测试能被收集且<b>全部失败</b>。不过就把原因发回,最多 3 次</p></div>
@@ -145,7 +167,7 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <h3>两种沙箱</h3>
 <ul><li><b>AgentCore</b>:每个 agent 一个 Amazon Bedrock AgentCore Runtime 会话 = 一台独立 microVM。实验大多用这个。</li>
 <li><b>Docker</b>:每个 agent 一个容器,跑在单独的 worker 机器上。</li></ul>
-<p class="dim small">会话之间不保留对话记忆,agent 靠数据库、git 和一个状态命令重新定位;所有模型调用(包括子 agent)都固定为 Claude Opus 5.5。</p></div></section><section class="chapter" id="a3"><div class="chead"><span class="cn">第 3 章</span><h2>团队怎么协作:只给一个空数据库</h2></div><div class="key"><span class="kl">本章要点</span><ul><li>Argus <mark>不规定</mark>表结构和流程,只给一个空的 Postgres 和一个 git 仓库,看团队自己怎么设计。</li><li>团队通常会自建「公告、手册、分工、状态」几类表;30 人时会用 <code>FOR UPDATE SKIP LOCKED</code> 抢活。</li><li>可以选四种组织方式:扁平、小组长、涌现分层、纯蜂群。</li></ul></div><div class="blk"><h3>团队自己建了什么表 <span class="tag ok">实测</span></h3>
+<p class="dim small">会话之间不保留对话记忆,agent 靠数据库、git 和一个状态命令重新定位;所有模型调用(包括子 agent)都固定为 Claude Opus 5.5。</p></div></section><section class="chapter" id="a3"><div class="chead rv"><span class="big">03</span><div><span class="cn">CHAPTER 03</span><h2>团队怎么协作:只给一个空数据库</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>Argus <mark>不规定</mark>表结构和流程,只给一个空的 Postgres 和一个 git 仓库,看团队自己怎么设计。</li><li>团队通常会自建「公告、手册、分工、状态」几类表;30 人时会用 <code>FOR UPDATE SKIP LOCKED</code> 抢活。</li><li>可以选四种组织方式:扁平、小组长、涌现分层、纯蜂群。</li></ul></div><div class="blk rv"><h3>团队自己建了什么表 <span class="tag ok">实测</span></h3>
 <div class="tw"><table class="rs-t">
 <tr><th>运行</th><th>团队自建的表</th></tr>
 <tr><td>8 人 CRM</td><td>messages(公告)、readme(手册)、tasks(分工)</td></tr>
@@ -160,7 +182,7 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <div class="cardx"><div class="k">emergent</div><div class="t">涌现分层</div><div class="d">lead 自己决定要不要、指定谁当协调者</div></div>
 <div class="cardx"><div class="k">leaderless</div><div class="t">纯蜂群</div><div class="d">没有 lead,所有 worker 地位平等</div></div>
 </div>
-<p class="dim small">「读写流」:控制室会显示谁写哪张表(红线)、谁读哪张表(绿线),这是从 Postgres 的语句日志解析出来的。</p></div></section><section class="chapter" id="a4"><div class="chead"><span class="cn">第 4 章</span><h2>判分与防作弊</h2></div><div class="key"><span class="kl">本章要点</span><ul><li>判分用<mark>两个临时容器</mark>:一个跑团队的产品,另一个用干净镜像跑批准版测试,不加载仓库里的任何 pytest 配置或插件。</li><li>判分输出带<mark>随机 nonce</mark> 并编码,产品打印的内容冒充不了判分结果。</li><li>实测的作弊尝试全部被挡住。</li></ul></div><div class="blk"><h3>判分怎么做</h3>
+<p class="dim small">「读写流」:控制室会显示谁写哪张表(红线)、谁读哪张表(绿线),这是从 Postgres 的语句日志解析出来的。</p></div></section><section class="chapter" id="a4"><div class="chead rv"><span class="big">04</span><div><span class="cn">CHAPTER 04</span><h2>判分与防作弊</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>判分用<mark>两个临时容器</mark>:一个跑团队的产品,另一个用干净镜像跑批准版测试,不加载仓库里的任何 pytest 配置或插件。</li><li>判分输出带<mark>随机 nonce</mark> 并编码,产品打印的内容冒充不了判分结果。</li><li>实测的作弊尝试全部被挡住。</li></ul></div><div class="blk rv"><h3>判分怎么做</h3>
 <ul>
 <li><b>产品容器</b>:干净克隆 main 的指定提交,跑团队自己的启动脚本。</li>
 <li><b>测试容器</b>:只从<b>批准的规格提交</b>里取出验收测试,用空的配置和固定参数跑,禁止自动加载插件。</li>
@@ -180,7 +202,7 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <tr><td>强制推送 / 回退 main</td><td>被拒绝</td></tr>
 <tr><td>在沙箱里找仓库文件</td><td>不存在</td></tr>
 <tr><td>用户配置里关掉守卫钩子</td><td>守卫照常生效(root 所有的 managed settings)</td></tr>
-</table></div></div></section><section class="chapter" id="a5"><div class="chead"><span class="cn">第 5 章</span><h2>安全模型:为什么 agent 碰不到凭证</h2></div><div class="key"><span class="kl">本章要点</span><ul><li><mark>沙箱里没有任何 AWS 凭证</mark>:模型请求发给 hub 的代理,由代理签名,而且只放行指定模型的推理接口。</li><li>每个 agent 一个独立 token,不能冒充别人;沙箱的网络被限制在必要的服务上。</li><li>守卫是「第一道提醒」,真正的边界是网络策略、git 服务端钩子和判分双容器。</li></ul></div><div class="blk"><ul>
+</table></div></div></section><section class="chapter" id="a5"><div class="chead rv"><span class="big">05</span><div><span class="cn">CHAPTER 05</span><h2>安全模型:为什么 agent 碰不到凭证</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li><mark>沙箱里没有任何 AWS 凭证</mark>:模型请求发给 hub 的代理,由代理签名,而且只放行指定模型的推理接口。</li><li>每个 agent 一个独立 token,不能冒充别人;沙箱的网络被限制在必要的服务上。</li><li>守卫是「第一道提醒」,真正的边界是网络策略、git 服务端钩子和判分双容器。</li></ul></div><div class="blk rv"><ul>
 <li><b>凭证</b>:沙箱里没有 AWS 凭证。代理替沙箱签名;白名单只允许指定模型的推理、流式推理、对话和计 token 接口,以及只读的模型列表。代理同时<b>按 agent 记账</b>。</li>
 <li><b>身份</b>:每个 agent 的 token 由运行 token 和 agent 名派生(HMAC);不能冒名,也不能用于已结束的运行。</li>
 <li><b>网络</b>:沙箱只需要访问 hub 代理、DNS、同一运行里的 git 服务和数据库,以及外网。Docker 后端由宿主机防火墙把其余访问(内网其他机器、实例元数据、宿主机)全部拒绝;AgentCore 后端由 VPC 安全组限制可达的服务。</li>
@@ -188,7 +210,7 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <li><b>控制室</b>:所有页面和 API 都要登录;按真实客户端 IP 限制错误次数;改密码后旧会话全部失效;不暴露服务器信息,不被搜索引擎收录。</li>
 <li><b>AgentCore 后端</b>:Runtime 的执行角色只有拉取沙箱镜像和写自己日志的权限,不给任何模型调用权限,模型调用仍然走 hub 代理。</li>
 </ul>
-<p class="note">已知风险和部署细节没有在公开页面列出。</p></div></section><section class="chapter" id="a6"><div class="chead"><span class="cn">第 6 章</span><h2>全程可回放:控制室</h2></div><div class="key"><span class="kl">本章要点</span><ul><li>每一次模型调用、工具调用、数据库读写、提交、判分、被拦截的操作都<mark>带时间戳记录</mark>。</li><li>所有页面都能拖动时间轴,看任一时刻的样子。</li><li>agent 写的英文任务和消息可以一键显示成中文(带缓存的翻译)。</li></ul></div><div class="blk"><div class="tw"><table class="rs-t">
+<p class="note">已知风险和部署细节没有在公开页面列出。</p></div></section><section class="chapter" id="a6"><div class="chead rv"><span class="big">06</span><div><span class="cn">CHAPTER 06</span><h2>全程可回放:控制室</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>每一次模型调用、工具调用、数据库读写、提交、判分、被拦截的操作都<mark>带时间戳记录</mark>。</li><li>所有页面都能拖动时间轴,看任一时刻的样子。</li><li>agent 写的英文任务和消息可以一键显示成中文(带缓存的翻译)。</li></ul></div><div class="blk rv"><div class="tw"><table class="rs-t">
 <tr><th>页面</th><th>看什么</th></tr>
 <tr><td>总览</td><td>验收通过数、花费 / 预算、提交数、读写次数、拦截次数、关键时刻、实时动态</td></tr>
 <tr><td>蜂群</td><td>每个 agent 此刻在做什么(思考 / 改文件 / 构建测试 / Git / 数据库 / 等待 / 被拦截),以及每个人的状态时间条</td></tr>
@@ -200,7 +222,7 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <tr><td>规格</td><td>规格版本、每条验收项在当前时刻是否通过、门禁结果</td></tr>
 <tr><td>迭代</td><td>每一轮的结果;发起修订</td></tr>
 </table></div>
-<p class="dim small">记录的数据:agent 状态变化、文字和工具调用、每次模型调用的 token 和费用、每分钟每个 agent 对每张表的读写、团队表的快照、main 上的每个提交、每次判分、资源占用、拦截、规格版本、关键时刻。每次运行结束会自动生成一份实验记录。</p></div></section><section class="chapter" id="a7"><div class="chead"><span class="cn">第 7 章</span><h2>实验一:从 2 人到 30 人</h2></div><div class="key"><span class="kl">本章要点</span><ul><li><mark>人多更快,但收益递减</mark>:8 → 30 个 worker(3.75 倍),速度只提高 2.2 倍。</li><li>每个 worker 至少要分到<mark>约 5 条验收</mark>;3.3 条时三分之一的人一直没有提交。</li><li>人多不明显变贵:每条验收 0.15–0.17 美元;<mark>规划成了最慢的一环</mark>。</li></ul></div><div class="blk"><h3>数据 <span class="tag ok">实测</span></h3>
+<p class="dim small">记录的数据:agent 状态变化、文字和工具调用、每次模型调用的 token 和费用、每分钟每个 agent 对每张表的读写、团队表的快照、main 上的每个提交、每次判分、资源占用、拦截、规格版本、关键时刻。每次运行结束会自动生成一份实验记录。</p></div></section><section class="chapter" id="a7"><div class="chead rv"><span class="big">07</span><div><span class="cn">CHAPTER 07</span><h2>实验一:从 2 人到 30 人</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li><mark>人多更快,但收益递减</mark>:8 → 30 个 worker(3.75 倍),速度只提高 2.2 倍。</li><li>每个 worker 至少要分到<mark>约 5 条验收</mark>;3.3 条时三分之一的人一直没有提交。</li><li>人多不明显变贵:每条验收 0.15–0.17 美元;<mark>规划成了最慢的一环</mark>。</li></ul></div><div class="blk rv"><h3>数据 <span class="tag ok">实测</span></h3>
 <p class="dim small">全部在 AgentCore microVM 里,模型 Claude Opus 5.5。「团队用时」= 从批准规格到第 1 轮全部验收通过。</p>
 <div class="tw"><table class="rs-t">
 <tr><th>运行</th><th>worker</th><th>验收项</th><th>每人</th><th>团队用时</th><th>每分钟完成</th><th>有提交</th><th>等待/协调</th><th>lead 花费占比</th><th>每条花费</th></tr>
@@ -208,7 +230,7 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <tr><td>ac-tasks</td><td>2</td><td>10</td><td>5.0</td><td>2.3 分钟</td><td>4.3</td><td>2/2</td><td>27%</td><td>28%</td><td>$0.08</td></tr>
 <tr><td>crm-8h</td><td>8</td><td>40</td><td>5.0</td><td>5.9 分钟</td><td>6.8</td><td>8/8</td><td>50%</td><td>18%</td><td>$0.15</td></tr>
 <tr><td>pm-30h</td><td>30</td><td>100</td><td>3.3</td><td>6.6 分钟</td><td>15.1</td><td><b>20/30</b></td><td>67%</td><td>5%</td><td>$0.17</td></tr>
-</table></div>
+</table></div><div class="charts2"><figure class="ch rv"><figcaption>每分钟完成的验收(按 worker 人数)<span>条/分钟</span></figcaption><svg aria-label="每分钟完成的验收(按 worker 人数)" role="img" viewbox="0 0 360 190"><line class="grid" x1="8" x2="352" y1="123.5" y2="123.5"></line><line class="grid" x1="8" x2="352" y1="91.0" y2="91.0"></line><line class="grid" x1="8" x2="352" y1="58.5" y2="58.5"></line><line class="grid" x1="8" x2="352" y1="26.0" y2="26.0"></line><line class="axis" x1="8" x2="352" y1="156" y2="156"></line><path class="bar" d="M28.0,156 V117.0 Q28.0,113.0 32.0,113.0 H70.0 Q74.0,113.0 74.0,117.0 V156 Z" data-tip="tiny-recipes · 2 人:5.9 条/分钟" fill="#3987e5"></path><text class="val" x="51.0" y="106.0">5.9</text><text class="lab" x="51.0" y="173">2</text><path class="bar" d="M114.0,156 V128.6 Q114.0,124.6 118.0,124.6 H156.0 Q160.0,124.6 160.0,128.6 V156 Z" data-tip="ac-tasks · 2 人:4.3 条/分钟" fill="#3987e5"></path><text class="val" x="137.0" y="117.6">4.3</text><text class="lab" x="137.0" y="173">2</text><path class="bar" d="M200.0,156 V110.4 Q200.0,106.4 204.0,106.4 H242.0 Q246.0,106.4 246.0,110.4 V156 Z" data-tip="crm-8h · 8 人:6.8 条/分钟" fill="#3987e5"></path><text class="val" x="223.0" y="99.4">6.8</text><text class="lab" x="223.0" y="173">8</text><path class="bar" d="M286.0,156 V49.8 Q286.0,45.8 290.0,45.8 H328.0 Q332.0,45.8 332.0,49.8 V156 Z" data-tip="pm-30h · 30 人:15.1 条/分钟" fill="#3987e5"></path><text class="val" x="309.0" y="38.8">15.1</text><text class="lab" x="309.0" y="173">30</text></svg><div class="cnote">8 → 30 人(3.75 倍),速度只 ×2.2</div></figure><figure class="ch rv"><figcaption>等待 / 协调时间占比(按 worker 人数)<span>%</span></figcaption><svg aria-label="等待 / 协调时间占比(按 worker 人数)" role="img" viewbox="0 0 360 190"><line class="grid" x1="8" x2="352" y1="123.5" y2="123.5"></line><line class="grid" x1="8" x2="352" y1="91.0" y2="91.0"></line><line class="grid" x1="8" x2="352" y1="58.5" y2="58.5"></line><line class="grid" x1="8" x2="352" y1="26.0" y2="26.0"></line><line class="axis" x1="8" x2="352" y1="156" y2="156"></line><path class="bar" d="M28.0,156 V118.9 Q28.0,114.9 32.0,114.9 H70.0 Q74.0,114.9 74.0,118.9 V156 Z" data-tip="tiny-recipes:25%" fill="#c98500"></path><text class="val" x="51.0" y="107.9">25%</text><text class="lab" x="51.0" y="173">2</text><path class="bar" d="M114.0,156 V115.6 Q114.0,111.6 118.0,111.6 H156.0 Q160.0,111.6 160.0,115.6 V156 Z" data-tip="ac-tasks:27%" fill="#c98500"></path><text class="val" x="137.0" y="104.6">27%</text><text class="lab" x="137.0" y="173">2</text><path class="bar" d="M200.0,156 V77.8 Q200.0,73.8 204.0,73.8 H242.0 Q246.0,73.8 246.0,77.8 V156 Z" data-tip="crm-8h:50%" fill="#c98500"></path><text class="val" x="223.0" y="66.8">50%</text><text class="lab" x="223.0" y="173">8</text><path class="bar" d="M286.0,156 V49.8 Q286.0,45.8 290.0,45.8 H328.0 Q332.0,45.8 332.0,49.8 V156 Z" data-tip="pm-30h:67%" fill="#c98500"></path><text class="val" x="309.0" y="38.8">67%</text><text class="lab" x="309.0" y="173">30</text></svg><div class="cnote">lead 越来越管不过来</div></figure></div>
 <h3>结论</h3>
 <ol>
 <li><b>人多更快,但收益递减</b>:8 → 30 人,完成速度只提高 2.2 倍。</li>
@@ -218,13 +240,13 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <li><b>规划成了最慢的一环</b>:单个 planner 写 100 条要 19 分钟,比团队开发的 6.6 分钟还长 → 改成「1 个总 planner + 若干模块 planner 并行」。</li>
 </ol>
 <h3>人少时硬加层级反而更慢 <span class="tag ok">实测</span></h3>
-<p>同一份 60 条规格、4 个 worker:扁平 <b>3.4 分钟</b>全部通过、4/4 有提交;加 2 个小组长 <b>10.9 分钟</b>、只有 2/4 有提交。小组长要先拆分再分配,worker 等着领活 → 128 人实验里不再「事先规定小组长」,改成「涌现分层」。</p></div></section><section class="chapter" id="a8"><div class="chead"><span class="cn">第 8 章</span><h2>实验二:128 人 · 电商平台(模块独立)</h2></div><div class="key"><span class="kl">本章要点</span><ul><li>同一份 640 条规格,比较三种组织:<mark>完全没有结构(A)最差</mark>,慢约 18%,rebase 冲突 260 次。</li><li><mark>涌现分层(B)和纯蜂群(C)一样快、一样便宜</mark>;B 冲突最少、参与最多。</li><li>纯蜂群自己把有效规模缩小到约三分之一:只有 39 个 worker 有提交。</li></ul></div><div class="blk"><h3>数据 <span class="tag ok">实测</span></h3>
+<p>同一份 60 条规格、4 个 worker:扁平 <b>3.4 分钟</b>全部通过、4/4 有提交;加 2 个小组长 <b>10.9 分钟</b>、只有 2/4 有提交。小组长要先拆分再分配,worker 等着领活 → 128 人实验里不再「事先规定小组长」,改成「涌现分层」。</p></div></section><section class="chapter" id="a8"><div class="chead rv"><span class="big">08</span><div><span class="cn">CHAPTER 08</span><h2>实验二:128 人 · 电商平台(模块独立)</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>同一份 640 条规格,比较三种组织:<mark>完全没有结构(A)最差</mark>,慢约 18%,rebase 冲突 260 次。</li><li><mark>涌现分层(B)和纯蜂群(C)一样快、一样便宜</mark>;B 冲突最少、参与最多。</li><li>纯蜂群自己把有效规模缩小到约三分之一:只有 39 个 worker 有提交。</li></ul></div><div class="blk rv"><h3>数据 <span class="tag ok">实测</span></h3>
 <div class="tw"><table class="rs-t">
 <tr><th>组</th><th>组织方式</th><th>团队用时</th><th>结果</th><th>团队花费</th><th>rebase 冲突</th><th>有提交的 worker</th></tr>
 <tr><td>A</td><td>扁平(1 lead + 128)</td><td>16.3 分钟</td><td>639/640(第 640 条规格自相矛盾)</td><td>$169</td><td><b>260</b></td><td>76</td></tr>
 <tr><td>B</td><td>涌现分层</td><td><b>13.4 分钟</b></td><td>640/640</td><td>$162</td><td><b>5</b></td><td><b>83</b></td></tr>
 <tr><td>C</td><td>纯蜂群(无 lead)</td><td>13.7 分钟</td><td>640/640</td><td>$161</td><td>13</td><td>39</td></tr>
-</table></div>
+</table></div><div class="lgd rv"><span><i style="background:#3987e5"></i>A 扁平</span><span><i style="background:#d95926"></i>B 涌现分层</span><span><i style="background:#199e70"></i>C 纯蜂群</span></div><div class="charts4"><figure class="ch rv"><figcaption>团队用时<span> 分钟</span></figcaption><svg aria-label="团队用时" role="img" viewbox="0 0 300 190"><line class="grid" x1="8" x2="292" y1="123.5" y2="123.5"></line><line class="grid" x1="8" x2="292" y1="91.0" y2="91.0"></line><line class="grid" x1="8" x2="292" y1="58.5" y2="58.5"></line><line class="grid" x1="8" x2="292" y1="26.0" y2="26.0"></line><line class="axis" x1="8" x2="292" y1="156" y2="156"></line><path class="bar" d="M32.3,156 V49.8 Q32.3,45.8 36.3,45.8 H74.3 Q78.3,45.8 78.3,49.8 V156 Z" data-tip="A 扁平:16.3 分钟" fill="#3987e5"></path><text class="val" x="55.3" y="38.8">16.3</text><text class="lab" x="55.3" y="173">A</text><path class="bar" d="M127.0,156 V69.4 Q127.0,65.4 131.0,65.4 H169.0 Q173.0,65.4 173.0,69.4 V156 Z" data-tip="B 涌现分层:13.4 分钟" fill="#d95926"></path><text class="val" x="150.0" y="58.4">13.4</text><text class="lab" x="150.0" y="173">B</text><path class="bar" d="M221.7,156 V67.4 Q221.7,63.4 225.7,63.4 H263.7 Q267.7,63.4 267.7,67.4 V156 Z" data-tip="C 纯蜂群:13.7 分钟" fill="#199e70"></path><text class="val" x="244.7" y="56.4">13.7</text><text class="lab" x="244.7" y="173">C</text></svg><div class="cnote">A 到 639/640 后卡住</div></figure><figure class="ch rv"><figcaption>团队花费<span> 美元</span></figcaption><svg aria-label="团队花费" role="img" viewbox="0 0 300 190"><line class="grid" x1="8" x2="292" y1="123.5" y2="123.5"></line><line class="grid" x1="8" x2="292" y1="91.0" y2="91.0"></line><line class="grid" x1="8" x2="292" y1="58.5" y2="58.5"></line><line class="grid" x1="8" x2="292" y1="26.0" y2="26.0"></line><line class="axis" x1="8" x2="292" y1="156" y2="156"></line><path class="bar" d="M32.3,156 V49.8 Q32.3,45.8 36.3,45.8 H74.3 Q78.3,45.8 78.3,49.8 V156 Z" data-tip="A 扁平:169 美元" fill="#3987e5"></path><text class="val" x="55.3" y="38.8">169</text><text class="lab" x="55.3" y="173">A</text><path class="bar" d="M127.0,156 V54.4 Q127.0,50.4 131.0,50.4 H169.0 Q173.0,50.4 173.0,54.4 V156 Z" data-tip="B 涌现分层:162 美元" fill="#d95926"></path><text class="val" x="150.0" y="43.4">162</text><text class="lab" x="150.0" y="173">B</text><path class="bar" d="M221.7,156 V55.0 Q221.7,51.0 225.7,51.0 H263.7 Q267.7,51.0 267.7,55.0 V156 Z" data-tip="C 纯蜂群:161 美元" fill="#199e70"></path><text class="val" x="244.7" y="44.0">161</text><text class="lab" x="244.7" y="173">C</text></svg></figure><figure class="ch rv"><figcaption>rebase 冲突<span> 次</span></figcaption><svg aria-label="rebase 冲突" role="img" viewbox="0 0 300 190"><line class="grid" x1="8" x2="292" y1="123.5" y2="123.5"></line><line class="grid" x1="8" x2="292" y1="91.0" y2="91.0"></line><line class="grid" x1="8" x2="292" y1="58.5" y2="58.5"></line><line class="grid" x1="8" x2="292" y1="26.0" y2="26.0"></line><line class="axis" x1="8" x2="292" y1="156" y2="156"></line><path class="bar" d="M32.3,156 V49.8 Q32.3,45.8 36.3,45.8 H74.3 Q78.3,45.8 78.3,49.8 V156 Z" data-tip="A 扁平:260 次" fill="#3987e5"></path><text class="val" x="55.3" y="38.8">260</text><text class="lab" x="55.3" y="173">A</text><path class="bar" d="M127.0,156 V154.9 Q127.0,153.9 128.1,153.9 H171.9 Q173.0,153.9 173.0,154.9 V156 Z" data-tip="B 涌现分层:5 次" fill="#d95926"></path><text class="val" x="150.0" y="146.9">5</text><text class="lab" x="150.0" y="173">B</text><path class="bar" d="M221.7,156 V153.2 Q221.7,150.5 224.4,150.5 H264.9 Q267.7,150.5 267.7,153.2 V156 Z" data-tip="C 纯蜂群:13 次" fill="#199e70"></path><text class="val" x="244.7" y="143.5">13</text><text class="lab" x="244.7" y="173">C</text></svg></figure><figure class="ch rv"><figcaption>有提交的 worker<span> / 128</span></figcaption><svg aria-label="有提交的 worker" role="img" viewbox="0 0 300 190"><line class="grid" x1="8" x2="292" y1="123.5" y2="123.5"></line><line class="grid" x1="8" x2="292" y1="91.0" y2="91.0"></line><line class="grid" x1="8" x2="292" y1="58.5" y2="58.5"></line><line class="grid" x1="8" x2="292" y1="26.0" y2="26.0"></line><line class="axis" x1="8" x2="292" y1="156" y2="156"></line><path class="bar" d="M32.3,156 V59.1 Q32.3,55.1 36.3,55.1 H74.3 Q78.3,55.1 78.3,59.1 V156 Z" data-tip="A 扁平:76 / 128" fill="#3987e5"></path><text class="val" x="55.3" y="48.1">76</text><text class="lab" x="55.3" y="173">A</text><path class="bar" d="M127.0,156 V49.8 Q127.0,45.8 131.0,45.8 H169.0 Q173.0,45.8 173.0,49.8 V156 Z" data-tip="B 涌现分层:83 / 128" fill="#d95926"></path><text class="val" x="150.0" y="38.8">83</text><text class="lab" x="150.0" y="173">B</text><path class="bar" d="M221.7,156 V108.2 Q221.7,104.2 225.7,104.2 H263.7 Q267.7,104.2 267.7,108.2 V156 Z" data-tip="C 纯蜂群:39 / 128" fill="#199e70"></path><text class="val" x="244.7" y="97.2">39</text><text class="lab" x="244.7" y="173">C</text></svg></figure></div>
 <p class="dim small">三组限流都是 0;每条验收约 $0.25。B、C 复用 A 批准的规格(只修了那条矛盾测试),所以三组唯一的区别是组织方式。</p>
 <h3>团队自己做了什么</h3>
 <ul>
@@ -238,13 +260,13 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <li><b>640 条验收用不满 128 个人</b>:C 用三分之一的人完成同样的工作,继续加人主要增加协调开销。</li>
 <li><b>规划仍是瓶颈</b>:1 个总 planner + 9 个模块 planner 用了 30 分钟、约 $25,比团队开发(13–16 分钟)还长。</li>
 <li><b>一条自相矛盾的测试代价很高</b>:A 在 639/640 时空转约 14 分钟,花费从 $196 涨到 $408,只能手动停止 → 催生了「申诉 + 独立仲裁」和「收尾缩编」(第 11 章)。</li>
-</ol></div></section><section class="chapter" id="a9"><div class="chead"><span class="cn">第 9 章</span><h2>实验三:128 人 · 工作流审批引擎(模块高度耦合)</h2></div><div class="key"><span class="kl">本章要点</span><ul><li><mark>结论反过来了</mark>:A 扁平最快最便宜,B 次之,C 纯蜂群最慢最贵,还把 main 改坏过一次。</li><li>推断:耦合度高的产品要先把共用核心做好,<mark>一个统一负责的 lead</mark> 更容易让核心先成型。</li><li>团队在开发中发现了 3 条规格矛盾或歧义,由仲裁者不停机修好。</li></ul></div><div class="blk"><h3>数据 <span class="tag ok">实测</span></h3>
+</ol></div></section><section class="chapter" id="a9"><div class="chead rv"><span class="big">09</span><div><span class="cn">CHAPTER 09</span><h2>实验三:128 人 · 工作流审批引擎(模块高度耦合)</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li><mark>结论反过来了</mark>:A 扁平最快最便宜,B 次之,C 纯蜂群最慢最贵,还把 main 改坏过一次。</li><li>推断:耦合度高的产品要先把共用核心做好,<mark>一个统一负责的 lead</mark> 更容易让核心先成型。</li><li>团队在开发中发现了 3 条规格矛盾或歧义,由仲裁者不停机修好。</li></ul></div><div class="blk rv"><h3>数据 <span class="tag ok">实测</span></h3>
 <div class="tw"><table class="rs-t">
 <tr><th>组</th><th>组织方式</th><th>团队用时</th><th>结果</th><th>团队花费</th><th>rebase 冲突</th><th>有提交的 worker</th></tr>
 <tr><td>A</td><td>扁平</td><td><b>21.5 分钟</b></td><td>640/640</td><td><b>$179</b></td><td>60</td><td>48</td></tr>
 <tr><td>B</td><td>涌现分层</td><td>23.9 分钟</td><td>640/640</td><td>$251</td><td><b>7</b></td><td><b>81</b></td></tr>
 <tr><td>C</td><td>纯蜂群</td><td>38.1 分钟</td><td>640/640</td><td>$327</td><td>16</td><td>42</td></tr>
-</table></div>
+</table></div><div class="lgd rv"><span><i style="background:#3987e5"></i>A 扁平</span><span><i style="background:#d95926"></i>B 涌现分层</span><span><i style="background:#199e70"></i>C 纯蜂群</span></div><div class="charts4"><figure class="ch rv"><figcaption>团队用时<span> 分钟</span></figcaption><svg aria-label="团队用时" role="img" viewbox="0 0 300 190"><line class="grid" x1="8" x2="292" y1="123.5" y2="123.5"></line><line class="grid" x1="8" x2="292" y1="91.0" y2="91.0"></line><line class="grid" x1="8" x2="292" y1="58.5" y2="58.5"></line><line class="grid" x1="8" x2="292" y1="26.0" y2="26.0"></line><line class="axis" x1="8" x2="292" y1="156" y2="156"></line><path class="bar" d="M32.3,156 V97.8 Q32.3,93.8 36.3,93.8 H74.3 Q78.3,93.8 78.3,97.8 V156 Z" data-tip="A 扁平:21.5 分钟" fill="#3987e5"></path><text class="val" x="55.3" y="86.8">21.5</text><text class="lab" x="55.3" y="173">A</text><path class="bar" d="M127.0,156 V90.9 Q127.0,86.9 131.0,86.9 H169.0 Q173.0,86.9 173.0,90.9 V156 Z" data-tip="B 涌现分层:23.9 分钟" fill="#d95926"></path><text class="val" x="150.0" y="79.9">23.9</text><text class="lab" x="150.0" y="173">B</text><path class="bar" d="M221.7,156 V49.8 Q221.7,45.8 225.7,45.8 H263.7 Q267.7,45.8 267.7,49.8 V156 Z" data-tip="C 纯蜂群:38.1 分钟" fill="#199e70"></path><text class="val" x="244.7" y="38.8">38.1</text><text class="lab" x="244.7" y="173">C</text></svg></figure><figure class="ch rv"><figcaption>团队花费<span> 美元</span></figcaption><svg aria-label="团队花费" role="img" viewbox="0 0 300 190"><line class="grid" x1="8" x2="292" y1="123.5" y2="123.5"></line><line class="grid" x1="8" x2="292" y1="91.0" y2="91.0"></line><line class="grid" x1="8" x2="292" y1="58.5" y2="58.5"></line><line class="grid" x1="8" x2="292" y1="26.0" y2="26.0"></line><line class="axis" x1="8" x2="292" y1="156" y2="156"></line><path class="bar" d="M32.3,156 V99.7 Q32.3,95.7 36.3,95.7 H74.3 Q78.3,95.7 78.3,99.7 V156 Z" data-tip="A 扁平:179 美元" fill="#3987e5"></path><text class="val" x="55.3" y="88.7">179</text><text class="lab" x="55.3" y="173">A</text><path class="bar" d="M127.0,156 V75.4 Q127.0,71.4 131.0,71.4 H169.0 Q173.0,71.4 173.0,75.4 V156 Z" data-tip="B 涌现分层:251 美元" fill="#d95926"></path><text class="val" x="150.0" y="64.4">251</text><text class="lab" x="150.0" y="173">B</text><path class="bar" d="M221.7,156 V49.8 Q221.7,45.8 225.7,45.8 H263.7 Q267.7,45.8 267.7,49.8 V156 Z" data-tip="C 纯蜂群:327 美元" fill="#199e70"></path><text class="val" x="244.7" y="38.8">327</text><text class="lab" x="244.7" y="173">C</text></svg></figure><figure class="ch rv"><figcaption>rebase 冲突<span> 次</span></figcaption><svg aria-label="rebase 冲突" role="img" viewbox="0 0 300 190"><line class="grid" x1="8" x2="292" y1="123.5" y2="123.5"></line><line class="grid" x1="8" x2="292" y1="91.0" y2="91.0"></line><line class="grid" x1="8" x2="292" y1="58.5" y2="58.5"></line><line class="grid" x1="8" x2="292" y1="26.0" y2="26.0"></line><line class="axis" x1="8" x2="292" y1="156" y2="156"></line><path class="bar" d="M32.3,156 V49.8 Q32.3,45.8 36.3,45.8 H74.3 Q78.3,45.8 78.3,49.8 V156 Z" data-tip="A 扁平:60 次" fill="#3987e5"></path><text class="val" x="55.3" y="38.8">60</text><text class="lab" x="55.3" y="173">A</text><path class="bar" d="M127.0,156 V147.1 Q127.0,143.1 131.0,143.1 H169.0 Q173.0,143.1 173.0,147.1 V156 Z" data-tip="B 涌现分层:7 次" fill="#d95926"></path><text class="val" x="150.0" y="136.1">7</text><text class="lab" x="150.0" y="173">B</text><path class="bar" d="M221.7,156 V130.6 Q221.7,126.6 225.7,126.6 H263.7 Q267.7,126.6 267.7,130.6 V156 Z" data-tip="C 纯蜂群:16 次" fill="#199e70"></path><text class="val" x="244.7" y="119.6">16</text><text class="lab" x="244.7" y="173">C</text></svg></figure><figure class="ch rv"><figcaption>有提交的 worker<span> / 128</span></figcaption><svg aria-label="有提交的 worker" role="img" viewbox="0 0 300 190"><line class="grid" x1="8" x2="292" y1="123.5" y2="123.5"></line><line class="grid" x1="8" x2="292" y1="91.0" y2="91.0"></line><line class="grid" x1="8" x2="292" y1="58.5" y2="58.5"></line><line class="grid" x1="8" x2="292" y1="26.0" y2="26.0"></line><line class="axis" x1="8" x2="292" y1="156" y2="156"></line><path class="bar" d="M32.3,156 V94.7 Q32.3,90.7 36.3,90.7 H74.3 Q78.3,90.7 78.3,94.7 V156 Z" data-tip="A 扁平:48 / 128" fill="#3987e5"></path><text class="val" x="55.3" y="83.7">48</text><text class="lab" x="55.3" y="173">A</text><path class="bar" d="M127.0,156 V49.8 Q127.0,45.8 131.0,45.8 H169.0 Q173.0,45.8 173.0,49.8 V156 Z" data-tip="B 涌现分层:81 / 128" fill="#d95926"></path><text class="val" x="150.0" y="38.8">81</text><text class="lab" x="150.0" y="173">B</text><path class="bar" d="M221.7,156 V102.9 Q221.7,98.9 225.7,98.9 H263.7 Q267.7,98.9 267.7,102.9 V156 Z" data-tip="C 纯蜂群:42 / 128" fill="#199e70"></path><text class="val" x="244.7" y="91.9">42</text><text class="lab" x="244.7" y="173">C</text></svg></figure></div>
 <ul>
 <li><b>A</b>:途中 worker 申诉 A922(「缺省值」规则和「必填」规则矛盾),仲裁者改为发送显式 null,不停机修好。</li>
 <li><b>B</b>:worker 申诉 A543 / A547(测试里的工作流有一个不可达的步骤,和「每一步都必须可达」冲突),仲裁者补了一条分支并加了断言;23 分钟时自动收尾缩编,停掉 120 人。</li>
@@ -255,7 +277,7 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <div class="cards2">
 <div class="cardx"><div class="k">电商 · 模块独立</div><div class="t">B ≈ C 优于 A</div><div class="d">让团队自组织(或蜂群)更好;没有结构最差</div></div>
 <div class="cardx"><div class="k">工作流 · 模块高度耦合</div><div class="t">A 最好,C 最差</div><div class="d">核心同时被很多人修改,长时间停滞甚至改坏 main;需要统一负责的人</div></div>
-</div></div></section><section class="chapter" id="a10"><div class="chead"><span class="cn">第 10 章</span><h2>总结论,以及证据的局限</h2></div><div class="key"><span class="kl">本章要点</span><ul><li><mark>没有一种组织方式永远最好,取决于产品的耦合度</mark>:模块独立时自组织更好,模块高度耦合时需要统一负责的人。</li><li>规模越大,<mark>规划和规格质量</mark>越是瓶颈:一条坏测试能让 128 人空转。</li><li>每种条件目前只跑了一次,结论需要重复实验来确认。</li></ul></div><div class="blk"><h3>五条总结论 <span class="tag ok">实测</span></h3>
+</div></div></section><section class="chapter" id="a10"><div class="chead rv"><span class="big">10</span><div><span class="cn">CHAPTER 10</span><h2>总结论,以及证据的局限</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li><mark>没有一种组织方式永远最好,取决于产品的耦合度</mark>:模块独立时自组织更好,模块高度耦合时需要统一负责的人。</li><li>规模越大,<mark>规划和规格质量</mark>越是瓶颈:一条坏测试能让 128 人空转。</li><li>每种条件目前只跑了一次,结论需要重复实验来确认。</li></ul></div><div class="blk rv"><h3>五条总结论 <span class="tag ok">实测</span></h3>
 <ol>
 <li><b>人多更快,但收益递减</b>;每人至少约 5 条验收,继续加人主要增加协调开销。</li>
 <li><b>组织方式取决于耦合度</b>:电商上 B ≈ C 比 A 快约 18%;工作流上 A 最快最便宜。</li>
@@ -263,7 +285,7 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <li><b>规划是最慢的一环</b>,而且规格里的一条矛盾在大团队里代价极高 → 需要申诉和独立仲裁。</li>
 <li><b>成本可控</b>:每条验收 0.07–0.25 美元;31 到 130 多个 agent 并发时,Bedrock 限流都为 0。</li>
 </ol>
-<h3>证据的局限 <span class="tag top">判断</span></h3>
+<h3>一张图看结论反转</h3><div class="lgd rv"><span><i style="background:#3987e5"></i>A 扁平</span><span><i style="background:#d95926"></i>B 涌现分层</span><span><i style="background:#199e70"></i>C 纯蜂群</span></div><div class="charts2"><figure class="ch rv"><figcaption>电商(模块独立):团队用时<span>分钟</span></figcaption><svg aria-label="电商(模块独立):团队用时" role="img" viewbox="0 0 360 190"><line class="grid" x1="8" x2="352" y1="123.5" y2="123.5"></line><line class="grid" x1="8" x2="352" y1="91.0" y2="91.0"></line><line class="grid" x1="8" x2="352" y1="58.5" y2="58.5"></line><line class="grid" x1="8" x2="352" y1="26.0" y2="26.0"></line><line class="axis" x1="8" x2="352" y1="156" y2="156"></line><path class="bar" d="M42.3,156 V49.8 Q42.3,45.8 46.3,45.8 H84.3 Q88.3,45.8 88.3,49.8 V156 Z" data-tip="电商 · A 扁平:16.3 分钟" fill="#3987e5"></path><text class="val" x="65.3" y="38.8">16.3</text><text class="lab" x="65.3" y="173">A</text><path class="bar" d="M157.0,156 V69.4 Q157.0,65.4 161.0,65.4 H199.0 Q203.0,65.4 203.0,69.4 V156 Z" data-tip="电商 · B 涌现分层:13.4 分钟" fill="#d95926"></path><text class="val" x="180.0" y="58.4">13.4</text><text class="lab" x="180.0" y="173">B</text><path class="bar" d="M271.7,156 V67.4 Q271.7,63.4 275.7,63.4 H313.7 Q317.7,63.4 317.7,67.4 V156 Z" data-tip="电商 · C 纯蜂群:13.7 分钟" fill="#199e70"></path><text class="val" x="294.7" y="56.4">13.7</text><text class="lab" x="294.7" y="173">C</text></svg><div class="cnote">B ≈ C 比 A 快约 18%</div></figure><figure class="ch rv"><figcaption>工作流(模块耦合):团队用时<span>分钟</span></figcaption><svg aria-label="工作流(模块耦合):团队用时" role="img" viewbox="0 0 360 190"><line class="grid" x1="8" x2="352" y1="123.5" y2="123.5"></line><line class="grid" x1="8" x2="352" y1="91.0" y2="91.0"></line><line class="grid" x1="8" x2="352" y1="58.5" y2="58.5"></line><line class="grid" x1="8" x2="352" y1="26.0" y2="26.0"></line><line class="axis" x1="8" x2="352" y1="156" y2="156"></line><path class="bar" d="M42.3,156 V97.8 Q42.3,93.8 46.3,93.8 H84.3 Q88.3,93.8 88.3,97.8 V156 Z" data-tip="工作流 · A 扁平:21.5 分钟" fill="#3987e5"></path><text class="val" x="65.3" y="86.8">21.5</text><text class="lab" x="65.3" y="173">A</text><path class="bar" d="M157.0,156 V90.9 Q157.0,86.9 161.0,86.9 H199.0 Q203.0,86.9 203.0,90.9 V156 Z" data-tip="工作流 · B 涌现分层:23.9 分钟" fill="#d95926"></path><text class="val" x="180.0" y="79.9">23.9</text><text class="lab" x="180.0" y="173">B</text><path class="bar" d="M271.7,156 V49.8 Q271.7,45.8 275.7,45.8 H313.7 Q317.7,45.8 317.7,49.8 V156 Z" data-tip="工作流 · C 纯蜂群:38.1 分钟" fill="#199e70"></path><text class="val" x="294.7" y="38.8">38.1</text><text class="lab" x="294.7" y="173">C</text></svg><div class="cnote">A 最快,C 最慢 —— 结论反转</div></figure></div><h3>证据的局限 <span class="tag top">判断</span></h3>
 <ul>
 <li><b>每种组织方式在每个场景下只跑了一次。</b>同一份规格多跑几次,用时可能有明显波动;「快 18%」这类差距需要重复跑来确认是否超出噪声(和 Evolve 的门禁要求一样)。</li>
 <li><b>场景只有两个</b>(一个松耦合、一个紧耦合),「取决于耦合度」是由此推断,不是测量出的规律。</li>
@@ -273,7 +295,7 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <h3>下一步可以怎么做</h3>
 <ul><li>让 lead / 总 planner 在规划时就判断耦合度,并选择组织方式。</li>
 <li>或者在 Evolve 里把「选组织方式」也变成可进化的对象(第 12 章)。</li>
-<li>做扩展曲线(同一规格 1 / 4 / 8 / 16 / 30 人)并每组重复多次。</li></ul></div></section><section class="chapter" id="a11"><div class="chead"><span class="cn">第 11 章</span><h2>从实验里长出来的两个机制</h2></div><div class="key"><span class="kl">本章要点</span><ul><li><mark>申诉 + 独立仲裁</mark>:团队认为某条测试不可能通过时可以申诉,由独立的仲裁者判断,只做最小修改,不削弱测试。</li><li><mark>收尾缩编</mark>:接近完成、进度停滞时自动只保留少数人,避免大团队空转烧钱。</li></ul></div><div class="blk"><h3>申诉 + 独立仲裁</h3>
+<li>做扩展曲线(同一规格 1 / 4 / 8 / 16 / 30 人)并每组重复多次。</li></ul></div></section><section class="chapter" id="a11"><div class="chead rv"><span class="big">11</span><div><span class="cn">CHAPTER 11</span><h2>从实验里长出来的两个机制</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li><mark>申诉 + 独立仲裁</mark>:团队认为某条测试不可能通过时可以申诉,由独立的仲裁者判断,只做最小修改,不削弱测试。</li><li><mark>收尾缩编</mark>:接近完成、进度停滞时自动只保留少数人,避免大团队空转烧钱。</li></ul></div><div class="blk rv"><h3>申诉 + 独立仲裁</h3>
 <ul>
 <li>团队改不了测试,但可以提交申诉:哪一条、为什么不可能通过。</li>
 <li>仲裁者独立于团队:如果这条测试和别的测试、规格或它自己矛盾,就修改测试或规格文字,让它和多数测试一致,<b>改动越小越好</b>,保留编号;如果测试没问题、只是产品没做好,就什么都不改。</li>
@@ -286,7 +308,7 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <li>一个有意思的现象:<b>不同团队对同一份规格的不同实现,会暴露规格里的歧义</b>。</li>
 </ul>
 <h3>收尾缩编 <span class="tag ok">实测</span></h3>
-<p>工作流 B 在 637/640 停滞后,自动只保留 lead + 8 个 worker,停掉 120 个。</p></div></section><section class="chapter" id="a12"><div class="chead"><span class="cn">第 12 章</span><h2>Evolve:让 agent 在严格门禁下自己变好(方案)</h2></div><div class="key"><span class="kl">本章要点</span><ul><li>让一个已有的 Strands Agent 自己变好:找失败 → proposer 修改 → <mark>在它看不到的 held-out 集上证明真的变好了</mark> → 人工审批 → 发布,可回滚。</li><li>门禁要证明三件事:<mark>不是运气、不是多花钱、不是钻空子</mark>。</li><li>之后把 Swarm 自己的工作方式当作进化对象 —— 一个可回放的 RSI 演示。</li></ul></div><div class="blk"><h3>改什么</h3>
+<p>工作流 B 在 637/640 停滞后,自动只保留 lead + 8 个 worker,停掉 120 个。</p></div></section><section class="chapter" id="a12"><div class="chead rv"><span class="big">12</span><div><span class="cn">CHAPTER 12</span><h2>Evolve:让 agent 在严格门禁下自己变好(方案)</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>让一个已有的 Strands Agent 自己变好:找失败 → proposer 修改 → <mark>在它看不到的 held-out 集上证明真的变好了</mark> → 人工审批 → 发布,可回滚。</li><li>门禁要证明三件事:<mark>不是运气、不是多花钱、不是钻空子</mark>。</li><li>之后把 Swarm 自己的工作方式当作进化对象 —— 一个可回放的 RSI 演示。</li></ul></div><div class="blk rv"><h3>改什么</h3>
 <p>一个 agent 包 + 清单:只能改提示词、工具描述、skills;工具实现和主程序冻结。越界修改在沙箱外比对 diff,直接拒绝并记为安全事件。</p>
 <h3>进化循环</h3>
 <pre class="rs-f">基线在搜索集上跑 → 失败样本 + 轨迹
@@ -307,13 +329,13 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <li>把 Swarm 的 lead / worker 提示词(甚至「选哪种组织方式」)当作进化对象;用多个项目的验收通过率和成本打分,另一组项目做 held-out。</li>
 <li>要算真正的 RSI,还要过三道门槛:改进者本身也要变好;held-out 项目的规格和测试<b>在运行前冻结、人工批准</b>,不能由 AI planner 现写;收益跨多代持续。</li>
 <li>主要难点:<b>每打一次分都要做完一个真项目</b>,评测成本和噪声远高于普通 agent 评测。</li>
-</ul></div></section><section class="chapter" id="a13"><div class="chead"><span class="cn">第 13 章</span><h2>和 RSI、OpenEvolve 以及其他框架的关系</h2></div><div class="key"><span class="kl">本章要点</span><ul><li>Swarm 是「AI 写软件」,本身不是 RSI;Evolve 是 AI for AI(AI4AI 的 L1);打通后才第一次碰到 RSI。</li><li>Argus 不做模型、不重造进化引擎;位置在<mark>执行 + 门禁 + 上线 + 隔离 + 回放</mark>。</li><li>和 OpenEvolve 互补:它回答「怎么找到更好的版本」,Argus 回答「怎么证明真的更好并安全用起来」。</li></ul></div><div class="blk"><ul>
+</ul></div></section><section class="chapter" id="a13"><div class="chead rv"><span class="big">13</span><div><span class="cn">CHAPTER 13</span><h2>和 RSI、OpenEvolve 以及其他框架的关系</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>Swarm 是「AI 写软件」,本身不是 RSI;Evolve 是 AI for AI(AI4AI 的 L1);打通后才第一次碰到 RSI。</li><li>Argus 不做模型、不重造进化引擎;位置在<mark>执行 + 门禁 + 上线 + 隔离 + 回放</mark>。</li><li>和 OpenEvolve 互补:它回答「怎么找到更好的版本」,Argus 回答「怎么证明真的更好并安全用起来」。</li></ul></div><div class="blk rv"><ul>
 <li><b>Swarm 今天的位置</b>:改进的对象是外部产品,不改进自己(AI4AI 的 L0)。但「什么算做完」是 AI planner 写的,所以规格门禁和人工批准很关键 —— 门禁证明测试不是空的,证明不了测试是对的、完整的。</li>
 <li><b>Evolve 的位置</b>:proposer 选改法,可改范围由清单定、评测冻结在 proposer 看不到的地方 → L1;在「五级自主」里大约是 L2。</li>
 <li><b>它的扩展实验本身就是 RSI 争论的一手数据</b>:「AI 研发人力能不能线性扩展」——这里测到了收益递减、协调开销和规划瓶颈。<span class="tag top">判断</span></li>
 <li><b>和同类框架比</b>:最接近 Evolve 的是 AgentCore optimization(改的对象几乎一样);最接近 Swarm 的是 Cursor 的 planner / worker 模式。逐个框架的对照见 <a href="../argus/">业务大图</a>。</li>
 </ul>
-<p>相关页面:<a href="../argus/">业务大图:各框架和 Argus 的位置</a> · <a href="../guide/#c10">RSI 完整指南 · 第 10 章</a> · <a href="../ai4ai/">AI4AI 解读</a></p></div></section><section class="chapter" id="a14"><div class="chead"><span class="cn">第 14 章</span><h2>已知限制和路线图</h2></div><div class="key"><span class="kl">本章要点</span><ul><li>原型,只在作者自己的 AWS 账号里部署过;一次只能跑一个运行。</li><li>路线图:进化模块、暂停 / 恢复、扩展曲线实验、讲解模式。</li></ul></div><div class="blk"><h3>已知限制</h3>
+<p>相关页面:<a href="../argus/">业务大图:各框架和 Argus 的位置</a> · <a href="../guide/#c10">RSI 完整指南 · 第 10 章</a> · <a href="../ai4ai/">AI4AI 解读</a></p></div></section><section class="chapter" id="a14"><div class="chead rv"><span class="big">14</span><div><span class="cn">CHAPTER 14</span><h2>已知限制和路线图</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>原型,只在作者自己的 AWS 账号里部署过;一次只能跑一个运行。</li><li>路线图:进化模块、暂停 / 恢复、扩展曲线实验、讲解模式。</li></ul></div><div class="blk rv"><h3>已知限制</h3>
 <ul>
 <li>AgentCore 会话最长 8 小时;会话之间靠数据库和 git 恢复进度,超长运行需要换新会话接着干。</li>
 <li>hub 重启后会自动接管正在运行的运行,但重启那一刻正在进行的模型请求会被中断,那次请求的费用不会被记账;规划 / 门禁阶段被打断时需要重新开始。</li>
@@ -326,7 +348,7 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <li>暂停 / 恢复。</li>
 <li><b>扩展曲线实验</b>:同一规格分别用 1 / 4 / 8 / 16 / 30 个 worker,并重复多次。</li>
 <li><b>讲解模式</b>:自动回放并配解说,适合演示。</li>
-</ul></div></section><section class="chapter" id="a15"><div class="chead"><span class="cn">第 15 章</span><h2>资料来源</h2></div><div class="key"><span class="kl">本章要点</span><ul><li>本页内容整理自 Argus 原型的 README、设计文档、团队设计记录、实验记录和每次运行自动生成的数据(2026-11-18)。</li></ul></div><div class="blk"><ul>
+</ul></div></section><section class="chapter" id="a15"><div class="chead rv"><span class="big">15</span><div><span class="cn">CHAPTER 15</span><h2>资料来源</h2></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>本页内容整理自 Argus 原型的 README、设计文档、团队设计记录、实验记录和每次运行自动生成的数据(2026-11-18)。</li></ul></div><div class="blk rv"><ul>
 <li>设计:README、DESIGN、EVOLVE_PLAN(Argus 私有仓库)。</li>
 <li>实验:TEAM_DESIGN(团队结构的设计记录和结论)、EXPERIMENTS(每次运行的记录),以及 13 份运行数据文件;128 人实验的用时和提交人数已和原始数据核对。</li>
 <li>相关公开页面:<a href="../argus/">业务大图</a> · <a href="../guide/">RSI 完整指南</a> · <a href="../view/">我的判断</a>。</li>
@@ -334,8 +356,15 @@ pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#f
 <p class="dim small">个人原型项目的记录,不代表任何雇主立场。</p></div></section>
 <footer class="gfoot">个人原型项目的记录,不代表任何雇主立场。已知风险和部署细节不在公开页面列出。</footer>
 </main></div>
+<div class="tip" id="tip"></div>
 <script>
+const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('.rv').forEach(el=>rm?el.classList.add('in'):io.observe(el));
+document.querySelectorAll('.kn[data-count]').forEach(el=>{const raw=el.dataset.count;const m=raw.match(/^(\d+)$/);if(!m||rm)return;const end=parseFloat(m[1]),pre=el.textContent.replace(raw,'');let t0=null;const step=ts=>{t0=t0||ts;const p=Math.min(1,(ts-t0)/1200);el.textContent=pre+Math.round(end*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step)};el.textContent=pre+'0';setTimeout(()=>requestAnimationFrame(step),300)});
+const tip=document.getElementById('tip');
+document.querySelectorAll('[data-tip]').forEach(b=>{b.addEventListener('mousemove',e=>{tip.textContent=b.dataset.tip;tip.style.opacity=1;tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-10)+'px'});b.addEventListener('mouseleave',()=>tip.style.opacity=0)});
 const links=[...document.querySelectorAll('.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
-const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-20% 0px -70% 0px'});
-secs.forEach(s=>s&&io.observe(s));
+const io2=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-20% 0px -70% 0px'});
+secs.forEach(s=>s&&io2.observe(s));
 </script><a data-cur="zh" data-to="en" href="../../en/rsi/argus-intro/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body></html>
