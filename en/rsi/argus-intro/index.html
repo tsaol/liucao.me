@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Argus (Hundred Eyes) · AI teams that write software on their own, observably and provably</title>
+<style>*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;color:#2d1b0e;background:#fdf8f0;
+  background-image:radial-gradient(ellipse at top,rgba(255,220,180,.35),transparent 60%),radial-gradient(ellipse at bottom,rgba(240,220,160,.25),transparent 60%);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;font-size:16.5px;line-height:1.75}
+a{color:#b4521a;text-decoration:none;border-bottom:1px dotted rgba(180,82,26,.45)}
+a:hover{border-bottom-style:solid}
+.gtop{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px;padding:10px 22px;background:rgba(253,248,240,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(160,110,60,.22)}
+.gtop a{border:none;color:#6b4423;font-size:14px}.gtop .gt{font-weight:700;font-size:15px;flex:1;text-align:center}
+.gtop .gl{background:#ffd8a6;border:1px solid #e07a3c;border-radius:999px;padding:3px 12px;color:#7a3a0c}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;max-width:1380px;margin:0 auto;padding:0 22px}
+.toc{position:sticky;top:58px;align-self:start;max-height:calc(100vh - 70px);overflow:auto;padding:22px 0 30px}
+.toc .tt{font-size:12px;font-weight:700;letter-spacing:2px;color:#a2471a;margin:0 0 10px 6px}
+.toc a{display:flex;gap:8px;align-items:baseline;border:none;color:#6b4423;font-size:13.5px;line-height:1.45;padding:6px 8px;border-radius:8px}
+.toc a .n{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#c9994e;min-width:20px}
+.toc a:hover{background:rgba(255,216,166,.35)}
+.toc a.on{background:#ffd8a6;color:#7a3a0c;font-weight:700}
+.toc .tnote{font-size:11.5px;color:#9a8068;margin:14px 8px 0}
+main.g{min-width:0;padding:28px 0 60px;overflow-wrap:anywhere}
+.hero{padding:10px 0 18px;border-bottom:1px solid rgba(160,110,60,.22);margin-bottom:10px}
+.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:2px;color:#a2471a}
+.hero h1{font-size:34px;line-height:1.3;margin:8px 0 10px}
+.hero h1 .acc{color:#c2571c}
+.hero .sub{color:#6b4423;max-width:900px}
+.legend2{font-size:13px;color:#6b4423;margin-top:10px}
+.kbox{display:inline-block;background:#e07a3c;color:#fff;font-size:11.5px;font-weight:700;border-radius:4px;padding:0 6px}
+.chapter{padding:34px 0 18px;border-bottom:1px solid rgba(160,110,60,.22)}
+.chead{margin-bottom:12px}
+.chead .cn{display:inline-block;font-size:12px;font-weight:700;letter-spacing:1px;color:#fff;background:#c2571c;border-radius:6px;padding:2px 9px}
+.chead h2{font-size:27px;line-height:1.3;margin:8px 0 4px;color:#2d1b0e}
+.chead .from{font-size:13px;color:#8a6a4a}
+.blk{margin:18px 0 6px}
+.blk>h3{font-size:20px;color:#7a3a0c;margin:22px 0 10px;padding-left:10px;border-left:4px solid #e07a3c}
+.blk h4{font-size:16.5px;margin:18px 0 8px;color:#2d1b0e}
+p{margin:0 0 .9em}
+ul,ol{margin:0 0 1em;padding-left:1.35em}li{margin:.3em 0}
+b,strong{color:#7a3a0c}
+.dim{color:#8a6a4a}.small{font-size:13.5px}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.86em;background:#fff3e2;border:1px solid #f0d6b3;border-radius:4px;padding:0 .3em}
+.lead{font-size:17px;line-height:1.7;padding:.9em 1.1em;border-left:4px solid #e07a3c;background:rgba(255,216,166,.35);border-radius:0 10px 10px 0;margin:1em 0;text-align:left;font-weight:400;color:#2d1b0e}
+.lead b{color:#a2471a}
+.note{font-size:14px;color:#5e4514;background:rgba(255,255,255,.7);border:1px solid rgba(160,110,60,.25);border-radius:10px;padding:.65em 1em;margin:1em 0}
+.tag{display:inline-block;font-size:11.5px;border:1px solid rgba(160,110,60,.4);border-radius:999px;padding:0 .6em;color:#8a6a4a;margin-left:.25em;white-space:nowrap;line-height:1.6;vertical-align:1px;background:#fff}
+.tag.ok{color:#3a5e2e;border-color:#6b9e5a;background:#eef5ea}
+.tag.top{color:#a2471a;border-color:#e07a3c;background:#fff1e0}
+mark{background:rgba(255,176,32,.32);color:inherit;padding:0 .15em;border-radius:3px}
+.key{background:rgba(255,216,166,.28);border:1px solid rgba(224,122,60,.45);border-left:5px solid #e07a3c;border-radius:0 10px 10px 0;padding:.75em 1.1em;margin:.6em 0 1.1em}
+.key .kl{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#e07a3c;border-radius:4px;padding:0 .5em;margin-right:.4em}
+.key ul{margin:.45em 0 0}
+.src{display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#7a5e9e;border:1px solid rgba(122,94,158,.4);border-radius:4px;padding:0 .35em;margin-left:.3em;white-space:nowrap;vertical-align:1px}
+.tw{overflow-x:auto}
+table.rs-t{width:100%;border-collapse:collapse;font-size:14.5px;margin:.6em 0 1.2em;background:rgba(255,255,255,.65);border-radius:10px;overflow:hidden}
+table.rs-t th,table.rs-t td{border-bottom:1px solid rgba(160,110,60,.18);padding:.55em .65em;text-align:left;vertical-align:top}
+table.rs-t th{background:rgba(240,220,190,.6);color:#6b4423;font-weight:600;font-size:13px}
+.rs-fig{margin:1em 0 1.5em}.rs-fig img{display:block;width:100%;max-width:980px;height:auto;border-radius:10px;background:#fff;border:1px solid rgba(160,110,60,.25)}
+.rs-fig figcaption{font-size:13px;color:#7b5a3c;line-height:1.6;margin-top:.5em}.rs-fig a{border:none}
+.rs-tl{border-left:2px solid rgba(160,110,60,.35);margin:1em 0 1.3em;padding-left:1em}.rs-tl>div{margin:.5em 0;font-size:15px}
+.rs-tl .y{display:inline-block;min-width:6.5em;color:#c2571c;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+pre.rs-f{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#fff8ee;border:1px solid #f0d6b3;border-radius:10px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7}
+.rs-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:1em 0}
+.rs-card{display:block;background:rgba(255,255,255,.7);border:1px solid rgba(160,110,60,.25)!important;border-radius:12px;padding:.85em 1em;color:#2d1b0e!important}
+.rs-card:hover{border-color:#e07a3c!important}
+.rs-card .k{font-size:12.5px;color:#8a6a4a}.rs-card .t{font-size:16.5px;font-weight:700;margin:.15em 0}.rs-card .d{font-size:13.5px;color:#6b4423;line-height:1.55}
+.rs-q{background:rgba(255,255,255,.7);border:1px solid rgba(160,110,60,.25);border-radius:10px;padding:.15em 1em;margin:.7em 0}
+.rs-q summary{cursor:pointer;font-weight:700;padding:.6em 0;list-style:none}.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:#e07a3c}.rs-q[open] summary::before{content:"− "}.rs-q>div{padding:0 0 .7em}
+.bp{margin-top:18px}
+.gfoot{font-size:12.5px;color:#8a6a4a;margin-top:28px;line-height:1.7}
+@media (max-width:760px){table.rs-t{display:block;overflow-x:auto}}
+@media (max-width:1000px){.layout{grid-template-columns:minmax(0,1fr)}.toc{display:none}.hero h1{font-size:26px}.rs-cards{grid-template-columns:1fr}}
+@media print{.toc,.gtop{display:none}.layout{display:block}.chapter{break-inside:auto}}
+
+.dl{margin:.6em 0}.dlb{display:inline-block;background:#e07a3c;color:#fff!important;border:none;border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px}
+
+.cards2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:.8em 0 1.2em}
+.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:.8em 0 1.2em}
+.cards4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:.8em 0 1.2em}
+.cardx{background:rgba(255,255,255,.75);border:1.5px solid rgba(201,153,78,.6);border-radius:12px;padding:.8em 1em}
+.cardx.plan{border-style:dashed;border-color:#e07a3c;background:rgba(255,238,214,.6)}
+.cardx .k{font-size:12px;font-weight:700;letter-spacing:1px;color:#a2471a}
+.cardx .t{font-size:16.5px;font-weight:700;margin:.15em 0 .25em}
+.cardx .d{font-size:14px;color:#5e4514;line-height:1.6}
+.flowx{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:.8em 0 1.2em}
+.flowx .st{background:rgba(255,255,255,.75);border:1.5px solid rgba(201,153,78,.6);border-radius:12px;padding:.7em .8em;position:relative}
+.flowx .st.gate{border:2px solid #b4521a;background:#fff3e2}
+.flowx .st .n{width:26px;height:26px;border-radius:50%;background:#e07a3c;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:6px}
+.flowx .st b{display:block;font-size:15px;margin-bottom:3px}
+.flowx .st p{font-size:13px;line-height:1.55;margin:0;color:#5e4514}
+.flowx .st:not(:last-child)::after{content:"";position:absolute;right:-9px;top:50%;border-left:8px solid #c9994e;border-top:6px solid transparent;border-bottom:6px solid transparent;transform:translateY(-50%)}
+@media (max-width:1000px){.flowx{grid-template-columns:repeat(2,minmax(0,1fr))}.flowx .st::after{display:none}.cards3,.cards4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.cards2,.cards3,.cards4{grid-template-columns:1fr}}
+</style></head><body>
+<header class="gtop"><a class="brand" href="../">← RSI Resources</a><span class="gt"> Argus (Hundred Eyes) · Introduction</span><a class="gl" href="../argus/"> The big business picture</a></header>
+<div class="layout">
+<nav class="toc"><div class="tt">Contents</div><a href="#a1"><span class="n">01</span> What Argus is and why we built it</a><a href="#a2"><span class="n">02</span> How it works: the flow of a single run</a><a href="#a3"><span class="n">03</span> How the team collaborates: given only an empty database</a><a href="#a4"><span class="n">04</span> Scoring and anti-cheating</a><a href="#a5"><span class="n">05</span> Security model: why the agent can't reach credentials</a><a href="#a6"><span class="n">06</span> Fully replayable: the control room</a><a href="#a7"><span class="n">07</span> Experiment 1: from 2 to 30 people</a><a href="#a8"><span class="n">08</span> Experiment 2: 128 people · e-commerce platform (independent modules)</a><a href="#a9"><span class="n">09</span> Experiment 3: 128 people · workflow approval engine (tightly coupled modules)</a><a href="#a10"><span class="n">10</span> Overall conclusions, and the limits of the evidence</a><a href="#a11"><span class="n">11</span> Two mechanisms that grew out of the experiments</a><a href="#a12"><span class="n">12</span> Evolve: letting agents improve themselves under strict gates (proposal)</a><a href="#a13"><span class="n">13</span> Relationship to RSI, OpenEvolve, and other frameworks</a><a href="#a14"><span class="n">14</span> Known limitations and roadmap</a><a href="#a15"><span class="n">15</span> Sources</a><div class="tnote"> Prototype project · compiled 2026-11-19</div></nav>
+<main class="g">
+<section class="hero"><div class="eyebrow">Argus Agent · Hundred Eyes · Prototype</div>
+<h1>Let a group of AI agents organize themselves to write software<br/><span class="acc"> Only tests that can't be faked count, and every step can be replayed</span></h1>
+<p class="sub">Argus is a prototype: a planner writes the spec and acceptance tests, 1 lead + N workers split up the work and develop in their own sandboxes, and the grader only accepts tests from the approved version. We used it on AgentCore to run team experiments ranging from 2 to 128 members. Next up is the Evolve module: letting agents improve themselves under strict gates.</p>
+<div class="lead"><b>The most important experimental finding:</b>More agents is faster, but with diminishing returns;<b>No organizational structure is always best; it depends on how tightly coupled the product is</b> — self-organization works better when modules are independent, while tightly coupled modules need a single accountable lead; and the larger the scale,<b>Planning and spec quality</b> the bigger the bottleneck.</div>
+<div class="tw"><table class="rs-t">
+<tr><th>Key numbers (measured)</th><th></th></tr>
+<tr><td>Maximum scale</td><td> 128 workers, 640 acceptance tests, all passing in 13–38 minutes</td></tr>
+<tr><td>Cost per acceptance criterion</td><td> About $0.07–0.25 (Claude Opus 5.5)</td></tr>
+<tr><td>Bedrock throttling</td><td> 0 with 130+ agents running concurrently</td></tr>
+<tr><td>Cheating attempts</td><td> Modifying tests, force-pushing, hunting for repo files, disabling guards: all blocked</td></tr>
+</table></div>
+<p class="dl"><a class="dlb" download="" href="../../../rsi/argus-intro/argus-intro.html">Download as a single HTML file</a></p>
+<div class="legend2"><b>Annotations</b>:<span class="kbox">Chapter highlights</span> Key points by chapter · <mark>Highlight</mark> Core conclusion · <span class="tag ok">Measured</span> From run data · <span class="tag top">Judgment</span> Author's inference</div>
+</section>
+<section class="chapter" id="a1"><div class="chead"><span class="cn">Chapter 1</span><h2> What Argus is and why we built it</h2></div><div class="key"><span class="kl"> Chapter highlights</span><ul><li> Let<mark> A swarm of AI coding agents organizing themselves to build real software</mark>, only acceptance tests that "can't be faked" decide, and the entire run is recorded for replay.</li><li>The name comes from Argus Panoptes, the hundred-eyed giant of Greek mythology: he sees everything.</li><li>It is<mark> Prototype</mark>: for validating ideas, not a production system. Runs incur real model costs.</li></ul></div><div class="blk"><h3>In one sentence</h3>
+<div class="lead">Put a small team (1 lead + N workers) in a room with nothing but a blank whiteboard and say, "Build this software; you decide how to split the work."<b>Argus is this room, plus a one-way mirror.</b></div>
+<h3>Three questions we want to answer</h3>
+<ul>
+<li><b>Can an AI team organize itself?</b>, take real software from requirements all the way to passing every acceptance test?</li>
+<li><b>Team size and organization</b> How does it affect speed, cost and quality? (2 to 128 agents)</li>
+<li><b>How we keep results trustworthy</b>: the team can't change the tests or reach credentials, and every step can be replayed and verified?</li>
+</ul>
+<h3>Two modules</h3>
+<div class="cards2">
+<div class="cardx"><div class="k">Module 1 · Implemented</div><div class="t"> Swarm: an agent swarm writes software</div><div class="d"> Requirements → spec and acceptance tests → spec gate → self-organizing team development → scoring → iteration. Chapters 2–11 of this page.</div></div>
+<div class="cardx plan"><div class="k">Module 2 · Proposal</div><div class="t"> Evolve: self-evolution</div><div class="d"> Make an existing agent improve itself under strict gates; then make Swarm's own way of working the target of evolution. Chapter 12 of this page.</div></div>
+</div></div></section><section class="chapter" id="a2"><div class="chead"><span class="cn">Chapter 2</span><h2> How it works: the flow of a single run</h2></div><div class="key"><span class="kl"> Chapter highlights</span><ul><li> Process:<mark>Planning → spec gate → approval → team development → grading → next-round revision</mark>.</li><li>Spec gate: the planner's tests, on the empty scaffold,<mark>All must fail</mark>, proving the tests are real.</li><li>In each round, new tests must fail first, and old tests must not regress.</li></ul></div><div class="blk"><h3>Six steps</h3>
+<div class="flowx">
+<div class="st"><div class="n">1</div><b> Planning</b><p> The planner writes the product spec SPEC.md and acceptance tests from a short requirements description; at large scale, 1 lead planner and several module planners write them in parallel</p></div>
+<div class="st gate"><div class="n">2</div><b> Spec gates</b><p> Every acceptance criterion must have a test; the scaffold must start; tests must be collectible and<b> All failed</b>. If it fails, send the reason back, up to 3 times</p></div>
+<div class="st"><div class="n">3</div><b> Approve</b><p> Approve the spec manually, or set it to auto-approve</p></div>
+<div class="st"><div class="n">4</div><b> Team development</b><p> The lead and workers start at the same time, each in its own sandbox, sharing only one git repo and one empty Postgres</p></div>
+<div class="st gate"><div class="n">5</div><b> Scoring</b><p> Run periodically on main<b> Approved version</b> acceptance tests; ends when all pass, the budget runs out, or time is up</p></div>
+<div class="st"><div class="n">6</div><b> Revisions (from round 2)</b><p>First restore the tests to the approved version; the planner adds new tests per the change request: new ones fail first, old ones don't regress</p></div>
+</div>
+<h3>Roles</h3>
+<div class="tw"><table class="rs-t">
+<tr><th>Roles</th><th> What it does</th></tr>
+<tr><td>planner (lead / module)</td><td>Writes the spec and acceptance tests; the lead planner splits modules, merges, and resolves conflicts between modules</td></tr>
+<tr><td>lead</td><td> Designs the division of work and the coordination tables, and coordinates the team (the “pure swarm” organization has no lead)</td></tr>
+<tr><td>worker</td><td> Claim tasks, write code, push to main</td></tr>
+<tr><td>observer</td><td> Labels the tables the team creates (this one is announcements, that one is task assignments…) so the control room can display them</td></tr>
+<tr><td>referee (arbiter)</td><td>When a team appeals that "this test can't pass", judge it independently and make only the minimal change (see Chapter 11)</td></tr>
+</table></div>
+<h3>Two kinds of sandbox</h3>
+<ul><li><b>AgentCore</b>: one Amazon Bedrock AgentCore Runtime session per agent = one dedicated microVM. Most experiments use this.</li>
+<li><b>Docker</b>: one container per agent, running on separate worker machines.</li></ul>
+<p class="dim small">No conversation memory is kept between sessions; agents reorient using the database, git and a status command. All model calls (including sub-agents) are pinned to Claude Opus 5.5.</p></div></section><section class="chapter" id="a3"><div class="chead"><span class="cn">Chapter 3</span><h2> How the team collaborates: given only an empty database</h2></div><div class="key"><span class="kl"> Chapter highlights</span><ul><li>Argus <mark>Not prescribed</mark> table schemas or workflows. We provide only an empty Postgres database and a git repo, and watch how the team designs them on its own.</li><li>Teams usually create their own tables for announcements, handbooks, task assignments and status; at 30 people they use <code>FOR UPDATE SKIP LOCKED</code> Grab work.</li><li>Four organization modes to choose from: flat, team leads, emergent hierarchy, and pure swarm.</li></ul></div><div class="blk"><h3>What tables the team created <span class="tag ok">Measured</span></h3>
+<div class="tw"><table class="rs-t">
+<tr><th>Run</th><th> Team-created tables</th></tr>
+<tr><td>8-person CRM</td><td> messages (announcements), readme (handbook), tasks (work split)</td></tr>
+<tr><td>30-person project management tool</td><td> helpers (member status), messages, packages (work split), readme; tasks are claimed with SKIP LOCKED</td></tr>
+<tr><td>4 people + 2 sub-leads</td><td> file_claims (file claims), messages, readme, status_log, tasks</td></tr>
+<tr><td>128-person pure swarm</td><td> Within 1 minute of starting, 6 workers each built their own set, 9 tables in total; they then discussed it in the notes table and converged on a single set by the rule "whoever's table was created first (to the millisecond) wins"</td></tr>
+</table></div>
+<h3>Four organization modes</h3>
+<div class="cards4">
+<div class="cardx"><div class="k">flat</div><div class="t"> Flat</div><div class="d"> 1 lead directly manages all workers</div></div>
+<div class="cardx"><div class="k">squads</div><div class="t"> Pre-assigned leads</div><div class="d"> lead → sub-lead → worker, grouped by module</div></div>
+<div class="cardx"><div class="k">emergent</div><div class="t"> Emergent hierarchy</div><div class="d"> The lead decides whether to have a coordinator and who it is</div></div>
+<div class="cardx"><div class="k">leaderless</div><div class="t"> Pure swarm</div><div class="d"> No lead; all workers are equal</div></div>
+</div>
+<p class="dim small">“Read/write flows”: the control room shows who writes to which table (red lines) and who reads from which table (green lines), parsed from Postgres statement logs.</p></div></section><section class="chapter" id="a4"><div class="chead"><span class="cn">Chapter 4</span><h2> Scoring and anti-cheating</h2></div><div class="key"><span class="kl"> Chapter highlights</span><ul><li> Scoring uses<mark> Two temporary containers</mark>: one runs the team's product; the other runs the approved tests on a clean image without loading any pytest config or plugins from the repo.</li><li>Scoring output includes<mark> Random nonce</mark> and encoded, so nothing the product prints can pass itself off as a grading result.</li><li>All observed cheating attempts were blocked.</li></ul></div><div class="blk"><h3>How scoring works</h3>
+<ul>
+<li><b>Product container</b>: clean-clone the specified commit on main and run the team's own startup script.</li>
+<li><b>Test container</b>: only from<b> Approved spec commit</b> extract the acceptance tests and run them with an empty config and fixed parameters, with plugin auto-loading disabled.</li>
+<li>An acceptance item passes = all of its tests pass; items without tests never count as passed.</li>
+<li>Grade when main gets new commits (at least 90 seconds apart), or on a schedule.</li>
+</ul>
+<h3>Can't modify tests</h3>
+<ul>
+<li>Inside the agent's sandbox<b> No repository files</b>, and can only push through the git service.</li>
+<li>Server-side git hook: only while the planner is working (or during recovery tests) can changes be made on main to the <code>acceptance/</code>; force-pushing and deleting branches are not allowed.</li>
+<li>Before each round of revisions, the tests on main are restored to the approved version (including reverting test files the team added).</li>
+</ul>
+<h3>Cheating test results <span class="tag ok">Measured</span></h3>
+<div class="tw"><table class="rs-t">
+<tr><th>Attempts</th><th> Results</th></tr>
+<tr><td>Push after modifying acceptance tests</td><td> Rejected by server-side hook</td></tr>
+<tr><td>Force-push / roll back main</td><td> Rejected</td></tr>
+<tr><td>Find repo files in the sandbox</td><td> Does not exist</td></tr>
+<tr><td>Disable the guard hooks in the user config</td><td> Guards still apply (root-owned managed settings)</td></tr>
+</table></div></div></section><section class="chapter" id="a5"><div class="chead"><span class="cn">Chapter 5</span><h2> Security model: why the agent can't reach credentials</h2></div><div class="key"><span class="kl"> Chapter highlights</span><ul><li><mark> There are no AWS credentials in the sandbox</mark>: model requests go to the hub's proxy, which signs them and only allows the inference APIs of specified models.</li><li>Each agent has its own token and cannot impersonate others; sandbox networking is restricted to required services.</li><li>Guards are the "first reminder"; the real boundaries are the network policy, git server-side hooks and the two-container grading setup.</li></ul></div><div class="blk"><ul>
+<li><b>Credentials</b>: there are no AWS credentials in the sandbox. The proxy signs on the sandbox's behalf. The allowlist only permits the specified models' inference, streaming inference, conversation and token-counting APIs, plus the read-only model list. The proxy also<b> Per-agent accounting</b>.</li>
+<li><b>Identity</b>: each agent's token is derived from the run token and the agent name (HMAC). It can't be used to impersonate another agent or for a run that has ended.</li>
+<li><b>Network</b>: the sandbox only needs access to the hub proxy, DNS, the git service and database in the same run, and the internet. On the Docker backend, a host firewall denies all other access (other internal machines, instance metadata, the host). On the AgentCore backend, VPC security groups limit which services are reachable.</li>
+<li><b>Guards</b>: Claude Code's PreToolUse hook, placed in root-owned managed settings and run with Python in isolated mode, so agents can't modify or disable it; it blocks force pushes, sudo / docker, metadata access, database deletion, edits to acceptance tests, and so on.</li>
+<li><b>Control room</b>: all pages and APIs require login, failed attempts are rate-limited by real client IP, changing the password invalidates all old sessions, no server info is exposed, and nothing is indexed by search engines.</li>
+<li><b>AgentCore backend</b>: the Runtime's execution role can only pull sandbox images and write its own logs, with no permission to call models; model calls still go through the hub proxy.</li>
+</ul>
+<p class="note">Known risks and deployment details are not listed on the public page.</p></div></section><section class="chapter" id="a6"><div class="chead"><span class="cn">Chapter 6</span><h2> Fully replayable: the control room</h2></div><div class="key"><span class="kl"> Chapter highlights</span><ul><li> Every model call, tool call, database read/write, commit, grading, and blocked action is<mark> Logged with timestamps</mark>.</li><li>Every page has a draggable timeline, so you can see what things looked like at any moment.</li><li>English tasks and messages written by agents can be shown in Chinese with one click (cached translation).</li></ul></div><div class="blk"><div class="tw"><table class="rs-t">
+<tr><th>Page</th><th> What to look at</th></tr>
+<tr><td>Overview</td><td> Acceptance tests passed, spend / budget, commits, reads/writes, blocks, key moments, live activity</td></tr>
+<tr><td>Swarm</td><td> What each agent is doing right now (thinking / editing files / building and testing / Git / database / waiting / blocked), plus a status timeline for each</td></tr>
+<tr><td>Collaboration</td><td> Read/write stream, team-created tables, task tree, lead announcements</td></tr>
+<tr><td>Code</td><td> Each agent's commits, file tree, and diffs</td></tr>
+<tr><td>Sandbox</td><td> CPU, memory, and isolation for each agent; shared services; network policy</td></tr>
+<tr><td>Safety</td><td> Security policies and blocked operations</td></tr>
+<tr><td>Economics</td><td> Cost per agent, token breakdown, cache hit rate, and cost of each acceptance criterion that turned green</td></tr>
+<tr><td>Specs</td><td> Spec version, whether each acceptance criterion currently passes, gate results</td></tr>
+<tr><td>Iterate</td><td> Results of each round; initiate revisions</td></tr>
+</table></div>
+<p class="dim small">Recorded data: agent state changes, text and tool calls, tokens and cost for every model call, each agent's reads and writes to each table per minute, snapshots of team tables, every commit on main, every grading run, resource usage, blocked actions, spec versions, and key moments. An experiment log is generated automatically at the end of each run.</p></div></section><section class="chapter" id="a7"><div class="chead"><span class="cn">Chapter 7</span><h2> Experiment 1: from 2 to 30 people</h2></div><div class="key"><span class="kl"> Chapter highlights</span><ul><li><mark> More agents is faster, but with diminishing returns</mark>: 8 → 30 workers (3.75×), but only 2.2× faster.</li><li>Each worker must be assigned at least<mark> About 5 acceptance criteria</mark>; at 3.3 items, a third of the workers never committed.</li><li>More agents doesn't make it noticeably more expensive: $0.15–0.17 per acceptance item;<mark>Planning became the slowest step</mark>.</li></ul></div><div class="blk"><h3>Data <span class="tag ok">Measured</span></h3>
+<p class="dim small">Everything runs in AgentCore microVMs, with the Claude Opus 5.5 model. “Team time” = from spec approval until all acceptance tests pass in round 1.</p>
+<div class="tw"><table class="rs-t">
+<tr><th>Run</th><th>worker</th><th> Acceptance criteria</th><th> Each</th><th> Team time</th><th> Completed per minute</th><th> Has commits</th><th> Waiting/coordination</th><th> Lead share of cost</th><th> Cost per item</th></tr>
+<tr><td>tiny-recipes</td><td>2</td><td>10</td><td>5.0</td><td> 1.7 minutes</td><td>5.9</td><td>2/2</td><td>25%</td><td>33%</td><td>$0.07</td></tr>
+<tr><td>ac-tasks</td><td>2</td><td>10</td><td>5.0</td><td> 2.3 minutes</td><td>4.3</td><td>2/2</td><td>27%</td><td>28%</td><td>$0.08</td></tr>
+<tr><td>crm-8h</td><td>8</td><td>40</td><td>5.0</td><td> 5.9 minutes</td><td>6.8</td><td>8/8</td><td>50%</td><td>18%</td><td>$0.15</td></tr>
+<tr><td>pm-30h</td><td>30</td><td>100</td><td>3.3</td><td> 6.6 minutes</td><td>15.1</td><td><b>20/30</b></td><td>67%</td><td>5%</td><td>$0.17</td></tr>
+</table></div>
+<h3>Conclusion</h3>
+<ol>
+<li><b>More agents is faster, but with diminishing returns</b>: 8 → 30 people, but completion is only 2.2× faster.</li>
+<li><b>At least ~5 acceptance criteria each</b>: below this ratio, many workers sit idle and coordination overhead goes up.</li>
+<li><b>A single lead has a limited span of control</b>: the share of waiting and coordination goes 25% → 50% → 67%, and the lead's share of spend drops from 33% to 5%, so each worker gets less and less of its attention.</li>
+<li><b>More agents doesn't make it noticeably more expensive</b>: waiting is mostly reading the task table, with a cache hit rate of about 95%, so it's cheap. With 31 microVMs running concurrently, Bedrock throttling was 0.</li>
+<li><b>Planning became the slowest step</b>: a single planner takes 19 minutes to write 100 items, longer than the team's 6.6 minutes of development → switched to “1 lead planner + several module planners in parallel”.</li>
+</ol>
+<h3>Forcing hierarchy on small teams actually makes them slower <span class="tag ok">Measured</span></h3>
+<p>Same 60-item spec, 4 workers: flat <b>3.4 minutes</b> All passed, 4/4 made commits; add 2 team leads <b>10.9 minutes</b>, and only 2/4 had commits. Leads had to split the work before assigning it, leaving workers waiting for tasks → so the 128-agent experiment dropped “pre-assigned leads” in favor of “emergent hierarchy”.</p></div></section><section class="chapter" id="a8"><div class="chead"><span class="cn">Chapter 8</span><h2> Experiment 2: 128 people · e-commerce platform (independent modules)</h2></div><div class="key"><span class="kl">Chapter highlights</span><ul><li> Same 640-item spec, comparing three organizations:<mark>No structure at all (A) performed worst</mark>, about 18% slower, with 260 rebase conflicts.</li><li><mark>Emergent hierarchy (B) was as fast and as cheap as a pure swarm (C)</mark>; B has the fewest conflicts and the most participation.</li><li>The pure swarm shrank its own effective size to about a third: only 39 workers made commits.</li></ul></div><div class="blk"><h3>Data <span class="tag ok">Measured</span></h3>
+<div class="tw"><table class="rs-t">
+<tr><th>Group</th><th> Organization</th><th> Team time</th><th> Results</th><th> Team cost</th><th> rebase conflicts</th><th> Workers with commits</th></tr>
+<tr><td>A</td><td> Flat (1 lead + 128)</td><td>16.3 minutes</td><td> 639/640 (the 640th spec contradicts itself)</td><td>$169</td><td><b>260</b></td><td>76</td></tr>
+<tr><td>B</td><td> Emergent hierarchy</td><td><b> 13.4 minutes</b></td><td>640/640</td><td>$162</td><td><b>5</b></td><td><b>83</b></td></tr>
+<tr><td>C</td><td> Pure swarm (no lead)</td><td>13.7 minutes</td><td>640/640</td><td>$161</td><td>13</td><td>39</td></tr>
+</table></div>
+<p class="dim small">All three groups had 0 rate limits; about $0.25 per acceptance item. B and C reused the spec approved for A (with only the contradictory test fixed), so the only difference between the three groups is how they were organized.</p>
+<h3>What the team did on its own</h3>
+<ul>
+<li><b>B's lead</b> Designated 10 coordinators from among the workers: one for each of the 9 modules, plus a self-organized 5-agent QA team; staffed modules by size (18 for the orders module); required each module to have its own directory, with the main program auto-loading each module's routes; marked the critical path (auth, products, inventory, cart and checkout first).</li>
+<li><b>C's swarm</b>: within 1 minute of starting, 6 workers each created their own set of coordination tables at the same time (9 in total). After discussion, they converged on one set based on creation time.</li>
+</ul>
+<h3>Conclusion</h3>
+<ol>
+<li>With 128 people,<b>No structure at all (A) performed worst</b>: more conflicts, about 18% slower.</li>
+<li><b>B ≈ C</b>: equally fast and equally cheap. B has the fewest conflicts and the most participation, and is the easiest to manage. C converges on its own but goes through a stretch of duplicated work.</li>
+<li><b>640 acceptance tests aren't enough to keep 128 people busy</b>: C did the same work with a third of the people; adding more people mostly adds coordination overhead.</li>
+<li><b>Planning is still the bottleneck</b>: 1 top-level planner + 9 module planners took 30 minutes and about $25, longer than team development (13–16 minutes).</li>
+<li><b>A single self-contradictory test is very costly</b>: A spun idle for about 14 minutes at 639/640, cost rose from $196 to $408, and it could only be stopped manually → this led to "appeals + independent arbitration" and "wind-down downsizing" (Chapter 11).</li>
+</ol></div></section><section class="chapter" id="a9"><div class="chead"><span class="cn">Chapter 9</span><h2> Experiment 3: 128 people · workflow approval engine (tightly coupled modules)</h2></div><div class="key"><span class="kl">Chapter highlights</span><ul><li><mark> The conclusion flips</mark>: A (flat) was fastest and cheapest, B came second, and C (pure swarm) was slowest and most expensive, and also broke main once.</li><li>Inference: for tightly coupled products, build the shared core first,<mark>A single lead in charge</mark> makes it easier for the core to take shape first.</li><li>During development, the team found 3 spec conflicts or ambiguities, which the arbiter fixed without stopping the run.</li></ul></div><div class="blk"><h3>Data <span class="tag ok">Measured</span></h3>
+<div class="tw"><table class="rs-t">
+<tr><th>Group</th><th> Organization</th><th> Team time</th><th> Results</th><th> Team cost</th><th> rebase conflicts</th><th> Workers with commits</th></tr>
+<tr><td>A</td><td> Flat</td><td><b> 21.5 minutes</b></td><td>640/640</td><td><b>$179</b></td><td>60</td><td>48</td></tr>
+<tr><td>B</td><td> Emergent hierarchy</td><td> 23.9 minutes</td><td>640/640</td><td>$251</td><td><b>7</b></td><td><b>81</b></td></tr>
+<tr><td>C</td><td> Pure swarm</td><td> 38.1 minutes</td><td>640/640</td><td>$327</td><td>16</td><td>42</td></tr>
+</table></div>
+<ul>
+<li><b>A</b>: midway, a worker appealed A922 (the “default value” rule contradicted the “required” rule). The arbiter changed it to send an explicit null, fixing it without stopping the run.</li>
+<li><b>B</b>: a worker appealed A543 / A547 (a workflow in the tests had an unreachable step, which conflicts with “every step must be reachable”), and the arbiter added a branch plus an assertion. At 23 minutes, the run automatically scaled down for wrap-up and stopped 120 workers.</li>
+<li><b>C</b>: stuck at 7 from minute 8 to minute 32; at 32.6 minutes main was broken (scored 0/640), and after the fix it went straight to 640.</li>
+</ul>
+<p class="note">Note when comparing: the specs for B and C include clarifications A543 / A547 that A's doesn't, and these two took extra time in B and C.</p>
+<h3>Comparison with e-commerce</h3>
+<div class="cards2">
+<div class="cardx"><div class="k">E-commerce · independent modules</div><div class="t"> B ≈ C, both better than A</div><div class="d"> Team self-organization (or a swarm) works better; no structure is worst</div></div>
+<div class="cardx"><div class="k">Workflow · tightly coupled modules</div><div class="t"> A is best, C is worst</div><div class="d"> The core is modified by many agents at once, so work stalls for long periods or even breaks main; it needs a single owner</div></div>
+</div></div></section><section class="chapter" id="a10"><div class="chead"><span class="cn">Chapter 10</span><h2> Overall conclusions, and the limits of the evidence</h2></div><div class="key"><span class="kl"> Chapter highlights</span><ul><li><mark> No organizational structure is always best; it depends on how tightly coupled the product is</mark>: self-organization works better when modules are independent; when modules are tightly coupled, you need a single owner.</li><li>The larger the scale, <mark>Planning and spec quality</mark> the bigger the bottleneck: one bad test can leave 128 people idle.</li><li>Each condition has been run only once so far; conclusions need repeated experiments to confirm.</li></ul></div><div class="blk"><h3>Five key conclusions <span class="tag ok">Measured</span></h3>
+<ol>
+<li><b>More agents is faster, but with diminishing returns</b>; each worker needs at least about 5 acceptance tests. Adding more workers beyond that mainly adds coordination overhead.</li>
+<li><b>The right organization depends on coupling</b>: on e-commerce, B ≈ C, about 18% faster than A; on workflow, A is the fastest and cheapest.</li>
+<li><b>Don't force hierarchy on small teams</b>; with many workers, letting the lead decide whether to appoint coordinators (emergent hierarchy) gives the fewest conflicts.</li>
+<li><b>Planning is the slowest step</b>, and a single contradiction in the spec is extremely costly in a large team → appeals and independent arbitration are needed.</li>
+<li><b>Cost under control</b>: $0.07–0.25 per acceptance test. With 31 to 130+ agents running concurrently, Bedrock throttling stayed at 0.</li>
+</ol>
+<h3>Limits of the evidence <span class="tag top">Judgment</span></h3>
+<ul>
+<li><b>Each organizational structure was run only once per scenario.</b>Running the same spec several times can give noticeably different times; gaps like “18% faster” need repeated runs to confirm they exceed the noise (same as Evolve's gate requirement).</li>
+<li><b>There are only two scenarios</b>(one loosely coupled, one tightly coupled); "depends on coupling" is inferred from this, not a measured pattern.</li>
+<li><b>Specs are not identical</b>: on the workflow task, B and C had two extra clarifications after arbitration.</li>
+<li>All experiments use the same model (Claude Opus 5.5) and the same Argus; conclusions may differ with a different model or framework.</li>
+</ul>
+<h3>What could come next</h3>
+<ul><li>Have the lead / chief planner assess coupling during planning and choose the organization accordingly.</li>
+<li>Or, in Evolve, make "choosing the organization structure" itself something that can evolve (Chapter 12).</li>
+<li>Build a scaling curve (same spec with 1 / 4 / 8 / 16 / 30 workers) and repeat each group several times.</li></ul></div></section><section class="chapter" id="a11"><div class="chead"><span class="cn">Chapter 11</span><h2> Two mechanisms that grew out of the experiments</h2></div><div class="key"><span class="kl"> Chapter highlights</span><ul><li><mark> Appeals + independent arbitration</mark>: when the team believes a test can't pass, it can appeal. An independent arbiter decides and makes only the minimal change, without weakening the test.</li><li><mark>Scaling down at the end</mark>: when work is nearly done and progress stalls, only a few agents are automatically kept, so a large team doesn't sit idle and burn money.</li></ul></div><div class="blk"><h3>Appeals + independent arbitration</h3>
+<ul>
+<li>Teams can't change the tests, but they can file an appeal stating which test and why it can't pass.</li>
+<li>The arbiter is independent of the team: if the test contradicts other tests, the spec or itself, it edits the test or the spec text to match the majority of tests,<b>The smaller the change, the better</b>, keeping the numbering; if the test is fine and only the product is wrong, change nothing.</li>
+<li>Can only change tests and specs, not product code; can't remove acceptance items or use the opportunity to weaken tests. Changes are pushed to a separate branch and merged after checks pass.</li>
+</ul>
+<h3>Verification <span class="tag ok">Measured</span></h3>
+<ul>
+<li><b>Deliberately planted trap tests</b>: one contradictory test was planted among 60. The lead appealed 70 seconds in, with an accurate reason. The arbiter changed only 2 lines (200 → 201), and 60/60 passed.</li>
+<li><b>Real runs</b>: A922 in workflow A and A543 / A547 in B were all found by the team itself. The arbiter supplied fixes that didn't weaken the tests (explicit null; an added branch + assertion).</li>
+<li>An interesting observation:<b>Different teams' implementations of the same spec expose ambiguities in it</b>.</li>
+</ul>
+<h3>Scaling down at the end <span class="tag ok">Measured</span></h3>
+<p>After workflow B stalled at 637/640, it automatically kept only the lead + 8 workers and stopped the other 120.</p></div></section><section class="chapter" id="a12"><div class="chead"><span class="cn">Chapter 12</span><h2> Evolve: letting agents improve themselves under strict gates (proposal)</h2></div><div class="key"><span class="kl">Chapter highlights</span><ul><li> Make an existing Strands Agent improve itself: find failures → proposer edits → <mark>Prove it actually improved on a held-out set it can't see</mark> → Human approval → release, with rollback.</li><li>The gate must prove three things:<mark>Not luck, not more spending, not gaming the system</mark>.</li><li>Next, Swarm's own way of working becomes the target of evolution — a replayable RSI demo.</li></ul></div><div class="blk"><h3>What to change</h3>
+<p>An agent package + manifest: only prompts, tool descriptions and skills can be changed; tool implementations and the main program are frozen. Out-of-bounds changes are caught by diffing outside the sandbox, rejected outright and logged as security incidents.</p>
+<h3>Evolution loop</h3>
+<pre class="rs-f">Run the baseline on the search set → failed samples + trajectories
+Each generation: pick a parent (by score + diversity; weaker ones are kept too)
+      → proposer (Claude Code) makes changes based on the failures and submits proposal.json: rationale, what changed, what it expects to fix / break
+      → diff is checked against the allowlist; anything out of bounds is rejected
+      → screen on a 20% subsample first, then run the full search set → save to the archive
+Stop when the budget runs out; output the Pareto frontier (pass rate, cost, latency)</pre>
+<h3>Promotion gate</h3>
+<div class="cards3">
+<div class="cardx"><div class="k">Not luck</div><div class="d"> Run the baseline 3+ times on the held-out set to get the noise distribution; use a paired bootstrap, and count it as an improvement only if the lower bound of the confidence interval is &gt; 0</div></div>
+<div class="cardx"><div class="k">Not spending more</div><div class="d"> Budget-matched baseline: give the original agent the same average cost (e.g., best of several attempts); the candidate must be significantly better</div></div>
+<div class="cardx"><div class="k">Not gaming the system</div><div class="d"> The held-out set is mounted only in the grading container and doesn't exist at all in the proposer's sandbox; every regressed sample is listed; final human approval, with a reason that can't be changed</div></div>
+</div>
+<p>The report breaks the improvement into three parts: what comes from extra compute, what may come from evaluation shortcuts, and what remains that truly generalizes.</p>
+<h3>Integration with Swarm <span class="tag top">Judgment</span></h3>
+<ul>
+<li>Treat the Swarm lead / worker prompts (and even "which organization structure to use") as what gets evolved; score them by acceptance pass rate and cost across multiple projects, with a separate set of projects held out.</li>
+<li>To count as true RSI, it must clear three more bars: the improver itself must also get better; the specs and tests for held-out projects<b> Frozen before the run and approved by a human</b>, and can't be written on the fly by the AI planner; the gains carry over across generations.</li>
+<li>Main challenges:<b>Every score requires completing a real project</b>, evaluation is far more costly and noisy than ordinary agent evaluation.</li>
+</ul></div></section><section class="chapter" id="a13"><div class="chead"><span class="cn">Chapter 13</span><h2> Relationship to RSI, OpenEvolve, and other frameworks</h2></div><div class="key"><span class="kl"> Chapter highlights</span><ul><li> Swarm is "AI writing software" and is not RSI in itself; Evolve is AI for AI (L1 of AI4AI); only once the two are connected do we first touch RSI.</li><li>Argus doesn't build models or reinvent evolution engines; it sits<mark> Execution + gating + release + isolation + replay</mark>.</li><li>Complements OpenEvolve: it answers “how do we find a better version,” while Argus answers “how do we prove it's really better and use it safely.”</li></ul></div><div class="blk"><ul>
+<li><b>Where Swarm stands today</b>: the target of improvement is an external product, not the system itself (L0 in AI4AI). But “what counts as done” is written by an AI planner, so the spec gate and human approval are critical. The gate proves the tests aren't empty, but it can't prove they're correct or complete.</li>
+<li><b>Where Evolve fits</b>: the proposer picks the change, a manifest sets what it may edit, and the evaluation is frozen where the proposer can't see it → L1. On the “five levels of autonomy” scale, it's roughly L2.</li>
+<li><b>Its scaling experiments are themselves first-hand data for the RSI debate</b>: “Can AI R&amp;D headcount scale linearly?” Here we measured diminishing returns, coordination overhead and a planning bottleneck.<span class="tag top">Judgment</span></li>
+<li><b>Compared with similar frameworks</b>: the closest to Evolve is AgentCore optimization (it changes almost the same things); the closest to Swarm is Cursor's planner / worker pattern. For a framework-by-framework comparison, see <a href="../argus/">The big business picture</a>.</li>
+</ul>
+<p>Related pages:<a href="../argus/">The big picture: where each framework and Argus fit</a> · <a href="../guide/#c10">The Complete Guide to RSI · Chapter 10</a> · <a href="../ai4ai/">AI4AI explained</a></p></div></section><section class="chapter" id="a14"><div class="chead"><span class="cn"> Chapter 14</span><h2> Known limitations and roadmap</h2></div><div class="key"><span class="kl"> Chapter highlights</span><ul><li> Prototype, deployed only in the author's own AWS account; only one run at a time.</li><li>Roadmap: Evolve module, pause / resume, scaling-curve experiments, walkthrough mode.</li></ul></div><div class="blk"><h3>Known limitations</h3>
+<ul>
+<li>AgentCore sessions last at most 8 hours; progress carries over between sessions via the database and git, and very long runs need a new session to pick up where the last one left off.</li>
+<li>After a restart, the hub automatically takes over in-progress runs, but model requests in flight at the moment of the restart are interrupted and their cost isn't recorded; runs interrupted during the planning / gating phase have to start over.</li>
+<li>Only one run at a time; pause / resume isn't implemented yet.</li>
+<li>Deployed only in the author's own AWS account.</li>
+</ul>
+<h3>Roadmap</h3>
+<ul>
+<li><b>Evolve module</b>: see Chapter 12.</li>
+<li>Pause / resume.</li>
+<li><b>Scaling-curve experiment</b>: the same spec, run with 1 / 4 / 8 / 16 / 30 workers and repeated several times.</li>
+<li><b>Walkthrough mode</b>: automatic replay with narration, good for demos.</li>
+</ul></div></section><section class="chapter" id="a15"><div class="chead"><span class="cn">Chapter 15</span><h2> Sources</h2></div><div class="key"><span class="kl"> Chapter highlights</span><ul><li> This page is compiled from the Argus prototype's README, design documents, team design notes, experiment logs, and data generated automatically on each run (2026-11-18).</li></ul></div><div class="blk"><ul>
+<li>Design: README, DESIGN, EVOLVE_PLAN (Argus private repo).</li>
+<li>Experiments: TEAM_DESIGN (design notes and conclusions on team structure), EXPERIMENTS (a record of each run), and 13 run data files; the time and number of submitters for the 128-person experiments have been checked against the raw data.</li>
+<li>Related public pages:<a href="../argus/">The big business picture</a> · <a href="../guide/">RSI Complete Guide</a> · <a href="../view/">My take</a>.</li>
+</ul>
+<p class="dim small">Notes from a personal prototype project; does not represent the views of any employer.</p></div></section>
+<footer class="gfoot">Notes from a personal prototype project; does not represent the views of any employer. Known risks and deployment details are not listed on public pages.</footer>
+</main></div>
+<script>
+const links=[...document.querySelectorAll('.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-20% 0px -70% 0px'});
+secs.forEach(s=>s&&io.observe(s));
+</script><a data-cur="en" data-to="zh" href="../../../rsi/argus-intro/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body></html>
