@@ -798,7 +798,7 @@ table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;b
 <li><b>成本也算进分数</b>:评测是最贵的部分。</li>
 <li><b>人留在上线这一步</b>:三家产品都把「开 PR / 人审 / 灰度」放在最后。</li>
 </ul>
-</div></section><section class="chapter" id="c10"><div class="chead"><span class="cn">第 10 章</span><h2>Argus 在哪里</h2><span class="from">原页面:<a href="https://liucao.me/rsi/argus/">业务大图 · 三、四</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>Argus 不做模型,也不重造进化引擎;位置在 <mark>④执行 + ⑤门禁 + ⑥上线 + 隔离 + 回放</mark>。</li><li>和 OpenEvolve 是互补:它回答「怎么找到更好的版本」,Argus 回答「怎么证明真的更好并安全用起来」。</li><li>定位图的右上角(改进对象是 AI 自己、验证又严格)目前很空。</li></ul></div><div class="blk bp"><h3>三、Argus 在哪里</h3><div class="lead">Argus 不做模型,也不重造进化引擎;它的位置是 <b>④执行 + ⑤门禁 + ⑥上线 + 隔离 + 回放</b> 这一段 —— 一个「带严格门禁的 AI 研发试验场」</div><div class="two" style="margin-top:12px">
+</div></section><section class="chapter" id="c10"><div class="chead"><span class="cn">第 10 章</span><h2>Argus 在哪里</h2><span class="from">原页面:<a href="https://liucao.me/rsi/argus/">业务大图 · 三、四</a> · <a href="https://liucao.me/rsi/argus-intro/">Argus 介绍</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>Argus 不做模型,也不重造进化引擎;位置在 <mark>④执行 + ⑤门禁 + ⑥上线 + 隔离 + 回放</mark>。</li><li>和 OpenEvolve 是互补:它回答「怎么找到更好的版本」,Argus 回答「怎么证明真的更好并安全用起来」。</li><li>定位图的右上角(改进对象是 AI 自己、验证又严格)目前很空。</li></ul></div><div class="blk bp"><h3>三、Argus 在哪里</h3><div class="lead">Argus 不做模型,也不重造进化引擎;它的位置是 <b>④执行 + ⑤门禁 + ⑥上线 + 隔离 + 回放</b> 这一段 —— 一个「带严格门禁的 AI 研发试验场」</div><p style="text-align:center;margin:10px 0 0;font-size:13.5px">想看 Argus 自己怎么工作、2 到 128 人的实验数据和结论 → <a href="https://liucao.me/rsi/argus-intro/"><b>Argus 介绍</b></a></p><div class="two" style="margin-top:12px">
 <div class="box">
 <h3>定位图</h3>
 <div class="map">
@@ -840,7 +840,7 @@ table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;b
 <tr><td>上线</td><td>输出最好的程序,由用户自己处理</td><td class="ar">审批、版本、一键回滚;全程可回放</td></tr>
 <tr><td>成熟度</td><td>成熟开源项目,Apache 2.0,v0.4.1(2026-11-02),约 7.8k 星,被很多论文引用</td><td class="ar">私有原型:Swarm 已实测,Evolve 只有方案</td></tr>
 </tbody>
-</table><div class="vs-sum"><b>两者不是二选一,而是互补:</b>OpenEvolve 回答「怎么找到更好的版本」,Argus 回答「怎么证明它真的更好,并且安全地用起来」。合理的分工是<b>引擎借用 OpenEvolve,门禁、隔离和回放用 Argus 自己的</b>。</div></div></section><section class="chapter" id="c11"><div class="chead"><span class="cn">第 11 章</span><h2>我的判断(个人观点)</h2><span class="from">原页面:<a href="https://liucao.me/rsi/view/">我的判断</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>核心论点:RSI 改变的是「改进」的成本结构 —— 受限于评测器质量和评测算力。</li><li><mark>价值迁移到评测器</mark>;算力形状变成评测长尾;落地顺序由验证成本决定;平台竞争在可审计的改动和中立。</li><li>7 条带判定标准的预测,2027-05 中期回顾,2027-11 打分。</li></ul></div><div class="blk" id="view-bias">
+</table><div class="vs-sum"><b>两者不是二选一,而是互补:</b>OpenEvolve 回答「怎么找到更好的版本」,Argus 回答「怎么证明它真的更好,并且安全地用起来」。合理的分工是<b>引擎借用 OpenEvolve,门禁、隔离和回放用 Argus 自己的</b>。 详见 <a href="https://liucao.me/rsi/argus-intro/">Argus 介绍</a>。</div></div></section><section class="chapter" id="c11"><div class="chead"><span class="cn">第 11 章</span><h2>我的判断(个人观点)</h2><span class="from">原页面:<a href="https://liucao.me/rsi/view/">我的判断</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>核心论点:RSI 改变的是「改进」的成本结构 —— 受限于评测器质量和评测算力。</li><li><mark>价值迁移到评测器</mark>;算力形状变成评测长尾;落地顺序由验证成本决定;平台竞争在可审计的改动和中立。</li><li>7 条带判定标准的预测,2027-05 中期回顾,2027-11 打分。</li></ul></div><div class="blk" id="view-bias">
 <h3>先说证据的局限</h3>
 <ul>
 <li><b>企业案例有幸存者偏差</b>:BASF、Coolblue、FM Logistic 这些数字都是客户和 Google 自己公布的成功案例。失败、放弃的项目不会被公开,所以真实的平均提升很可能比公开案例低。</li>
@@ -957,6 +957,7 @@ table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;b
 <a class="rs-card" href="https://liucao.me/rsi/alphaevolve/"><div class="k">详解 · 2026-11</div><div class="t">AlphaEvolve 是什么</div><div class="d">怎么工作、做成了什么、企业怎么用、和 RSI 的关系</div></a>
 <a class="rs-card" href="https://liucao.me/rsi/ai4ai/"><div class="k">论文解读 · 2026-11</div><div class="t">一文读懂 AI4AI</div><div class="d">方向、空间、评测三个决定和 L0–L3 控制梯子</div></a>
 <a class="rs-card" href="https://liucao.me/rsi/argus/"><div class="k">业务大图 · 2026-11</div><div class="t">AI 自动研发:各框架和 Argus 的位置</div><div class="d">六块业务能力 · 7 类框架的思路和覆盖 · 定位图</div></a>
+<a class="rs-card" href="https://liucao.me/rsi/argus-intro/"><div class="k">介绍 · 2026-11</div><div class="t">Argus 百眼:AI 团队自己写软件</div><div class="d">怎么工作、防作弊和安全、2–128 人实验结论、Evolve 方案</div></a>
 <a class="rs-card" href="https://liucao.me/rsi/view/"><div class="k">判断 · 2026-11</div><div class="t">站在 SA 的角度看 RSI</div><div class="d">6 条判断 + 反方论证 + 客户算账 + 可打分的预测(个人观点)</div></a>
 </div>
 </div></section><section class="chapter" id="c14"><div class="chead"><span class="cn">第 14 章</span><h2>延伸资料:视频和国内研究</h2><span class="from">原页面:<a href="https://liucao.me/rsi/#videos">RSI 资料包 ④⑤⑥</a></span></div><div class="key"><span class="kl">本章要点</span><ul><li>推荐视频(Schmidhuber、DGM、ShinkaEvolve、Kirsch 等),以及国内的 harness 自进化和自我验证研究。</li><li>国内主力同样在 harness / agent 层和好验证的领域(数学、代码、芯片)。</li></ul></div><div class="blk" id="hub-videos">

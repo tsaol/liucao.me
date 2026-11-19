@@ -194,6 +194,7 @@ table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;b
 <p class="foot" style="text-align:left">能力标注依据 2026-11-18 对官方仓库、文档和论文的调研;「文档未提」指调研时读到的 README / 文档里没写。许可证和状态写在框架名下方。</p>
 <div class="sec"><h2>三、Argus 在哪里</h2><span>作者判断</span></div>
 <div class="lead">Argus 不做模型,也不重造进化引擎;它的位置是 <b>④执行 + ⑤门禁 + ⑥上线 + 隔离 + 回放</b> 这一段 —— 一个「带严格门禁的 AI 研发试验场」</div>
+<p style="text-align:center;margin:10px 0 0;font-size:13.5px">想看 Argus 自己怎么工作、2 到 128 人的实验数据和结论 → <a href="../argus-intro/"><b>Argus 介绍</b></a></p>
 <div class="two" style="margin-top:12px">
 <div class="box">
 <h3>定位图</h3>
@@ -239,9 +240,9 @@ table.pos{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;b
 <tr><td>成熟度</td><td>成熟开源项目,Apache 2.0,v0.4.1(2026-11-02),约 7.8k 星,被很多论文引用</td><td class="ar">私有原型:Swarm 已实测,Evolve 只有方案</td></tr>
 </tbody>
 </table>
-<div class="vs-sum"><b>两者不是二选一,而是互补:</b>OpenEvolve 回答「怎么找到更好的版本」,Argus 回答「怎么证明它真的更好,并且安全地用起来」。合理的分工是<b>引擎借用 OpenEvolve,门禁、隔离和回放用 Argus 自己的</b>。</div>
+<div class="vs-sum"><b>两者不是二选一,而是互补:</b>OpenEvolve 回答「怎么找到更好的版本」,Argus 回答「怎么证明它真的更好,并且安全地用起来」。合理的分工是<b>引擎借用 OpenEvolve,门禁、隔离和回放用 Argus 自己的</b>。 详见 <a href="../argus-intro/">Argus 介绍</a>。</div>
 <div class="legend"><span>定位图:横轴 = 改进的对象,纵轴 = 验证的严格程度</span><span><span style="display:inline-block;width:22px;height:12px;border-radius:999px;background:#ffd8a6;border:2px solid #e07a3c;vertical-align:-1px;margin-right:6px"></span>Argus(实线已实现,虚线为方案)</span><span>位置为作者判断</span></div>
-<p class="foot">各流派只列代表项目,不代表完整市场。能力标注依据 2026-11-18 对官方仓库、文档和论文的调研;Argus 是作者的原型项目(私有)。相关:<a href="../ai4ai/">AI4AI 解读(D/S/E 框架出处)</a> · <a href="../landscape/">RSI 全景</a> · <a href="../alphaevolve/">AlphaEvolve 详解</a> · <a href="../view/">我的判断</a></p>
+<p class="foot">各流派只列代表项目,不代表完整市场。能力标注依据 2026-11-18 对官方仓库、文档和论文的调研;Argus 是作者的原型项目(私有)。相关:<a href="../argus-intro/">Argus 介绍</a> · <a href="../ai4ai/">AI4AI 解读(D/S/E 框架出处)</a> · <a href="../landscape/">RSI 全景</a> · <a href="../alphaevolve/">AlphaEvolve 详解</a> · <a href="../view/">我的判断</a></p>
 </div>
 <a data-cur="zh" data-to="en" href="../../en/rsi/argus/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
 </html>
