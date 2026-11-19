@@ -117,7 +117,32 @@ figure.ch .cnote{font-size:12px;color:var(--ink3);margin:2px 4px 0}
 @media (max-width:1000px){.layout{grid-template-columns:minmax(0,1fr)}.toc{display:none}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cards3,.cards4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.charts2,.charts4,.cards2,.cards3,.cards4,.flowx{grid-template-columns:1fr}.chead .big{font-size:44px}table.rs-t{display:block;overflow-x:auto}}
 @media print{.toc,.gtop,.eye,.hgrid{display:none}.rv{opacity:1;transform:none}body{background:#fff;color:#111}}
-
+.sp{--sp-bg1:#16202c;--sp-bg2:#111821;--sp-line:#223041;--sp-ink:#e8edf3;--sp-ink2:#b7c2cf;--sp-ink3:#7f8da0;--sp-acc:#ffb020;--sp-link:#4cc2ff;--sp-on-acc:#1a0d00;--sp-head:#fff;background:linear-gradient(180deg,var(--sp-bg1),var(--sp-bg2));border:1px solid var(--sp-line);border-radius:16px;padding:16px 18px;margin:.6em 0 1em;color:var(--sp-ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;line-height:1.6;box-sizing:border-box;overflow-wrap:anywhere}
+.sp *{box-sizing:border-box}
+.sp a{color:var(--sp-link);text-decoration:none;border-bottom:1px dotted currentColor}
+.sp-h{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+.sp-ava{width:54px;height:54px;border-radius:50%;border:2px solid var(--sp-acc);box-shadow:0 0 16px color-mix(in srgb,var(--sp-acc) 30%,transparent);flex:none;object-fit:cover}
+.sp-n{font-weight:700;color:var(--sp-head);font-size:16px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.sp-n a{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;font-weight:400}
+.sp-badge{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:12px;color:var(--sp-on-acc);background:var(--sp-acc);border-radius:999px;padding:1px 10px;font-weight:800}
+.sp-q{font-size:13.5px;color:var(--sp-ink3);font-style:italic;margin-top:2px}
+.sp-g{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.sp-g.one{grid-template-columns:minmax(0,1fr)}
+.sp figure{margin:0}
+.sp figure img{display:block;width:100%;height:auto;border-radius:12px;background:#fff;border:1px solid var(--sp-line)}
+.sp figcaption{font-size:12.5px;color:var(--sp-ink3);margin-top:4px}
+.sp-r{display:flex;flex-direction:column;gap:8px}
+.sp-p{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;font-size:13.5px;border-top:1px dashed var(--sp-line);padding-top:7px}
+.sp-p b{color:var(--sp-acc)}.sp-p span{color:var(--sp-ink2)}
+.sp-src{font-size:12px;color:var(--sp-ink3);margin-top:10px}
+.sp-l{display:flex;flex-direction:column;gap:8px}
+.sp-ct{font-size:13px;font-weight:700;color:var(--sp-acc);margin-top:4px}
+.sp-cs{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.sp-c{border:1px solid var(--sp-line);border-radius:10px;padding:6px 9px;background:color-mix(in srgb,var(--sp-bg2) 70%,transparent)}
+.sp-c b{display:block;color:var(--sp-head);font-size:13.5px}.sp-c span{font-size:12px;color:var(--sp-ink2);line-height:1.45}
+.sp-cn{font-size:12.5px;color:var(--sp-ink2)}.sp-cn b{color:var(--sp-acc)}
+@media (max-width:900px){.sp-g{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:480px){.sp-p{grid-template-columns:minmax(0,1fr);gap:2px}}
 .tchip{display:inline-block;font-family:var(--mono);font-size:12px;color:var(--amb);border:1px solid rgba(255,176,32,.45);border-radius:999px;padding:1px 10px;margin-top:6px}
 .loop{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:.9em 0 1.2em}
 .lpc{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--ink3);margin-bottom:8px}
@@ -137,7 +162,7 @@ figure.ch .cnote{font-size:12px;color:var(--ink3);margin:2px 4px 0}
 .py b{display:block;color:#fff;font-size:14.5px}.py span{font-size:13px;color:var(--ink2)}
 .p5{width:52%;border-color:rgba(217,89,38,.6)}.p4{width:64%}.p3{width:76%}.p2{width:88%;border-color:rgba(56,211,159,.55)}.p1{width:100%}
 .flowx.f4{grid-template-columns:repeat(4,minmax(0,1fr))}.flowx.f3{grid-template-columns:repeat(3,minmax(0,1fr))}
-.flowx .st .n{width:auto;min-width:28px;padding:0 6px;border-radius:999px}
+.flowx .st .n{display:inline-flex;width:auto;min-width:28px;padding:0 8px;border-radius:999px}
 .demo{border:1px solid rgba(255,176,32,.55);border-radius:14px;padding:14px 18px;margin:1em 0;background:linear-gradient(135deg,rgba(255,176,32,.10),rgba(76,194,255,.04))}
 .demo .dk{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;color:var(--amb)}.demo .dt{font-size:17px;font-weight:700;color:#fff;margin:.2em 0 .3em}
 .demo ul{margin:.3em 0 .8em}
@@ -188,11 +213,11 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="hcta"><a class="btn" href="#c0">从结构开始 ↓</a><a class="btn ghost" href="#c3">直接看人和论文</a></div>
 </div></div>
 <div class="layout">
-<nav class="toc"><div class="tt">CONTENTS · 时间</div><a href="#c0"><span class="n">0:00</span>这场分享讲什么</a><a href="#c1"><span class="n">0:30</span>2026 年的领域全景</a><a href="#c2"><span class="n">2:00</span>方法:循环怎么转</a><a href="#c3"><span class="n">4:30</span>人和论文:谁做得深,先读哪篇</a><a href="#c4"><span class="n">6:30</span>Demo 1 · 达尔文哥德尔机,再看 Play 的进化逻辑</a><a href="#c5"><span class="n">10:00</span>三个场景:哪里的「验」越可信,哪里先落地</a><a href="#c6"><span class="n">18:30</span>限制与落地:先把「验」做好</a><a href="#c7"><span class="n">21:30</span>总结:千篇「一律」—— RSI 里什么在变,什么不变</a></nav>
+<nav class="toc"><div class="tt">CONTENTS · 时间</div><a href="#c0"><span class="n">0:00</span>这场分享讲什么</a><a href="#c1"><span class="n">0:30</span>2026 年的领域全景</a><a href="#c2"><span class="n">2:00</span>方法:循环怎么转</a><a href="#c3"><span class="n">5:30</span>人和论文:谁做得深,先读哪篇</a><a href="#c4"><span class="n">7:30</span>Demo 1 · Play:把 DGM 的进化逻辑跑一遍</a><a href="#c5"><span class="n">10:00</span>三个场景:哪里的「验」越可信,哪里先落地</a><a href="#c6"><span class="n">18:30</span>限制与落地:先把「验」做好</a><a href="#c7"><span class="n">21:30</span>总结:千篇「一律」—— RSI 里什么在变,什么不变</a></nav>
 <main class="g">
 <div class="legend2 rv"><span class="kbox">本章要点</span> 每章关键信息 · <mark>高亮</mark> 核心结论 · 每章标题下是分享时的时间段 · 图表悬停看数值</div>
 <section class="chapter" id="c0"><div class="chead rv"><span class="big">00</span><div><span class="cn">CHAPTER 00</span><h2>这场分享讲什么</h2><span class="tchip">⏱ 0:00–0:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>一句话:<b>方法各不相同,但都可以用同一个五步框来看 —— 跑、看、提、验、定;真正难的是「验」</b>。</li><li>内容分四块:领域在做什么、谁做得深、我们自己跑出了什么、怎么落地。内部和外部都能讲,内部多留讨论时间。</li></ul></div>
-<div class="blk rv"><h3>时间怎么分</h3><div class="strip rv"><div class="sg" data-tip="开场:0–0.5 分钟" style="flex:0.5"><b>开场</b><span>0.5′</span></div><div class="sg" data-tip="01 全景:0.5–2 分钟" style="flex:1.5"><b>01 全景</b><span>1.5′</span></div><div class="sg" data-tip="02 方法:2–4.5 分钟" style="flex:2.5"><b>02 方法</b><span>2.5′</span></div><div class="sg" data-tip="03 人和论文:4.5–6.5 分钟" style="flex:2"><b>03 人和论文</b><span>2′</span></div><div class="sg dm" data-tip="DGM + Play:6.5–10 分钟" style="flex:3.5"><b>DGM + Play</b><span>3.5′</span></div><div class="sg" data-tip="04 三个场景:10–18.5 分钟" style="flex:8.5"><b>04 三个场景</b><span>8.5′</span></div><div class="sg" data-tip="05 落地:18.5–21.5 分钟" style="flex:3"><b>05 落地</b><span>3′</span></div><div class="sg bf" data-tip="提问 / 余量:21.5–25 分钟" style="flex:3.5"><b>提问 / 余量</b><span>3.5′</span></div></div><div class="cnote">一共 25 分钟。黄色 = 现场 demo,虚线 = 留给提问和意外。悬停看起止时间。</div></div>
+<div class="blk rv"><h3>时间怎么分</h3><div class="strip rv"><div class="sg" data-tip="开场:0–0.5 分钟" style="flex:0.5"><b>开场</b><span>0.5′</span></div><div class="sg" data-tip="01 全景:0.5–2 分钟" style="flex:1.5"><b>01 全景</b><span>1.5′</span></div><div class="sg" data-tip="02 方法:2–5.5 分钟" style="flex:3.5"><b>02 方法</b><span>3.5′</span></div><div class="sg" data-tip="03 人和论文:5.5–7.5 分钟" style="flex:2"><b>03 人和论文</b><span>2′</span></div><div class="sg dm" data-tip="Play:7.5–10 分钟" style="flex:2.5"><b>Play</b><span>2.5′</span></div><div class="sg" data-tip="04 三个场景:10–18.5 分钟" style="flex:8.5"><b>04 三个场景</b><span>8.5′</span></div><div class="sg" data-tip="05 落地:18.5–21.5 分钟" style="flex:3"><b>05 落地</b><span>3′</span></div><div class="sg bf" data-tip="提问 / 余量:21.5–25 分钟" style="flex:3.5"><b>提问 / 余量</b><span>3.5′</span></div></div><div class="cnote">一共 25 分钟。黄色 = 现场 demo,虚线 = 留给提问和意外。悬停看起止时间。</div></div>
 <div class="blk rv"><h3>主线:五步循环</h3>
 <p>后面每一章都会用同一个五步框套一遍。<mark>变的是「改什么」和「信号从哪来」,不变的是这五步</mark>。</p>
 <div class="loop rv"><div class="lpc">通用 · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">让当前版本在评测集上真跑,留下轨迹</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">读轨迹和错题,找到机制性的原因</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt">提一个最小的改动(diff)</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">用确定性的门决定要不要它:held-out、成本、泄漏审计</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">接受就入档,能回滚;拒绝也记下来</div></div></div></div>
@@ -217,28 +242,31 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="py p1"><b>第 1 层 · Prompt</b><span>GEPA、MIPRO、TextGrad —— 几百个 rollout 就有收益</span></div>
 </div>
 <p><b>读法:从下往上</b>。先把便宜的层榨干,再考虑上一层;权重永远最后动。改进机制本身也可以被进化(HGM 进化「怎么选亲本」,MemEvolve 进化「记忆系统架构」),但这更需要严格的门。</p>
-<div class="note">注意:这里的「第 1–5 层」是<b>改什么</b>。网站上 <a href="../landscape/">RSI 全景</a> 的 L1–L5 是另一套东西(AI 的<b>自主程度</b>,来自 Last-AI 论文),两者不要混。</div></div></section><section class="chapter" id="c2"><div class="chead rv"><span class="big">02</span><div><span class="cn">CHAPTER 02</span><h2>方法:循环怎么转</h2><span class="tchip">⏱ 2:00–4:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>autoresearch 是最小的循环:改 train.py → 训 5 分钟 → 变好就 commit,否则 reset。</li><li>Meta-Harness 把全部历史(约 1000 万 token/轮)喂给提案 agent;DGM 放到 demo 前细讲。</li><li><mark>涨的分要拆三块:租来的(多花算力)、借来的(钻评测空子)、挣来的</mark>。只有挣来的才值得上线。</li></ul></div>
+<div class="note">注意:这里的「第 1–5 层」是<b>改什么</b>。网站上 <a href="../landscape/">RSI 全景</a> 的 L1–L5 是另一套东西(AI 的<b>自主程度</b>,来自 Last-AI 论文),两者不要混。</div></div></section><section class="chapter" id="c2"><div class="chead rv"><span class="big">02</span><div><span class="cn">CHAPTER 02</span><h2>方法:循环怎么转</h2><span class="tchip">⏱ 2:00–5:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>autoresearch 是最小的循环:改 train.py → 训 5 分钟 → 变好就 commit,否则 reset。</li><li>DGM(达尔文哥德尔机):agent 改<b>自己</b>的代码,用实测代替证明,留档案做开放式探索;<mark>去掉自改写或去掉档案都会停住</mark>。SWE-bench 20% → 50%。</li><li>Meta-Harness 再往外一层:一个循环专门改另一个 agent 的 harness,每轮读约 1000 万 token 的历史。</li><li><mark>涨的分要拆三块:租来的(多花算力)、借来的(钻评测空子)、挣来的</mark>。只有挣来的才值得上线。</li></ul></div>
 <div class="blk rv"><h3>最小的进化循环:autoresearch</h3>
-<div class="ar rv">
-<div class="arh"><img alt="Andrej Karpathy 的 GitHub 头像" class="ava" src="img/karpathy.jpg"/>
-<div class="arm"><div class="arn">Andrej Karpathy <a class="repo" href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a> <span class="star">★ 100.3k stars</span></div>
-<div class="arq">“an AI agent edits train.py, trains for 5 minutes, keeps what lowers val_bpb — forever”</div></div></div>
-<div class="arg">
-<figure class="rs-img"><img alt="autoresearch 的循环:想法 → 改 train.py → git commit → 训 5 分钟 → 评估 val_bpb → 变低就 KEEP,否则 DISCARD(git reset),永远循环" loading="lazy" src="img/autoresearch-loop.png"/></figure>
-<div class="arr">
-<figure class="rs-img"><img alt="autoresearch 进度图:83 个实验,保留 15 个改进,val_bpb 单调下降" loading="lazy" src="img/autoresearch-progress.png"/><figcaption>83 个实验 · 保留 15 个改进 · val_bpb 单调下降</figcaption></figure>
-<div class="arp"><b>循环即全部</b><span>想法 → 改 train.py → git commit → 训 5 分钟 → 看 val_bpb → KEEP / DISCARD(git reset)</span></div>
-<div class="arp"><b>No human</b><span>约每小时 12 个实验 · 睡一觉约 100 个 · 从不停下来问人</span></div>
-<div class="arp"><b>护栏即指标</b><span>val_bpb 固定 + 只许改一个文件,作弊不了</span></div>
-</div></div>
-<div class="arsrc">图:左为循环示意(依据仓库说明整理),右为仓库自带的 progress.png。仓库 README 标注 MIT License;星标数为 2026-11-19 的数字。</div>
-</div>
+<div class="rv"><div class="sp"><div class="sp-h"><img alt="Andrej Karpathy 头像" class="sp-ava" src="img/karpathy.jpg"/><div><div class="sp-n">Andrej Karpathy <a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a> <span class="sp-badge">★ 100.3k stars</span></div><div class="sp-q">“an AI agent edits train.py, trains for 5 minutes, keeps what lowers val_bpb — forever”</div></div></div><div class="sp-g"><figure><img alt="autoresearch 的循环:想法 → 改 train.py → git commit → 训 5 分钟 → 评估 val_bpb → 变低就 KEEP,否则 DISCARD(git reset),永远循环" loading="lazy" src="img/autoresearch-loop.png"/></figure><div class="sp-r"><figure><img alt="autoresearch 进度图:83 个实验,保留 15 个改进,val_bpb 单调下降" loading="lazy" src="img/autoresearch-progress.png"/><figcaption>83 个实验 · 保留 15 个改进 · val_bpb 单调下降</figcaption></figure><div class="sp-p"><b>循环即全部</b><span>想法 → 改 train.py → git commit → 训 5 分钟 → 看 val_bpb → KEEP / DISCARD(git reset)</span></div><div class="sp-p"><b>No human</b><span>约每小时 12 个实验 · 睡一觉约 100 个 · 从不停下来问人</span></div><div class="sp-p"><b>护栏即指标</b><span>val_bpb 固定 + 只许改一个文件,作弊不了</span></div></div></div><div class="sp-src">图:左为循环示意(依据仓库说明整理),右为仓库自带的 progress.png。仓库 README 标注 MIT License;星标数为 2026-11-19 的数字。</div></div></div>
 <div class="loop rv"><div class="lpc">autoresearch · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">训 5 分钟</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">看 val_bpb</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt">改 train.py(只许改这一个文件)</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">val_bpb 降没降 —— 指标固定,作弊不了</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">git commit 或 git reset</div></div></div></div>
 </div>
-<div class="blk rv"><h3>方法谱系:从 DGM 到 Meta-Harness</h3>
+<div class="blk rv"><h3>下一步:达尔文哥德尔机(DGM)—— 先从达尔文讲起</h3>
+<p>autoresearch 只留一条线:变好就留,变差就撤。DGM 借的是<b>达尔文进化论</b>的做法,先把几个词对上,后面就好懂了。</p>
+<div class="cards3">
+<div class="cardx"><div class="k">达尔文 ①</div><div class="t">变异</div><div class="d">后代和父母不完全一样,会有随机的小变化。<br/><b>在 DGM 里</b>:agent 改一下自己的代码,得到一个新版本。</div></div>
+<div class="cardx"><div class="k">达尔文 ②</div><div class="t">选择</div><div class="d">更适应环境的个体,更有机会留下后代。<br/><b>在 DGM 里</b>:在 benchmark 上打分(= 适应度),分数高的更容易被选为<b>亲本</b>。</div></div>
+<div class="cardx"><div class="k">达尔文 ③</div><div class="t">遗传</div><div class="d">后代继承父母的特征,好的变化会一代代累积。<br/><b>在 DGM 里</b>:<b>子代</b>从亲本的代码出发再改,改进会叠加。</div></div>
+</div>
 <div class="cards2">
-<div class="cardx"><div class="k">2025-05 · <a href="https://arxiv.org/abs/2505.22954">DGM</a></div><div class="t">Darwin Gödel Machine</div><div class="d">agent 读自己的代码、改自己,新版本放回档案,不淘汰旧分支。<b>这是 Play demo 背后的进化逻辑,在第 04 章 demo 前细讲</b>。</div></div>
+<div class="cardx"><div class="k">达尔文 ④ · 关键</div><div class="t">种群要多样,不只留最强的</div><div class="d">进化没有终点,今天看着没用的物种,可能是以后的祖先。<br/><b>在 DGM 里</b>:所有能跑的版本都放进<b>档案</b>(archive,相当于种群),不淘汰旧分支 —— 这就叫<b>开放式探索</b>。选亲本时,分数高、子代少的更容易被选,冷门分支也有机会。</div></div>
+<div class="cardx"><div class="k">再加上哥德尔</div><div class="t">改的是「自己」</div><div class="d">原版<b>哥德尔机</b>(Schmidhuber, 2003):系统可以改写自己,但必须先<b>证明</b>改了更好。现实里几乎证明不出来。<br/><b>DGM 的改法</b>:被改的就是 agent 自己的代码;不证明,<b>改完直接实测</b>。</div></div>
+</div>
+<div class="lead">所以 <b>DGM = 达尔文(档案 + 选择 + 变异,开放式探索)+ 哥德尔(改自己,用实测代替证明)</b>。autoresearch 改的是训练脚本、只留一条线;DGM 改的是 agent 自己、留一整个种群。</div>
+<div class="rv"><div class="sp"><div class="sp-h"><div><div class="sp-n">Jenny Zhang、Shengran Hu、Cong Lu、Robert Lange、Jeff Clune <a href="https://github.com/jennyzzt/dgm">github.com/jennyzzt/dgm</a> <span class="sp-badge">★ 2.5k stars</span></div><div class="sp-q">Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Agents · <a href="https://arxiv.org/abs/2505.22954">arXiv:2505.22954</a> · UBC / Sakana AI / Vector · 2025-05</div></div></div><div class="sp-g"><div class="sp-l"><figure><img alt="DGM 循环:从档案里选一个 coding agent 作亲本 → 让它读自己的代码并自我修改 → 在 benchmark 上评测 → 新 agent 加回档案" loading="lazy" src="img/dgm-loop.png"/><figcaption>循环:从档案里选一个 agent → 读自己的代码、改自己 → 在 SWE-bench 上评测 → 新变体<b>放回</b>档案(不淘汰旧分支)</figcaption></figure><div class="sp-ct">Gödel Machine 谱系(2025-05 → 2026-08)</div><div class="sp-cs"><div class="sp-c"><b>DGM</b><span>自改写 + 档案</span></div><div class="sp-c"><b>HGM</b><span>按全体后代的表现选亲本</span></div><div class="sp-c"><b>Mendel-GM</b><span>跨谱系杂交</span></div><div class="sp-c"><b>SGM / Red Queen</b><span>统计门控 · 评估器共进化</span></div></div><div class="sp-cn"><b>HGM 的跨模型迁移</b>:用 GPT-5-mini 优化出的 agent,换 GPT-5 执行即达到人类水平。</div></div><div class="sp-r"><figure><img alt="DGM 消融:完整 DGM 在 SWE-bench 上从 0.20 升到 0.50;去掉开放式探索停在 0.23,去掉自改写停在 0.39" loading="lazy" src="img/dgm-ablation.png"/><figcaption>红色虚线 = 开源手工做的最好水平</figcaption></figure><div class="sp-p"><b>SWE-bench</b><span>20.0% → 50.0%:约 80 轮自改写后,逼近开源手工 SOTA(虚线)</span></div><div class="sp-p"><b>两条消融都塌</b><span>去掉自改写(self-improve)或去掉开放式探索(open-ended),曲线立即停在平台上</span></div><div class="sp-p"><b>档案是关键设计</b><span>保留「当下较差」的分支 —— 它们是后来居上的踏脚石</span></div></div></div><div class="sp-src">图:DGM 论文 Figure 1 与消融图(Zhang et al., arXiv:2505.22954,CC BY 4.0)。仓库 Apache-2.0;星标数为 2026-11-19 的数字。</div></div></div>
+<div class="loop rv"><div class="lpc">DGM · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">当前 agent 在 SWE-bench / Polyglot 上跑</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">读自己的评测日志,找失败原因</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt"><b>读自己的源码,改自己</b>(改进者 = 被改进者)</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">在 benchmark 上实测;先过小样本,再上全量</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">能跑的变体都放回档案,不淘汰旧分支</div></div></div></div>
+<div class="note"><b>它也会钻空子</b>:论文报告过,agent 为了让「工具调用幻觉」检测通过,删掉了检测用的标记,而不是真的不再幻觉。所以评测和门必须放在 agent 改不到的地方。Polyglot 上也从 14.2% 升到 30.7%。</div>
+</div>
+<div class="blk rv"><h3>再往外一层:Meta-Harness</h3>
+<div class="cards2">
 <div class="cardx"><div class="k">2026-03 · <a href="https://arxiv.org/abs/2603.28052">Meta-Harness</a></div><div class="t">Meta-Harness</div><div class="d">外面套一个循环,专门给另一个 agent 设计 harness。所有历史候选的源码、轨迹、得分都放在文件系统里,提案 agent 每轮读约 1000 万 token 的原始记录(比 OPRO / GEPA 多三个数量级)。Terminal-Bench 2 上 76.4%,超过手工最好的 74.7%;小模型获益更大。</div></div>
+<div class="cardx"><div class="k">三者怎么区分</div><div class="t">autoresearch · DGM · Meta-Harness</div><div class="d">autoresearch:agent 改<b>训练脚本</b>;DGM:agent 改<b>自己</b>;Meta-Harness:一个循环改<b>另一个 agent 的外壳</b>。</div></div>
 </div>
 <p class="dim small">AlphaEvolve 也属于这一类(改的是一道题的解法程序,不是自己),详见 <a href="../alphaevolve/">AlphaEvolve 详解</a>。</p></div>
 <div class="blk rv"><h3>Delta Attribution:涨的分有多少是挣来的</h3>
@@ -253,7 +281,7 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="cardx"><div class="k">O · E − E′</div><div class="t">借来的分</div><div class="d">硬编码测例特征、判据关键词。离开这套评测立刻失效。<b>对策:泄漏审计 + held-out</b>。</div></div>
 <div class="cardx plan"><div class="k">G · 剩下的</div><div class="t">挣来的分</div><div class="d">分解、护栏、通用编排这类真改进。最值得追,但仍要跨模型 / 跨数据集检验。</div></div>
 </div>
-<div class="lead">真正的问题不是「分数涨没涨」,而是「<b>涨分的机制值不值得信、付出了什么成本、离开搜索集还能不能工作</b>」。</div></div></section><section class="chapter" id="c3"><div class="chead rv"><span class="big">03</span><div><span class="cn">CHAPTER 03</span><h2>人和论文:谁做得深,先读哪篇</h2><span class="tchip">⏱ 4:30–6:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>源头和理论:Schmidhuber 组(Gödel Machine → HGM)。开放式进化:Jeff Clune 组(ADAS、DGM)。</li><li>工程化:DeepMind AlphaEvolve 团队、Sakana(ShinkaEvolve,我们的 demo 用它)、Khattab 一线(DSPy → GEPA → Meta-Harness)。</li><li>国内:复旦 AHE 最接近我们做的 harness 进化;字节 Seed 的 HarnessDev 给出了最冷静的结论。</li><li>先立坐标的三篇综述:Lilian Weng(工程)、Schmidhuber 组(形式化)、1,250 篇的 RSI 综述(验证层级决定上限)。</li></ul></div>
+<div class="lead">真正的问题不是「分数涨没涨」,而是「<b>涨分的机制值不值得信、付出了什么成本、离开搜索集还能不能工作</b>」。</div></div></section><section class="chapter" id="c3"><div class="chead rv"><span class="big">03</span><div><span class="cn">CHAPTER 03</span><h2>人和论文:谁做得深,先读哪篇</h2><span class="tchip">⏱ 5:30–7:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>源头和理论:Schmidhuber 组(Gödel Machine → HGM)。开放式进化:Jeff Clune 组(ADAS、DGM)。</li><li>工程化:DeepMind AlphaEvolve 团队、Sakana(ShinkaEvolve,我们的 demo 用它)、Khattab 一线(DSPy → GEPA → Meta-Harness)。</li><li>国内:复旦 AHE 最接近我们做的 harness 进化;字节 Seed 的 HarnessDev 给出了最冷静的结论。</li><li>先立坐标的三篇综述:Lilian Weng(工程)、Schmidhuber 组(形式化)、1,250 篇的 RSI 综述(验证层级决定上限)。</li></ul></div>
 <div class="blk rv"><h3>值得跟的人和团队</h3>
 <div class="cards3">
 <div class="cardx pp"><div class="t">Jürgen Schmidhuber 组</div><div class="k">KAUST · 理论源头</div><div class="d">2003 年前后提出 Gödel Machine:证明改了更好才改。2025 年的 HGM 用「全体后代的表现」选亲本;2026 年又和合作者写了 agent 自改进综述。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2510.21614">HGM</a> · <a href="https://arxiv.org/abs/2607.13104">综述</a></div></div>
@@ -283,20 +311,7 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <li><b>定坐标</b>:上面两篇综述(2607.13104、2607.07663)、Last AI(分级)、<a href="../ai4ai/">AI4AI 解读</a>(看「谁做决定」而不是「谁执行」)。</li>
 <li><b>泼冷水</b>:HarnessDev;以及 Phantom Gains(未训练的模型也会因为批处理伪影「凭空变强」)。</li>
 </ol>
-<p class="dim small">作者和机构都按 arXiv 页面核对过。更全的论文表见 <a href="../demo/papers/">Papers</a> 和 <a href="../guide/">RSI 全景长文</a>。</p></div></section><section class="chapter" id="c4"><div class="chead rv"><span class="big">04</span><div><span class="cn">CHAPTER 04</span><h2>Demo 1 · 达尔文哥德尔机,再看 Play 的进化逻辑</h2><span class="tchip">⏱ 6:30–10:00</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>达尔文哥德尔机(DGM):<b>哥德尔</b>那一半是「agent 改自己」,但用实测代替证明;<b>达尔文</b>那一半是「留档案、开放式探索」,不只留第一名。</li><li><mark>去掉自改写或去掉档案,性能都马上停住</mark> —— 两半缺一不可。SWE-bench 20% → 50%。</li><li>Play 演示的是<b>达尔文那一半的进化逻辑</b>:档案、按分数加权选亲本、带着错题提改动、三套测试门控、晋升或丢弃。</li></ul></div>
-<div class="blk rv"><h3>先讲 DGM:名字里的两半</h3>
-<div class="cards2">
-<div class="cardx"><div class="k">哥德尔 · Gödel(2003, Schmidhuber)</div><div class="t">改自己,但只在证明更好时才改</div><div class="d">原版哥德尔机要求先<b>证明</b>修改后更好才能改写自己。想法很美,但现实里几乎证明不出来。<br/><b>DGM 的改法:不证明,直接实测</b> —— 改完在 benchmark 上跑一遍,分数说了算。</div></div>
-<div class="cardx"><div class="k">达尔文 · Darwin</div><div class="t">留档案,开放式探索</div><div class="d">不是只留当前最好的版本,而是把每个能跑的变体都<b>放回档案</b>。现在看着差的分支,可能是以后的踏脚石。<br/>选亲本时,<b>分数高、已有子代少</b>的更容易被选中 —— 既利用好的,也给冷门的机会。</div></div>
-</div>
-<div class="loop rv"><div class="lpc">DGM · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">当前 agent 在 SWE-bench / Polyglot 上跑</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">读自己的评测日志,找失败原因</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt"><b>读自己的源码,改自己</b>(改进者 = 被改进者)</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">在 benchmark 上实测;先过小样本,再上全量</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">能跑的变体都放回档案,不淘汰旧分支</div></div></div></div>
-<div class="cards3">
-<div class="cardx"><div class="k">结果</div><div class="t">SWE-bench 20.0% → 50.0%</div><div class="d">Polyglot 14.2% → 30.7%。约 80 轮自改写后,接近开源手工做的最好水平。</div></div>
-<div class="cardx"><div class="k">最有信息量的消融</div><div class="t">两半缺一不可</div><div class="d">去掉「自改写」(改进者固定不变)或去掉「开放式档案」(只留最好的),曲线都很快停住。</div></div>
-<div class="cardx plan"><div class="k">为什么有「递归」的味道</div><div class="t">改好的 agent 也更会改自己</div><div class="d">因为改进者就是被改进者,一次改进(比如更好的代码编辑工具)会让下一次改进也更容易。但评测本身是固定的,不会进化。</div></div>
-</div>
-<div class="note"><b>它也会钻空子</b>:论文报告过,agent 为了让「工具调用幻觉」检测通过,删掉了检测用的标记,而不是真的不再幻觉。所以评测和门必须放在 agent 改不到的地方。<br/>后续谱系:HGM 按「全体后代的表现」选亲本;Mendel-GM 做跨谱系杂交;SGM 加统计门控。</div>
-</div>
+<p class="dim small">作者和机构都按 arXiv 页面核对过。更全的论文表见 <a href="../demo/papers/">Papers</a> 和 <a href="../guide/">RSI 全景长文</a>。</p></div></section><section class="chapter" id="c4"><div class="chead rv"><span class="big">04</span><div><span class="cn">CHAPTER 04</span><h2>Demo 1 · Play:把 DGM 的进化逻辑跑一遍</h2><span class="tchip">⏱ 7:30–10:00</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>Play 演示的是 DGM <b>达尔文那一半的进化逻辑</b>:档案、按分数加权选亲本、带着错题提改动、三套测试门控、晋升或丢弃。</li><li>一圈循环里能看到:<mark>一次泄漏被拦、一次花钱买分被拒、一次真改进晋升</mark>。</li></ul></div>
 <div class="blk rv"><h3>再看 Play:同样的进化逻辑,放在一个电商搜索 agent 上</h3>
 <p>用户搜「apple 128gb」,起点版返回红富士苹果。Play 用 ShinkaEvolve(Sakana)做引擎,Claude 做 proposer,只改 <code>search()</code> 代码,模型权重不动。</p>
 <div class="tw"><table class="rs-t"><tr><th>进化逻辑</th><th>DGM</th><th>Play</th></tr>
@@ -309,7 +324,7 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 </table></div>
 <div class="note"><b>区别要讲清楚</b>:Play 只演示了 DGM 的<b>达尔文</b>那一半(档案、选择、变异、门控);它改的是别的 agent 的代码,proposer 自己不变,所以没有<b>哥德尔</b>那一半的「改自己」。</div>
 <div class="loop rv"><div class="lpc">Play demo · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">亲本代码在 31 道题上真跑</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">从档案里加权选亲本,附上它做错的题</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt">Claude 先推理,再给出 diff</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">三套测试:防背题(hold-out)、防脆弱(typo)</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">综合分 &gt; 0 才晋升入档</div></div></div></div>
-<div class="demo rv"><div class="dk">DEMO</div><div class="dt">Demo 看什么:进化逻辑(限时 3 分钟)</div><ul><li><b>档案和选亲本</b>:柱子越长,被选中的概率越高,但低分的也有机会</li><li><b>提案</b>:带着错题,AI 先写思路再写 diff</li><li><b>门</b>:为什么要 hold-out 和 typo —— 硬记答案会在这两套上崩</li><li><b>一次被拒</b>:把答案写进代码(泄漏),或者每题跑 20 个候选重排(花钱买分)</li><li><b>一次晋升</b>:先识别意图、再抽属性、再检索,「apple 128gb」返回 iPhone;档案多了一个版本</li></ul><a class="btn" href="../demo/play/">打开 Play →</a></div>
+<div class="demo rv"><div class="dk">DEMO</div><div class="dt">Demo 看什么:进化逻辑(限时 2.5 分钟)</div><ul><li><b>档案和选亲本</b>:柱子越长,被选中的概率越高,但低分的也有机会</li><li><b>提案</b>:带着错题,AI 先写思路再写 diff</li><li><b>门</b>:为什么要 hold-out 和 typo —— 硬记答案会在这两套上崩</li><li><b>一次被拒</b>:把答案写进代码(泄漏),或者每题跑 20 个候选重排(花钱买分)</li><li><b>一次晋升</b>:先识别意图、再抽属性、再检索,「apple 128gb」返回 iPhone;档案多了一个版本</li></ul><a class="btn" href="../demo/play/">打开 Play →</a></div>
 <div class="note">Play 每次都真调 Bedrock,结果每次不同。讲之前先跑一次存好备份;卡住超过 20 秒就切到备份。剧情总结见 <a href="../demo/">Demo 介绍页</a>。</div>
 </div></section><section class="chapter" id="c5"><div class="chead rv"><span class="big">05</span><div><span class="cn">CHAPTER 05</span><h2>三个场景:哪里的「验」越可信,哪里先落地</h2><span class="tchip">⏱ 10:00–18:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>Infra:指标最客观。coding agent 自己诊断并调配置,decode 吞吐 +86%。</li><li>Agent:Harvey 法律 agent 81.5% → 89.5%,<mark>门真的拦下过泄漏和花钱买分</mark>。</li><li>Software:128 个 agent 一起写软件;<mark>最好的组织方式取决于产品的耦合度</mark>。但现在改的是软件,还不是工厂本身。</li></ul></div>
 <div class="blk rv"><h3>场景一 · Infra:用 coding agent 进化推理集群配置</h3>
