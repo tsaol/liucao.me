@@ -177,6 +177,33 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 .rv.in figure.ch .dot,figure.ch.rv.in .dot{animation:pop .6s ease both}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 .charts2>figure.ch,.charts2>.cardx{min-width:0}
+.slide{position:relative;background:radial-gradient(700px 300px at 85% 0%,rgba(76,194,255,.10),transparent 60%),radial-gradient(600px 300px at 0% 100%,rgba(255,138,60,.10),transparent 60%),linear-gradient(180deg,#121a24,#0d131b);border:1px solid var(--line);border-radius:18px;padding:26px 30px 18px;margin:18px 0 22px;min-height:440px;display:flex;flex-direction:column;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.sk{font-family:var(--mono);font-size:12px;letter-spacing:3px;color:var(--amb)}
+.st{font-size:clamp(22px,2.6vw,32px)!important;line-height:1.3;color:#fff;margin:10px 0 22px!important;display:block!important}
+.st::before{display:none!important}.st .hl{background:linear-gradient(90deg,#ffd27a,#ff8a3c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sg2{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:26px;align-items:center;flex:1}
+.sb{font-size:19px;line-height:1.6;color:var(--ink)}.sb b{color:var(--amb)}.sb2{font-size:17px;color:#fff;font-weight:700;border-left:3px solid var(--amb);padding-left:10px}
+.sp3{font-size:16px;color:var(--ink2)}.sp3 li{margin:.4em 0}
+.sr{display:flex;flex-direction:column;gap:10px}
+.stile{border:1px solid var(--line);border-radius:14px;padding:12px 16px;background:rgba(10,15,21,.6);display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:baseline}
+.sn{font-family:var(--mono);font-size:34px;font-weight:800;color:#fff;text-shadow:0 0 18px rgba(255,176,32,.35);grid-row:span 2}
+.su{font-size:15px;color:var(--amb);font-weight:700}.sd{font-size:13px;color:var(--ink3)}
+.sf{margin-top:auto;padding-top:14px;font-size:12px;color:var(--ink3)}
+.sflow{display:flex;align-items:stretch;gap:10px;margin:8px 0 6px}
+.sfi{flex:1;border:1px solid var(--line);border-radius:14px;padding:16px;background:rgba(10,15,21,.6);text-align:center}
+.sfi b{display:block;font-size:18px;color:#fff;margin-top:6px}.sfi.hot{border-color:rgba(255,176,32,.7);box-shadow:0 0 26px rgba(255,176,32,.15) inset}
+.sfn{width:30px;height:30px;margin:0 auto;border-radius:50%;background:linear-gradient(135deg,var(--amb),var(--amb2));color:#1a0d00;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--mono)}
+.sfa{display:flex;align-items:center;font-size:26px;color:var(--amb)}
+.sback{text-align:center;font-family:var(--mono);color:var(--amb);font-size:14px;margin:4px 0 16px}
+.s3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.s3>div{border-top:2px solid var(--amb);padding-top:8px}.s3 b{display:block;font-size:17px;color:#fff}.s3 span{font-size:14px;color:var(--ink2)}
+.scmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;flex:1}
+.sc2{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(10,15,21,.6)}
+.sck2{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px}
+.row2{display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;font-size:14.5px;padding:6px 0;border-top:1px dashed var(--line)}
+.row2 i{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--ink3);padding-top:2px}.row2.r i{color:var(--amb)}.row2 span{color:var(--ink2)}.row2 b{color:var(--amb)}
+.big2{margin-top:10px;font-family:var(--mono);font-size:22px;font-weight:800;color:#fff}.big2 small{display:block;font-family:inherit;font-size:12.5px;font-weight:400;color:var(--ink3)}
+@media (max-width:900px){.slide{min-height:0;padding:20px}.sg2,.scmp,.s3{grid-template-columns:minmax(0,1fr)}.sflow{flex-direction:column}.sfa{justify-content:center;transform:rotate(90deg)}}
 #demo2{scroll-margin-top:70px}
 .rx{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:.8em 0 .4em}
 .rxi{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 14px;border-top:3px solid #38d39f}
@@ -300,33 +327,46 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <main class="g">
 <div class="legend2 rv"><mark>高亮</mark> 核心结论 · 每章标题下是分享时的时间段 · 图表悬停看数值</div>
 <section class="chapter" id="c0"><div class="chead rv"><span class="big">00</span><div><span class="cn">CHAPTER 00</span><h2>这场分享讲什么</h2><span class="tchip">⏱ 0:00–0:30</span></div></div><div class="blk rv"><div class="ag rv"><a class="agi" href="#cw"><span class="agn">01</span><span class="agt">WHY RSI:为什么要让 AI 改进自己</span><span class="agm">0:30–1:30</span></a><a class="agi" href="#c1"><span class="agn">02</span><span class="agt">2026 年的领域全景</span><span class="agm">1:30–2:30</span></a><a class="agi" href="#c2"><span class="agn">03</span><span class="agt">方法:从 autoresearch 到达尔文哥德尔机</span><span class="agm">2:30–5:00</span></a><a class="agi dm" href="#c4"><span class="agn">04</span><span class="agt">Demo 1 · Play:把 DGM 的进化逻辑跑一遍</span><span class="agm">5:00–7:30</span></a><a class="agi" href="#c2b"><span class="agn">05</span><span class="agt">方法(续):AlphaEvolve,以及涨的分怎么算</span><span class="agm">7:30–9:00</span></a><a class="agi" href="#c3"><span class="agn">06</span><span class="agt">人和论文:三条线索,谁做得深,先读哪篇</span><span class="agm">9:00–10:30</span></a><a class="agi" href="#c5"><span class="agn">07</span><span class="agt">三个场景:哪里的「验」越可信,哪里先落地</span><span class="agm">10:30–18:30</span></a><a class="agi dm sub" href="#demo2"><span class="agn">▶</span><span class="agt">Demo 2 · Argus 回放:128 个 agent 一起写软件</span><span class="agm">16:30–18:30</span></a><a class="agi" href="#c6"><span class="agn">08</span><span class="agt">限制与落地:先把「验」做好</span><span class="agm">18:30–21:30</span></a><a class="agi" href="#c7"><span class="agn">09</span><span class="agt">总结:千篇「一律」—— RSI 里什么在变,什么不变</span><span class="agm">21:30–25:00</span></a></div><p class="dim small">一共 25 分钟,最后一章含提问时间。黄色 = 现场 demo。点任意一行跳到对应章节。</p></div></section><section class="chapter" id="cw"><div class="chead rv"><span class="big">01</span><div><span class="cn">CHAPTER 01</span><h2>WHY RSI:为什么要让 AI 改进自己</h2><span class="tchip">⏱ 0:30–1:30</span></div></div>
-<div class="blk rv"><h3>三种越来越重的负担</h3>
-<div class="cards3">
-<div class="cardx"><div class="k">负担 ① · 训练</div><div class="t">基础模型训练太耗资源</div><div class="d">数据、架构、分布式训练、评测,每一步都要大量人和算力。数据质量更难:一套 1,320 项专业任务的评测,花了约 9,240 个专家工时;一个 3,000 题的高难基准,背后筛过 7 万多次投稿。</div></div>
-<div class="cardx"><div class="k">负担 ② · 反馈</div><div class="t">反馈和学习环境要不断扩大</div><div class="d">合成数据和强化学习让一部分工作自动化了,但经验要有地方生成、有办法评估。例如有模型的后训练算力预算,已超过预训练成本的 10%。</div></div>
-<div class="cardx"><div class="k">负担 ③ · 上线后</div><div class="t">部署后要反复人工适配</div><div class="d">文档会变、工具会换、上下文不全,改进靠工程师手动诊断、改接口、跑回归、按版本发布。agent 消耗的 token 约是普通对话的 4 倍,多 agent 约 15 倍;一家大厂每周识别出数千个基础设施回归,诊断一个约要 10 个工程师工时。</div></div>
-</div>
-<p class="dim small">数字均来自论文 §1.1 引用的公开报告。</p></div>
-<div class="blk rv"><h3>根本原因:某些场景里,人成了瓶颈</h3>
-<div class="lead">模型改进的每一步 —— <b>决定改什么、准备数据和环境、确认每个改动有没有用</b> —— 都要人在系统外面来回协调。任务越来越多、越来越复杂,<b>人的时间和专业判断跟不上了</b>。RSI 要问的是:这些协调里,有没有一部分可以变成被改进系统<b>自己持久具备的能力</b>?</div>
-<div class="cards3">
-<div class="cardx"><div class="k">人跟不上 ①</div><div class="t">专家工时</div><div class="d">一套 1,320 项任务的评测要约 9,240 个专家工时;一个 3,000 题的基准要筛 7 万多次投稿 —— 好数据靠专家一点点攒。</div></div>
-<div class="cardx"><div class="k">人跟不上 ②</div><div class="t">诊断和回归</div><div class="d">一家大厂每周识别出数千个基础设施回归,诊断一个约要 10 个工程师工时 —— 人修的速度赶不上问题出现的速度。</div></div>
-<div class="cardx"><div class="k">人跟不上 ③</div><div class="t">发版节奏</div><div class="d">上线后的改进靠人诊断、改接口、跑回归、按版本发布;agent 越多、跑得越久,这条人工流水线越长。</div></div>
-</div>
-<p>论文给 RSI 的定义:一个自主的闭环过程,AI 系统<b>找到自己的局限 → 开发并验证改进 → 用得到的新能力去改进「改进过程」本身</b>。它从三个方向衡量:</p>
-<div class="cards3">
-<div class="cardx"><div class="k">自主</div><div class="t">人交出去的越来越多</div><div class="d">从「执行人定好的更新」,扩大到自己找短板、提炼经验、提出改动、验证并留下更好的后继版本。</div></div>
-<div class="cardx"><div class="k">效率</div><div class="t">同样的投入,更多验证过的改进</div><div class="d">数据、算力、推理、人工审核、返工,每一项投入换来更多真正被验证过的改进。</div></div>
-<div class="cardx"><div class="k">创新</div><div class="t">找到人没想到的做法</div><div class="d">在人规定的更新策略之外去搜索,并把有用的发现带进后面的改进轮次。</div></div>
+<div class="slide rv"><div class="sk">WHY RSI · 1 / 3</div>
+<h3 class="st">在越来越多的场景里,<span class="hl">人成了模型改进的瓶颈</span></h3>
+<div class="sg2">
+<div class="sl"><p class="sb">决定改什么、准备数据和环境、确认每个改动有没有用 —— <b>每一步都要人在系统外面来回协调</b>。</p>
+<ul class="sp3"><li>训练:数据和评测靠专家一点点攒</li><li>反馈:经验要有地方生成、有办法评估</li><li>上线后:诊断、回归、发版,全靠人</li></ul>
+<p class="sb2">任务的规模和复杂度,涨得比人快。</p></div>
+<div class="sr">
+<div class="stile"><div class="sn">9,240</div><div class="su">专家工时</div><div class="sd">只为一套 1,320 项任务的评测</div></div>
+<div class="stile"><div class="sn">~10</div><div class="su">工程师工时 / 个</div><div class="sd">诊断一个基础设施回归;每周有数千个</div></div>
+<div class="stile"><div class="sn">4–15×</div><div class="su">token 消耗</div><div class="sd">agent / 多 agent 对比普通对话</div></div>
 </div></div>
-<div class="blk rv"><h3>两个例子:普通做法 vs RSI 做法</h3>
-<div class="tw"><table class="rs-t"><tr><th></th><th>普通做法</th><th>RSI 做法</th><th>结果</th></tr>
-<tr><td><b>训练基础模型</b><br/><span class="dim small">A-Evolve-Training</span></td><td>实验循环挑出更好的 checkpoint,但「下一步做什么实验」的方法不变</td><td>把后训练结果沉淀成持久的<b>研究策略和发现日志</b>,元 agent 修订它来指导后面的实验;发现开发集分数涨了、外部分数没涨,就自己把方向转到数据配比和 checkpoint 选择</td><td>30B 模型上自主跑 4 轮,外部分数 0.80 → 0.86;人类最好提交是 0.87</td></tr>
-<tr><td><b>上线后的编码 agent</b><br/><span class="dim small">Ouroboros</span></td><td>修好一个仓库,改的是软件;agent 自己反复犯的错没变</td><td>用审核过的部署证据,对 agent 自己的<b>工具、上下文组装、提示词和核心实现</b>提出带版本的修改;通过测试和人工审核后才替换运行版本</td><td>后面的编码行为变好,诊断和修复失败的机制也变了;关键修正和发布仍由专家控制</td></tr>
-</table></div>
-<div class="note"><b>区别一句话</b>:普通做法改的是「这一次的结果」,RSI 改的是「以后怎么改进」。这也是后面每个例子都要回答的问题:改进留下来了吗?改进的方法自己变好了吗?<br/><span class="dim">来源:<a href="../paper/lastai/">The Last AI Built by Humans</a> §1.1–1.2。</span></div>
-</div></section><section class="chapter" id="c1"><div class="chead rv"><span class="big">02</span><div><span class="cn">CHAPTER 02</span><h2>2026 年的领域全景</h2><span class="tchip">⏱ 1:30–2:30</span></div></div>
+<div class="sf">来源:<a href="../paper/lastai/">The Last AI Built by Humans</a> §1.1 引用的公开报告</div></div>
+<div class="slide rv"><div class="sk">WHY RSI · 2 / 3</div>
+<h3 class="st">RSI:把一部分「协调」<span class="hl">变成系统自己的能力</span></h3>
+<div class="sflow">
+<div class="sfi"><div class="sfn">1</div><b>找到自己的短板</b></div><div class="sfa">→</div>
+<div class="sfi"><div class="sfn">2</div><b>做出改进并验证</b></div><div class="sfa">→</div>
+<div class="sfi hot"><div class="sfn">3</div><b>用新能力改进「改进的过程」</b></div>
+</div>
+<div class="sback">↺ 改进被保留下来,进入下一轮</div>
+<div class="s3">
+<div><b>自主</b><span>人交出去的越来越多:从执行人定的更新,到自己找短板、提改动、验证</span></div>
+<div><b>效率</b><span>同样的数据、算力、人工审核,换来更多验证过的改进</span></div>
+<div><b>创新</b><span>在人规定的做法之外去找,并把发现带进后面的轮次</span></div>
+</div>
+<div class="sf">来源:The Last AI Built by Humans §1.2 的定义</div></div>
+<div class="slide rv"><div class="sk">WHY RSI · 3 / 3</div>
+<h3 class="st">普通做法改「这一次的结果」,<span class="hl">RSI 改「以后怎么改进」</span></h3>
+<div class="scmp">
+<div class="sc2"><div class="sck2">训练基础模型 · A-Evolve-Training</div>
+<div class="row2"><i>普通</i><span>挑出更好的 checkpoint,「下一步做什么实验」的方法不变</span></div>
+<div class="row2 r"><i>RSI</i><span>把结果沉淀成<b>研究策略</b>,自己改方向:发现开发分涨、外部分不涨,转去调数据配比</span></div>
+<div class="big2">0.80 → 0.86 <small>4 轮自主,30B 模型;人类最好 0.87</small></div></div>
+<div class="sc2"><div class="sck2">上线后的编码 agent · Ouroboros</div>
+<div class="row2"><i>普通</i><span>修好一个仓库,改的是软件;agent 反复犯的错没变</span></div>
+<div class="row2 r"><i>RSI</i><span>用部署证据改 agent <b>自己的工具、提示词和实现</b>,过测试和人工审核才换上</span></div>
+<div class="big2">诊断和修复的方法也变了 <small>关键修正和发布仍由专家控制</small></div></div>
+</div>
+<div class="sf">后面每个例子都要回答:改进留下来了吗?改进的方法自己变好了吗? · 来源:The Last AI Built by Humans §1.2</div></div>
+</section><section class="chapter" id="c1"><div class="chead rv"><span class="big">02</span><div><span class="cn">CHAPTER 02</span><h2>2026 年的领域全景</h2><span class="tchip">⏱ 1:30–2:30</span></div></div>
 <div class="blk rv"><h3>论文有多少、在哪儿</h3><figure class="ch rv"><figcaption>11 个方向的论文数<span>篇 · 括号里是核心贡献篇数</span></figcaption><svg aria-label="11 个方向的论文数" role="img" viewbox="0 0 720 302"><line class="axis" x1="190" x2="190" y1="8" y2="294"></line><text class="lab" style="text-anchor:end" x="180" y="25.0">记忆与技能进化</text><path class="bar hb" d="M190,13 H596.0 Q600.0,13 600.0,17 V25 Q600.0,29 596.0,29 H190 Z" data-tip="记忆与技能进化:共 151 篇,核心 121 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="608.0" y="25.0">151(121)</text><text class="lab" style="text-anchor:end" x="180" y="51.0">领域应用</text><path class="bar hb" d="M190,39 H509.1 Q513.1,39 513.1,43 V51 Q513.1,55 509.1,55 H190 Z" data-tip="领域应用:共 119 篇,核心 21 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="521.1" y="51.0">119(21)</text><text class="lab" style="text-anchor:end" x="180" y="77.0">权重级自我改进</text><path class="bar hb" d="M190,65 H492.8 Q496.8,65 496.8,69 V77 Q496.8,81 492.8,81 H190 Z" data-tip="权重级自我改进:共 113 篇,核心 71 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="504.8" y="77.0">113(71)</text><text class="lab" style="text-anchor:end" x="180" y="103.0">Harness 与工作流</text><path class="bar hb" d="M190,91 H490.1 Q494.1,91 494.1,95 V103 Q494.1,107 490.1,107 H190 Z" data-tip="Harness 与工作流:共 112 篇,核心 75 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="502.1" y="103.0">112(75)</text><text class="lab" style="text-anchor:end" x="180" y="129.0">基准与评测</text><path class="bar hb" d="M190,117 H405.9 Q409.9,117 409.9,121 V129 Q409.9,133 405.9,133 H190 Z" data-tip="基准与评测:共 81 篇,核心 46 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="417.9" y="129.0">81(46)</text><text class="lab" style="text-anchor:end" x="180" y="155.0">安全、对齐与治理</text><path class="bar hb" d="M190,143 H357.1 Q361.1,143 361.1,147 V155 Q361.1,159 357.1,159 H190 Z" data-tip="安全、对齐与治理:共 63 篇,核心 29 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="369.1" y="155.0">63(29)</text><text class="lab" style="text-anchor:end" x="180" y="181.0">LLM 驱动的进化搜索</text><path class="bar hb" d="M190,169 H310.9 Q314.9,169 314.9,173 V181 Q314.9,185 310.9,185 H190 Z" data-tip="LLM 驱动的进化搜索:共 46 篇,核心 9 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="322.9" y="181.0">46(9)</text><text class="lab" style="text-anchor:end" x="180" y="207.0">提示词与上下文进化</text><path class="bar hb" d="M190,195 H275.6 Q279.6,195 279.6,199 V207 Q279.6,211 275.6,211 H190 Z" data-tip="提示词与上下文进化:共 33 篇,核心 30 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="287.6" y="207.0">33(30)</text><text class="lab" style="text-anchor:end" x="180" y="233.0">综述与立场</text><path class="bar hb" d="M190,221 H243.0 Q247.0,221 247.0,225 V233 Q247.0,237 243.0,237 H190 Z" data-tip="综述与立场:共 21 篇,核心 10 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="255.0" y="233.0">21(10)</text><text class="lab" style="text-anchor:end" x="180" y="259.0">多智能体协同进化</text><path class="bar hb" d="M190,247 H243.0 Q247.0,247 247.0,251 V259 Q247.0,263 243.0,263 H190 Z" data-tip="多智能体协同进化:共 21 篇,核心 11 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="255.0" y="259.0">21(11)</text><text class="lab" style="text-anchor:end" x="180" y="285.0">递归自指</text><path class="bar hb" d="M190,273 H237.6 Q241.6,273 241.6,277 V285 Q241.6,289 237.6,289 H190 Z" data-tip="递归自指:共 19 篇,核心 16 篇" fill="#ffb020"></path><text class="val" style="text-anchor:start" x="249.6" y="285.0">19(16)</text></svg><div class="cnote">黄色 = 真正「改进自己的改进机制」的递归自指,只有 19 篇。数据:《自进化智能体 2026》综述,检索窗口 2026-01-01 至 08-21。</div></figure><div class="charts2"><figure class="ch rv"><figcaption>每月入选论文<span>篇</span></figcaption><svg aria-label="每月入选论文" role="img" viewbox="0 0 360 200"><line class="grid" x1="10" x2="350" y1="131.0" y2="131.0"></line><line class="grid" x1="10" x2="350" y1="96.0" y2="96.0"></line><line class="grid" x1="10" x2="350" y1="61.0" y2="61.0"></line><line class="grid" x1="10" x2="350" y1="26.0" y2="26.0"></line><line class="axis" x1="10" x2="350" y1="166" y2="166"></line><path class="bar" d="M28.7,166 V142.1 Q28.7,138.1 32.7,138.1 H72.3 Q76.3,138.1 76.3,142.1 V166 Z" data-tip="1 月:35 篇" fill="#3987e5"></path><text class="val" x="52.5" y="131.1">35</text><text class="lab" x="52.5" y="183">1 月</text><path class="bar" d="M113.7,166 V51.4 Q113.7,47.4 117.7,47.4 H157.3 Q161.3,47.4 161.3,51.4 V166 Z" data-tip="5 月:149 篇(峰值)" fill="#3987e5"></path><text class="val" x="137.5" y="40.4">149</text><text class="lab" x="137.5" y="183">5 月</text><path class="bar" d="M198.7,166 V57.7 Q198.7,53.7 202.7,53.7 H242.3 Q246.3,53.7 246.3,57.7 V166 Z" data-tip="7 月:141 篇" fill="#3987e5"></path><text class="val" x="222.5" y="46.7">141</text><text class="lab" x="222.5" y="183">7 月</text><path class="bar" d="M283.7,166 V76.0 Q283.7,72.0 287.7,72.0 H327.3 Q331.3,72.0 331.3,76.0 V166 Z" data-tip="8 月前 21 天:118 篇" fill="#3987e5"></path><text class="val" x="307.5" y="65.0">118</text><text class="lab" x="307.5" y="183">8 月*</text></svg><div class="cnote">* 8 月只统计到 21 日。只列综述里给出的月份。</div></figure><div class="cardx"><div class="k">趋势</div><div class="t">5 月以后一直在高位</div><div class="d">1 月只有 35 篇,5 月到了 149 篇,之后每月都在 120–150 篇左右。原综述只统计到 8 月 21 日。</div></div></div></div>
 <div class="blk rv"><h3>能改的东西:五层,从便宜到贵</h3>
 <div class="pyr rv">
