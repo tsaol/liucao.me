@@ -435,7 +435,7 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 </section><section class="chapter" id="c3"><div class="chead rv"><span class="big">06</span><div><span class="cn">CHAPTER 06</span><h2> Cloud provider status: all three are building “agents that improve automatically”</h2><span class="tchip">⏱ 8:30–10:00</span></div></div>
 <div class="eyebrow2" style="margin:10px 0 -6px"><a href="../landscape/#cloud">RSI landscape · Three cloud providers</a> · As of 2026-11-15</div>
 <div class="slide rv"><div class="sk">Cloud providers · 1 / 2</div>
-<h3 class="st">All three have turned “agents that improve automatically” into products,<span class="hl">Nearly identical shape</span></h3>
+<h3 class="st">All three have turned “agents that improve on their own”<span class="hl">into products</span></h3>
 <div class="cl3">
 <div class="clv g"><div class="clk">Google Cloud</div><div class="clt"> AlphaEvolve (GA)</div><p>Give it a seed algorithm and a scoring function; Gemini repeatedly mutates, evaluates, and keeps the better versions. The official tutorial also uses it to automatically improve agent skills.</p><div class="clr"><b>How it's verified</b> Run alongside the baseline and compare the delta, then recheck on unseen tasks</div></div>
 <div class="clv m"><div class="clk">Microsoft Azure</div><div class="clt">Foundry Agent Optimizer</div><p> Evaluate the baseline → generate candidates from failures → re-evaluate on the same tasks → rank → ship with one command; can change instructions, skills, and model choice.</p><div class="clr"><b>How it's verified</b> Held-out regression set + engineer PR review + staged rollout</div></div>
