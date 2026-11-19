@@ -171,7 +171,7 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="hcta"><a class="btn" href="#c0">从结构开始 ↓</a><a class="btn ghost" href="#c3">直接看人和论文</a></div>
 </div></div>
 <div class="layout">
-<nav class="toc"><div class="tt">CONTENTS · 时间</div><a href="#c0"><span class="n">0:00</span>这场分享讲什么</a><a href="#c1"><span class="n">0:30</span>2026 年的领域全景</a><a href="#c2"><span class="n">2:00</span>方法:循环怎么转</a><a href="#c3"><span class="n">4:30</span>人和论文:谁做得深,先读哪篇</a><a href="#c4"><span class="n">6:30</span>Demo 1 · 达尔文哥德尔机,再看 Play 的进化逻辑</a><a href="#c5"><span class="n">10:00</span>三个场景:哪里的「验」越可信,哪里先落地</a><a href="#c6"><span class="n">18:30</span>限制与落地:先把「验」做好</a><a href="#c7"><span class="n">21:30</span>总结:变的是对象和信号,不变的是节奏</a></nav>
+<nav class="toc"><div class="tt">CONTENTS · 时间</div><a href="#c0"><span class="n">0:00</span>这场分享讲什么</a><a href="#c1"><span class="n">0:30</span>2026 年的领域全景</a><a href="#c2"><span class="n">2:00</span>方法:循环怎么转</a><a href="#c3"><span class="n">4:30</span>人和论文:谁做得深,先读哪篇</a><a href="#c4"><span class="n">6:30</span>Demo 1 · 达尔文哥德尔机,再看 Play 的进化逻辑</a><a href="#c5"><span class="n">10:00</span>三个场景:哪里的「验」越可信,哪里先落地</a><a href="#c6"><span class="n">18:30</span>限制与落地:先把「验」做好</a><a href="#c7"><span class="n">21:30</span>总结:千篇「一律」—— RSI 里什么在变,什么不变</a></nav>
 <main class="g">
 <div class="legend2 rv"><span class="kbox">本章要点</span> 每章关键信息 · <mark>高亮</mark> 核心结论 · 每章标题下是分享时的时间段 · 图表悬停看数值</div>
 <section class="chapter" id="c0"><div class="chead rv"><span class="big">00</span><div><span class="cn">CHAPTER 00</span><h2>这场分享讲什么</h2><span class="tchip">⏱ 0:00–0:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>一句话:<b>方法各不相同,但都可以用同一个五步框来看 —— 跑、看、提、验、定;真正难的是「验」</b>。</li><li>内容分四块:领域在做什么、谁做得深、我们自己跑出了什么、怎么落地。内部和外部都能讲,内部多留讨论时间。</li></ul></div>
@@ -318,7 +318,25 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="st"><div class="n">1</div><b>先建评估</b><p>golden set + 评估器。这是自进化最贵、也最值钱的前置资产(AgentCore Evaluations)</p></div>
 <div class="st"><div class="n">2</div><b>接上可观测</b><p>生产轨迹和在线评估分,作为进化信号(AgentCore Observability)</p></div>
 <div class="st gate"><div class="n">3</div><b>再做进化</b><p>离线进化 + 门禁 + 人工审批后发布,可回滚(AgentCore Optimization)</p></div>
-</div></div></section><section class="chapter" id="c7"><div class="chead rv"><span class="big">07</span><div><span class="cn">CHAPTER 07</span><h2>总结:变的是对象和信号,不变的是节奏</h2><span class="tchip">⏱ 21:30–25:00</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>今天看到的五个例子,五步都一样;不一样的只是「改什么」和「信号从哪来」。</li><li>三条带走:<b>① 先从最好验证的地方开始;② 每个涨分都拆成租来 / 借来 / 挣来;③ 先建评估,再谈进化</b>。</li></ul></div>
+</div></div></section><section class="chapter" id="c7"><div class="chead rv"><span class="big">07</span><div><span class="cn">CHAPTER 07</span><h2>总结:千篇「一律」—— RSI 里什么在变,什么不变</h2><span class="tchip">⏱ 21:30–25:00</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li><b>变的</b>:改什么、信号从哪来、门长什么样、规模、以及「谁做决定」。</li><li><b>不变的</b>:五步节奏;瓶颈永远在「验」;评测必须放在被进化者改不到的地方;涨分要拆账;从便宜的层开始。</li><li>「千篇一律」说的是骨架:<mark>论文和系统千差万别,但都逃不出同一个「跑 → 看 → 提 → 验 → 定」</mark>。</li><li>三条带走:<b>① 先从最好验证的地方开始;② 每个涨分都拆成租来 / 借来 / 挣来;③ 先建评估,再谈进化</b>。</li></ul></div>
+<div class="blk rv"><h3>什么在变</h3>
+<div class="cards3">
+<div class="cardx"><div class="k">变 ①</div><div class="t">改什么</div><div class="d">从 train.py,到搜索代码、harness、集群配置、整个软件;下一步是改「改进者」本身。五层金字塔从下往上走。</div></div>
+<div class="cardx"><div class="k">变 ②</div><div class="t">信号从哪来</div><div class="d">val_bpb、NDCG、吞吐和延迟、rubric 判分、验收测试…… 每个场景都要自己找一个<b>做不了假</b>的信号。</div></div>
+<div class="cardx"><div class="k">变 ③</div><div class="t">门长什么样</div><div class="d">固定指标、hold-out + typo、金丝雀 + 风险清单、泄漏审计 + 成本罚、规格门禁 + 独立判分。</div></div>
+<div class="cardx"><div class="k">变 ④</div><div class="t">规模</div><div class="d">从 1 个 agent 改 1 个文件,到 128 个 agent 一起写软件;单次评测从 5 分钟到做完一个真项目。</div></div>
+<div class="cardx"><div class="k">变 ⑤</div><div class="t">谁做决定</div><div class="d">今天目标和验收都由人定(自主分级停在 L2);研究前沿在试让 AI 也决定「改什么、怎么评」。</div></div>
+<div class="cardx"><div class="k">变 ⑥</div><div class="t">成本结构</div><div class="d">评测越来越贵,成为最大开销;所以出现了评估级联、小样本初筛、预算匹配基线。</div></div>
+</div></div>
+<div class="blk rv"><h3>什么不变</h3>
+<div class="cards3">
+<div class="cardx plan"><div class="k">不变 ①</div><div class="t">五步节奏</div><div class="d">跑 → 看 → 提 → 验 → 定。从 1965 年的设想到今天的系统,骨架没变。</div></div>
+<div class="cardx plan"><div class="k">不变 ②</div><div class="t">瓶颈在「验」</div><div class="d">想法从来不缺;能不能证明「改得是真的」,决定了能走多远。验证层级越高,能放手的越多。</div></div>
+<div class="cardx plan"><div class="k">不变 ③</div><div class="t">评测放在改不到的地方</div><div class="d">DGM 会删检测标记,R1 会偷看测试集。评估器可以进化,但必须有一个它碰不到的锚。</div></div>
+<div class="cardx plan"><div class="k">不变 ④</div><div class="t">涨分要拆账</div><div class="d">租来的(多花算力)、借来的(钻评测空子)、噪声(换随机种子),最后剩下的才是挣来的。</div></div>
+<div class="cardx plan"><div class="k">不变 ⑤</div><div class="t">从便宜的层开始</div><div class="d">先 prompt、上下文、harness,权重最后动。能回滚的先做。</div></div>
+<div class="cardx plan"><div class="k">不变 ⑥</div><div class="t">人定目标</div><div class="d">至少到今天,目标、评测集和门槛还得人来定 —— 这也是我们能做的最有价值的事。</div></div>
+</div></div>
 <div class="blk rv"><h3>五个例子放在一起</h3>
 <div class="tw"><table class="rs-t"><tr><th></th><th>改什么</th><th>信号</th><th>门(Verify)</th></tr>
 <tr><td><b>autoresearch</b></td><td>train.py</td><td>val_bpb</td><td>指标固定,只许改一个文件</td></tr>
