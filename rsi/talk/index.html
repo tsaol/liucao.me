@@ -222,7 +222,7 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="cardx"><div class="k">O · E − E′</div><div class="t">借来的分</div><div class="d">硬编码测例特征、判据关键词。离开这套评测立刻失效。<b>对策:泄漏审计 + held-out</b>。</div></div>
 <div class="cardx plan"><div class="k">G · 剩下的</div><div class="t">挣来的分</div><div class="d">分解、护栏、通用编排这类真改进。最值得追,但仍要跨模型 / 跨数据集检验。</div></div>
 </div>
-<div class="lead">真正的问题不是「分数涨没涨」,而是「<b>涨分的机制值不值得信、付出了什么成本、离开搜索集还能不能工作</b>」。</div></div></section><section class="chapter" id="c3"><div class="chead rv"><span class="big">03</span><div><span class="cn">CHAPTER 03</span><h2>人和论文:谁做得深,先读哪篇</h2><span class="tchip">⏱ 4:30–6:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>源头和理论:Schmidhuber 组(Gödel Machine → HGM)。开放式进化:Jeff Clune 组(ADAS、DGM)。</li><li>工程化:DeepMind AlphaEvolve 团队、Sakana(ShinkaEvolve,我们的 demo 用它)、Khattab 一线(DSPy → GEPA → Meta-Harness)。</li><li>国内:复旦 AHE 最接近我们做的 harness 进化;字节 Seed 的 HarnessDev 给出了最冷静的结论。</li></ul></div>
+<div class="lead">真正的问题不是「分数涨没涨」,而是「<b>涨分的机制值不值得信、付出了什么成本、离开搜索集还能不能工作</b>」。</div></div></section><section class="chapter" id="c3"><div class="chead rv"><span class="big">03</span><div><span class="cn">CHAPTER 03</span><h2>人和论文:谁做得深,先读哪篇</h2><span class="tchip">⏱ 4:30–6:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>源头和理论:Schmidhuber 组(Gödel Machine → HGM)。开放式进化:Jeff Clune 组(ADAS、DGM)。</li><li>工程化:DeepMind AlphaEvolve 团队、Sakana(ShinkaEvolve,我们的 demo 用它)、Khattab 一线(DSPy → GEPA → Meta-Harness)。</li><li>国内:复旦 AHE 最接近我们做的 harness 进化;字节 Seed 的 HarnessDev 给出了最冷静的结论。</li><li>先立坐标的三篇综述:Lilian Weng(工程)、Schmidhuber 组(形式化)、1,250 篇的 RSI 综述(验证层级决定上限)。</li></ul></div>
 <div class="blk rv"><h3>值得跟的人和团队</h3>
 <div class="cards3">
 <div class="cardx pp"><div class="t">Jürgen Schmidhuber 组</div><div class="k">KAUST · 理论源头</div><div class="d">2003 年前后提出 Gödel Machine:证明改了更好才改。2025 年的 HGM 用「全体后代的表现」选亲本;2026 年又和合作者写了 agent 自改进综述。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2510.21614">HGM</a> · <a href="https://arxiv.org/abs/2607.13104">综述</a></div></div>
@@ -238,12 +238,18 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="cardx pp"><div class="t">字节 Seed 等</div><div class="k">HarnessDev</div><div class="d">测模型能不能自己搭 harness、再自己进化。结论偏冷静:有提升但不稳定,迁移到新任务有限;自我评判几乎预测不了下一轮提升。<b>适合用来泼冷水</b>。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2609.01437">HarnessDev</a></div></div>
 <div class="cardx pp"><div class="t">字节、清华、上海 AI Lab 等 35 人</div><div class="k">The Last AI Built by Humans</div><div class="d">给 RSI 分五级自主(L1–L5),今天的云产品停在 L2,AlphaEvolve 被放在 B0。<b>拿来给自己定坐标</b>。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2609.11873">Last AI</a></div></div>
 </div></div>
+<div class="blk rv"><h3>先立坐标:三篇必读综述</h3>
+<div class="cards3">
+<div class="cardx"><div class="k">工程视角 · Lilian Weng · 2026-07</div><div class="t"><a href="https://lilianweng.github.io/posts/2026-07-04-harness/">Harness Engineering for Self-Improvement</a></div><div class="d">把「模型外的一切可执行结构」叫做 harness:上下文组装、工具、记忆、验证、停机。自改进 = 对这些东西<b>持续、可审计的编辑</b>。最适合入门。</div></div>
+<div class="cardx"><div class="k">形式化视角 · Schmidhuber 组 · 2026-07</div><div class="t"><a href="https://arxiv.org/abs/2607.13104">Self-Improvements in Modern Agentic Systems</a></div><div class="d">agent = 基础模型 θ × 脚手架 Σ(prompt / memory / tools / 控制逻辑)。自改进 = 系统<b>自己产生并提交</b>对 θ 或 Σ 的更新;目标是可控的进化。</div></div>
+<div class="cardx plan"><div class="k">风险与边界 · 2026-07 · 覆盖 1,250 篇</div><div class="t"><a href="https://arxiv.org/abs/2607.07663">RSI in AI: From Bounded Self-Refinement to Autonomous Research Loops</a></div><div class="d">两条轴定位:改什么 × 闭环到什么程度。核心论点:<mark>自改进能走多远,取决于验证的层级</mark> —— 形式验证最强,自己评自己最弱;失效都来自「用弱验证给强改动背书」。</div></div>
+</div></div>
 <div class="blk rv"><h3>读书顺序(建议)</h3>
 <ol>
-<li><b>入门(1 小时)</b>:autoresearch 的 README;Lilian Weng 的 Harness Engineering 长文(2026-07)。</li>
+<li><b>入门(1 小时)</b>:autoresearch 的 README;Lilian Weng 的 Harness Engineering 长文。</li>
 <li><b>方法核心</b>:DGM → Meta-Harness → GEPA → ACE。读完就知道第 1–4 层各自怎么进化。</li>
 <li><b>对标我们</b>:AHE(harness 怎么拆)、ShinkaEvolve(引擎怎么用)。</li>
-<li><b>定坐标</b>:Last AI(分级)、<a href="../ai4ai/">AI4AI 解读</a>(看「谁做决定」而不是「谁执行」)。</li>
+<li><b>定坐标</b>:上面两篇综述(2607.13104、2607.07663)、Last AI(分级)、<a href="../ai4ai/">AI4AI 解读</a>(看「谁做决定」而不是「谁执行」)。</li>
 <li><b>泼冷水</b>:HarnessDev;以及 Phantom Gains(未训练的模型也会因为批处理伪影「凭空变强」)。</li>
 </ol>
 <p class="dim small">作者和机构都按 arXiv 页面核对过。更全的论文表见 <a href="../demo/papers/">Papers</a> 和 <a href="../guide/">RSI 全景长文</a>。</p></div></section><section class="chapter" id="c4"><div class="chead rv"><span class="big">04</span><div><span class="cn">CHAPTER 04</span><h2>Demo 1 · 达尔文哥德尔机,再看 Play 的进化逻辑</h2><span class="tchip">⏱ 6:30–10:00</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>达尔文哥德尔机(DGM):<b>哥德尔</b>那一半是「agent 改自己」,但用实测代替证明;<b>达尔文</b>那一半是「留档案、开放式探索」,不只留第一名。</li><li><mark>去掉自改写或去掉档案,性能都马上停住</mark> —— 两半缺一不可。SWE-bench 20% → 50%。</li><li>Play 演示的是<b>达尔文那一半的进化逻辑</b>:档案、按分数加权选亲本、带着错题提改动、三套测试门控、晋升或丢弃。</li></ul></div>
