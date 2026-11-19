@@ -1011,6 +1011,7 @@
 "zh2en:,并不单独确立某个系统能达到的最高自主等级。": ", and does not on its own establish the highest autonomy level a system can reach.",
 "zh2en:,并不是现有 RSI 基准已经证实的能力。": ", and is not a capability already demonstrated by existing RSI benchmarks.",
 "zh2en:,并且刻意保留人工把关。": ", while deliberately keeping human review in place.",
+"zh2en:,并且有一套能自动发现「答错了、错在哪」的评估。": ", and an evaluation that automatically detects when an answer is wrong and where it went wrong.",
 "zh2en:,并且有一套能自动发现「答错了、错在哪」的评估。飞书先把这两件事做好,再让 agent 在上面改进,而且每一步都有人把关。": ", plus an evaluation that automatically detects when an answer is wrong and where it went wrong. Feishu got these two things right first, then let the agent improve on top of them, with human review at every step.",
 "zh2en:,并在后续任务中复用。也就是说,改变的是系统自身的状态,而不只是当前这一次的输出。": ", and reused in subsequent tasks. In other words, what changes is the system's own state, not just the output of the current run.",
 "zh2en:,并跨越多代传递。Agent-Native Research Lab 专门做这一层,整体结构见图 16。": ", and passed down across multiple generations. Agent-Native Research Lab focuses specifically on this layer; its overall structure is shown in Figure 16.",
