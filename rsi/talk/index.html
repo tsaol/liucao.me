@@ -380,18 +380,6 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="blk rv"><h3>最小的进化循环:autoresearch</h3>
 <div class="rv"><div class="sp"><div class="sp-h"><img alt="Andrej Karpathy 头像" class="sp-ava" src="img/karpathy.jpg"/><div><div class="sp-n">Andrej Karpathy <a href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a> <span class="sp-badge">★ 100.3k stars</span></div><div class="sp-q">“an AI agent edits train.py, trains for 5 minutes, keeps what lowers val_bpb — forever”</div></div></div><div class="sp-g"><figure><img alt="autoresearch 的循环:想法 → 改 train.py → git commit → 训 5 分钟 → 评估 val_bpb → 变低就 KEEP,否则 DISCARD(git reset),永远循环" loading="lazy" src="img/autoresearch-loop.png"/></figure><div class="sp-r"><figure><img alt="autoresearch 进度图:83 个实验,保留 15 个改进,val_bpb 单调下降" loading="lazy" src="img/autoresearch-progress.png"/><figcaption>83 个实验 · 保留 15 个改进 · val_bpb 单调下降</figcaption></figure><div class="sp-p"><b>循环即全部</b><span>想法 → 改 train.py → git commit → 训 5 分钟 → 看 val_bpb → KEEP / DISCARD(git reset)</span></div><div class="sp-p"><b>No human</b><span>约每小时 12 个实验 · 睡一觉约 100 个 · 从不停下来问人</span></div><div class="sp-p"><b>护栏即指标</b><span>val_bpb 固定 + 只许改一个文件,作弊不了</span></div></div></div><div class="sp-src">图:左为循环示意(依据仓库说明整理),右为仓库自带的 progress.png。仓库 README 标注 MIT License;星标数为 2026-11-19 的数字。</div></div></div>
 <div class="loop rv"><div class="lpc">autoresearch · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">训 5 分钟</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">看 val_bpb</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt">改 train.py(只许改这一个文件)</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">val_bpb 降没降 —— 指标固定,作弊不了</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">git commit 或 git reset</div></div></div></div>
-<h4 class="sub4">三个文件,三种角色</h4>
-<div class="cards3">
-<div class="cardx"><div class="k">prepare.py · 谁都不改</div><div class="t">数据、分词器、评测</div><div class="d">下载训练数据、训练 BPE 分词器、提供评测代码。<mark>评测放在 agent 改不到的地方</mark> —— 后面每个系统都要守这一条。</div></div>
-<div class="cardx"><div class="k">train.py · agent 改</div><div class="t">整个 GPT 训练</div><div class="d">模型结构、优化器(Muon + AdamW)、超参数、batch size 都能改,但只能改这一个文件。每次固定训练 <b>5 分钟</b>(和硬件无关),<mark>算力一样,比较才公平</mark> —— 这就是后面「预算匹配基线」最朴素的样子。</div></div>
-<div class="cardx plan"><div class="k">program.md · 人改</div><div class="t">给 agent 的指令</div><div class="d">相当于一份很轻的 skill。<mark>人管方向,agent 管执行</mark>:人改的是指令,不是代码。</div></div>
-</div>
-<p class="dim small">据 <a href="https://github.com/karpathy/autoresearch">karpathy/autoresearch</a> README:在单张 NVIDIA GPU(作者在 H100 上测过)上训练一个小型但真实的 GPT 语言模型。</p>
-<p class="dim small"><b>val_bpb</b>(validation bits per byte):模型在没见过的验证集上,平均预测 1 个字节要多少比特,越低越好;可以理解成「压缩率」—— 越懂语言,越能把没见过的文字压得越小。按字节算,和分词方式无关,改词表也刷不了分。图上从约 0.998 降到约 0.977。</p>
-<div class="cards2">
-<div class="cardx"><div class="k">它证明了什么</div><div class="t">只要验证能自动化,人就能退到循环外面</div><div class="d">一个晚上跑约 100 个实验,从不停下来问人;83 个实验留下 15 个改进,靠的是「指标固定、只许改一个文件」这条作弊不了的护栏。和上一页的斯曼森正好相反:那里每一步都要人。GitHub 星标超过 10 万,说明这个想法很受关注。</div></div>
-<div class="cardx plan"><div class="k">它缺什么,引出后面哪一节</div><div class="t">三个局限 = 后面三个答案</div><div class="d"><b>只留一条线、没有档案</b>:看着差的分支全丢了 → DGM 的档案和开放式探索。<br/><b>改的是训练脚本,不是改进者自己</b> → DGM 的「改自己」(哥德尔那一半)。<br/><b>门只看一个数</b>:噪声也可能被当成进步 → 后面的「涨分拆账」和先测 null 分布。</div></div>
-</div>
 </div>
 <div class="blk rv"><h3>下一步:达尔文哥德尔机(DGM)—— 先从达尔文讲起</h3>
 <p>autoresearch 只留一条线:变好就留,变差就撤。DGM 借的是<b>达尔文进化论</b>的做法 —— 先把几个词对上,后面就好懂了。</p>
