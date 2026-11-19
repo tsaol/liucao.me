@@ -434,26 +434,15 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 </div>
 </section><section class="chapter" id="c3"><div class="chead rv"><span class="big">06</span><div><span class="cn">CHAPTER 06</span><h2>云厂商现状:三家都在做「agent 自动变好」</h2><span class="tchip">⏱ 8:30–10:00</span></div></div>
 <div class="eyebrow2" style="margin:10px 0 -6px"><a href="../landscape/#cloud">RSI 全景 · 三家云厂商</a> · 截至 2026-11-15</div>
-<div class="slide rv"><div class="sk">云厂商 · 1 / 2</div>
+<div class="slide rv"><div class="sk">云厂商</div>
 <h3 class="st">三家都把「agent 自动变好」<span class="hl">做成了产品</span></h3>
 <div class="cl3">
 <div class="clv g"><div class="clk">Google Cloud</div><div class="clt">AlphaEvolve(已 GA)</div><p>给种子算法和打分函数,Gemini 不断变异、评测、留下更好的版本;官方教程还用它自动改 agent 的 skill。</p><div class="clr"><b>怎么验</b>和基线同跑看差值,再在没见过的任务上复查</div></div>
 <div class="clv m"><div class="clk">Microsoft Azure</div><div class="clt">Foundry Agent Optimizer</div><p>评测基线 → 按失败生成候选 → 同一批任务重评 → 排名 → 一条命令上线;能改指令、skill 和模型选择。</p><div class="clr"><b>怎么验</b>留出回归集 + 工程师审 PR + 灰度上线</div></div>
 <div class="clv a"><div class="clk">AWS</div><div class="clt">AgentCore optimization + Evaluations</div><p>从生产轨迹里找静默失败,自动给出 system prompt 和工具描述的改法;配套内置评估器打分。</p><div class="clr"><b>怎么验</b>先离线批量评测,再线上 A/B,赢了才上线</div></div>
 </div>
-<p class="sb2" style="margin-top:16px">共同点:都停在「人定目标和打分,AI 选改法」这一级(自主分级的 L2)。</p>
+<p class="sb2" style="margin-top:16px">共同点:都停在「人定目标和打分,AI 选改法」这一级 —— 按 <a href="../paper/lastai/#s3">The Last AI Built by Humans</a> 的 B0–L5 自主分级,是 <b>L2(改进策略交给 AI)</b>。这是我们的对照判断,不是论文对这三款产品的定级。</p>
 <div class="sf">来源:<a href="../landscape/#cloud">RSI 全景 ③</a>(各家官方发布、文档和教程)</div></div>
-<div class="slide rv"><div class="sk">云厂商 · 2 / 2</div>
-<h3 class="st">真正的差别:<span class="hl">有没有「算法发现」引擎</span>,研究和产品接得顺不顺</h3>
-<div class="tw"><table class="rs-t"><tr><th></th><th>Google Cloud</th><th>Microsoft Azure</th><th>AWS</th></tr>
-<tr><td><b>自动改 prompt / skill</b></td><td>AlphaEvolve 改 skill(教程)</td><td>Agent Optimizer</td><td>AgentCore optimization</td></tr>
-<tr><td><b>自动改代码 / 算法</b></td><td><b>AlphaEvolve 托管服务</b></td><td>没有托管服务</td><td>没有托管服务;开源引擎 + Bedrock 自建</td></tr>
-<tr><td><b>大规模评测算力</b></td><td>Cloud Batch 扇出</td><td>—</td><td>AgentCore Runtime;Batch / EC2</td></tr>
-<tr><td><b>RSI 创业公司</b></td><td>Mirendil(1 亿美元+);GV 领投 Recursive</td><td>—</td><td><b>Recursive(4.1 亿美元)</b></td></tr>
-<tr><td><b>自研前沿研究</b></td><td>DeepMind:AlphaEvolve、SwarmEvolve</td><td>研究院论文多,和产品没看到直接连接</td><td>声量小</td></tr>
-</table></div>
-<p class="dim small">「—」表示公开资料里没找到,不代表一定没有。</p>
-<div class="sf">来源:<a href="../landscape/#cloud">RSI 全景 ③</a> · 资本视角见 <a href="../capital/">跟着算力的钱走</a></div></div>
 </section><section class="chapter" id="c5"><div class="chead rv"><span class="big">07</span><div><span class="cn">CHAPTER 07</span><h2>两个场景:哪里的「验」越可信,哪里先落地</h2><span class="tchip">⏱ 10:00–16:00</span></div></div>
 <div class="blk rv"><h3>先看全貌:两个场景</h3>
 <div class="scs rv">

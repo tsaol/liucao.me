@@ -434,26 +434,15 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 </div>
 </section><section class="chapter" id="c3"><div class="chead rv"><span class="big">06</span><div><span class="cn">CHAPTER 06</span><h2> Cloud provider status: all three are building “agents that improve automatically”</h2><span class="tchip">⏱ 8:30–10:00</span></div></div>
 <div class="eyebrow2" style="margin:10px 0 -6px"><a href="../landscape/#cloud">RSI landscape · Three cloud providers</a> · As of 2026-11-15</div>
-<div class="slide rv"><div class="sk">Cloud providers · 1 / 2</div>
+<div class="slide rv"><div class="sk">Cloud providers</div>
 <h3 class="st">All three have turned “agents that improve on their own”<span class="hl">into products</span></h3>
 <div class="cl3">
 <div class="clv g"><div class="clk">Google Cloud</div><div class="clt"> AlphaEvolve (GA)</div><p>Give it a seed algorithm and a scoring function; Gemini repeatedly mutates, evaluates, and keeps the better versions. The official tutorial also uses it to automatically improve agent skills.</p><div class="clr"><b>How it's verified</b> Run alongside the baseline and compare the delta, then recheck on unseen tasks</div></div>
 <div class="clv m"><div class="clk">Microsoft Azure</div><div class="clt">Foundry Agent Optimizer</div><p> Evaluate the baseline → generate candidates from failures → re-evaluate on the same tasks → rank → ship with one command; can change instructions, skills, and model choice.</p><div class="clr"><b>How it's verified</b> Held-out regression set + engineer PR review + staged rollout</div></div>
 <div class="clv a"><div class="clk">AWS</div><div class="clt">AgentCore optimization + Evaluations</div><p> Finds silent failures in production traces and automatically suggests changes to system prompts and tool descriptions; built-in evaluators score the results.</p><div class="clr"><b>How it's verified</b> Batch-evaluate offline first, then A/B test online; ship only if it wins</div></div>
 </div>
-<p class="sb2" style="margin-top:16px">Common ground: all stop at the “humans set goals and scoring, AI picks the changes” level (L2 on the autonomy scale).</p>
+<p class="sb2" style="margin-top:16px">What they have in common: all stop at the level of “humans set the goals and scoring, AI chooses the changes”. According to <a href="../paper/lastai/#s3">The Last AI Built by Humans</a> 's B0–L5 autonomy levels, this is <b>L2 (improvement strategy delegated to AI)</b>. This is our own comparative assessment, not the paper's rating of these three products.</p>
 <div class="sf">Source:<a href="../landscape/#cloud">RSI landscape ③</a>(official announcements, docs, and tutorials from each vendor)</div></div>
-<div class="slide rv"><div class="sk">Cloud providers · 2 / 2</div>
-<h3 class="st">The real difference:<span class="hl">Has an “algorithm discovery” engine?</span>, and how well research connects to products</h3>
-<div class="tw"><table class="rs-t"><tr><th></th><th>Google Cloud</th><th>Microsoft Azure</th><th>AWS</th></tr>
-<tr><td><b>Automatic prompt / skill tuning</b></td><td> AlphaEvolve improving skills (tutorial)</td><td>Agent Optimizer</td><td>AgentCore optimization</td></tr>
-<tr><td><b>Automatically modifying code / algorithms</b></td><td><b> AlphaEvolve managed service</b></td><td> No managed service</td><td> No managed service; build your own with open-source engines + Bedrock</td></tr>
-<tr><td><b>Large-scale evaluation compute</b></td><td> Cloud Batch fan-out</td><td>—</td><td>AgentCore Runtime;Batch / EC2</td></tr>
-<tr><td><b>RSI startups</b></td><td> Mirendil ($100M+); GV leads Recursive round</td><td>—</td><td><b>Recursive ($410M)</b></td></tr>
-<tr><td><b>In-house frontier research</b></td><td> DeepMind: AlphaEvolve, SwarmEvolve</td><td> Many research papers, but no visible direct link to products</td><td> Low profile</td></tr>
-</table></div>
-<p class="dim small">“—” means nothing was found in public sources, not that it definitely doesn't exist.</p>
-<div class="sf">Source:<a href="../landscape/#cloud">RSI landscape ③</a> · For the investment perspective, see <a href="../capital/">Follow the compute money</a></div></div>
 </section><section class="chapter" id="c5"><div class="chead rv"><span class="big">07</span><div><span class="cn">CHAPTER 07</span><h2> Two scenarios: the more trustworthy the "verify" step, the sooner it lands</h2><span class="tchip">⏱ 10:00–16:00</span></div></div>
 <div class="blk rv"><h3>The big picture first: two scenarios</h3>
 <div class="scs rv">
