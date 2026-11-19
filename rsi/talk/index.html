@@ -177,6 +177,14 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 .rv.in figure.ch .dot,figure.ch.rv.in .dot{animation:pop .6s ease both}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 .charts2>figure.ch,.charts2>.cardx{min-width:0}
+.case5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:.6em 0 .4em}
+.c5{position:relative;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px}
+.c5.gate{border-color:rgba(255,176,32,.65);box-shadow:0 0 22px rgba(255,176,32,.12) inset}
+.c5:not(:last-child)::after{content:"→";position:absolute;right:-10px;top:14px;color:var(--amb);font-size:14px}
+.c5n{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--amb),var(--amb2));color:#1a0d00;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px;font-family:var(--mono);margin-bottom:6px}
+.c5>b{display:block;color:#fff;font-size:15px;margin-bottom:4px}.c5 p b{color:#fff}.c5 p{font-size:13.5px;line-height:1.6;margin:0}
+@media (max-width:1000px){.case5{grid-template-columns:repeat(2,minmax(0,1fr))}.c5::after{display:none}}
+@media (max-width:560px){.case5{grid-template-columns:minmax(0,1fr)}}
 .ag{display:flex;flex-direction:column;gap:8px;margin:.4em 0 .6em}
 .agi{display:grid;grid-template-columns:44px minmax(0,1fr) 110px;align-items:center;gap:12px;border:1px solid var(--line)!important;border-radius:12px;padding:10px 14px;background:linear-gradient(180deg,var(--bg3),var(--bg2));color:var(--ink)!important;transition:border-color .2s,transform .2s}
 .agi:hover{border-color:rgba(255,176,32,.6)!important;transform:translateX(3px)}
@@ -450,9 +458,23 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="st"><div class="n">1</div><b>先建评估</b><p>golden set + 评估器。这是自进化最贵、也最值钱的前置资产(AgentCore Evaluations)</p></div>
 <div class="st"><div class="n">2</div><b>接上可观测</b><p>生产轨迹和在线评估分,作为进化信号(AgentCore Observability)</p></div>
 <div class="st gate"><div class="n">3</div><b>再做进化</b><p>离线进化 + 门禁 + 人工审批后发布,可回滚(AgentCore Optimization)</p></div>
-</div></div><div class="blk rv"><h3>一个真实的例子:飞书先建数据底座</h3>
-<p>上面的顺序不是纸上谈兵。飞书在企业协作场景里做 RSI,第一步不是让 agent 改自己,而是<b>先把数据和评估做可靠</b>,并且刻意保留人工把关。</p>
+</div></div><div class="blk rv"><h3>案例:飞书 —— 先把数据底座和评估做可靠,再谈自我改进</h3>
+<div class="lead"><b>一句话</b>:agent 要越用越好,前提是每天产生的文档、消息、会议记录被整理成<b>可靠、带时间的知识</b>,并且有一套能自动发现「答错了、错在哪」的评估。飞书先把这两件事做好,再让 agent 在上面改进,而且每一步都有人把关。</div>
+<h4 class="sub4">举个例子(示意):员工问「上周和某客户的会上,交付时间定的是哪天?」</h4>
+<div class="case5 rv">
+<div class="c5"><div class="c5n">1</div><b>数据从哪来</b><p>会议纪要、群聊、文档里都提过交付时间,而且<b>改过两次</b>:先说 10 号,后来改成 15 号,最后定 18 号。</p></div>
+<div class="c5"><div class="c5n">2</div><b>整理成知识图谱</b><p>把「客户 A」「交付」「会议」「谁说的」「哪天说的」连成一张关系网,每条信息都带<b>时间</b>。</p></div>
+<div class="c5"><div class="c5n">3</div><b>agent 回答</b><p>旧做法(RAG)搜到几段相似的文字拼答案,可能答成 10 号;用图谱能顺着时间找到<b>最后一次确认的 18 号</b>。</p></div>
+<div class="c5 gate"><div class="c5n">4</div><b>自动评估 + 找原因</b><p>评估器发现答错的样本,并归类原因:<b>时间错乱</b>、问题被改写走样、来源质量差……每一类对应一个改法。</p></div>
+<div class="c5"><div class="c5n">5</div><b>修正后回流</b><p>例如规定「时间敏感的问题只能用提问时间之前的信息」;修好的数据和评估标准进入下一轮,agent 下次答得更准。</p></div>
+</div>
+<p class="dim small">这个例子是按论文描述的机制编的示意,不是论文里的原始案例。</p>
 <div class="rv"><div class="sp"><div class="sp-h"><div><div class="sp-n">飞书 Lark(字节跳动) <a href="../paper/lastai/#s5">The Last AI §5.2 · 中文解读</a> <span class="sp-badge">人工把关</span></div><div class="sp-q">企业级 RSI 的前提:先有一个持续更新、质量可靠的数据底座</div></div></div><div class="sp-g stack"><figure><a class="sp-z" href="img/lark-loop.webp" rel="noopener" target="_blank"><img alt="飞书的数据底座循环:采集协作数据 → 整理成时间驱动的上下文图谱 → 自动评估并归因错误 → 修正后的数据和标准回流 → agent 在真实工作中变好" loading="lazy" src="img/lark-loop.webp"/></a><figcaption>五步循环:采集日常协作数据 → 整理成按时间组织的知识图谱 → 自动评估、给错误找原因 → 修正后的数据和标准回流 → agent 在真实工作里变好,新的使用记录进入下一轮。</figcaption></figure><div class="sp-r"><div class="sp-p"><b>为什么先做数据</b><span>agent 要改进自己,每一轮都得有新经验可学、有可靠的标准判断进步、有足够细的诊断知道该改哪里</span></div><div class="sp-p"><b>企业知识图谱</b><span>把文档、消息、会议里的信息连成实体、事件和时间关系;和 RAG 基线比,人工评的可用率 <b>52% → 65%</b>,自动评 47% → 56%</span></div><div class="sp-p"><b>自动质量评估</b><span>先筛掉明显不可用的结果,再做对比评测决定新版本能否上线;每个错误归类到具体原因。和人工判断约 <b>84%</b> 一致,不一致多半是它比人更严</span></div><div class="sp-p"><b>人工把关</b><span>重复的数据处理和评估交给 agent;<b>标准由人定、关键样本人审、重要改动人批</b></span></div></div></div><div class="sp-src">图:The Last AI Built by Humans(Duan et al., arXiv:2609.11873)Figure 11,CC BY-NC-ND 4.0,原图未改动。数字为公司自报的内部评估,论文没有独立复现。</div></div></div>
+<div class="cards3">
+<div class="cardx"><div class="k">结果(公司自报)</div><div class="t">可用率 52% → 65%</div><div class="d">用知识图谱替代 RAG 后,人工评定的任务可用率从 52% 升到 65%,自动评估从 47% 升到 56%;自动评估器和人工约 84% 一致。</div></div>
+<div class="cardx"><div class="k">人管什么</div><div class="t">标准、关键样本、重要改动</div><div class="d">重复的数据处理和评估交给 agent;评估标准由人定,关键样本由人审,重要改动由人批。</div></div>
+<div class="cardx plan"><div class="k">对我们的启发</div><div class="t">先做「能判对错」的底座</div><div class="d">客户想要「agent 越用越好」,第一步不是上自进化,而是把生产数据整理好、建一套能自动判对错并给出原因的评估。</div></div>
+</div>
 <div class="note">对照上面的三步:知识图谱和自动质量评估 = <b>① 先建评估</b>;真实使用记录回流 = <b>② 接上可观测</b>;agent 改进仍由人定标准、审样本、批改动 = <b>③ 再做进化,不跳级</b>。</div>
 </div>
 </section><section class="chapter" id="c7"><div class="chead rv"><span class="big">08</span><div><span class="cn">CHAPTER 08</span><h2>总结:千篇「一律」—— RSI 里什么在变,什么不变</h2><span class="tchip">⏱ 21:30–25:00</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li><b>变的</b>:改什么、信号从哪来、门长什么样、规模、以及「谁做决定」。</li><li><b>不变的</b>:五步节奏;瓶颈永远在「验」;评测必须放在被进化者改不到的地方;涨分要拆账;从便宜的层开始。</li><li>「千篇一律」说的是骨架:<mark>论文和系统千差万别,但都逃不出同一个「跑 → 看 → 提 → 验 → 定」</mark>。</li><li>三条带走:<b>① 先从最好验证的地方开始;② 每个涨分都拆成租来 / 借来 / 挣来;③ 先建评估,再谈进化</b>。</li></ul></div>
