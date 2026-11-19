@@ -150,6 +150,23 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 .rv.in figure.ch .dot,figure.ch.rv.in .dot{animation:pop .6s ease both}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 .charts2>figure.ch,.charts2>.cardx{min-width:0}
+.ar{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:.6em 0 1em}
+.arh{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+.ava{width:54px;height:54px;border-radius:50%;border:2px solid var(--amb);box-shadow:0 0 16px rgba(255,176,32,.3);flex:none}
+.arn{font-weight:700;color:#fff;font-size:16px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.arn .repo{font-family:var(--mono);font-size:12.5px;font-weight:400}
+.star{font-family:var(--mono);font-size:12px;color:#1a0d00;background:var(--amb);border-radius:999px;padding:1px 10px;font-weight:800}
+.arq{font-size:13.5px;color:var(--ink3);font-style:italic;margin-top:2px}
+.arg{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.arg .rs-img{margin:0}.arg .rs-img img{max-width:none}
+.arr{display:flex;flex-direction:column;gap:8px}
+.arr figcaption{font-size:12.5px;margin-top:4px}
+.arp{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;font-size:13.5px;border-top:1px dashed var(--line);padding-top:7px}
+.arp b{color:var(--amb)}.arp span{color:var(--ink2)}
+.arw{margin-top:12px;padding:9px 12px;border-left:3px solid var(--amb);background:rgba(255,176,32,.08);border-radius:0 10px 10px 0;font-size:14.5px;color:var(--ink)}
+.arw b{color:var(--amb)}
+.arsrc{font-size:12px;color:var(--ink3);margin-top:8px}
+@media (max-width:900px){.arg{grid-template-columns:minmax(0,1fr)}}
 .rs-img{margin:.6em 0 1.2em}.rs-img img{display:block;width:100%;max-width:880px;margin:0 auto;height:auto;border-radius:12px;background:#fff;border:1px solid var(--line)}.rs-img a{border:none}.rs-img figcaption{font-size:13.5px;color:var(--ink3);margin-top:.5em;line-height:1.65}.rs-img figcaption a{border-bottom:1px dotted rgba(76,194,255,.45)}
 .tl{border-left:2px solid var(--line);margin:.6em 0 1.2em 6px;padding-left:18px}
 .te{display:flex;gap:14px;position:relative;margin:0 0 12px}
@@ -201,12 +218,24 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 </div>
 <p><b>读法:从下往上</b>。先把便宜的层榨干,再考虑上一层;权重永远最后动。改进机制本身也可以被进化(HGM 进化「怎么选亲本」,MemEvolve 进化「记忆系统架构」),但这更需要严格的门。</p>
 <div class="note">注意:这里的「第 1–5 层」是<b>改什么</b>。网站上 <a href="../landscape/">RSI 全景</a> 的 L1–L5 是另一套东西(AI 的<b>自主程度</b>,来自 Last-AI 论文),两者不要混。</div></div></section><section class="chapter" id="c2"><div class="chead rv"><span class="big">02</span><div><span class="cn">CHAPTER 02</span><h2>方法:循环怎么转</h2><span class="tchip">⏱ 2:00–4:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>autoresearch 是最小的循环:改 train.py → 训 5 分钟 → 变好就 commit,否则 reset。</li><li>Meta-Harness 把全部历史(约 1000 万 token/轮)喂给提案 agent;DGM 放到 demo 前细讲。</li><li><mark>涨的分要拆三块:租来的(多花算力)、借来的(钻评测空子)、挣来的</mark>。只有挣来的才值得上线。</li></ul></div>
-<div class="blk rv"><h3>最小的循环:autoresearch(Karpathy)</h3>
-<p>一个 AI agent 反复改 train.py,每次训 5 分钟,val_bpb 降了就 git commit,否则 git reset。83 个实验,留下 15 个改进。</p>
-<figure class="rs-img rv"><img alt="autoresearch 的循环:提出想法 → 改 train.py → git commit → 训 5 分钟 → 评估 val_bpb → 变低就 KEEP,否则 DISCARD(git reset),永远循环" loading="lazy" src="img/autoresearch-loop.png"/>
-<figcaption>autoresearch 的完整循环:想法 → 改 train.py → git commit → 训 5 分钟 → 读 val_bpb → <b>变低就 KEEP</b>(推进分支),<b>否则 DISCARD</b>(git reset);崩了先快速修一次,修不好就跳过这个想法。约每小时 12 个实验,睡一觉约 100 个,从不停下来问人。<br/>依据 <a href="https://github.com/karpathy/autoresearch">karpathy/autoresearch</a>(MIT License)整理。</figcaption></figure>
+<div class="blk rv"><h3>最小的进化循环:autoresearch</h3>
+<div class="ar rv">
+<div class="arh"><img alt="Andrej Karpathy 的 GitHub 头像" class="ava" src="img/karpathy.jpg"/>
+<div class="arm"><div class="arn">Andrej Karpathy <a class="repo" href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a> <span class="star">★ 100.3k stars</span></div>
+<div class="arq">“an AI agent edits train.py, trains for 5 minutes, keeps what lowers val_bpb — forever”</div></div></div>
+<div class="arg">
+<figure class="rs-img"><img alt="autoresearch 的循环:想法 → 改 train.py → git commit → 训 5 分钟 → 评估 val_bpb → 变低就 KEEP,否则 DISCARD(git reset),永远循环" loading="lazy" src="img/autoresearch-loop.png"/></figure>
+<div class="arr">
+<figure class="rs-img"><img alt="autoresearch 进度图:83 个实验,保留 15 个改进,val_bpb 单调下降" loading="lazy" src="img/autoresearch-progress.png"/><figcaption>83 个实验 · 保留 15 个改进 · val_bpb 单调下降</figcaption></figure>
+<div class="arp"><b>循环即全部</b><span>想法 → 改 train.py → git commit → 训 5 分钟 → 看 val_bpb → KEEP / DISCARD(git reset)</span></div>
+<div class="arp"><b>No human</b><span>约每小时 12 个实验 · 睡一觉约 100 个 · 从不停下来问人</span></div>
+<div class="arp"><b>护栏即指标</b><span>val_bpb 固定 + 只许改一个文件,作弊不了</span></div>
+</div></div>
+<div class="arw"><b>为什么值得看:</b>改一下 → 测一下 → 好就留、不好就撤。这就是所有自进化系统的最小骨架;本次分享标题「从 AutoResearch 到 Agent 自进化」就出自这里。</div>
+<div class="arsrc">图:左为循环示意(依据仓库说明整理),右为仓库自带的 progress.png。仓库 README 标注 MIT License;星标数为 2026-11-19 的数字。</div>
+</div>
 <div class="loop rv"><div class="lpc">autoresearch · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">训 5 分钟</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">看 val_bpb</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt">改 train.py(只许改这一个文件)</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">val_bpb 降没降 —— 指标固定,作弊不了</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">git commit 或 git reset</div></div></div></div>
-<p class="dim small">值得学的三点:实验单元压到 5 分钟(评估快,进化才快);用 git 管 keep / discard;从不停下来问人,护栏全靠一个作弊不了的指标。</p></div>
+</div>
 <div class="blk rv"><h3>方法谱系:从 DGM 到 Meta-Harness</h3>
 <div class="cards2">
 <div class="cardx"><div class="k">2025-05 · <a href="https://arxiv.org/abs/2505.22954">DGM</a></div><div class="t">Darwin Gödel Machine</div><div class="d">agent 读自己的代码、改自己,新版本放回档案,不淘汰旧分支。<b>这是 Play demo 背后的进化逻辑,在第 04 章 demo 前细讲</b>。</div></div>

@@ -150,6 +150,23 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 .rv.in figure.ch .dot,figure.ch.rv.in .dot{animation:pop .6s ease both}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 .charts2>figure.ch,.charts2>.cardx{min-width:0}
+.ar{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:.6em 0 1em}
+.arh{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+.ava{width:54px;height:54px;border-radius:50%;border:2px solid var(--amb);box-shadow:0 0 16px rgba(255,176,32,.3);flex:none}
+.arn{font-weight:700;color:#fff;font-size:16px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.arn .repo{font-family:var(--mono);font-size:12.5px;font-weight:400}
+.star{font-family:var(--mono);font-size:12px;color:#1a0d00;background:var(--amb);border-radius:999px;padding:1px 10px;font-weight:800}
+.arq{font-size:13.5px;color:var(--ink3);font-style:italic;margin-top:2px}
+.arg{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.arg .rs-img{margin:0}.arg .rs-img img{max-width:none}
+.arr{display:flex;flex-direction:column;gap:8px}
+.arr figcaption{font-size:12.5px;margin-top:4px}
+.arp{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;font-size:13.5px;border-top:1px dashed var(--line);padding-top:7px}
+.arp b{color:var(--amb)}.arp span{color:var(--ink2)}
+.arw{margin-top:12px;padding:9px 12px;border-left:3px solid var(--amb);background:rgba(255,176,32,.08);border-radius:0 10px 10px 0;font-size:14.5px;color:var(--ink)}
+.arw b{color:var(--amb)}
+.arsrc{font-size:12px;color:var(--ink3);margin-top:8px}
+@media (max-width:900px){.arg{grid-template-columns:minmax(0,1fr)}}
 .rs-img{margin:.6em 0 1.2em}.rs-img img{display:block;width:100%;max-width:880px;margin:0 auto;height:auto;border-radius:12px;background:#fff;border:1px solid var(--line)}.rs-img a{border:none}.rs-img figcaption{font-size:13.5px;color:var(--ink3);margin-top:.5em;line-height:1.65}.rs-img figcaption a{border-bottom:1px dotted rgba(76,194,255,.45)}
 .tl{border-left:2px solid var(--line);margin:.6em 0 1.2em 6px;padding-left:18px}
 .te{display:flex;gap:14px;position:relative;margin:0 0 12px}
@@ -201,12 +218,24 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 </div>
 <p><b>How to read: from the bottom up</b>. Squeeze the cheap layers dry before moving up a layer; weights always come last. The improvement mechanism itself can also be evolved (HGM evolves "how to pick parents," MemEvolve evolves "memory system architecture"), but that calls for even stricter gates.</p>
 <div class="note">Note: the "Layers 1–5" here are<b> What to change</b>. On the website <a href="../landscape/">RSI Landscape</a> 's L1–L5 are a different framework (AI's<b> Autonomy level</b>, from the Last-AI paper); don't mix the two up.</div></div></section><section class="chapter" id="c2"><div class="chead rv"><span class="big">02</span><div><span class="cn">CHAPTER 02</span><h2> Method: how the loop runs</h2><span class="tchip">⏱ 2:00–4:30</span></div></div><div class="key rv"><span class="kl"> Chapter highlights</span><ul><li> autoresearch is the minimal loop: edit train.py → train for 5 minutes → commit if it improves, otherwise reset.</li><li>Meta-Harness feeds the entire history (about 10 million tokens per round) to the proposer agent; DGM is covered in detail before the demo.</li><li><mark>Split the gain into three parts: rented (more compute), borrowed (exploiting eval loopholes), and earned</mark>. Only earned gains are worth shipping.</li></ul></div>
-<div class="blk rv"><h3>The smallest loop: autoresearch (Karpathy)</h3>
-<p>An AI agent repeatedly edits train.py and trains for 5 minutes each time. If val_bpb drops, it runs git commit; otherwise, git reset. 83 experiments, 15 improvements kept.</p>
-<figure class="rs-img rv"><img alt="The autoresearch loop: propose an idea → edit train.py → git commit → train for 5 min → evaluate val_bpb → KEEP if lower, otherwise DISCARD (git reset), and loop forever" loading="lazy" src="../../../rsi/talk/img/autoresearch-loop.png"/>
-<figcaption>The full autoresearch loop: idea → edit train.py → git commit → train for 5 min → read val_bpb → <b>KEEP if lower</b>(advance the branch),<b>otherwise DISCARD</b>(git reset); if it crashes, try one quick fix, and if that fails, skip the idea. About 12 experiments per hour, about 100 overnight, and it never stops to ask a human.<br/>Based on <a href="https://github.com/karpathy/autoresearch">karpathy/autoresearch</a>(MIT License).</figcaption></figure>
+<div class="blk rv"><h3>The minimal evolution loop: autoresearch</h3>
+<div class="ar rv">
+<div class="arh"><img alt="Andrej Karpathy's GitHub avatar" class="ava" src="../../../rsi/talk/img/karpathy.jpg"/>
+<div class="arm"><div class="arn">Andrej Karpathy <a class="repo" href="https://github.com/karpathy/autoresearch">github.com/karpathy/autoresearch</a> <span class="star">★ 100.3k stars</span></div>
+<div class="arq">“an AI agent edits train.py, trains for 5 minutes, keeps what lowers val_bpb — forever”</div></div></div>
+<div class="arg">
+<figure class="rs-img"><img alt="The autoresearch loop: idea → edit train.py → git commit → train for 5 minutes → evaluate val_bpb → KEEP if lower, otherwise DISCARD (git reset), loop forever" loading="lazy" src="../../../rsi/talk/img/autoresearch-loop.png"/></figure>
+<div class="arr">
+<figure class="rs-img"><img alt="autoresearch progress chart: 83 experiments, 15 improvements kept, val_bpb decreases monotonically" loading="lazy" src="../../../rsi/talk/img/autoresearch-progress.png"/><figcaption>83 experiments · 15 improvements kept · val_bpb decreases monotonically</figcaption></figure>
+<div class="arp"><b>The loop is everything</b><span> Idea → edit train.py → git commit → train for 5 minutes → check val_bpb → KEEP / DISCARD (git reset)</span></div>
+<div class="arp"><b>No human</b><span> About 12 experiments per hour · about 100 overnight · never stops to ask a human</span></div>
+<div class="arp"><b>The metric is the guardrail</b><span> Fixed val_bpb + only one file can be edited, so no cheating</span></div>
+</div></div>
+<div class="arw"><b>Why it's worth a look:</b>Make a change → test it → keep it if it's better, revert if not. This is the minimal skeleton of every self-improving system, and it's where the title of this talk, "From AutoResearch to Agent Self-Improvement," comes from.</div>
+<div class="arsrc">Figure: left, a diagram of the loop (based on the repo's documentation); right, the repo's own progress.png. The repo README lists the MIT License; star count as of 2026-11-19.</div>
+</div>
 <div class="loop rv"><div class="lpc">autoresearch · the five steps</div><div class="lps"><div class="lp"><div class="lpv">Run<i> Run</i></div><div class="lpt"> Train for 5 minutes</div></div><div class="lp"><div class="lpv">Observe<i> See</i></div><div class="lpt"> Watch val_bpb</div></div><div class="lp"><div class="lpv">Propose<i> Propose</i></div><div class="lpt"> Edit train.py (the only file allowed to change)</div></div><div class="lp lv"><div class="lpv">Verify<i> Verify</i></div><div class="lpt"> Did val_bpb go down? The metric is fixed, so there's no cheating</div></div><div class="lp"><div class="lpv">Commit<i> Commit</i></div><div class="lpt"> git commit or git reset</div></div></div></div>
-<p class="dim small">Three things worth learning: shrink the experiment unit to 5 minutes (fast evaluation means fast evolution); use git to manage keep / discard; never stop to ask a human, with a metric that can't be gamed as the only guardrail.</p></div>
+</div>
 <div class="blk rv"><h3>Method lineage: from DGM to Meta-Harness</h3>
 <div class="cards2">
 <div class="cardx"><div class="k">2025-05 · <a href="https://arxiv.org/abs/2505.22954">DGM</a></div><div class="t">Darwin Gödel Machine</div><div class="d"> The agent reads its own code, modifies itself, and puts the new version back into the archive without discarding old branches.<b>This is the evolutionary logic behind the Play demo, covered in detail before the demo in Chapter 04</b>.</div></div>
