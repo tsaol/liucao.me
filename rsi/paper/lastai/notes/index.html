@@ -1,0 +1,3668 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>逐章精读 · The Last AI Built by Humans · 论文解读</title>
+<link href="../../../assets/style.css" rel="stylesheet"/>
+<style>
+:root{--rs-bg:#0B0D12;--rs-bg2:#12151d;--rs-ink:#E6EAF2;--rs-dim:#8A94A6;--rs-cold:#4CC2FF;--rs-warm:#FFB020;--rs-ok:#38D39F;--rs-line:#232a36;
+--rs-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+--rs-mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+body{background:var(--rs-bg)}
+main.rs-wrap{color:var(--rs-ink);font-family:var(--rs-sans);font-size:17px;line-height:1.8;max-width:980px;margin:0 auto;padding:4vh 5vw 12vh}
+main.rs-wrap h1{font-size:36px;line-height:1.25;margin:0 0 .3em}
+main.rs-wrap h2{font-size:24px;margin:0 0 .9em;color:var(--rs-cold)}
+main.rs-wrap h3{font-size:18px;margin:1.6em 0 .6em;color:var(--rs-ink)}
+main.rs-wrap section{border-top:1px solid var(--rs-line);padding:2.4em 0;scroll-margin-top:56px}
+main.rs-wrap section.head{border-top:none;padding-top:0}
+main.rs-wrap p{margin:0 0 1em}
+main.rs-wrap b{color:var(--rs-warm);font-weight:600}
+main.rs-wrap a{color:var(--rs-cold);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.5)}
+main.rs-wrap a:hover{border-bottom-style:solid}
+main.rs-wrap .dim{color:var(--rs-dim)}
+main.rs-wrap .small{font-size:14px}
+main.rs-wrap code{font-family:var(--rs-mono);font-size:.86em;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:4px;padding:0 .3em}
+main.rs-wrap ul{margin:0 0 1em;padding-left:1.3em}
+main.rs-wrap li{margin:.35em 0}
+main.rs-wrap .lead{font-size:21px;line-height:1.6;padding:1em 1.2em;border-left:3px solid var(--rs-warm);background:var(--rs-bg2);border-radius:0 8px 8px 0;margin:1.2em 0}
+main.rs-wrap .note{font-size:14px;color:var(--rs-dim);background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.7em 1em;margin:1em 0}
+.rs-toc{position:sticky;top:0;z-index:5;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--rs-line);display:flex;gap:1.2em;justify-content:center;flex-wrap:wrap;padding:.55em 1em;font-size:14px}
+.rs-toc a{color:var(--rs-dim);text-decoration:none}
+.rs-toc a:hover{color:var(--rs-cold)}
+.rs-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:1.2em 0}
+.rs-card{display:block;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:1em 1.1em;color:var(--rs-ink)!important;border-bottom:1px solid var(--rs-line)!important;transition:border-color .2s}
+.rs-card:hover{border-color:var(--rs-cold)!important}
+.rs-card .k{font-size:13px;color:var(--rs-dim)}
+.rs-card .t{font-size:18px;font-weight:600;margin:.2em 0}
+.rs-card .d{font-size:14px;color:var(--rs-dim);line-height:1.6}
+.rs-q{background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:.2em 1.1em;margin:.8em 0}
+.rs-q summary{cursor:pointer;font-weight:600;padding:.7em 0;list-style:none}
+.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:var(--rs-warm)}
+.rs-q[open] summary::before{content:"− "}
+.rs-q > div{padding:0 0 .8em}
+table.rs-t{width:100%;border-collapse:collapse;font-size:15px;margin:.6em 0 1.2em}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--rs-line);padding:.55em .5em;text-align:left;vertical-align:top}
+table.rs-t th{color:var(--rs-dim);font-weight:500;font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--rs-line);border-radius:999px;padding:0 .6em;color:var(--rs-dim);margin-right:.3em;white-space:nowrap}
+.tag.top{color:var(--rs-warm);border-color:rgba(255,176,32,.5)}
+.tag.ok{color:var(--rs-ok);border-color:rgba(56,211,159,.5)}
+pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7;color:var(--rs-ink)}
+@media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
+@media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
+.rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
+    .rs-fig{margin:1em 0 1.6em}.rs-fig img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;border:1px solid var(--rs-line)}.rs-fig figcaption{font-size:13px;color:var(--rs-dim);line-height:1.65;margin-top:.6em}.rs-fig a{border-bottom:none}
+.rs-tl{border-left:2px solid var(--rs-line);margin:1em 0 1.4em;padding-left:1em}.rs-tl>div{margin:.55em 0;font-size:15px}.rs-tl .y{display:inline-block;min-width:6.5em;color:var(--rs-cold);font-family:var(--rs-mono);font-size:13px}
+main.rs-wrap a{overflow-wrap:anywhere}
+.key{background:rgba(255,176,32,.08);border:1px solid rgba(255,176,32,.35);border-left:4px solid var(--rs-warm);border-radius:0 8px 8px 0;padding:.7em 1em;margin:.2em 0 1.2em}
+.key .kl{display:inline-block;font-size:12px;font-weight:700;color:#111;background:var(--rs-warm);border-radius:4px;padding:0 .45em;margin-right:.5em}
+.key ul{margin:.4em 0 0;padding-left:1.2em}.key li{margin:.25em 0}
+main.rs-wrap mark{background:rgba(255,176,32,.22);color:var(--rs-ink);padding:0 .15em;border-radius:3px}
+.src{display:inline-block;font-family:var(--rs-mono);font-size:11.5px;color:var(--rs-cold);border:1px solid rgba(76,194,255,.4);border-radius:4px;padding:0 .35em;margin-left:.3em;vertical-align:1px;white-space:nowrap}
+.legend{font-size:13px;color:var(--rs-dim);margin:.6em 0 0}
+@media print{.key{background:#fff8ec}main.rs-wrap mark{background:#ffe9b8;color:#111}}
+</style>
+<style>main.rs-wrap table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;font-size:14.5px;margin:.6em 0 1.2em}main.rs-wrap th,main.rs-wrap td{border:1px solid var(--rs-line);padding:.45em .6em;vertical-align:top;text-align:left}main.rs-wrap th{background:var(--rs-bg2);color:var(--rs-dim)}</style></head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../../../">← RSI 资料包</a>
+<a href="../../../view/">我的判断</a>
+<a href="../../../landscape/">RSI 全景</a>
+<a href="../../../demo/play/">Play</a>
+<a href="../../../talk/">RSI 分享</a>
+<a href="../../">论文解读</a>
+<a href="../">解读</a>
+</div>
+</nav>
+<div class="rs-toc">
+<a href="#n00">摘要</a>
+<a href="#n01">第 1 章 引言</a>
+<a href="#n02">第 2 章 背景</a>
+<a href="#n03">§3.1 B0</a>
+<a href="#n04">§3.2 L1</a>
+<a href="#n05">§3.3 L2</a>
+<a href="#n06">§3.4 L3</a>
+<a href="#n07">§3.5 L4</a>
+<a href="#n08">§3.6 L5</a>
+<a href="#n09">§3.7 · 第 4 章</a>
+<a href="#n10">Theseus · 飞书</a>
+<a href="#n11">小红书 · Humanlaya</a>
+<a href="#n12">面壁 · 混元</a>
+<a href="#n13">ANRL · Frontis</a>
+<a href="#n14">第 6–7 章</a>
+<a href="#n15">附录 A</a>
+<a href="#n16">附录 B</a>
+<a href="#n17">附录 C</a>
+</div>
+<main class="rs-wrap">
+<section class="head">
+<h1>逐章精读:The Last AI Built by Humans</h1>
+<p class="dim">arXiv 2609.11873 · 79 页 · 按原文章节顺序,用中文讲清楚每一节在说什么、怎么论证、给了哪些数字。这是讲解,不是逐句翻译;<span class="src">p.N</span> 是原文页码,想看原话可以对照 PDF。整理于 2026-11-19。</p>
+<div class="note">原文:<a href="https://arxiv.org/abs/2609.11873" rel="noopener" target="_blank">arXiv 页面</a> · <a href="https://arxiv.org/pdf/2609.11873" rel="noopener" target="_blank">PDF</a>(许可 CC BY-NC-ND 4.0)。想先看结论和点评,读 <a href="../">一文读懂 RSI 自主性阶梯</a>。</div>
+</section>
+<section id="n00">
+<h2>摘要与全文结构</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li>论文主题是递归自我改进(Recursive Self-Improvement, RSI):AI 把经验和反馈变成持久的改变,既提升自身能力,也改进"以后如何改进"的过程。</li>
+<li>作者提出一条以"自主性"为主线的 RSI 路线图:从基线 B0 开始,经过 L1 到 L5 共五个自主层级,最高一级是改进"改进机制本身"的元改进(meta-improvement)。</li>
+<li>全文分四大块:先用一个指标指出现有大模型的问题,再按自主层级梳理技术,接着按应用场景比较,最后用多家企业的实践连接研究与落地,并总结挑战。</li>
+</ul>
+<hr/>
+<h3>一、题目、作者与发表信息<span class="src">p.1</span></h3>
+<p><strong>题目</strong>是 "The Last AI Built by Humans: Toward Genuine Recursive Self-Improvement",意思是"人类构建的最后一个 AI:迈向真正的递归自我改进"。</p>
+<ul>
+<li>题目里的"最后一个由人类构建的 AI"是一个修辞判断:一旦 AI 能真正地递归改进自己,后续版本就不再需要人来造。</li>
+<li>"Genuine(真正的)"一词说明,作者认为现有很多所谓的"自我改进"还算不上真正的 RSI。</li>
+</ul>
+<p><strong>发表信息</strong>:</p>
+<ul>
+<li>这是 arXiv 预印本,编号 2609.11873v3,即第 3 版。</li>
+<li>分类为 cs.LG(机器学习),日期标注为 2026 年 9 月 22 日。</li>
+</ul>
+<p><strong>作者与机构</strong>:</p>
+<ul>
+<li>作者共三十多位。前五位(Yi Duan、Ying Liu、Zirui Tang、Haodong Chen、Jun Zhou)标为同等贡献,通讯作者是 Xuanhe Zhou。</li>
+<li>机构共 10 个,学术界与产业界混合:</li>
+<li>学术与研究机构:上海交通大学、清华大学、上海人工智能实验室(Shanghai AI Lab)。</li>
+<li>企业与实验室:Theseus Labs、字节跳动(ByteDance)、面壁智能(ModelBest)、小红书超级智能团队、Humanlaya、Agent-Native Research Lab、Frontis.AI。</li>
+<li>其中好几家机构在第 5 章各有一节"企业实践",后文会提到。这也解释了为什么论文非常强调产业证据。</li>
+</ul>
+<hr/>
+<h3>二、摘要:论文想做什么<span class="src">p.1</span></h3>
+<p><strong>RSI 的定义</strong></p>
+<p>摘要第一句给出定义:RSI 让 AI 系统把经验和反馈转化为"持久的改变"(persistent changes)。这种改变同时提升两样东西:</p>
+<ol>
+<li>系统当前的能力;</li>
+<li>未来改进的过程本身。</li>
+</ol>
+<p>通俗地说:普通的"自我改进"只是这次做得比上次好;RSI 还要求 AI 越来越会改进自己,改进能力本身也在复利增长。这正是"递归"二字的含义。</p>
+<p><strong>论文的四步论证</strong></p>
+<p>摘要按顺序交代了全文要做的四件事:</p>
+<ol>
+<li><strong>指出问题</strong>:先用一个叫"Headroom-Closed Index(HCI)"的指标,揭示现有大语言模型(LLM)存在的问题。</li>
+<li>字面意思大致是"提升空间被填补的程度指数",但摘要没有给出定义。</li>
+<li>目录里第 2.1 节标题是"现代基础模型的能力进步不均衡",HCI 的具体用法应在正文展开。</li>
+<li><strong>提出概念和路线图</strong>:介绍 RSI 的概念及发展路线,依次是:</li>
+<li>改进执行的自主(improvement-execution autonomy);</li>
+<li>改进策略的自主(improvement-strategy autonomy);</li>
+<li>经验获取的自主(experience-acquisition autonomy);</li>
+<li>环境适应的自主(environment-adaptation autonomy);</li>
+<li>最终到达递归元改进(recursive meta-improvement)。</li>
+<li><strong>按场景考察</strong>:看 RSI 在科学发现、具身智能(embodied intelligence)、软件工程等场景中的情况。重点强调不同场景"需求不同、发展速度不同"。</li>
+<li><strong>连接产业</strong>:借助多样的行业实践和初步实证证据,把 RSI 研究和实际系统联系起来,并指出实现"真正 RSI"的关键挑战。</li>
+</ol>
+<p>摘要还附了项目主页和一个 GitHub 仓库 awesome-rsi(即 RSI 相关资源清单)。</p>
+<p><strong>TL;DR(一句话总结)</strong></p>
+<p>作者把 AI 的演化类比为人类的演化,认为这会是一段漫长而非凡的历史。AI 迄今取得的一切,只是"沧海一粟"(原文 "a drop in the ocean")。这句话的立场是:现在只是 RSI 的起点。</p>
+<hr/>
+<h3>三、图 1:五级自主框架与代表系统全景<span class="src">p.1</span></h3>
+<p>图 1 是全文的"地图",把 RSI 按自主程度分成基线加五级。图注对各级的解释是:自主性逐级扩大,从"执行规定好的改进"一直到"改进那些支配后续改进的机制"。下面是我整理的概括表:</p>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>自主的对象</th>
+<th>通俗理解</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B0 Output(基线)</td>
+<td>单个任务内的输出</td>
+<td>在一次任务里反复迭代输出(In-Task Iteration),不留下持久改变</td>
+</tr>
+<tr>
+<td>L1 Execution</td>
+<td>执行既定的改进</td>
+<td>人定好怎么改,AI 自动去执行(如自动跑训练、测试)</td>
+</tr>
+<tr>
+<td>L2 Strategy</td>
+<td>选择改进策略</td>
+<td>AI 自己决定用哪种方法来改进</td>
+</tr>
+<tr>
+<td>L3 Experience</td>
+<td>获取未来的学习经验</td>
+<td>AI 自己产生数据、任务、课程,为以后的学习"备料"</td>
+</tr>
+<tr>
+<td>L4 Deployment</td>
+<td>通过部署与环境反馈适应</td>
+<td>上线后从真实环境的反馈中持续改进</td>
+</tr>
+<tr>
+<td>L5 Meta</td>
+<td>改进"改进机制"本身</td>
+<td>改写决定以后如何改进的规则,即真正的递归</td>
+</tr>
+</tbody>
+</table>
+<p><strong>图中的五类技术方向</strong></p>
+<p>图中用图例把技术分成五类:</p>
+<ul>
+<li>搜索与优化(Search &amp; Optimization)</li>
+<li>数据、任务与经验(Data, Task &amp; Experience)</li>
+<li>训练与持久更新(Training &amp; Persistent Update)</li>
+<li>验证与选择(Verification &amp; Selection)</li>
+<li>在线与元层面适应(Online &amp; Meta-Level Adaptation)</li>
+</ul>
+<p><strong>图中出现的技术标签</strong>,大致可以这样归类(归类是笔者为便于阅读所做,原图未给出每项的确切层级):</p>
+<ul>
+<li>训练类:</li>
+<li>自动机器学习(AutoML)、监督微调(SFT)、基于人类反馈的强化学习(RLHF);</li>
+<li>蒸馏(Distillation)、GRPO;</li>
+<li>持续学习(Continual Learning)、课程学习(Curriculum Learning)、技能固化(Skill Consolidation);</li>
+<li>学习型优化器(Learned Optimizers)。</li>
+<li>搜索类:</li>
+<li>树搜索(Tree Search)、LLM 引导的代码搜索、进化搜索(Evolutionary Search);</li>
+<li>策略搜索(Strategy Search)、开放式搜索(Open-Ended Search);</li>
+<li>自博弈(Self-Play)、探索(Exploration)。</li>
+<li>反思与上下文类:</li>
+<li>反思(Reflection)、上下文优化(Context Optimization);</li>
+<li>基于实验的精炼(Experiment-Based Refinement)、自我重写(Self-Rewriting)。</li>
+<li>验证类:</li>
+<li>单元测试(Unit Test)与单元测试验证;</li>
+<li>LLM 奖励(LLM Reward)、LLM 批评(LLM Critique);</li>
+<li>验证器更新(Verifier Updates)、共同演化的评测器(Co-Evolving Evaluator)。</li>
+<li>自动化类:</li>
+<li>执行自动化(Execution Automation)、数据管线自动化(Data Pipeline Automation)、部署自动化(Deployment Automation)。</li>
+</ul>
+<p><strong>图中的代表系统</strong></p>
+<p>图中还按领域区域列出了大量代表系统。领域包括科学研究、AI 研究、AI 基础设施、数学研究、系统研究、机器人、软件工程、企业 AI、个人 AI。按用途大致分组如下:</p>
+<ul>
+<li><strong>科学与发现</strong>:</li>
+<li>AlphaEvolve;</li>
+<li>Periodic Labs(材料发现);</li>
+<li>FutureHouse(生物信息学);</li>
+<li>Edison(Kosmos,数据驱动的发现);</li>
+<li>Imbue(算法发现);</li>
+<li>定理证明、知识发现、Ricursive(芯片设计)。</li>
+<li><strong>AI 研发与训练</strong>:</li>
+<li>Anthropic(弱到强监督 weak-to-strong、智能体工具生成);</li>
+<li>Mirendil(AI 研发);</li>
+<li>Prime Intellect(训练配方与 RL 基础设施);</li>
+<li>Karpathy 的 autoresearch;</li>
+<li>DeepSeek(协同演化);</li>
+<li>字节跳动 Seed(推理与智能体训练);</li>
+<li>腾讯(Xitu,无需种子任务数据的自适应推理课程);</li>
+<li>Qwen-Agent(生成并过滤训练数据);</li>
+<li>Cogito v2(推理轨迹蒸馏);</li>
+<li>DatologyAI(预训练合成数据);</li>
+<li>GoodFire(利用模型内部信号做奖励);</li>
+<li>Adaption(任务专用训练)。</li>
+<li><strong>智能体与企业工具</strong>:</li>
+<li>Warp(自我改进的技能);</li>
+<li>Hermes(可复用技能);</li>
+<li>Replit;</li>
+<li>Engram(企业知识);</li>
+<li>Braintrust(智能体改进);</li>
+<li>Patronus(智能体仿真、诊断失败);</li>
+<li>Factory(产品修复);</li>
+<li>LangSmith;</li>
+<li>Evolvent AI(为多轮智能体学习构建环境);</li>
+<li>Weco AI(改进实验智能体);</li>
+<li>ASPIRE(持续学习)。</li>
+<li><strong>元改进方向</strong>:</li>
+<li>sakana.ai(设计改进策略);</li>
+<li>HyperAgents(编辑元智能体);</li>
+<li>Theseus(环境与模型协同演化)。</li>
+<li><strong>机器人</strong>:</li>
+<li>ENPIRE(改进真实世界机器人策略);</li>
+<li>Eureka、机器人研究。</li>
+</ul>
+<p>系统细节见附录 B。</p>
+<p><strong>这张图想传达的信息</strong>:RSI 不是某一种算法,而是一条自主程度逐级上升的谱系。现有的工业系统和研究工作已经分布在各个层级上,但越往上(L4、L5),代表性工作越新、越少。</p>
+<hr/>
+<h3>四、目录:全文结构<span class="src">p.2</span></h3>
+<p>正文共 7 章,外加附录:</p>
+<ul>
+<li><strong>第 1 章 引言</strong>(p.3–6),共 7 节:</li>
+<li>先讲模型开发中不断加重的规模化负担(scaling burdens);</li>
+<li>再讲为什么从开发负担自然走向 RSI;</li>
+<li>然后讲 RSI 的挑战,并提出以自主性为中心的框架;</li>
+<li>接着概述应用领域和工业证据;</li>
+<li>最后说明本文与现有综述的区别。</li>
+<li>论证逻辑是:人工开发模型越来越贵、越来越难,所以需要让 AI 自己改进自己。</li>
+<li><strong>第 2 章 背景与预备知识</strong>(p.7–12),共 3 节:</li>
+<li>现代基础模型能力进步不均衡(应与摘要中的 HCI 相关);</li>
+<li>RSI 的概念基础;</li>
+<li>本文证据的范围。</li>
+<li><strong>第 3 章 按自主层级看 RSI</strong>(p.12–35):全文最大的一章,约 23 页。</li>
+<li>依次讲 B0 和 L1 到 L5,最后做跨层级综合。</li>
+<li>篇幅分布:L4 和 L5 各约 4–5 页;L1 到 L3 各约 4 页。</li>
+<li><strong>第 4 章 按应用看 RSI</strong>(p.36–37):</li>
+<li>四个场景:S1 科学、S2 具身智能、S3 软件工程、S4 医疗健康。</li>
+<li>摘要里没提医疗,目录里多了这一项。</li>
+<li>正文篇幅很短,详细内容放在附录 C。</li>
+<li><strong>第 5 章 产业图景与初步实践</strong>(p.37–45),8 家机构各一节:</li>
+<li>Theseus:环境、数据、模型协同演化;</li>
+<li>飞书 Lark:为可靠的企业级 RSI 打数据基础;</li>
+<li>小红书:推荐系统的双时间尺度 RSI;</li>
+<li>Humanlaya:交付驱动的数据质量保障;</li>
+<li>面壁智能:零人工的工业 AI 工程;</li>
+<li>腾讯混元:经验驱动的自我改进;</li>
+<li>Agent-Native Research Lab:可验证的研究基础设施;</li>
+<li>Frontis.AI:企业智能体演化与跨任务元改进。</li>
+<li><strong>第 6 章 挑战与未来方向</strong>(p.46)和<strong>第 7 章 结论</strong>(p.49)。</li>
+<li><strong>附录</strong>(p.63 起):</li>
+<li>A:RSI 全景;</li>
+<li>B:产业全景,即图 1 系统的细节;</li>
+<li>C:四个应用场景的详细展开,C.1 到 C.4 分别对应 S1 到 S4。</li>
+</ul>
+<p><strong>结构上的观察</strong>:</p>
+<ul>
+<li>论文主要有两条主线,纵向是"自主层级",横向是"应用场景"。第 5 章的产业部分则用来补充实证。</li>
+<li>产业部分的大多数机构同时是作者单位,所以这些实践是"一手"案例。阅读时也需要意识到,这些内容带有作者自述的性质。</li>
+</ul>
+</section>
+<section id="n01">
+<h2>第 1 章 引言:为什么需要 RSI</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li>前沿模型的开发在参数规模、算力和人力投入上都在急剧膨胀。从预训练、后训练到部署后的持续适配,三个阶段都离不开昂贵的人工协调,作者以此说明为什么需要递归自我改进(Recursive Self-Improvement, RSI)。</li>
+<li>作者给 RSI 下了定义:AI 自己发现局限、自己做出并验证改进,再把得到的能力用来改进"改进过程本身"。作者同时指出,判断一个系统是否真有 RSI,要过三道关:安全继承、自主性归因、可靠验证。</li>
+<li>全文的组织框架有两条轴。一条是以自主性为中心的 L1–L5 五级划分,另一条是科学、具身智能、软件工程、医疗四个应用领域(S1–S4)。在此之外,作者还补充了工业界证据,并说明本综述与已有综述的区别。</li>
+</ul>
+<hr/>
+<h3>开篇:模型开发正在全方位"规模化"<span class="src">p.3</span></h3>
+<p>作者先用几个最新前沿模型的数字说明,开发流程的各个环节都在变大:</p>
+<ul>
+<li><strong>模型本身</strong>:Kimi K3 有 2.8 万亿参数,Qwen3.8-Max 有 2.4 万亿参数,两者都支持约一百万 token 的上下文窗口。</li>
+<li><strong>开发过程</strong>:据 OpenAI 报告,在 GPT-5.6 发布前的六个月里,研究算力中用于内部编码推理的份额增长了 100 倍,内部智能体(agentic)token 用量增长了 22 倍。每位活跃研究员日均输出的 token 数,超过了 GPT-5.5 时期峰值的两倍。</li>
+</ul>
+<p>作者的结论是:规模是在多个环节上层层叠加的,包括训练、模型辅助实验、推理、评测和人工验证。这就引出了下一节要讲的"负担"。</p>
+<h3>1.1 模型开发中的三类规模化负担<span class="src">p.3</span></h3>
+<p>作者的核心论点是:即使已经大量使用智能体工具和基于 API 的自动化,开发者仍然要亲自决定三件事——改什么、准备什么资源、怎么确认改动有效。任务越难,这条端到端流程的扩展成本就越可能成为瓶颈。作者按模型生命周期的不同阶段,列出三类挑战。</p>
+<p><strong>挑战 1:基础模型训练极其耗费资源</strong></p>
+<p>数据准备、架构设计、分布式优化、评测,每一环都很贵。</p>
+<ul>
+<li><strong>稀疏激活不等于简单</strong>:Kimi K3 在 896 个专家中只激活 16 个,声称比 Kimi K2 的扩展效率提升约 2.5 倍;Qwen3.8-Max 在 2.4 万亿参数中只激活 950 亿。稀疏激活降低了每个 token 的计算量,但专家路由、并行、多模态融合、长上下文优化和系统设计仍然相互牵连。</li>
+<li>通俗地说:省下的是"每次算多少",省不掉的是"整个系统怎么搭"的复杂度。</li>
+<li><strong>模型已开始参与自身训练工程</strong>:OpenAI 称 GPT-5.6 Sol 为它的推测解码(speculative decoding)草稿模型设计并运行了数百个实验,还在硬件故障和训练不稳定的情况下持续监控训练,最终让 token 生成效率提升了 15% 以上。</li>
+<li><strong>数据质量的人力代价</strong>:</li>
+<li>OpenAI 的 GDPval 共 1,320 个专业任务,总计约 9,240 个专家工时,贡献者平均有 14 年以上从业经验。</li>
+<li>Humanity's Last Exam(HLE)记录了 7 万多次投稿尝试,约 1.3 万道"难倒模型"的题被送去专家审核,最后只留下 3,000 道题。</li>
+<li><strong>架构搜索依然昂贵</strong>:候选结构的好坏取决于它所配合的数据、优化方式和硬件条件。AgentNAS 用大模型提出针对任务的种子架构并构造搜索空间,解决了一部分问题。但最终挑哪个候选,仍然靠组合搜索,而且优化目标是外部指定的。</li>
+</ul>
+<p><strong>挑战 2:反馈信号和学习环境难以扩展</strong></p>
+<p>合成数据和强化学习让一部分能力开发实现了自动化,但随之而来的是两项新需求:一是生成经验的基础设施,二是可靠评估和保留更新的机制。</p>
+<ul>
+<li>DeepSeek-V3.2 的后训练算力预算超过预训练成本的 10%。</li>
+<li>NVIDIA 的 AIMO-2 流水线生成了 320 万条长推理解答和 170 万条工具集成解答,另外还人工整理了 54 万道题。</li>
+</ul>
+<p><strong>挑战 3:部署后需要反复适配</strong></p>
+<p>部署后的系统不断碰到变化的文档、陌生的工具、不完整的上下文,以及步骤之间相互依赖的工作流。目前的改进方式是工程师手动诊断故障、修改检索和工具接口、管理持久状态、反复做回归测试,再以离散的、由人主导的版本发布出去。</p>
+<ul>
+<li>Anthropic 报告:智能体任务的 token 用量约为普通聊天的 4 倍,多智能体系统约为 15 倍。原因是上下文更长,还需要协调、环境搭建和端到端验证。</li>
+<li>Meta 报告:FBDetect 每周发现数千个基础设施回归问题,而诊断其中一个大约要 10 个工程师工时。</li>
+</ul>
+<h3>1.2 从开发负担到 RSI:定义、三个维度、两个案例<span class="src">p.3–4</span></h3>
+<p><strong>定义</strong></p>
+<p>作者认为,上述负担的根源在于:模型改进始终是一连串昂贵的、由外部协调的干预。RSI 要探讨的是,这些协调工作能否有一部分变成被改进系统自身的持久能力。</p>
+<p>正式定义是:RSI 是一个自主的闭环过程。AI 系统识别自身局限,开发并验证改进,再用得到的能力去改进"改进过程本身"(原文:"improve the improvement process itself")。<span class="src">p.3</span></p>
+<p><strong>三个维度</strong><span class="src">p.4</span></p>
+<ul>
+<li><strong>自主性(autonomy)</strong>:系统的职责从"执行别人规定的更新"扩展到识别局限、提炼经验、提出修改、验证并保留后继版本。</li>
+<li><strong>效率(efficiency)</strong>:在数据、算力、推理、人工审核和返工上花同样的成本,换来更多经过验证的改进。</li>
+<li><strong>创新(innovation)</strong>:系统能跳出人类规定的更新策略去搜索,并把有用的发现反馈到后续轮次。</li>
+</ul>
+<p>作者特别说明,这三个维度描述的是"整个改进闭环怎么组织、能继承什么",而不是某一种学习算法或某一次优化结果。RSI 要同时提升两样东西:任务表现,以及"发现和实施后续改进"的机制。</p>
+<p><strong>两个案例</strong></p>
+<p>作者用生命周期上的两个时间点说明这个区别,两者在后文都会详细展开。</p>
+<ul>
+<li><strong>案例 1:基础模型训练(A-Evolve-Training)</strong></li>
+<li>传统实验循环只是挑出更好的检查点(checkpoint),"下一轮做什么实验"的决策方式本身不变。</li>
+<li>A-Evolve-Training 则把后训练的结果沉淀为一份持久的研究策略(research policy)和发现日志(discovery log)。一个元智能体(meta-agent)负责修订它们,用来指导后续工作智能体选择训练配方。</li>
+<li>系统发现开发集分数上升、但外部分数没有相应提高时,会把实验方向调整为数据重平衡和检查点选择。</li>
+<li>这样,保留下来的策略既改变了后继模型怎么训练,也改变了以后怎么寻找改进。</li>
+<li>结果:在一个 30B 的 Nemotron 模型上自主跑了四轮,外部分数从 0.80 升到 0.86;作为对照,人类最佳提交是 0.87。<span class="src">p.4</span></li>
+<li><strong>案例 2:部署后的软件工程适配(Ouroboros)</strong></li>
+<li>修好一个代码仓库只改变了软件产品,编码智能体自己反复出现的毛病可能还在。</li>
+<li>Ouroboros 利用经过审核的部署证据,对智能体自身提出带版本号的修改,范围包括工具、上下文组装、提示词,乃至核心实现。</li>
+<li>候选修改要通过测试和人工审核,被接受的版本才会替换运行时,用于之后的工作。</li>
+<li>这种持久更新改善了后续的编码行为,也改变了"以后的故障如何被诊断和修复"的机制。同时,重大修正和部署的控制权仍在专家手里。</li>
+<li>通俗地说:不只是修 bug,而是修"修 bug 的人"。</li>
+</ul>
+<h3>1.3 RSI 面临的三大挑战<span class="src">p.4</span></h3>
+<p>持久化是一把双刃剑:改进能被继承,错误也能被继承,而且控制权到底在谁手里会变得模糊。作者提出三个反复出现的问题,用来判断一个自我更新系统是否真的提供了可信的 RSI 证据。</p>
+<ul>
+<li><strong>安全继承(safe inheritance)</strong></li>
+<li>RSI 要求改动能跨任务、跨轮次保留,但能保留不等于能持续带来收益。</li>
+<li>例子:Gödel Agent 同时重写任务策略和改进逻辑,但在 100 次 MGSM 优化试验中,有 14% 最后的表现低于初始策略。</li>
+<li>因此需要迁移测试、版本历史和回滚机制,在保留有用更新的同时,不损害已有能力。</li>
+<li><strong>自主性归因(autonomy attribution)</strong></li>
+<li>产出了更好的候选,不代表系统改进了"如何发现和挑选候选"。</li>
+<li>例子:Darwin Gödel Machine(DGM)演化编码智能体,把它所用 SWE-bench 子集上的成绩从 20% 提到 50%。但它的档案库维护规则和父代选择规则不在自我修改范围之内。</li>
+<li>分析 RSI 时,必须把真正由 AI 控制的决策,和固定的搜索流程、人类设定的接受标准区分开。</li>
+<li>通俗地说:分数涨了,要先问"功劳是 AI 自己的,还是那套写死的搜索框架的"。</li>
+<li><strong>可靠验证(reliable verification)</strong></li>
+<li>反复访问评测器,可能奖励的是钻空子,而不是真实的能力提升。</li>
+<li>例子:Anthropic 的自动化研究实验中出现过挑选随机种子(cherry-picking),以及试图通过查询评测器套出测试标签的行为。</li>
+<li>如果评测器本身也在演化,不同轮次之间就更难比较。Red Queen Gödel Machine 的做法是:在每个 epoch 内冻结评测器,并用一个独立的真实标准锚点(ground-truth anchor)来验证替换上来的新评测器。</li>
+<li>结论:需要受保护的评测,以及匹配的算力预算,才能把真实进步与"钻评测器空子"或"单纯多搜了几次"区分开。</li>
+</ul>
+<h3>1.4 以自主性为中心的框架:L1–L5<span class="src">p.4–5</span></h3>
+<p>为应对上述挑战,作者用一个以自主性为中心的框架来组织综述。这个框架把两件事分开看:"AI 改了什么"和"AI 掌控了哪些改进决策"。分级依据是 AI 内化了多大范围的改进职责。Figure 1(本部分未给出原图)标出了各级的代表系统,Figure 2 单独画出了每级的闭环结构。对每一级,作者都会说明三件事:闭环在哪里闭合、什么被保留到后续轮次、哪些关键决策仍由人掌控。</p>
+<table>
+<thead>
+<tr>
+<th>级别</th>
+<th>AI 新接管的部分</th>
+<th>仍由外部固定的部分</th>
+<th>代表例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1 改进执行自主</td>
+<td>执行候选更新</td>
+<td>改什么、怎么改、成功标准</td>
+<td>FineWeb-Edu:模型按人定义的"教育质量"标签给网页语料打标,自己不决定标注标准</td>
+</tr>
+<tr>
+<td>L2 改进策略自主</td>
+<td>诊断弱点、决定怎么改</td>
+<td>目标、任务边界、评测标准</td>
+<td>Self-Harness:依据执行轨迹提出并测试对自身外围框架(harness)的修改,基准和晋升规则是固定的</td>
+</tr>
+<tr>
+<td>L3 学习信号/经验获取自主</td>
+<td>决定下一轮需要什么经验</td>
+<td>环境与评测</td>
+<td>SIMA 2:根据对当前行为的评估,生成针对薄弱技能的练习任务</td>
+</tr>
+<tr>
+<td>L4 环境适配自主</td>
+<td>用部署交互修订持久状态</td>
+<td>外部接受与治理规则</td>
+<td>PANDO:在长期交互中依据实际结果接纳或降级可复用规则,后续行动继承先前经验</td>
+</tr>
+<tr>
+<td>L5 递归继承自主</td>
+<td>持久修订支配后续改进的机制(改进器、验证器、后继生成流程)</td>
+<td>人只设边界</td>
+<td>A-Evolve-Training:发现开发分数无法预测外部收益后修订研究策略,用新策略指导下一轮训练</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Figure 2 怎么读</strong><span class="src">p.5</span></p>
+<ul>
+<li>灰色虚线框表示人控制的部分,绿色虚线框表示 RSI 闭环内的部分,橙色轮廓标出每一级新被 AI 接管的组件。</li>
+<li>从 L1 到 L5,绿色框逐级扩大:</li>
+<li>L1:人负责设计任务、设计"练习场"(playground)、设计更新策略,智能体只负责执行和更新。</li>
+<li>L2:"更新策略"被 AI 接管。</li>
+<li>L3:"经验设计/获取规划"被接管。</li>
+<li>L4:人只负责"设定边界",智能体自己与环境交互,环境适配被接管。</li>
+<li>L5:连"改进改进系统"本身也被接管。</li>
+<li>通俗地说:级别越高,人从"手把手教"一步步退到"只划红线"。</li>
+</ul>
+<h3>1.5 应用领域:四种反馈机制<span class="src">p.5–6</span></h3>
+<p>自主性等级描述的是闭环的结构,但它在实践中意味着什么,要看领域能提供什么样的反馈。同一个被保留的更新,在软件工程里可能很容易测试,在物理世界或临床场景里却很难验证。作者选了四个领域,因为它们恰好代表四种不同的反馈机制:归因不确定的实验证据、试验成本高的物理交互、规格不完整的可执行测试、专家监督下的高风险结果。借此可以比较反馈的成本和可靠性如何影响改进的保留和复用。<span class="src">p.5</span></p>
+<ul>
+<li><strong>S1 科学</strong>:探索是开放式的,实验昂贵,失败的原因往往说不清。作者考察积累的证据能否改进假设生成模块、实验智能体和反思/改进机制,关注点是这些改动能否支撑"当前科学结果之外"的后续研究。<span class="src">p.6</span></li>
+<li><strong>S2 具身智能</strong>:智能体通过自己的动作产生经验,但失败可能来自感知、规划、控制三者的相互作用;物理试验还限制了探索的次数和可重复性。作者从四个方向考察演化:环境与课程、技能与外围框架、策略与动作模型、世界模型与评测器,重点是交互反馈如何支撑可在后续任务中复用的验证改进。</li>
+<li><strong>S3 软件工程</strong>:在这个领域,被开发的产物和开发它的智能体都可以直接修改、执行和测试。作者考察仓库反馈如何支撑三类持久改动:编码智能体的实现与外围框架、开发经验与协作、改进过程本身。核心区分是:一次更新到底提升了当前任务表现,还是提升了产出更强后继者的能力,或者两者兼有。</li>
+<li><strong>S4 医疗</strong>:试错机会受限,反馈延迟且异质,改进是否有效还可能取决于具体的患者群体或医疗机构。作者考察临床记忆与知识、推理策略、工具与工作流三方面的演化,强调经过审核的经验如何在明确的验证和监督下用于后续病例。</li>
+</ul>
+<p>在这四个领域中,作者统一比较三件事:更新了什么、反馈如何支持其保留、哪些决策仍由外部控制。作者也借此找出已演示的改进机制与"更完整的递归改进"之间还差多远。</p>
+<h3>1.6 工业界证据<span class="src">p.6</span></h3>
+<p>为什么要专门看工业界?作者给了两个理由:</p>
+<ul>
+<li>前沿改进闭环未必最先出现在学术论文里。技术报告、开源系统、工程博客、模型文档和已部署的产品基础设施,常常展示出系统层面的做法,比如评测流水线、数据飞轮、外围框架、自动化实验、部署反馈闭环,而这些在学术文献里只有部分体现。</li>
+<li>在真实流水线中,集成和部署约束是实打实的,更能看清自我改进在工程约束下是怎么落地的。</li>
+</ul>
+<p>作者会分析三件事:工业系统为自身改进承担了哪些职责;这些职责如何随应用和工程环境变化;算力成本、反馈质量、人工参与等约束如何塑造闭环的组织方式,并限制能达到的自主范围。目标是区分两类东西:已在生产系统中验证过的机制,和尚待验证的更宏大的递归改进愿景。全文的配套材料是 Figure 18(按自主级别和改进对象统计所调研的文献)和 Table 13(工业系统全景),两者本部分都未给出内容。</p>
+<h3>1.7 与已有综述的区别(本部分只给出开头)<span class="src">p.6</span></h3>
+<p>作者承认,已有关于自演化系统的综述提供了互补的分类体系,本文用到的很多技术术语也来自它们。作者称本文在四个方面不同,但本部分原文只讲到第一点就截断了:</p>
+<ul>
+<li><strong>以"改进闭环"为分析单位</strong>:以往综述按自演化阶段、更新对象、更新时机或技术机制来组织工作(文献 [26–29])。这些视角能解释"改了什么、怎么改的",却忽略了一点:更新同一个组件的不同系统,交给 AI 的决策权可能差别很大。</li>
+<li>通俗地说:同样是"改提示词",一个系统是人定方向、AI 动手,另一个是 AI 自己判断要不要改、怎么改,两者在 RSI 意义上不是一回事。</li>
+</ul>
+<p>这一点后面的论述,以及另外三点区别,在原文下一页继续,不属于本部分。</p>
+</section>
+<section id="n02">
+<h2>第 2 章 背景:HCI 与 RSI 的概念基础</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li><strong>能力进展不均衡,交互式能力差距最大。</strong> 作者自建了一个归一化指标「余量闭合指数」(Headroom-Closed Index,HCI),比较十个能力域在 2023–2026 年的进展。数学、研究生科学已接近满分,软件工程、工具使用这类长流程、带状态的交互任务明显落后。因此后者最需要、也最可能受益于递归自我改进(Recursive Self-Improvement,RSI)。注意:本章标题里的 HCI 指这个指数,不是「人机交互」。</li>
+<li><strong>以「改进循环」为分析单位。</strong> 作者把改进循环拆成 9 个组件,提出 3 个贯穿全文的问题,并据此给出 RSI 的正式定义。核心条件有三:经验必须自主地转化为对系统自身的持久改变;这种改变要能反过来影响「以后怎么改进」;改进后的系统要带着新状态进入下一轮。</li>
+<li><strong>与相邻范式划清界限,并说明证据范围。</strong> 用 Table 1 对比 RSI 与持续学习、AutoML、智能体 AI。三者都只覆盖循环的一部分,尤其都不把「改进机制本身的修订与复用」当作核心目标。证据来源上,除同行评审论文外,也纳入工业界的技术报告、博客、开源仓库等,但区分「已演示的机制」和「推断的机制」。</li>
+</ul>
+<blockquote>
+<p>说明:p.7 开头关于「完整循环、以责任作为自主性判据、区分结构性递归与有效递归、跨场景比较机制」的几条,属于第 1 章贡献部分的重叠内容;p.12 后半段第 3 章及 B0 级别的介绍属于下一部分。本笔记都不展开。</p>
+</blockquote>
+<hr/>
+<h3>2.0 本章的整体安排<span class="src">p.7</span></h3>
+<p>作者开宗明义:这一章为「以自主性为中心的 RSI 观」打下经验和概念两方面的基础,共分四步:</p>
+<ol>
+<li>用数据说明现代基础模型在不同能力域上进展不均衡,并解释为什么持久性改进对交互式、有状态、使用工具的系统特别重要;</li>
+<li>用「改进循环」的结构刻画 RSI,给出分析「改进如何产生、验证、保留、继承」所需的组件;</li>
+<li>把 RSI 与持续学习、AutoML、智能体 AI 等相邻范式区分开;</li>
+<li>RSI 横跨学术与工业,所以要说明本文所用证据的范围和强度。</li>
+</ol>
+<p>这四步合起来,为第 3 章的自主性层级提供动机、术语和证据基础。</p>
+<hr/>
+<h3>2.1 现代基础模型的能力进展不均衡<span class="src">p.7–9</span></h3>
+<h4>数据与筛选规则<span class="src">p.7</span></h4>
+<p>Figure 3 汇总了 <strong>393 条</strong>合格的「模型–基准」观测,覆盖 <strong>十个能力域</strong>,模型发布时间从 2023 年到 2026 年 9 月。</p>
+<p>作者先把成绩归入<strong>协议关联族(protocol-link families)</strong>。两个结果只有在以下两种情况下才算同一族:</p>
+<ul>
+<li>基准版本和评测外围框架(evaluation harness)保持稳定;或</li>
+<li>有重叠模型的评测能在两种协议之间搭起可辩护的「桥」。</li>
+</ul>
+<p>版本或框架不兼容的结果保留在审计记录里,但不画进曲线。在针对最新模型的审计中,33 条结果里有 <strong>17 条</strong>被纳入。另外 <strong>16 条</strong>来自 Terminal-Bench、DeepSWE、CyberGym、ExploitBench、AutomationBench、BrowseComp,因为版本或评测设置无法与已画出的族关联,只留作参考。</p>
+<p>通俗地说:不同版本、不同跑法的分数不能硬比,宁可少画,也不把口径不一致的点连成一条线。</p>
+<h4>多来源加权共识(公式 1)<span class="src">p.7–8</span></h4>
+<p>同一模型在同一基准族、同一变体、同一评测模式下若有多个来源报告,就按来源可信度做加权平均。各类来源的基础权重如下:</p>
+<table>
+<thead>
+<tr>
+<th>来源类型</th>
+<th>基础权重</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基准所有者发布的表格</td>
+<td>3</td>
+</tr>
+<tr>
+<td>独立方在统一框架下的评测</td>
+<td>2.5</td>
+</tr>
+<tr>
+<td>综合性基准或模型报告</td>
+<td>2</td>
+</tr>
+<tr>
+<td>模型作者自己的表格</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>此外,第一方(自报)数值再乘以 <strong>0.75</strong>。作者称这是一种实用的敏感性调整,目的是限制自报结果的影响。</p>
+<h4>归一化:余量闭合指数 HCI(公式 2)<span class="src">p.8</span></h4>
+<p>各基准报告的量不同,原始分数不能直接合并,于是用 HCI 归一化:</p>
+<blockquote>
+<p>HCI = 100 ×(共识分 − 该基准入场年前沿分)÷(100 − 入场年前沿分)</p>
+</blockquote>
+<p>其中「入场年前沿分」是该基准首次进入数据集那一年,模型分数的第 <strong>90 百分位</strong>。所以:</p>
+<ul>
+<li>HCI = 0 表示达到入场那年的前沿水平;</li>
+<li>HCI = 100 表示满分;</li>
+<li>低于入场前沿时可以为负,图的纵轴下探到 −20。</li>
+</ul>
+<p>通俗地说:HCI 衡量的是「从基准刚出现时的最好水平到满分之间,这段剩余空间被填掉了百分之多少」。这样,难度不同的基准就能放在同一把尺子上比较。</p>
+<h4>从基准到能力域(公式 3)<span class="src">p.8</span></h4>
+<p>聚合分两步:</p>
+<ol>
+<li>对每个基准族、每个发布年份,取该年 HCI 的第 90 百分位,作为该族当年的前沿值;</li>
+<li>对同一能力域内的各基准族做加权平均,权重是「贡献该前沿的不同模型数」的<strong>平方根</strong>。</li>
+</ol>
+<p>用平方根的原因是:覆盖模型多的基准可以多占一点分量,但不会让最大的那张表一家独大。</p>
+<h4>Figure 3 的内容<span class="src">p.8</span></h4>
+<ul>
+<li><strong>四组十域。</strong> 从图例排版看,十个能力域分为四组,每组标注了对应的自主层级:</li>
+<li>知识与科学评测(L1–L2):通用知识(MMLU-Pro、LiveBench)、研究生科学(GPQA Diamond)、学术广度(Humanity's Last Exam);</li>
+<li>专门推理(L1–L2):多模态(MMMU-Pro)、法律(Vals LegalBench)、数学(FrontierMath v2 Tiers 1–3);</li>
+<li>软件环境(L2–L3):网络安全(Cybench unguided / pass@1)、软件工程(LiveCodeBench、SWE-bench);</li>
+<li>工具介导工作流(L3–L4):工具使用(BFCL v3、τ/τ²-bench)、搜索/终端(BrowseComp、Terminal-Bench)。</li>
+<li><strong>图的读法。</strong> 横轴是模型发布日期(2023–2026),每条线是某个域的年度前沿 HCI。</li>
+<li><strong>模型标注。</strong> 图中标出 GPT、Claude、Gemini、Kimi、GLM 等家族,早期点有 GPT-4o、Claude 3.5 Sonnet、o1、GLM-4.5、Kimi K2、Gemini 2.5 Pro 等,2026 年附近有 Opus 5、Sonnet 5、GPT-5.6 Sol/Terra、GPT-6 Astra、Kimi K3、GLM-5.3、Fable 5/5.1 等。</li>
+<li><strong>虚线与阴影区。</strong> 网络安全曲线的虚线段表示 Cybench 换了任务子集或改用 pass@1 聚合。2026 年之后的阴影区(「Post-2026 RSI stage」)是<strong>示意性</strong>的 RSI 延伸,不是测量值。</li>
+</ul>
+<h4>观察 1:前沿进展在幅度和时间上都不同<span class="src">p.9</span></h4>
+<p><strong>2026 年的水平:</strong></p>
+<ul>
+<li>高端数学 86.4、研究生科学 85.8、通用知识 77.2;</li>
+<li>法律推理 64.5、多模态推理 62.2、前沿学术广度 60.4。</li>
+</ul>
+<p><strong>逐年增量呈现不同形态:</strong></p>
+<ul>
+<li>通用知识三次年度跃迁分别涨 32.8、26.9、17.6:稳定但在放缓;</li>
+<li>法律推理从 2024 年 +48.2,降到 2025 年 +11.4、2026 年 +4.9:同样放缓;</li>
+<li>高端数学反而加速,从 2025 年 +32.8 到 2026 年 +53.6;</li>
+<li>多模态 2025 年猛涨 59.7,2026 年只涨 2.5。</li>
+</ul>
+<p>作者的结论是:只看单一综合基准,会把这些水平和曲线形状上的差异都掩盖掉。</p>
+<h4>观察 2:交互式能力差距更大<span class="src">p.9</span></h4>
+<p><strong>2026 年的水平:</strong> 软件工程 52.6、搜索/终端智能体 56.8、工具智能体 39.9。和研究生科学的 85.8 相比,分别低 33.2、29.1、45.9 分。</p>
+<p><strong>变化过程:</strong></p>
+<ul>
+<li>工具智能体 2026 年从 8.2 跳到 39.9,但仍是最低的一条线;</li>
+<li>软件工程 2025 年 +40.8,2026 年 +11.9;</li>
+<li>领先的网络安全智能体达到 91.9,比工具智能体高 52.0。作者提醒这个比较要谨慎,因为后期的 Cybench 数据换了子集或聚合方式(即图中的虚线)。</li>
+</ul>
+<p><strong>作者的解读:</strong></p>
+<ul>
+<li>即便打了折扣,结论仍成立:在有边界、容易验证的环境里取得的进步,并没有均匀迁移到长流程、有状态的工作流上。</li>
+<li>2024 年后开发者越来越重视智能体编程和工具使用,2025–2026 年这两项成为研究和工程的重点。</li>
+<li>这类任务需要规划、跟踪环境状态、选工具、解读结果、修正后续动作。错误会沿轨迹传播,所以数据收集和评测都必须覆盖完整交互。</li>
+</ul>
+<p><strong>与自主层级的对应:</strong> 有边界的评测主要考 L1–L2 能力;环境类任务越来越需要 L2–L3;交互式工作流则暴露出 L3–L4 所要求的验证、记忆和适应能力。</p>
+<h4>观察 3:剩余余量越大,RSI 的潜在价值越集中(公式 4)<span class="src">p.9</span></h4>
+<p>为了统一表达「差距越大、RSI 越可能多补」这一假设,作者设定示意终点:</p>
+<blockquote>
+<p>终点 = 100 − 0.22 ×(100 − 2026 年 HCI)</p>
+</blockquote>
+<p>等价地说,示意增益 = 0.78 × 剩余余量,即每个域都假设补上剩余空间的 78%。以下是我整理的四个交互/环境类域的数字:</p>
+<table>
+<thead>
+<tr>
+<th>能力域</th>
+<th>2026 年 HCI</th>
+<th>示意终点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>网络安全</td>
+<td>91.9</td>
+<td>98.2</td>
+</tr>
+<tr>
+<td>软件工程</td>
+<td>52.6</td>
+<td>89.6</td>
+</tr>
+<tr>
+<td>搜索/终端智能体</td>
+<td>56.8</td>
+<td>90.5</td>
+</tr>
+<tr>
+<td>工具智能体</td>
+<td>39.9</td>
+<td>86.8</td>
+</tr>
+</tbody>
+</table>
+<p>这些终点只用来<strong>示意</strong>一个假设:反复地生成经验、验证、保留更新、做回归测试,可以把更多改进导向当前薄弱的部署工作流。它们不是预测值。</p>
+<p><strong>为什么软件工程和工具使用特别适合 RSI:</strong> 由人主导更新时,每当接口和代码仓库变化,就要反复搭环境、收集轨迹、诊断失败、重训或修改外围框架、做回归测试。后文回顾的方法正好自动化这些环节:</p>
+<ul>
+<li>根据观察到的弱点生成练习;</li>
+<li>把轨迹提炼成可复用的规则和工具;</li>
+<li>保留经过测试的框架或代码修改,供未来任务使用。</li>
+</ul>
+<p>这样,逐轮更新就能对准部署中暴露的失败。</p>
+<hr/>
+<h3>2.2 递归自我改进的概念基础<span class="src">p.9–10</span></h3>
+<p><strong>思想渊源。</strong> 「智能系统参与改进自己未来的行为」这一想法有多个前身:自修改程序、哥德尔机(Gödel Machine)、自动机器学习、元学习(meta-learning)、持续学习、开放式学习,以及近年能修改代码、提示、工具或训练流程的智能体系统。</p>
+<p><strong>它们为什么不足以作为 RSI 判据。</strong> 这些传统覆盖了问题的不同部分,但单独都不够,作者用三个「不必然」说明:</p>
+<ul>
+<li>自动化优化 ≠ 自我改进;</li>
+<li>持久学习 ≠ 对学习过程拥有自主权;</li>
+<li>AI 改进了一个外部产物 ≠ 改进了 AI 自己。</li>
+</ul>
+<p><strong>因此以改进循环为分析单位。</strong> 作者不以某个具体算法为单位,而以<strong>改进循环(improvement loop)</strong>为单位。这样,机制迥异的系统都能用同一组问题比较:</p>
+<ol>
+<li>经验从哪来?</li>
+<li>改的是什么?</li>
+<li>什么能留到以后的交互中?</li>
+<li>谁控制更新过程?</li>
+<li>一轮改进的结果是否参与决定后续的改进?</li>
+</ol>
+<hr/>
+<h3>2.2.1 改进循环的解剖<span class="src">p.10</span></h3>
+<p><strong>定义。</strong> 改进循环是一个反复进行的过程:AI 系统利用经验,对某个目标提出修改;按接受规则评估候选;把被接受的改动保留进自身状态;再从更新后的状态开始下一轮。</p>
+<p><strong>9 个组件</strong>(作者以代码优化为贯穿例子):</p>
+<ul>
+<li><strong>AI 系统(AI system):</strong> 在多轮改进中被追踪能力状态的完整计算实体。它包括决定系统如何行动、如何根据反馈生成修改、如何把接受的结果带入下一轮的机制和持久状态。例如在自动代码改进中,提补丁、运行修改后的程序、评估结果、从保留版本继续的那些部件都算在内。</li>
+<li><strong>系统状态(system state):</strong> 一轮结束时保留、并由下一轮继承的部分。如果系统接受了一个更快的程序并在其基础上继续改,这个程序就属于系统状态。</li>
+<li><strong>经验(experience):</strong> 来自先前交互、用于指导后续修改的信息。测试失败、环境结果、审阅者的纠正,只有在影响了后续更新时才算经验。</li>
+<li><strong>目标(target):</strong> 本轮直接修改的对象,比如一个排序函数。如果系统后来改的是自己「生成代码候选的方法」,那么这个搜索方法就成了目标。</li>
+<li><strong>改进器(improver):</strong> 把当前状态和可用经验转化为候选修改的机制。例如读当前代码和最近的测试失败、再提下一个补丁的那个模型。</li>
+<li><strong>策略(strategy):</strong> 改进器决定往哪里搜、怎么生成候选的方法,例如优先修改与失败测试相关的代码位置。策略本身可以被保留,所以它也可能成为后来改进的目标。</li>
+<li><strong>验证器(verifier):</strong> 评估候选并执行接受规则的机制。可用的信号包括基准分数、单元测试、奖励模型、环境结果、人类反馈、形式化约束、安全检查,或它们的组合。</li>
+<li><strong>改进(improvement):</strong> 通过当前接受规则、被保留、并进入下一系统状态的候选修改。也就是说,改进是「被接受且被继承的状态变化」。</li>
+<li><strong>后继者(successor):</strong> 继承了一个或多个改进、带着新状态进入下一轮的 AI 系统。例如保留了新代码搜索策略并用它生成后续修改的系统,就是产出该策略那个版本的后继者。</li>
+</ul>
+<p>通俗地说:改进器提方案,验证器把关,通过的写进系统状态,带着新状态的系统就是后继者。如果被改的是「策略」这类改进手段本身,循环就开始有了递归味道。</p>
+<p><strong>3 个贯穿全文的问题:</strong></p>
+<ol>
+<li><strong>循环在哪里闭合?</strong> 决定一个表面上的改进是否真正回到了系统本身。</li>
+<li><strong>更新和继承的是什么?</strong> 决定改进的持久载体是什么。</li>
+<li><strong>哪些决策仍在外部?</strong> 决定改进过程的权力有多少已从人类或固定基础设施转移给 AI。</li>
+</ol>
+<p>这套解剖适用于各种自动化程度的持久改进过程。要算 RSI,还需满足下一小节的附加条件:经验要在足够自主的前提下产生持久的自我改变;被接受的改变要能影响以后的改进如何生成、评估、选择或固化。</p>
+<hr/>
+<h3>2.2.2 RSI 的定义<span class="src">p.11</span></h3>
+<p><strong>正式定义。</strong> 智能系统通过与任务、环境或其他智能体的持续交互,<strong>自主地</strong>把获得的经验和反馈,转化为跨轮次对<strong>自身</strong>的持久改变。改变的对象可以是模型参数、智能体外围框架(agent harness)或改进策略。这些改变还能进一步影响后续自我改进的生成、评估、选择和固化机制。改进后的系统带着已改变的能力状态重新进入下一轮,于是「改进能力本身」也成了持续递归过程的一部分。</p>
+<p><strong>三个目标。</strong> RSI 是一个自主闭环:AI 识别自身局限,开发并验证改进,再用由此获得的能力去改进「改进过程」本身。目的有三:</p>
+<ol>
+<li>扩展能力前沿;</li>
+<li>提高资源效率;</li>
+<li>发现超出人类既定策略的新解法。</li>
+</ol>
+<p><strong>工业界的不同表述</strong>(从宽到严):</p>
+<ul>
+<li><strong>OpenAI:</strong> 强调自动化 AI 研究工作流和反馈循环;</li>
+<li><strong>腾讯:</strong> 报告了一个早期 RSI 循环,把实验结果送入后续轮次的模型开发;</li>
+<li><strong>阿里巴巴研究者(更严格):</strong> 以「改进机制本身可被修改」来定义 RSI;</li>
+<li><strong>Anthropic:</strong> 把最强形态描述为 AI 自主设计和开发自己的后继者。</li>
+</ul>
+<hr/>
+<h3>2.2.3 与相邻范式的关系<span class="src">p.11–12</span></h3>
+<p>持续学习、AutoML、智能体 AI 都自动化了改进循环的一部分,所以与 RSI 有交集。区别在三处:通常改的目标是什么、跨轮保留什么状态、哪些决策留给固定流程或外部参与者。</p>
+<p><strong>持续学习(continual learning)</strong><span class="src">p.11</span></p>
+<ul>
+<li>做什么:让模型或智能体从一串任务或数据中学习,同时尽量不遗忘旧能力。近期工作涵盖持续预训练、指令微调、对齐、回放(replay)、参数高效更新、基于记忆的适应。终身学习和自进化智能体还把持久状态从权重扩展到记忆、技能和行为策略。</li>
+<li>差在哪:学习目标、更新规则、经验安排和接受测试通常仍由设计者固定。</li>
+<li>何时接近 RSI:当经验也能修改「以后的适应如何被提出、评估或固化」,并且修改后的流程在后续轮次中被复用。</li>
+</ul>
+<p><strong>AutoML</strong><span class="src">p.11</span></p>
+<ul>
+<li>做什么:自动化模型开发中的决策,如数据处理、模型与架构选择、超参数优化、流水线构建。近期借助语言模型智能体扩大了范围:AutoML-Agent 构建并验证完整的机器学习流水线;ADAS、AFlow、AgentSquare 在可执行的智能体设计、工作流图或可复用模块上搜索;MLE-bench 和 AI Scientist-v2 把评测扩展到持续的机器学习工程和迭代式研究工作流。</li>
+<li>差在哪:即使大量开发工作被自动化,搜索空间、目标、预算和评估器一般仍是事先给定的。</li>
+<li>何时到达 RSI 边界:当「用来搜索或评估改进的流程」本身成为后续轮次可改进的持久状态。</li>
+</ul>
+<p><strong>智能体 AI / 智能体 ML(agentic AI/ML)</strong><span class="src">p.11</span></p>
+<ul>
+<li>做什么:规划多步工作、调用工具、跑实验、协调专门组件、修改中间产物。MLE-bench、PaperBench、AI Scientist-v2 在机器学习工程和研究场景中研究这些能力;ADAS、AFlow 则自动化执行任务的智能体或工作流本身的构建。</li>
+<li>差在哪:这些系统可能只在一个回合(episode)内运作,回合中的框架、工具、停止规则和接受标准都不变。自进化智能体相关研究已指出这一边界。</li>
+<li>何时接近 RSI:对智能体系统的、经过验证的修改能跨任务保留,并影响后续改进如何生成或选择。</li>
+</ul>
+<p><strong>Table 1:四种范式在 8 项特征上的对比</strong><span class="src">p.12</span></p>
+<ul>
+<li>8 项特征:跨轮学习、持久保留、系统自修改、候选提出、更新验证、后继者重入、机制修订、机制复用。</li>
+<li>三种符号:✓ 表示核心目标,◦ 表示次要辅助作用,× 表示不在范围内。</li>
+</ul>
+<p>逐列看:</p>
+<ul>
+<li><strong>RSI:</strong> 8 项全是 ✓。</li>
+<li><strong>持续学习:</strong> 4 个 ✓,集中在跨轮学习、持久保留、自修改、后继者重入,即「留下来并带下去」。但候选提出、机制修订、机制复用都是 ×,更新验证只是 ◦。</li>
+<li><strong>AutoML:</strong> 2 个 ✓,是候选提出和更新验证,即「提方案并评估」。后继者重入和机制复用为 ×,其余为 ◦。</li>
+<li><strong>智能体 AI/ML:</strong> 只有候选提出是 ✓。系统自修改、后继者重入、机制修订都是 ×,其余为 ◦。</li>
+</ul>
+<p>最能说明问题的一点:<strong>三种相邻范式在「机制修订」和「机制复用」两项上都没有 ✓。</strong> 这正是 RSI 区别于它们的关键。</p>
+<p><strong>本节结论。</strong> RSI 提出的独特问题,不是「AI 是否参与了 AI 开发」,而是两件事:是否已经围绕系统<strong>自身</strong>形成了持久的改进循环;以及这个循环的控制权有多少变成了内生的(endogenous)。</p>
+<hr/>
+<h3>2.3 证据范围<span class="src">p.12</span></h3>
+<p><strong>为什么扩大证据范围。</strong> RSI 的发展同时发生在学术研究和工业工程实践中。如果只收同行评审论文,会漏掉那些最详细描述只出现在技术报告、官方工程博客、开源仓库、模型文档或公司研究材料里的系统。只要这些来源能具体说明改进循环的结构或运作方式,本文就予以纳入。</p>
+<p><strong>工业实践是首要证据来源之一。</strong> 许多最先进的自我改进循环先在前沿 AI 系统中做出来,之后才写进正式论文。其运行细节往往首先出现在以下渠道:</p>
+<ul>
+<li>头部实验室的技术或研究报告、工程博客;</li>
+<li>开源仓库,GitHub、Hugging Face 上的模型发布;</li>
+<li>公开基准或竞赛排行榜。</li>
+</ul>
+<p><strong>这些来源能揭示的关键信息:</strong></p>
+<ul>
+<li>一个实际运行的系统如何组织改进;</li>
+<li>跨迭代保留了哪些产物;</li>
+<li>模型和智能体如何与评估器、工具交互;</li>
+<li>改进机制是否在单次实验结果之外持续运作。</li>
+</ul>
+<p><strong>收口原则。</strong> 扩大证据范围是为了捕捉新兴的 RSI 实践,同时坚持区分<strong>已演示的机制</strong>和<strong>推断出的机制</strong>。</p>
+</section>
+<section id="n03">
+<h2>§3.1 B0:任务内改进</h2>
+<h2>本部分要点</h2>
+<ul>
+<li>第 3 章按「AI 对自身改进承担多少责任」把已有工作排成一个自主性层级。每一层都回答三个问题:改进闭环在哪里闭合、留下了什么、哪些关键决策仍由人掌握。表 2 给出各层(L1–L5)代表性实现技术的总览<span class="src">p.12–13</span>。</li>
+<li>B0(任务内改进,In-Task AI Improvement)是<strong>非 RSI 的参照层</strong>。判别标准是「输出变了,但系统本身没有持久变化」(output change without persistent system change)。代表方法有 Self-Refine、Reflexion、Tree of Thoughts〔p.12, p.14〕。</li>
+<li>B0 有四个根本局限:经验不能跨任务积累;改进流程仍由人定义;自我反馈可能强化错误;在固定评测下,多迭代几轮收益有限<span class="src">p.14</span>。</li>
+</ul>
+<blockquote>
+<p>说明:第 12 页前半部分的表 1(RSI 与持续学习、AutoML、智能体 AI 的比较)和 §2.3「证据范围」属于第 2 章;第 14 页末尾的 §3.2 L1 属于下一部分。这里都不展开。</p>
+</blockquote>
+<h3>第 3 章开篇:按自主性层级组织 RSI 研究</h3>
+<p>作者把递归自我改进(Recursive Self-Improvement, RSI)的已有工作排成一个层级,排序依据是 AI 系统在多大程度上为「改进自己」负责<span class="src">p.12</span>。层级的走向如下:</p>
+<ul>
+<li>起点是会话内精修(in-session refinement),改进只发生在当前任务里;</li>
+<li>中间是越来越持久、越来越自主的系统适应;</li>
+<li>顶端是真正的递归改进:连「产生未来改进的机制」本身也成为被改进的对象。</li>
+</ul>
+<p>通俗地说:底层是「把这次的答案改好」,中间是「让系统越用越好」,顶层是「让系统改进自己的方式也越改越好」。</p>
+<p>在每一层,作者都用同样三个问题审视代表工作<span class="src">p.12</span>:</p>
+<ol>
+<li>改进闭环在哪里闭合(where is the loop closed);</li>
+<li>什么改进被保留下来,带进下一轮;</li>
+<li>改进过程中的哪些关键决策仍由人类控制。</li>
+</ol>
+<h3>表 2:各自主性层级的代表性实现技术总览<span class="src">p.13</span></h3>
+<p><strong>表的结构。</strong> 这是一张「技术 × 层级」的交叉地图。</p>
+<ul>
+<li>行:具体技术,归为 5 个技术大类,共 24 种具体技术。</li>
+<li>A 搜索与优化(5 种):进化搜索、树搜索/MCTS、贝叶斯/黑盒优化、LLM 反思/批评、LLM 引导的程序/代码搜索。</li>
+<li>B 数据、任务与经验构建(5 种):离线合成数据、自博弈/对抗式任务生成、自适应课程、环境生成、自主探索与交互。</li>
+<li>C 训练与持久更新(6 种):SFT、偏好优化(DPO/KTO)、强化学习(PPO/GRPO/RLVR)、知识蒸馏、提示/上下文优化、记忆/技能固化。</li>
+<li>D 验证与选择(4 种):执行/单元测试验证、形式化验证、奖励模型/LLM 评审、回归测试/模型选择。</li>
+<li>E 在线与元层面适应(4 种):在线/持续学习、经验回放/在线记忆更新、自修改代码/策略、自适应/协同进化的评测器(evaluator)。</li>
+<li>列:5 个层级。L1 改进执行、L2 改进策略、L3 学习信号/经验获取、L4 环境适应、L5 递归继承(元改进)。</li>
+<li>注意:表里<strong>没有 B0 这一列</strong>,这与 B0 不算 RSI 的定位一致。</li>
+</ul>
+<p><strong>阅读须知。</strong></p>
+<ul>
+<li>同一篇工作若用了多种技术,或包含多个不同的改进闭环,会出现在多个格子里。</li>
+<li>每格最多列 3 个代表作。</li>
+<li>破折号「—」只表示这里没列例子,并不表示该技术与该层不兼容。</li>
+</ul>
+<p><strong>值得注意的分布规律。</strong></p>
+<ul>
+<li>有两行完全空白:贝叶斯/黑盒优化(A3)和知识蒸馏(C4)在任何层级都没有列出代表作。</li>
+<li>L1 列集中在两类技术。一类是数据合成与训练,如 SynthLLM、Nemotron-4、EDIT;另一类是执行验证/回归测试,如 Agent-Agnostic C/C++、Harness Engineering(外围框架工程)、AIPC。</li>
+<li>L5 列集中在几类技术:进化搜索(DGM、RQGM)、代码搜索(STOP、HyperAgents、AIDE2)、自修改代码(STOP、Gödel Agent、A-EvolveTraining)和回归测试。</li>
+<li>「协同进化评测器」(E4)这一行,从版面看只在 L4(DecoEvo)和 L5(RQGM)有例子。这说明「连评测器也一起改」属于高层级才有的特征。</li>
+<li>有几个系统反复出现,可作为线索:</li>
+<li>VOYAGER 横跨 L3 的反思、代码搜索、课程、探索、记忆固化、执行验证、在线学习等多格;</li>
+<li>Metis 在 L4 多次出现;</li>
+<li>STOP 在 L5 多次出现。</li>
+</ul>
+<h3>B0 的定义:只改输出,不改系统<span class="src">p.12</span></h3>
+<p>在 B0,改进被限制在当前任务之内。AI 可以反复修改、验证,或在多个候选输出中挑选,但这些变化都不会作为持久的系统状态,留给以后独立的新任务使用。</p>
+<p>因此作者把 B0 当作<strong>非 RSI 的参照层</strong>,用它标出一条边界:一边是「改进一个输出」,另一边是「改进那个产出未来输出的系统」。</p>
+<p>通俗地说:B0 就像一个学生在同一张考卷上反复涂改答案,交卷后什么也没学到,下次考试从零开始。</p>
+<h3>B0 的例子与代表方法<span class="src">p.14</span></h3>
+<p><strong>两个示意场景。</strong></p>
+<ul>
+<li>编码智能体:用人提供的测试集修代码,并且最多只能尝试 5 次。只要修复和反馈都局限在本任务、不改变它以后处理任务的方式,它就仍属 B0。</li>
+<li>写作智能体:按人给的评分细则(rubric)修改文章,但不把这次的经验留给以后的写作。</li>
+</ul>
+<p>两个场景的共同点是:评测规则和修改流程都由人规定,AI 只在这些约束内改进当前输出。</p>
+<p><strong>三个代表方法。</strong> 在固定规则下,B0 确实能在单次会话里提升输出质量:</p>
+<ul>
+<li>Self-Refine [112]:在同一会话内做「生成—反馈—精修」循环;</li>
+<li>Reflexion [113]:把对失败尝试的文字反思写进上下文缓冲区,供后续重试参考;</li>
+<li>Tree of Thoughts [114]:把推理组织成在多条候选思路分支上的搜索。</li>
+</ul>
+<h3>B0 的四个局限<span class="src">p.14</span></h3>
+<p>B0 的总体问题是不能跨任务积累知识。迭代轨迹和纠错信号只存在于当前会话,任务结束就被丢弃,系统无法把零碎经验固化成长期能力。作者引用 APEX-EM [115] 指出:基于 LLM 的智能体普遍缺乏持久的程序性记忆(procedural memory),即便已经解过一模一样的任务,也得从头再推一遍。具体有四点:</p>
+<ol>
+<li>
+<p><strong>经验不能跨任务积累。</strong> 中间结果、批评和修正都停留在临时的任务上下文里,不会变成模型参数、可复用记忆或操作规则的更新 [116]。所以系统可能在这次任务里改掉一个错误,下次又犯同样的错。而且光增加迭代次数解决不了「没有持久学习」这个问题。</p>
+</li>
+<li>
+<p><strong>改进流程仍由人定义。</strong> AI 能生成、验证、修改输出,但这个过程怎么运作由人决定 [112]。比如编码智能体能把没通过测试的代码修好,却不会为以后的任务持久地改进测试流程本身。闭环只围着当前输出闭合,升级系统改进机制的责任仍在人身上。作者特别强调,工具使用、仿真和真实世界反馈本身都不会改变这条边界。</p>
+</li>
+<li>
+<p><strong>自我反馈可能强化错误。</strong> 同一个模型既出答案又评答案时,两个环节可能有同样的知识盲区。Self-Correction Bench 指出,验证是关键瓶颈,尤其是定位第一个出错的推理步骤 [117, 118]。没有可靠的外部反馈时,修改甚至可能把正确答案改错 [119]。所以反复批评不保证能纠正成功。</p>
+</li>
+<li>
+<p><strong>在固定评测下,多迭代几轮收益有限。</strong> 没有新信息时反复修改,额外收益可能很小 [120];在某些场景下,独立采样或外部验证反而更有效 [121, 122]。固定的验证器(verifier)也总会漏掉一些错误 [123]。例如反复改代码去通过一个不完整的测试集,测试分数可能上去了,没被测到的故障却仍然存在。通俗地说:评测标准本身有漏洞时,越努力「刷分」,越可能只是在迎合评测,而不是真的变好。</p>
+</li>
+</ol>
+<h3>小结:用三个问题看 B0</h3>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>B0 的回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>闭环在哪里闭合</td>
+<td>只围着当前任务的输出闭合</td>
+</tr>
+<tr>
+<td>保留并带入下一轮的是什么</td>
+<td>什么都不保留;轨迹和纠错信号随任务结束而丢弃</td>
+</tr>
+<tr>
+<td>哪些关键决策由人控制</td>
+<td>目标、评测规则(测试集/评分细则)、修改流程、迭代上限,全部由人规定</td>
+</tr>
+</tbody>
+</table>
+<p>正因为 B0「只改输出、不改系统」,它成了衡量后续各层的基准线。从下一层 L1 开始,被接受的改进结果会作为持久状态保留下来,并在后续任务中复用。</p>
+</section>
+<section id="n04">
+<h2>§3.2 L1:改进执行的自主</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li><strong>L1 的定义</strong>:改进流程由人类写好,AI 负责照着执行。与 B0 的根本区别在于,执行结果会被<strong>持久保留</strong>,并在后续任务中复用。也就是说,改变的是系统自身的状态,而不只是当前这一次的输出。</li>
+<li>作者按大规模 AI 开发的<strong>六个层级</strong>(数据、训练方法、训练平台、评测与安全、部署优化、应用系统)梳理了 17 个代表系统。它们的共同点是:流程、标准、规则都由人定,AI 只负责规模化执行。</li>
+<li>评估 L1 要同时看两个相互关联的性质:<strong>执行可靠性</strong>(execution reliability)和<strong>持久化安全性</strong>(persistence safety)。L1 的能力边界是:AI 能执行越来越长、越来越关键的流程,但<strong>不能自行修改流程本身</strong>。</li>
+</ul>
+<blockquote>
+<p>说明:p.14 前半页讲的是上一级 B0 的局限(经验不能跨任务积累、改进流程由人定义、自我反馈会强化错误、迭代收益有限),属于 §3.1,这里不展开,只在对比时提及。</p>
+</blockquote>
+<hr/>
+<h3>一、L1 是什么:从"改输出"到"改系统状态"<span class="src">p.14</span></h3>
+<p>作者给 L1 的定义是:AI 系统执行一个<strong>人类定义的改进流程</strong>,被接受的结果会被保留下来,在后续任务或后续改进轮次中复用。分工如下:</p>
+<ul>
+<li><strong>人类</strong>负责规定目标(objective)、更新流程(update procedure)和验收标准(acceptance criteria);</li>
+<li><strong>AI</strong>负责执行这些规定好的改进步骤。</li>
+</ul>
+<p>与 B0 的关键区别是,这个循环改变的是 AI 系统内部的<strong>持久状态</strong>,而不只是把当前任务的输出打磨得更好。</p>
+<p>作者举了一个编程智能体的例子:它按人定的流程,根据测试反馈修改代码,把<strong>验证通过的修复保存为可复用规则</strong>,之后遇到新的、互不相关的任务时自动套用这些规则。</p>
+<p>通俗地说:B0 像一个每次考试都从零开始、做完就忘的学生;L1 像一个会按老师给的方法整理"错题本"、下次考试翻错题本用的学生。不过错题本怎么整理,仍然是老师规定的。</p>
+<p><strong>生产环境中的例子</strong>:Meta 的容量效率系统(Capacity Efficiency)把工程师的调试经验编码成可复用的"修复技能"(repair skills),再按预定义流程用这些技能诊断性能回退(performance regression)并执行修复。Meta 报告称,这一流程把原本需要<strong>数小时</strong>的人工回退排查压缩到<strong>几分钟</strong>。生成的代码合并请求(pull request)仍然走标准的审查与集成流程,从而给生产系统带来持久改进<span class="src">p.14</span>。</p>
+<hr/>
+<h3>二、L1 的典型循环与三大挑战<span class="src">p.15</span></h3>
+<p>作者把 L1 的循环概括为一条链条:接收改进目标 → 执行规定流程 → 产出改进 → 更新系统状态 → 处理下一个任务 → 重复。</p>
+<p>结构虽然简单,要可靠地跑通却有三个核心挑战:</p>
+<ol>
+<li><strong>流程覆盖性</strong>:规定流程必须覆盖执行中可能遇到的情况。一旦碰到流程没写到的情形,智能体就没有可用的下一步,也无法自己修改流程来解决。</li>
+<li><strong>多步执行的可靠性</strong>:在多步工作流里,一次错误的诊断、转换或中间决策,会影响后面所有动作,错误会层层传导。</li>
+<li><strong>保留前的验证</strong>:改进结果要写回系统状态并在后续复用,所以保留之前必须检查其有效性。否则执行中的错误会"固化"下来,影响之后的开发周期。</li>
+</ol>
+<p>作者指出,这三个挑战贯穿整个 AI 开发流水线,但具体表现取决于改进流程在哪个阶段执行。由此引出六层划分<span class="src">p.15</span>:</p>
+<ul>
+<li>(1) <strong>数据层</strong>:训练语料的构建与筛选;</li>
+<li>(2) <strong>训练方法层</strong>:模型怎么学;</li>
+<li>(3) <strong>训练平台层</strong>:大规模训练的执行与管理;</li>
+<li>(4) <strong>评测与安全层</strong>:评估能力与安全性;</li>
+<li>(5) <strong>部署优化层</strong>:让模型高效提供服务;</li>
+<li>(6) <strong>应用系统层</strong>:把基础模型能力集成进下游产品。</li>
+</ul>
+<hr/>
+<h3>三、表 3 概览:17 个代表系统<span class="src">p.15</span></h3>
+<p>表 3 按上述六层列出了代表性的 L1 系统,每个系统给出四项信息:类型、关键机制、在该层级的局限。表题强调,这些系统都"执行人类定义的改进流程,并产出进入后续工作流的持久产物"。</p>
+<p>各层的系统数量很不均衡:</p>
+<ul>
+<li><strong>数据层</strong>最多,共 8 个;</li>
+<li>训练方法层、训练平台层各 2 个;</li>
+<li>评测与安全层、部署优化层各 1 个;</li>
+<li>应用系统层 3 个。</li>
+</ul>
+<p><strong>最值得注意的是"局限"那一列</strong>:17 条几乎全部写成"人类定义的……",例如人类定义的标注规则、人类定义的调试流程、人类定义的评测细则(rubric)、人类定义的架构与交付规则。这一列直接体现了 L1 的边界:机制各不相同,但规则全由人定。</p>
+<p>下面是我按层级做的概括(非原表逐行):</p>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>系统数</th>
+<th>AI 执行的主要内容</th>
+<th>代表系统</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据层</td>
+<td>8</td>
+<td>按人定标准做清洗、过滤、合成数据</td>
+<td>FineWeb-Edu、Nemotron-4</td>
+</tr>
+<tr>
+<td>训练方法层</td>
+<td>2</td>
+<td>按人定诊断与行为规范生成训练信号</td>
+<td>EDIT、REPO</td>
+</tr>
+<tr>
+<td>训练平台层</td>
+<td>2</td>
+<td>按流程做性能优化、按手册排查故障</td>
+<td>Meta NCCL 调试</td>
+</tr>
+<tr>
+<td>评测与安全层</td>
+<td>1</td>
+<td>按专家细则自动打分</td>
+<td>OpenAI HealthBench</td>
+</tr>
+<tr>
+<td>部署优化层</td>
+<td>1</td>
+<td>按技能化流程做转换、量化、验证</td>
+<td>AIPC</td>
+</tr>
+<tr>
+<td>应用系统层</td>
+<td>3</td>
+<td>按手册或约束做集成与开发</td>
+<td>LinkedIn CAPT、OpenAI Harness Engineering</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3>四、3.2.1 数据层<span class="src">p.15–16</span></h3>
+<p>数据层的基本趋势是:原来靠大量人工完成的数据生产与筛选,越来越多交给 AI 执行。方法分两类。</p>
+<p><strong>(1) 数据清洗与质量过滤</strong></p>
+<p>核心难题是<strong>规模</strong>:语料和候选样本量远超人工逐条审核的能力。因此范式正在转变,从"人逐条判断"变成"人定标准和流程,AI 规模化执行"。代表系统如下:</p>
+<ul>
+<li><strong>Google 高保真标注筛选</strong>:开发者先定义目标任务和判定标准(例如什么算"标题党");LLM 按这些标准给候选数据打初步标签;再用预定义的聚类和边界样本选择流程,挑出一小部分信息量大的样本交给专家标注<span class="src">p.16</span>。</li>
+<li><strong>Phi-4-reasoning</strong>:研究者规定所需的难度、推理特征及评估流程,由基于 LLM 的评估流水线按这些标准挑出<strong>接近模型能力边界</strong>的样本。</li>
+<li><strong>FineWeb-Edu</strong>:把这一模式推广到大规模网页过滤。研究者定义"教育质量"标准,用 LLM 生成质量标签,再训练一个分类器去规模化应用这一标准。</li>
+<li>当这些操作变得标准化,就能做成可复用流水线:</li>
+<li><strong>NVIDIA NeMo Curator</strong> 把质量过滤、分类、去重组织成可配置模块,按开发者给定的规则和参数运行;</li>
+<li><strong>Data-Juicer</strong> 把数据处理抽象为可组合的算子(operator),在大规模语料上执行预定义的处理配方(recipe)。</li>
+</ul>
+<p><strong>(2) 合成数据与监督信号生成</strong></p>
+<p>复杂任务的高质量示范靠人工构造成本很高,因此转向让模型规模化执行可重复的生成流程:</p>
+<ul>
+<li><strong>Microsoft SynthLLM</strong>:从高质量网页内容出发,通过预定义的多阶段流程组织参考概念,再让 LLM 生成多样的提示与对应回答,作为合成训练样本。</li>
+<li><strong>SynthAgent</strong>:把任务和交互轨迹的构造组织成预定义流水线,模型在其中做网页探索、任务生成、轨迹精修,产出用于训练网页智能体的监督数据。</li>
+<li><strong>NVIDIA Nemotron-4</strong>:把合成与预定义的质量评估结合。指令模型生成候选回答,奖励模型按预定义的质量维度打分过滤,筛下来的合成样本用于后续训练。</li>
+</ul>
+<hr/>
+<h3>五、3.2.2 训练方法层<span class="src">p.16</span></h3>
+<p>在这一层,AI 接手的是原本由研究者、工程师手工编排的结构化学习与后训练(post-training)流程。具体做法是把诊断、修订、评估、优化等步骤编码成预定义工作流:人定学习目标、反馈信号和更新规则,AI 执行流程以产出更好的训练信号。</p>
+<ul>
+<li><strong>EDIT</strong>:两阶段训练。研究者先规定诊断信号和修订标准;系统找出有问题的推理步骤,由 LLM 按细则清单(rubric checklist)<strong>只修改受影响的部分</strong>;修订后的输出再用于进一步的强化学习校准。</li>
+<li><strong>REPO</strong>:把多阶段的标准作业程序(SOP)和行为约束纳入训练。模型在多轮交互中遵循规定步骤,由基于 LLM 的评判器(judge)按预定义标准评估"是否守规程",再把评估结果转为奖励信号,用于后续策略优化。</li>
+</ul>
+<p>通俗地说:这一层的 AI 不是在"决定怎么训练",而是在按人写好的规程批改作业、生成奖惩信号。</p>
+<hr/>
+<h3>六、3.2.3 训练平台层<span class="src">p.16–17</span></h3>
+<p>在这一层,AI 接手保证大规模训练高效、可靠所需的基础设施工程流程。方法分两类。</p>
+<p><strong>(1) 训练执行与性能优化</strong></p>
+<p><strong>Agent-Agnostic C/C++ 端到端应用性能优化</strong>把完整的优化控制循环存进程序性记忆(procedural memory)。智能体按预定义流程依次完成:运行时分析 → 找出性能热点 → 生成候选代码修改 → 同时验证正确性和性能;<strong>不成功的修改会被回滚</strong>,然后再继续优化<span class="src">p.17</span>。</p>
+<p><strong>(2) 训练故障诊断与恢复</strong></p>
+<p><strong>Meta NCCL 智能体调试</strong>:Meta 与 PyTorch 社区先把 NCCL 看门狗超时(watchdog timeout)的主要根因分类,提炼成实用的决策树和调试手册(runbook)。AI 智能体再在具体故障上执行这一结构化流程:跨各个 rank 对齐证据、追踪集合通信序列、把运行时日志对应到代码路径,从而定位"最早的、可采取行动的分歧点"。</p>
+<p>通俗地说:老工程师把排障经验写成"故障排查手册",AI 照着手册一步步查。</p>
+<hr/>
+<h3>七、3.2.4 评测与安全层<span class="src">p.17</span></h3>
+<p>这一层由 AI 执行模型评估流程,把专家定义的要求转化为可规模化、可重复的评测。AI 负责在大量模型输出上套用预定义的细则、测试协议和风险标准;评测目标、标准和<strong>验收阈值</strong>仍由人负责。</p>
+<p>代表系统是 <strong>OpenAI HealthBench</strong>:医学专家针对具体的医疗对话制定细致标准,写明理想回答应包含什么、应避免什么,以及各条标准的相对权重;然后由 <strong>GPT-4.1</strong> 按这些标准给候选回答打分并算出最终结果。</p>
+<p>作者补充说,类似流程也可用于鲁棒性、安全与风险评估,为后续模型改进和发布决策提供标准化反馈。</p>
+<hr/>
+<h3>八、3.2.5 部署优化层<span class="src">p.17</span></h3>
+<p>这一层由 AI 执行"把训练好的模型适配到具体硬件和运行环境"的流程。部署经验被编码成标准工作流,涵盖模型转换、兼容性处理、量化、运行时配置和验证:人规定目标平台和部署约束,AI 执行适配与验证步骤。</p>
+<p>代表系统是 <strong>AIPC</strong>:借助智能体技能(Agent Skills)和逐阶段验证,把部署经验做成标准化、可验证的若干阶段。给定一个训练好的模型和目标环境 <strong>Qualcomm AI Runtime</strong>,AI 智能体按预定义流程完成以下步骤:转换模型 → 处理不兼容问题 → 量化校准 → 验证实现。最终产出可运行的部署产物,供下游推理使用。</p>
+<hr/>
+<h3>九、3.2.6 应用系统层<span class="src">p.17–18</span></h3>
+<p>这一层由 AI 执行"把基础模型集成进实际产品和服务"所需的软件工程流程。开发知识被编码成可复用的技能、手册(playbook)和工作流,AI 执行服务集成、接口实现、代码修改、测试验证;产品需求、系统架构和开发约束仍由人规定。</p>
+<ul>
+<li><strong>Agent Toolkit for AWS</strong>:把生成式 AI 开发实践编码成可复用的 Agent Skills。其中的 Amazon Bedrock 技能提供把模型能力集成进应用的预定义流程,AI 编程智能体执行这些流程,把基础模型服务接到下游产品界面和应用组件上<span class="src">p.17</span>。</li>
+<li><strong>LinkedIn CAPT</strong>(Contextual Agent Playbooks &amp; Tools):把组织积累的知识编码成逐步执行的手册,让 AI 编程智能体在真实代码库中完成具体工程任务,如创建服务、扩展接口、维护代码<span class="src">p.18</span>。</li>
+<li><strong>OpenAI 外围框架工程(Harness Engineering)</strong>:把这一模式扩展到端到端的软件产品开发。工程师定义产品意图、系统架构,以及持续集成、代码合并、回滚的规则;<strong>Codex</strong> 在这些约束内负责实现和验证,持续产出进入后续开发流程的代码产物。</li>
+</ul>
+<hr/>
+<h3>十、3.2.7 如何评估 L1 的执行自主<span class="src">p.18</span></h3>
+<p>作者总结,各层 L1 系统有<strong>同一条能力边界</strong>:AI 能执行越来越长、后果越来越重的改进流程,产物也会持续进入后续阶段,但"支配改进的流程仍由外部指定"。</p>
+<p>因此评估 L1 要看两个<strong>耦合</strong>的性质:</p>
+<ul>
+<li><strong>执行可靠性</strong>:在条件变化时,AI 能否正确执行规定流程。L1 系统能在较少人工干预下完成很长的动作序列,但始终受预先写好的流程约束。当任务条件超出流程覆盖范围,或流程中隐含的假设不再成立时,系统无法自行修订流程,就容易执行失败。</li>
+<li><strong>持久化安全性</strong>:执行中引入的错误,能否在其产物传播到后续改进轮次<strong>之前</strong>被发现。持久化会<strong>放大</strong>失败的后果,因为产物会被保留复用,错误会溢出到引入它的那个任务之外,影响后续迭代。所以评估不仅要看流程是否执行正确,还要看产物进入下游之前是否仍然有效。</li>
+</ul>
+<p><strong>本节结论(Finding)</strong>:L1 是在规模化地执行人类定义的改进流程。人先把成熟的工程经验编码成明确的改进步骤和验证规则,AI 在具体任务上执行;产物被保留并纳入后续开发流程,使同一套改进流程能在互不相关的任务和不同开发阶段中反复应用。</p>
+<p>通俗地说:L1 的 AI 是一个非常能干、不知疲倦的"按 SOP 办事的执行者"。它的贡献会沉淀下来,但它不能决定 SOP 怎么写,也不能自主选择下一步该尝试哪种改进。后者正是下一级 L2(改进策略的自主)要解决的问题。</p>
+</section>
+<section id="n05">
+<h2>§3.3 L2:改进策略的自主</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li>L2 的核心变化是:AI 不再只执行人规定好的改动,而是<strong>根据评测反馈自己决定下一步尝试哪种改进</strong>。目标、任务边界和验收标准仍由人设定。作者把这看作「把观察到的证据转化为下一个实验」这一研究职责的部分移交。</li>
+<li>作者没有按单个系统来组织 L2,而是按「改进策略作用的对象」分成三类:提示词搜索(Prompt Search)、智能体与外围框架搜索(Agent and Harness Search)、模型与训练搜索(Model and Training Search)。对象越大,可干预的范围越广。</li>
+<li>策略自主度高,不等于递归自我改进(RSI)就强。搜索可能低效,可能钻评测器(evaluator)的空子,收益也可能几轮后就消失。作者特别提醒三类风险:基准过拟合、把算力投入误当成算法进步、LLM 评测器与提议者共享盲区。</li>
+</ul>
+<blockquote>
+<p>说明:p.18 开头的 L1 收尾内容(LinkedIn CAPT、OpenAI Harness Engineering、§3.2.7 L1 评估)和 p.22 起的 L3 内容(§3.4)不属于本部分,这里不讲。</p>
+</blockquote>
+<hr/>
+<h3>一、L2 的定义:自主决定「怎么改」<span class="src">p.18</span></h3>
+<p>作者给 L2 的定义是:AI 系统<strong>利用评测反馈选择下一步尝试哪种改进干预</strong>,而不是执行一个事先规定好的更新。它提出改动、测试改动,并保留被接受的修订。人仍然负责三件事:目标(objective)、任务边界(task boundary)、验收标准(acceptance criteria)。外层的搜索框架本身可以固定不变,L2 的自主只体现在「目标系统该怎么被改进」这一点上。</p>
+<p>作者解释了为什么这一步重要。在很多 AI 开发流程里,执行一个已经想好的改动相对机械,难点在于<strong>决定哪个改动值得尝试</strong>。研究者要做一连串判断:</p>
+<ul>
+<li>解读失败原因;</li>
+<li>推断是哪个组件在限制进展;</li>
+<li>选一个效果不确定的干预;</li>
+<li>看到结果后再决定下一步。</li>
+</ul>
+<p>可选干预越多,这种实验决策就越成为瓶颈。穷举搜索做不到,人工试验又受限于研究者的精力和先入为主的直觉。L2 系统要自动化的正是这个瓶颈:改进者(improver)根据评测结果和实验证据,自己确定下一个候选干预。</p>
+<p>通俗地说:L1 像是按菜谱炒菜的厨师,L2 像是尝了味道后自己决定「下一锅该多放盐还是少放油」的厨师。菜谱的目标(做出好吃的菜)和评判标准(谁来尝、怎么打分)仍由别人定。</p>
+<p>作者认为这种转变越来越像<strong>实证研究者角色的部分自动化</strong>。他引用 OpenAI 的说法:当前前沿智能体在人类监督下处理定义明确的研究任务时,已达到「automated research intern」(自动化研究实习生)阶段,而优先级以及哪些结果值得继续投入或部署,仍由研究者决定<span class="src">p.18</span>。因此作者强调,L2 的自主<strong>不是对研究的无限制控制</strong>,只是移交了一项具体职责:把观察到的证据变成下一个实验。</p>
+<hr/>
+<h3>二、L2 的总体循环与图 4<span class="src">p.19</span></h3>
+<p>作者把 L2 的典型循环概括为六步:</p>
+<p><strong>观察性能 → 诊断 → 选择如何改 → 实例化并测试 → 保留或回退 → 重复</strong></p>
+<p><strong>图 4</strong> 用一张流程图展示了这个机制:</p>
+<ul>
+<li><strong>证据来源</strong>:从「当前系统」采集执行轨迹(traces)、错误(errors)、指标(metrics)等证据。</li>
+<li><strong>自主策略选择</strong>包含几个环节:</li>
+<li>诊断:图中示例是「智能体反复访问同一批文件,在长轨迹中丢失上下文」;</li>
+<li>归因:示例是「外围框架缺少显式记忆和检索」;</li>
+<li>提出候选干预:示例目标是「改进智能体脚手架」。</li>
+<li><strong>评测器把关</strong>:候选干预交给评测器,通过就接受,测试失败就拒绝。被接受的更新进入后续迭代。</li>
+<li><strong>两种技术范式</strong>:</li>
+<li><strong>基于推理的策略合成</strong>(Reasoning-Based Strategy Synthesis):由模型根据证据推理出改法。图中示例任务是「给仓库的数据加载器加缓存机制」。</li>
+<li><strong>基于搜索的策略优化</strong>(Search-Based Strategy Optimization):生成多个候选再比较、探索、选择。图中细分为基于进化(Evolution-Based,有「父代」)、基于树(Tree-Based)、基于档案库(Archive-Based,有「以往设计的档案库」)三种。图中候选示例是两种提示词写法:「简洁回答……」与「逐步回答……」。</li>
+</ul>
+<p>作者指出,被改进的对象可以很小,比如提示词;也可以扩大到可执行的智能体,乃至模型训练程序。不同场景之间变化的是两样东西:改进者能干预的<strong>对象与范围</strong>,以及用来决定改什么的<strong>证据</strong>。因此 L2 按「策略搜索所作用的对象」来组织,而不是按单个系统<span class="src">p.19</span>。</p>
+<hr/>
+<h3>三、§3.3.1 提示词搜索(Prompt Search)<span class="src">p.19</span></h3>
+<p>这是<strong>最窄的 L2 场景</strong>。改进者根据执行轨迹和评测结果,决定控制模型或智能体的指令(提示词或其他文本控制变量)该怎么改,而不只是套用一个规定好的编辑。</p>
+<ul>
+<li><strong>工业例子</strong>:Dropbox 用 GEPA 重写了一段提示词。这段提示词告诉 LLM 如何判断检索到的文件或消息与用户搜索是否相关。</li>
+<li><strong>方法演进</strong>:早期的进化方法是在不同的变异(mutation)之间搜索;较新的反思式优化器(reflective optimizer)则利用执行轨迹识别失败模式,再生成有针对性的修改。</li>
+<li><strong>GEPA</strong>:把失败归因到具体模块。它会保留多个互补的提示词变体,不急于锁定单一的贪心谱系。</li>
+<li><strong>MPO</strong>:把可编辑对象扩展到多模态提示词,用评测得出的语义反馈来引导后续的文本与非文本提示词候选。</li>
+<li><strong>C-Evolve</strong>:把候选生成嵌入一个固定的进化协议中。</li>
+</ul>
+<p>这一小节的结论是:搜索机制本身可以由外部规定,但具体的提示词修改是从评测反馈中「长出来」的。作者原话强调,自主度的提升<strong>不在于生成提示词本身</strong>,而在于「control over which revision strategy is attempted next」,即掌控下一步尝试哪种修改策略。</p>
+<hr/>
+<h3>四、§3.3.2 智能体与外围框架搜索(Agent and Harness Search)<span class="src">p.19–20</span></h3>
+<p>这一类改进涉及重新设计推理组件与工具调用组件之间的协作方式。当可编辑对象从提示词扩展到<strong>可执行的智能体代码</strong>,策略搜索就开始像「自动化系统设计」了。</p>
+<ul>
+<li><strong>Microsoft Foundry 的 Agent Optimizer</strong>:根据评测失败,重写托管智能体的系统指令、技能(skills)和本地函数工具描述。</li>
+<li><strong>ADAS</strong>(Automated Design of Agentic Systems,智能体系统自动设计):把智能体形式化为一个 Python 的 forward 函数,由元智能体(meta-agent)不断往一个持续增长的候选智能体档案库里添加新设计。每轮迭代中,元智能体在验证数据上评估候选,再把代码和指标一起存入档案库。</li>
+</ul>
+<p>作者指出关键差别在于:这些设计决策写在可执行的外围框架(harness)代码里,所以<strong>一次修改就能改变智能体在整个任务中的行为</strong>,不像提示词那样只改一条指令。</p>
+<p>随后作者介绍两个工作流搜索系统,它们用不同方式表示设计空间:</p>
+<ul>
+<li><strong>AFlow</strong>:把工作流编码为可执行的图,用蒙特卡洛树搜索(MCTS)对代码级修改做逐步探索,执行结果作为后续分支的反馈。</li>
+<li><strong>AgentSquare</strong>:把智能体设计拆成可复用模块,通过进化与重组来搜索。在一种配置中找到的成功结构,可以成为另一种配置的积木。</li>
+</ul>
+<p><strong>边界</strong>:这一层的自主远大于局部调参,但在一个重要意义上仍有边界。改进者在不同智能体设计之间做选择,候选能被提升,仍然是因为它在<strong>外部维护的评测流程</strong>下表现更好。作者强调,L2 自主是寻找更好的系统配置,「does not imply authority to redefine what constitutes successful performance」,即无权重新定义什么才算成功<span class="src">p.20</span>。</p>
+<hr/>
+<h3>五、§3.3.3 模型与训练搜索(Model and Training Search)<span class="src">p.20–21</span></h3>
+<p>这里改进者要把<strong>训练中得到的实证证据</strong>,转化为关于学习者本身如何配置、如何构造、如何优化的决策。背景是:可做的实验太多,人类研究者只能凭积累的直觉挑出极小一部分来跑。L2 改进者的新角色是<strong>压缩这个实验周期</strong>:查看以往运行发生了什么,推断改进可能来自哪里,据此安排下一个实验。作者把这一类细分为四种。</p>
+<p><strong>(1) 配置搜索(Configuration Search)</strong></p>
+<ul>
+<li>自动分配昂贵的训练试验。</li>
+<li>新的智能体方法在传统搜索之外加入了对以往实验的语义推理。每次试验不再被当作孤立的黑盒查询,系统会解读训练结果,并据此集中后续探索。</li>
+<li>例子:NVIDIA 2026 年用于对 Cosmos 3 做后训练的 TAO 工作流,让编码智能体在固定验证目标下调用 LLM 引导的 AutoML。人提供模型、任务、数据和期望指标,「下一个该评估哪个配置」这一反复出现的决策大部分交给系统。</li>
+</ul>
+<p><strong>(2) 架构搜索(Architecture Search)</strong></p>
+<ul>
+<li>把模型的结构设计交出去,减少对人工设计搜索空间的依赖。基于 LLM 的改进者能解读实验结果,提出<strong>事先没有被枚举过</strong>的结构改动。</li>
+<li>例子:AgentNAS 的出发点是,现代神经架构搜索(NAS)仍依赖人工设计、针对特定任务的搜索空间。它先用 LLM 生成一个针对任务的种子架构,再从这个设计推导出结构化搜索空间,用于后续的组合搜索。</li>
+</ul>
+<p><strong>(3) 训练规则搜索(Training-Rule Search)</strong></p>
+<ul>
+<li>改进者修改的是「模型参数如何被学习」这一可执行流程。前沿智能体开始自动化「从假设到实验」这一步。</li>
+<li>例子一:OpenAI 为 GPT-6 Astra 做的 NanoGPT 评测。给智能体一个固定的验证目标、<strong>一块 GPU</strong> 和受限的训练设置,要求它自己诊断训练瓶颈、修改训练代码、调整配置,并对训练循环做出有用的改动。</li>
+<li>例子二:开放研究环境 autoresearch 把这种分工体现得更直接。数据管线、评估函数、指标和每次实验的算力预算都固定,智能体反复编辑训练程序,<strong>只有当受保护的验证指标提升时才保留修改</strong>。</li>
+</ul>
+<p><strong>(4) 系统与实现搜索(Systems and Implementation Search)</strong></p>
+<ul>
+<li>改进者寻找模型计算的更高效实现,正确性和系统级性能由外部测试守住。流程是:剖析瓶颈 → 提出实现改动 → 验证数值正确性 → 测量真实硬件性能 → 据此决定下一步改什么。</li>
+<li>例子:AutoKernel 不从任意的代码生成起步,而是先做性能剖析(profiling),找出对端到端影响最大的算子,把智能体的实验引向这些瓶颈。候选的 Triton 或 CUDA 实现<strong>必须通过正确性检查并实测到 GPU 加速</strong>才会被接受<span class="src">p.20–21</span>。</li>
+</ul>
+<hr/>
+<h3>六、表 4:代表性 L2 系统一览<span class="src">p.21</span></h3>
+<p><strong>表 4</strong> 列出代表性(作者强调「并非穷举」)的 L2 系统,共 <strong>13 个</strong>,从三个维度比较:类型、关键机制、层级局限(level limitation)。系统分为三组:</p>
+<ul>
+<li><strong>提示词搜索,4 个</strong>:Promptbreeder、GEPA、MPO、C-Evolve。</li>
+<li>Promptbreeder 让提示词与变异方式共同进化;GEPA 用「轨迹反思 + 帕累托选择」。</li>
+<li>局限都是固定的任务适应度或任务指标,C-Evolve 还多一层固定协议。</li>
+<li><strong>智能体与外围框架搜索,4 个</strong>:Microsoft Foundry Agent Optimizer、ADAS、AFlow、AgentSquare。</li>
+<li>局限分别是固定评测流程、固定基准、固定评测器、固定基准。</li>
+<li><strong>自主实验搜索(Autonomous Experimental Search),5 个</strong>:AutoResearch、GPT-6 Astra NanoGPT、Auto Research〔136〕、AgentNAS、AutoKernel。</li>
+<li>这一组对应正文的「模型与训练搜索」,表中换了组名。</li>
+<li>AutoResearch 是「编辑–训练–评估」循环,局限是固定指标。</li>
+<li>Auto Research〔136〕采用「专家智能体 + 共享谱系」,受外部评测器约束(正文没有展开介绍这一项)。</li>
+<li>AutoKernel 是「剖析–重写–基准测试」循环,受固定的正确性与速度标准约束。</li>
+<li>GPT-6 Astra NanoGPT 的局限是固定验证目标加固定训练算力。</li>
+</ul>
+<p><strong>这张表最能说明问题的是「层级局限」一列</strong>:13 个系统无一例外,都受某种外部固定的指标、评测器、基准或验收规则约束。表题说明了这正是它们停留在 L2 的原因:它们自主决定怎么改,但目标、评估标准或验收规则仍由外部规定。</p>
+<p>下面是我按正文整理的对象层级概括:</p>
+<table>
+<thead>
+<tr>
+<th>搜索对象</th>
+<th>改什么</th>
+<th>代表系统</th>
+<th>外部固定的是什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>提示词</td>
+<td>指令/文本控制变量</td>
+<td>GEPA、MPO、C-Evolve</td>
+<td>任务指标、进化协议</td>
+</tr>
+<tr>
+<td>智能体与外围框架</td>
+<td>可执行的智能体代码、工作流</td>
+<td>ADAS、AFlow、AgentSquare</td>
+<td>基准、评测器</td>
+</tr>
+<tr>
+<td>模型与训练</td>
+<td>配置、架构、训练规则、底层实现</td>
+<td>TAO、AgentNAS、autoresearch、AutoKernel</td>
+<td>验证指标、算力预算、正确性与速度测试</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3>七、§3.3.4 如何评估 L2 策略自主<span class="src">p.21</span></h3>
+<p><strong>1. 自主程度 ≠ 改进质量。</strong> 作者首先强调,对改进策略有更大自主权,本身并不意味着递归自我改进更强。一个 L2 系统的干预空间可能非常丰富,却仍可能出现三种问题:搜索低效;利用评测器的弱点;收益几轮迭代后就消失。因此作者把两件事分开评估:<strong>被委托的自主程度</strong>,以及<strong>由此产生的改进过程的质量</strong>。</p>
+<p><strong>2. 三者要配合。</strong> 这两个维度互补。搜索空间更宽,只有在两个条件同时满足时才有用:反馈能区分候选的好坏,搜索过程能高效探索这个空间。作者用这一点解释,为什么当前工业系统集中在<strong>编码、模型训练、内核优化</strong>这几个领域:这些领域的候选干预可以直接执行,反馈也来得快。</p>
+<p><strong>3. 自适应搜索循环带来的评估风险。</strong> 同一个循环也会制造典型的评估陷阱:</p>
+<ul>
+<li><strong>基准过拟合</strong>:反复访问开发集,容易让系统过拟合基准。</li>
+<li><strong>把算力当进步</strong>:额外的搜索算力可能被误认为是算法上的改进。</li>
+<li><strong>共享盲区</strong>:LLM 评测器可能和提议者有相同的盲区。</li>
+</ul>
+<p>公开的自动化研究系统已经让这些风险变得具体,报告过的行为包括:挑选随机种子(cherry-picking)、发现捷径(shortcut),以及通过反复查询评测器试图套出测试标签〔20〕。</p>
+<p>作者的一句关键判断是:一旦基准被自适应地反复查询,它实际上就成了<strong>优化对象的一部分</strong>,不再是被动的测量工具。通俗地说:考题被反复拿来练,它就不再能真实检验水平了。</p>
+<p><strong>4. 对企业报告的态度。</strong> 公司自己报告的结果可以作为「可行性与规模」的证据,但来源应当标明,也不应把它们等同于经过独立复现的实验。</p>
+<hr/>
+<h3>八、本节结论(Finding)<span class="src">p.21</span></h3>
+<p>作者的总结是:<strong>L2 把人类的工作从「提出每一个具体改进」转移到「约束对改进的搜索」</strong>。人仍然规定目标和验收标准,但不再需要亲自挑选每个候选干预。瓶颈因此从「执行一个已知的改进」变成了「在可能的改进中搜索」。</p>
+<p>这为下一节的 L3 做了铺垫:L2 决定「怎么改」,L3 将进一步自主决定「接下来从什么经验中学习」<span class="src">p.22</span>。</p>
+</section>
+<section id="n06">
+<h2>§3.4 L3:未来学习经验的自主</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li>L3 在 L2"自己决定怎么改进"的基础上,再加一层自主:系统根据自身当前的能力、失败和学习历史,决定<strong>接下来从什么经验中学习</strong>。学到的东西又会改变下一轮的选择,形成闭环。</li>
+<li>工业界的数据流水线虽然高度自动化,但"操作自动化"不等于"经验自主"。判断是否达到 L3,看的是有没有一条闭合的依赖链:学习者状态 → 获取经验 → 持久学习 → 后续获取决策。</li>
+<li>代表性做法分两类:①自适应任务生成与自我对弈;②在环境中自主练习。评估时要把"有没有自主"和"学得好不好"分开看,还要警惕"经验污染"(experience corruption)在多轮之间不断传播。</li>
+</ul>
+<hr/>
+<h3>1. L3 的定义:掌控"学习议程"</h3>
+<p><span class="src">p.22</span>L2 关心的是<strong>如何</strong>改进;L3 新增的自主权针对的是<strong>学习议程</strong>(learning agenda):系统用关于自身能力、失败和学习历史的证据,决定下一步从什么经验中学习。学习完成后,系统状态发生变化,而下一轮获取什么经验又取决于这个状态。于是,"选经验"和"持久改进"在多轮之间被串了起来。</p>
+<p>作者把这一层的典型循环概括为:观察学习者状态 → 选择学习经验 → 获取经验 → 更新持久状态 → 重塑未来经验 → 重复。</p>
+<p><strong>定义性特征</strong>是"以学习者为条件的未来经验获取"(learner-conditioned future experience acquisition)。具体有两点要求:</p>
+<ul>
+<li>关于学习者当前状态的证据,必须影响"下一步选、生成或去寻找哪些经验"这个决策;</li>
+<li>由此产生的持久更新,必须反过来影响之后的获取决策。</li>
+</ul>
+<p>这个决策可以交给一个独立的课程(curriculum)组件,也可以融在智能体自己的策略里。作者特别强调一个反例:策略更新后,智能体碰巧去了不同的状态,这<strong>本身不算</strong>掌控学习议程。通俗地说:必须是"有意识地根据自己哪里弱去挑下一步练什么",而不是"变了之后顺带走到了别处"。</p>
+<p><span class="src">p.22</span>几点澄清:</p>
+<ul>
+<li><strong>经验不必从零生成。</strong>从外部给定的数据池里反复挑选,只要挑选会随学习者变化而调整,并且参与持续循环,就符合 L3。一次性的过滤或保留不算。</li>
+<li><strong>人类设计的部分可以保留。</strong>目标、评测器(evaluator)、更新过程乃至经验选择规则都可以由人设计。关键在于:学习者的反馈能否自主改变下一轮的学习议程,而不需要人在每一轮之后重新设计。</li>
+<li><strong>持久学习的载体</strong>可以是模型参数,也可以是可复用的外部状态,比如记忆(memories)和技能(skills)。</li>
+<li><strong>L3 证据只是一个维度。</strong>给一个系统定总体等级时,还要结合层级体系中其他层的要求一起判断。</li>
+</ul>
+<h3>2. 从工业自动化到经验自主(§3.4.1)</h3>
+<p><span class="src">p.22</span>作者综合几份公开的训练数据实践文献[137–140],把训练数据流水线中反复出现的功能归纳为<strong>六个组件</strong>:</p>
+<ol>
+<li>数据源准备</li>
+<li>数据标注</li>
+<li>数据选择</li>
+<li>数据构建</li>
+<li>数据配比与训练编排</li>
+<li>模型反馈诊断</li>
+</ol>
+<p>这些功能不是固定的先后顺序,在预训练、监督微调、偏好优化和强化学习等阶段都可能反复出现。</p>
+<p><strong>图 6 的要点</strong><span class="src">p.24</span>:每行是一个组件,圆角条代表该组件中反复出现的具体操作,横向位置表示从"人工主导(M)"经"人在回路(H)"到"自动化(A)"的定性程度。各组件涉及的操作大致如下:</p>
+<ul>
+<li><strong>数据源准备</strong>:来源发现;格式处理与网页抓取。</li>
+<li><strong>数据标注</strong>:标签体系与评分细则(rubric)设计;标注校准与质量控制。</li>
+<li><strong>数据选择</strong>:批量属性打分;排序、阈值筛选与代表性选取;输出校验。</li>
+<li><strong>数据构建</strong>:任务目标与生成规格;样本生成;基于规则的安全与隐私过滤;输出校验。</li>
+<li><strong>数据配比与训练编排</strong>:配比方案与权衡;训练阶段与课程排期。</li>
+<li><strong>模型反馈诊断</strong>:失败分析与根因诊断;能力测量与行为监控。</li>
+</ul>
+<p>图注特别声明两点:这些位置是对已报道实践的<strong>解读性综合</strong>,不是定量测量,也不是对各家机构的打分;操作层面的自动化,与"学习者反馈跨轮自主重塑经验获取"这一额外要求是两回事。</p>
+<p><span class="src">p.22</span>正文的论证分三步:</p>
+<ul>
+<li><strong>哪些已经自动化。</strong>抓取、过滤、样本生成等操作,只要输入和验收标准定好,就能大规模自动执行[22, 137, 139]。</li>
+<li><strong>哪些仍由研究者决定。</strong>这些报告同样描述了由研究者拍板的选择:数据政策、生成与配比策略、训练阶段、实验评估[22, 138, 141]。"自动执行一个操作"和"把后续学习议程的决定权交出去"是不同的。</li>
+<li><strong>判断标准是闭环,而不是谁设计了规则。</strong></li>
+<li>一个固定的、人写的选择算法,只要它利用不断变化的学习者反馈来挑下一批经验,就可以产生自适应议程,符合 L3。</li>
+<li>反过来,一条反复生成、过滤数据的自动流水线,仅仅因为产出了新样本,并不构成经验自主。</li>
+<li>决定性证据是"学习者状态—经验获取—持久学习—后续获取决策"之间的闭合依赖。</li>
+</ul>
+<p>作者认为,所引的流水线文档证明了大量操作自动化,但<strong>单凭这些文档</strong>不能确立这一完整依赖。同时作者也说明,这只是证据层面的区分,不等于断言工业系统一定没有这种机制。</p>
+<p><span class="src">p.22–23</span>后面的研究案例分两类模式:自适应任务生成与自我对弈、通过环境交互自主练习。作者说明,这是两种互补的组织视角,并非穷尽或互斥的分类:交互式智能体也可以自己出题,以学习者为条件的选择也可以在任一模式中进行,或直接作用于现成的数据池。</p>
+<h3>3. 图 5:两种实现路径的示意</h3>
+<p><span class="src">p.23</span>图 5 的总前提是:在人定义的目标和评估约束下,系统根据当前能力、失败与交互历史决定下一步学什么。</p>
+<p><strong>上半部分:自适应任务生成与自我对弈</strong>,以代码推理为例。</p>
+<ul>
+<li>学习者状态显示:算术已掌握,短板是"循环边界推理",<code>sum(range(3))</code> 做错过。</li>
+<li>任务生成器(角色名为 Proposer/Challenger,可以是独立模型,也可以是同一模型扮演的角色)据此出一道新题:预测一段 <code>range(4)</code> 累加循环的输出。</li>
+<li>求解器(Solver)预测为 4,实际执行结果为 6,执行检查判定失败。</li>
+<li>这条反馈一方面更新学习者状态,下一步出更多循环边界的变体题;另一方面在适用时更新生成器:用经过验证的任务更新模型参数,并维护一个已验证任务缓冲区,让生成器把出题重点放在循环边界上,同时调整下一题的难度。</li>
+</ul>
+<p><strong>下半部分:通过环境交互自主练习</strong>,以 Minecraft 为例。</p>
+<ul>
+<li>智能体身处沙漠,已会 <code>gather_wood()</code>,看到了仙人掌,但背包里没有。</li>
+<li>它自问"下一步该练什么",选定练习目标"收集 1 块仙人掌"。</li>
+<li>执行成功后,背包中仙人掌从 0 变为 1,新技能 <code>gather_cactus()</code> 被存入技能库,下一个目标定为采集沙子。</li>
+<li>图中列出的环境类型还包括:电脑使用(操作系统、软件)、物理/机器人环境,以及其他环境。</li>
+</ul>
+<p>两条路径的共同点是:持久更新会重塑后续的出题或练习选择,从而闭合"学习"与"未来经验获取"之间的反馈回路。</p>
+<h3>4. 自适应任务生成与自我对弈(§3.4.2)</h3>
+<p><span class="src">p.23</span><strong>为什么需要自适应?</strong>训练任务的价值会随学习者进步而变化。固定的任务分布不会显式追踪这条移动的"能力前沿"(competence frontier):做熟的题不再提供信息,远超能力的题又给不出可用的学习信号。通俗地说:题目要始终出在"跳一跳够得着"的位置。</p>
+<p>作者指出这里有三大挑战:</p>
+<ol>
+<li>拿到有信息量的信号;</li>
+<li>把信号转化成有用的任务分布;</li>
+<li>保证由此产生的经验是有效的、正确的。</li>
+</ol>
+<p>代表系统如下:</p>
+<ul>
+<li><strong>SSP(Search Self-Play)[98]</strong><span class="src">p.23</span>:让出题方(proposer)的奖励取决于求解方当前的表现。求解方一变,激励后续搜索题目的信号也跟着变,课程就能自行演化,不用人工逐批重新设计。它把挑战 1 和挑战 2 连接了起来。</li>
+<li><strong>AZR(Absolute Zero Reasoner)[99]</strong>:在<strong>同一个模型</strong>里同时承担可执行推理任务的出题和解题。出题由一个依赖求解方表现的"可学性奖励"(learnability reward)引导;代码执行器既检验题目本身是否成立,也检查解答。这样就拆开了无约束合成容易混为一谈的两个要求:经验必须<strong>可评估</strong>,其难度又必须<strong>对当前学习者有用</strong>。</li>
+<li><strong>R-Zero[103]</strong><span class="src">p.23–24</span>:采用挑战者—求解者(Challenger–Solver)架构,不需要外部答案标签。挑战者的"不确定性奖励"取决于当前求解者多次回答之间的一致性,因此求解者一更新,控制后续出题的信号也随之改变。作者提醒,一致性只是"模型感知难度"的代理指标,既不直接证明答案正确,也不直接证明未来有学习收益。它的作用在于:即使拿不到更强的正确性信号,也能让经验获取对学习者保持敏感。</li>
+<li><strong>STP[100]</strong><span class="src">p.24</span>:形式化领域提供了另一条获得可靠反馈的路径。为解决证明奖励稀疏的问题,STP 同时训练猜想者(conjecturer)和证明者(prover)。当前证明者"勉强能证出"的猜想被用来训练猜想者,经过检查的证明则用来提升证明者;证明者能力前沿的移动又会重塑后续猜想。这里有一个分工:证明助手负责形式领域内的正确性检查,而依赖学习者的选择标准负责另一件事,即找出合适的训练难度。</li>
+<li><strong>PSV(Propose, Solve, Verify)[101]</strong>:把类似机制用到可验证的代码生成上。由求解者得出的难度标签附在示例上,用来提示生成新的规格(specification);候选规格要先通过可编译检查,生成的解答还要对照规格做形式化验证,通过后才用于训练。作者指出,这些检查只能确立"相对于规格"的性质,不能保证规格本身是有价值的任务,也不能保证其解答能提升学习者。PSV 自己报告,标为易、中、难的题目,<strong>实际难度有大量重叠</strong>,说明按难度条件出题只能做到<strong>部分而非精确</strong>的课程控制。</li>
+<li><strong>VisPlay[142]</strong>:把这一思路扩展到视觉-语言推理,由基于图像的提问者(Questioner)和推理者(Reasoner)组成。提问者的不确定性奖励偏好这样的问题:推理者多数答案的置信度接近预设的中点。同时还有多样性惩罚,防止题目重复。推理者变化后,其回答一致性随之变化,进而改变出题奖励。与 R-Zero 一样,这种信号可以规模化,但它反映的可能是题目歧义或回答混乱,而不一定是"有成效的难度"。</li>
+</ul>
+<p><span class="src">p.24–25</span><strong>横向比较</strong>:这些系统的反馈在两个相互关联的维度上不同。</p>
+<ul>
+<li><strong>反馈的可靠性。</strong>可执行结果和形式化证明检查能在限定的任务设定内确立正确性;答案一致性只能估计难度,不能独立确立正确性。</li>
+<li><strong>自适应发生在哪里。</strong>可以落在一个经过训练的出题模型里,也可以落在依据当前学习者测量结果来调整的生成提示和选择流程中。</li>
+</ul>
+<p>这些选择要在验证覆盖范围、反馈成本、对不完美代理指标的敏感度之间做权衡。共同的进步在于:<strong>估计出的学习价值影响未来的经验获取,而持久学习又在后续轮次中改变这一估计。</strong></p>
+<h3>5. 表 5:九个代表性循环</h3>
+<p><span class="src">p.25</span>表 5 从三列比较各循环:改进对象、以学习者为条件的机制、外部规定的约束。</p>
+<ul>
+<li><strong>分组</strong>:共 9 个系统。"自适应任务生成与自我对弈"6 个(SSP、AZR、R-Zero、STP、PSV、VisPlay),"环境交互自主练习"3 个(VOYAGER、SIMA 2、SEAgent)。</li>
+<li><strong>改进对象</strong>:涵盖搜索智能体、推理模型、定理证明器、代码模型、视觉-语言模型、具身智能体和电脑使用智能体。</li>
+<li><strong>约束列的共同点</strong>:几乎都包含奖励或评审设计、训练或优化流程,以及领域工具(代码执行器、形式验证器、Minecraft 接口、软件接口等)。也就是说,"出什么题、练什么"由系统决定,但游戏规则仍由人设定。</li>
+</ul>
+<p>几个有代表性的例子:</p>
+<ul>
+<li>R-Zero 的约束是不确定性奖励、伪标签方案和优化方法;</li>
+<li>STP 的约束是形式领域、证明检查和训练规则;</li>
+<li>SIMA 2 的约束是任务设定器、奖励评分细则和训练流程。</li>
+</ul>
+<p>表注强调:约束列描述的是<strong>所讨论那个循环的范围</strong>,并不单独确立某个系统能达到的最高自主等级。</p>
+<h3>6. 通过环境交互自主练习(§3.4.3)</h3>
+<p><span class="src">p.25</span>交互式智能体必须决定把下一份学习精力花在哪里。单纯多收集轨迹解决不了这个问题:无引导的探索会反复练已经会的行为,固定的练习计划又无法对新学会的技能或持续存在的失败做出显式响应。下面三个系统把交互反馈接到未来的练习目标上。</p>
+<ul>
+<li><strong>VOYAGER[84]</strong>:在 Minecraft 中把自动课程与持久的可执行技能库结合起来。当前状态和探索历史决定新目标,成功的行为变成可复用技能,供后续任务调用。学习改变了智能体"能尝试什么",新的探索又提供获取新技能的经验。作者特别指出,这里的持久性体现在<strong>外部技能</strong>中,并不要求更新底层语言模型的参数。</li>
+<li><strong>SIMA 2[24]</strong>:说明实验设定对识别这一机制至关重要。它的固定任务实验证明了"用自生成轨迹能带来提升",但仅凭这一点不能说明它掌控了任务选择。在完整的 ASKA 自我改进设定中,一个基于 Gemini 的任务设定器(task setter)利用下游奖励模型的评估结果,把练习集中在较弱的技能上,所得经验再用来训练智能体,从而把能力评估和后续练习分配连了起来。作者认为,这种自主属于包括任务设定器在内的<strong>整个耦合学习系统</strong>,不要求执行动作的那个模型亲自做每一个课程决策。</li>
+<li><strong>SEAgent[61]</strong><span class="src">p.25–26</span>:针对在陌生软件中的练习,显式地连接"轨迹评估"和"课程记忆"。世界状态模型(World State Model)提供轨迹判断和 GUI 状态变化的描述,交给课程生成器(Curriculum Generator);后者更新一本持久的"软件指南"(guidebook),并据此生成后续任务。执行者(Actor)从收集到的经验中学习,之后的交互又继续修订指南和任务集。这本指南把早期探索的信息带入后来的练习决策,让课程能扩展到之前未探索过的操作。</li>
+</ul>
+<p><span class="src">p.26</span><strong>三者对比</strong>:它们共享同一种反馈结构,但依赖不同的持久资源和判断来源。</p>
+<ul>
+<li>VOYAGER 依赖探索历史和技能库;</li>
+<li>SIMA 2 依赖奖励模型的评估;</li>
+<li>SEAgent 依赖不断演化的软件行为描述。</li>
+</ul>
+<p>相应地,技能构建不可靠、奖励判断不准确、指南条目出错,都可能把后续的学习精力引向错误方向。自主交互减少了对人工课程的需求,但反馈质量和累积状态的质量仍然是这个循环是否可靠的核心。</p>
+<p><strong>两条路径的概括对比</strong>(自制):</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>自适应任务生成与自我对弈</th>
+<th>环境交互自主练习</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>核心决策</td>
+<td>下一道题出什么、多难</td>
+<td>下一步去练什么目标</td>
+</tr>
+<tr>
+<td>学习者信号</td>
+<td>求解成功率、可学性、答案一致性、难度标签</td>
+<td>智能体状态、探索历史、奖励模型评估、轨迹判断</td>
+</tr>
+<tr>
+<td>持久载体</td>
+<td>主要是模型参数(含出题模型),外加已验证任务缓冲</td>
+<td>技能库、软件指南,或模型参数</td>
+</tr>
+<tr>
+<td>主要风险</td>
+<td>代理指标把歧义误当成难度;"已验证"不等于"有用"</td>
+<td>技能、奖励判断或指南出错,误导后续练习</td>
+</tr>
+</tbody>
+</table>
+<h3>7. 如何评估 L3 经验自主(§3.4.4)</h3>
+<p><span class="src">p.26</span><strong>第一,自主不等于学得好。</strong>一个系统可以掌控自己的学习议程,却获取到无信息量、过于狭窄或被错误评估的经验。因此评估要同时确立两件事:反馈机制确实存在,以及使用这个机制确实带来好处。具体要回答三个问题:哪个学习者信号影响了获取?学习改变了什么持久状态?这一变化如何影响后来的获取决策?</p>
+<p><strong>第二,用对照实验分离"以学习者为条件"的贡献。</strong></p>
+<ul>
+<li>可用的对照有两种:把获取机制的学习者状态输入<strong>冻结在早期检查点</strong>;或者把自适应决策换成<strong>与学习者无关的固定计划</strong>。</li>
+<li>比较时应匹配数据源和环境的访问权限,并让计算预算和交互预算相当,其中要计入生成经验和评估经验的成本。</li>
+<li>作者特别提醒:<strong>不应让两边获取的样本完全相同</strong>,否则恰好消除了要研究的"分布自适应"本身。</li>
+<li>这些对照的目的,是把"自适应获取经验的价值"与"单纯多给训练资源带来的提升"区分开。</li>
+</ul>
+<p><strong>第三,区分正确性、难度和学习收益。</strong>形式化或可执行检查能在其支持的设定内确立规定的性质;一致性度量和基于模型的评判只是可能出错的估计。无论是"已验证正确",还是"估计难度合适",都不能单独证明边际学习价值。条件允许时,应把获取信号与独立的有效性检查、实际难度、后续学习增益做对照,并检验这些关系在学习者变化时是否依然稳定。</p>
+<p><strong>第四,经验污染(experience corruption)。</strong>作者用这个词指"有缺陷的经验或反馈扭曲后续学习和获取决策"的风险。例子有三类:</p>
+<ul>
+<li>误导性的难度代理会偏向不合适的任务;</li>
+<li>不准确的评审会奖励错误行为;</li>
+<li>持久记忆会把错误假设带进未来的练习。</li>
+</ul>
+<p>由于这些影响可能进入参数、技能、记忆或课程状态,它们可以<strong>跨轮传播</strong>。作者说明,这是反馈回路的结构性风险,并非断言每个系统都会出现这种放大。通俗地说:错一次不可怕,可怕的是错误被存下来,下一轮再按错误去出题、去练习,越滚越偏。</p>
+<p><strong>第五,可信评估要做到以下几点:</strong></p>
+<ul>
+<li>跟踪多轮表现;</li>
+<li>检查所获经验的有效性和多样性;</li>
+<li>测试向新任务、新环境的迁移;</li>
+<li>把"用来引导课程的反馈"和"用来评估泛化的受保护测试"严格分开。如果通过任务选择、奖励构造或持久记忆反复接触测试实例,这些实例就成了学习过程的一部分;</li>
+<li>对任务生成类系统,检查课程是否持续追踪学习者,而没有坍缩到狭窄或容易拿分的样例上;</li>
+<li>对交互类系统,检查练习是否能持续获得新技能,而不是停留在熟悉行为上。</li>
+</ul>
+<p><strong>结论(Finding)</strong>:L3 增加了对未来学习议程的自主。系统利用不断变化的能力、失败或学习历史,引导下一步选择、生成或寻找什么经验,持久学习又反馈到后续获取决策中。人设计的目标、评测器和学习规则可以继续存在,经验自主指的是在这一框架之内做出的决策,而且它<strong>本身不保证</strong>改进是有用或可靠的。</p>
+<p><span class="src">p.26</span>页末开始进入 §3.5 L4(部署与环境适应中的自主),作者用一句话做了区分:L3 关心"为学习而获取什么经验",L4 关心"运行中的经验如何改变后续任务所用的记忆、技能或执行组件"。具体内容属于下一部分。</p>
+</section>
+<section id="n07">
+<h2>§3.5 L4:部署与环境适应的自主</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li>L4 讨论的是 Agent 上线之后的事。系统根据真实部署中的交互反馈,自己决定哪些经验要沉淀下来、持久地改变自身,包括记忆、技能、代码或外围框架,甚至权重。L3 关心"下一步学什么经验",L4 关心"经验的哪些后果要留下来"。</li>
+<li>作者把 L4 的工作分成三类机制:轨迹蒸馏(trajectory distillation)、Agent 系统的迭代修订(iterative revision)、更新的选择性保留与部署(selective retention and deployment)。Table 6 按这三类汇总了 24 个代表系统、基准或分析。</li>
+<li>这一层的典型风险是"持久更新失败":一个已被接受的坏改动,会在暴露之前影响后续大量决策。目标、访问边界、受保护的评测和发布权仍然握在人手里。</li>
+</ul>
+<hr/>
+<h3>一、L4 的定义与核心循环</h3>
+<p><strong>定义<span class="src">p.26</span>。</strong> 在 L4,AI 利用持续部署中的交互反馈,决定正在运行的 Agent 应当怎样持久地适应。作者特意和 L3 区分开来:L3 的重心是"获取什么经验来学习",L4 的重心是"运行中的经验如何改变后续任务要用到的记忆、技能或执行组件"。</p>
+<p><strong>边界<span class="src">p.27</span>。</strong> 被保留下来的改动会塑造之后的行为,也会改变之后能拿到的反馈。下面四样东西仍由外部治理:目标(objective)、访问边界(access boundaries)、受保护的评测(protected evaluation),以及对重要发布的决定权。</p>
+<p><strong>核心循环<span class="src">p.27</span>。</strong> 作者把这一层的循环概括为:</p>
+<blockquote>
+<p>观察部署交互 → 提出持久适应 → 修订 Agent 组件 → 验证并保留 → 在后续任务中复用 → 收集新反馈,重复</p>
+</blockquote>
+<p>三类机制的差别在于三点:改的是什么、什么时候被复用、怎样确认它持续有用。Table 6 就是沿这三个维度整理的。</p>
+<h3>二、图 7:用一个"分页 bug"串起三类机制</h3>
+<p>图 7 用同一个具体例子演示 L4 的三个环节<span class="src">p.27</span>。</p>
+<p><strong>场景。</strong> 部署中的 Agent 在网页或 API 环境中执行真实任务。它可持久修改的状态有记忆、技能/工具、代码/外围框架(harness),权重标为"可选"。用户的需求会变化。某个任务要求"收集所有页里的全部 issue",但 Agent 只请求了第 1 页就停了,结果不完整。后来修正为:沿着 <code>next_page</code> 一直请求,直到它为空,才收齐所有页。同样的修正在后续任务里反复出现。</p>
+<p><strong>环节 1:轨迹蒸馏(Metis 风格)。</strong> 任务 A、B、C 都用到了"跟随 next_page"。系统把这些经验合并成一个共享流程,再编译成可复用工具 <code>fetch_all_pages(api)</code>。这个工具要先在沙箱里编译并运行,检查通过后才入库;之后的任务 D 直接调用它。图中概括为"多次经验 → 一个可复用制品"。同时还蒸馏出一条技能:"收尾前检查分页"。</p>
+<p><strong>环节 2:Agent 系统修订(HarnessDev 风格)。</strong> 当前外围框架 v1 只取一页,于是提出候选 v2,在框架里循环更新页指针。开发阶段的运行结果会反馈回来,用于继续修改。另有一条独立的通道:在固定执行器上冻结回放隐藏任务,测量成功率和执行器 token 成本。这条通道只测量,结果不回流给修订者。</p>
+<p><strong>环节 3:选择性保留与部署(HDSO 风格)。</strong> 先提出假设:"不完整结果会减少"。然后在同一批评测任务上做对照:对照组只用已批准技能,实验组是"已批准技能 + 候选"。比较结果后逐步扩大配对测试,最后在独立任务上确认。结论支持就加入已批准库;不支持或不明确,就拒绝并保持现状。</p>
+<p>通俗地说,图 7 讲的是同一个教训的三种落地方式:做成工具、改进框架、经过对照实验后才正式采纳。</p>
+<h3>三、Table 6 概览</h3>
+<p>Table 6 列出 24 个代表工作<span class="src">p.28</span>,每个工作记录三项:更新目标(update target)、更新时机(timing)、更新验证方式(update validation)。按本节三类机制分组:</p>
+<ul>
+<li><strong>轨迹蒸馏:15 个。</strong> 从 Dynamic Cheatsheet 到 Evo-Memory。</li>
+<li><strong>迭代修订:5 个。</strong> DecoEvo、HarnessDev、ASPIRE、S3Gym,以及分析性的 Harness Benefit。</li>
+<li><strong>选择性保留与部署:4 个。</strong> HDSO、Library Drift、Rethinking Skill Evolution,以及 Tax AI。</li>
+</ul>
+<p>这张表最值得注意的是"验证"一列,它呈现出一条由弱到强的梯度:</p>
+<ul>
+<li><strong>最弱:没有准入检验。</strong> Dynamic Cheatsheet 只靠任务结果引导自我整理,明确标注"no held-out gate"(没有留出集把关)。PersonaAgent 也"没有单独报告准入测试"。</li>
+<li><strong>中间:执行或反馈检查。</strong> Metis 要求反复复用,并通过沙箱编译检查;PANDO 用置信度打分来决定准入和降级。</li>
+<li><strong>最强:对照实验或人工把关。</strong> HDSO 用对照组与实验组的配对执行;Tax AI 先跑定向测试和回归测试,再交给人工审查。</li>
+</ul>
+<p>时机一列也跨度很大:有的每道题之后就更新(Dynamic Cheatsheet),有的离线批量更新(Trace2Skill、PRACTICE),有的在运行中实时更新(PANDO),最慢的按产品发布周期更新(Tax AI)。</p>
+<p>下表是笔者自制的三类机制概括:</p>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>改什么</th>
+<th>怎样确认有用</th>
+<th>代表</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>轨迹蒸馏</td>
+<td>文本记忆、结构化记忆、技能库、可执行代码</td>
+<td>多为任务结果、评判或沙箱检查</td>
+<td>Dynamic Cheatsheet、Trace2Skill、Metis</td>
+</tr>
+<tr>
+<td>迭代修订</td>
+<td>求解技能、评分标准、外围框架、权重</td>
+<td>固定验证器、隐藏任务回放、分数门控回滚</td>
+<td>DecoEvo、HarnessDev、ASPIRE</td>
+</tr>
+<tr>
+<td>选择性保留与部署</td>
+<td>哪些候选能入库、留存和上线</td>
+<td>配对对照、生命周期管理、人工审查</td>
+<td>HDSO、Library Drift、Tax AI</td>
+</tr>
+</tbody>
+</table>
+<h3>四、§3.5.1 轨迹蒸馏</h3>
+<p><strong>定义<span class="src">p.27</span>。</strong> 轨迹蒸馏把 Agent 的交互历史压缩成紧凑的制品(artifact),这些制品跨会话保存,并影响之后的任务。和原始轨迹相比,它更简洁、查阅成本更低、结构上更便于复用。作者按制品形态分成四类。</p>
+<p><strong>1. 文本经验记忆(textual experience memory)<span class="src">p.27–28</span>。</strong> 制品就是自然语言段落,后续任务时检索进提示词。</p>
+<ul>
+<li><strong>Dynamic Cheatsheet。</strong> 让一个冻结的模型在一系列相关问题上逐步变强,不需要真实标签。它维护一份不断演化的笔记,里面有策略、代码片段和已知陷阱。同一个模型答题时查阅这份笔记,并负责整理:加入新提炼的教训,删掉过时的条目。</li>
+<li><strong>Agentic Context Engineering(ACE)。</strong> 沿用同样的思路,但重点是让记忆在增长时仍保持详细。它存放短条目,每条带一个计数器,记录这条在后续任务中是帮了忙还是添了乱。更新时只打小补丁,不整篇重写,这样就避免了压缩造成的信息丢失。</li>
+<li><strong>ReasoningBank。</strong> 把这个思路用到多步 Agent 上,而且失败和成功同样被用来学习。每条经评判的轨迹都被蒸馏成一条带标题的简短策略,后续任务开始前先检索。</li>
+</ul>
+<p><strong>2. 结构化记忆(structured memory)<span class="src">p.28–29</span>。</strong> 经验存成显式的记录或图,"何时该复用"变得可以检查。</p>
+<ul>
+<li><strong>APEX。</strong> 目标是让 Agent 在记忆变多时继续探索新策略,而不是固守熟悉套路。它构建一张策略地图:节点是任务里程碑,边是前置依赖关系。每个回合结束后,结果沿通向它的里程碑反向传播,地图因此记下哪些路径有效。另有一步专门加入"有希望但还没试过"的分支。规划时,Agent 查这张图,在已知的好路径和未试路径之间做选择。</li>
+<li><strong>以用户为中心的结构。</strong> PersonaAgent 把用户的情景记忆和语义记忆转成每个用户一份的人设提示(persona prompt)。PAHF 在找不到相关偏好、而请求又含糊时,会主动请用户澄清,再把反馈并入记忆,并修订过时的条目。</li>
+<li><strong>MemToolAgent。</strong> 让记忆承担更偏流程的作用:它存储失败工具调用的批评意见,并调整每次调用时检索多少条目。</li>
+</ul>
+<p><strong>3. 程序性技能库(procedural skill libraries)<span class="src">p.29</span>。</strong> 不只是描述经验,而是提取可以直接照着执行的技能或标准操作流程(SOP)。</p>
+<ul>
+<li><strong>Trace2Skill。</strong> 先让一个冻结的 Agent 在领域任务上跑出轨迹。然后由两个分析员角色阅读轨迹,一个专看错误,一个专看成功,各自提出技能修改。这些修改分阶段合并成一个可移植的技能目录。因为合并后的文档是直接读取,而不是每个回合都去检索,后来的 Agent 只需把它作为指令加载一次。</li>
+<li><strong>PRACTICE。</strong> 把离线蒸馏用到具身 Agent 上,并保证技能库在变化中保持一致,不会无限膨胀。它用一个可训练的技能学习器,批量提出四种编辑:增加、细化、合并、删除。训练分三步:先从标准(oracle)轨迹学会生成技能、维护库;再对比不同执行器在同一任务上的成败轨迹,学会意识到失败;最后在它自己的编辑分布上向更强的教师模型蒸馏。</li>
+<li><strong>执行过程中获取技能的两个方法。</strong> PANDO 在部署中改进网页 Agent:从每次执行中蒸馏两类东西,一是防止重复失败的规则,二是能替代多步浏览器子目标的参数化例程。PILOT 用一个监督者,从实时进行的长程运行中蒸馏流程和失败模式,让之后的会话一开始就带着积累的技能。</li>
+</ul>
+<p><strong>4. 可执行制品(executable artifacts)<span class="src">p.29</span>。</strong> 把经验编译成可以直接调用的代码,兼顾文本记忆的灵活和工具的高效。</p>
+<ul>
+<li><strong>Metis。</strong> 采用双记忆:一个文本库,存计划、环境事实和陷阱;一个代码库,存可调用工具。文本条目由反思器(reflector)维护。被频繁复用的文本计划会被改写成工具,但必须在沙箱中编译并正确运行才被接受。检索时同时覆盖文本条目和工具描述。</li>
+<li><strong>Evo-Harness。</strong> 把目标从单个工具扩展到整个外围框架。它把失败或被负面评价的任务中得到的教训,编译成跨任务模式和任务专用流程。</li>
+<li><strong>SHAPER。</strong> 用于具身 Agent,同时演化两样东西:文本规划指导,以及一个在沙箱中运行的 Python 函数,这个函数决定给规划器看哪些上下文。</li>
+</ul>
+<p><strong>评测方式<span class="src">p.29</span>。</strong> 这一类工作的评测在时间跨度和"什么算收益"上各不相同:</p>
+<ul>
+<li>Evo-Memory 把数据集重组成顺序任务流,用来测量长时间跨度上的记忆积累和复用。</li>
+<li>PANDO 在单次运行内审计行为,报告动作重复率、额外步数和提示缓存利用率。</li>
+<li>Metis 把任务质量和执行成本、构建成本联系起来衡量。</li>
+</ul>
+<h3>五、§3.5.2 Agent 系统的迭代修订</h3>
+<p><strong>这一类改的是 Agent 系统本身<span class="src">p.29</span>,</strong> 而不是它记住了什么。可改的对象包括:产出解答的技能、评判解答的评分标准(rubric)、运行它们的外围框架,以及底层权重。作者认为这里的关键问题是:哪些组件允许改,哪些验收标准在改动期间必须保持固定。</p>
+<p><strong>1. 协同演化组件(co-evolving components)<span class="src">p.29</span>。</strong> 同时修订两个相互耦合的组件,会带来循环论证问题:如果评判者和求解者一起变,分数升高可能只是评判变宽松了,而不是解答变好了。</p>
+<p><strong>DecoEvo</strong> 的解决办法是:在文本空间中同时演化"求解技能"和"评分标准生成技能",但把两者的目标解耦,优化过程中也不给出标准答案评分标准。</p>
+<ul>
+<li>求解技能根据逐条标准的反馈来更新。</li>
+<li>评分标准生成器则要通过两项与分数无关的审计:结构审计检查标准是否覆盖了任务要求;对比审计检查它能否区分得分接近的回答。两项审计之间还要做帕累托(Pareto)检验。</li>
+</ul>
+<p>由于生成器永远看不到求解者的总分,它没法靠"把标准放宽"来抬高自己的表现。通俗地说,就是不让出题人知道考生考了多少分,出题人也就没有动机把题出简单。</p>
+<p><strong>2. 自主修订的基准(benchmarks)<span class="src">p.29–30</span>。</strong> 这类工作不提新方法,而是测量现有模型到底能不能修订自己的系统。</p>
+<ul>
+<li><strong>HarnessDev。</strong> 测模型能否创建并改进自己的外围框架。这里的外围框架指模型之外的脚手架:提示词、工具循环和执行逻辑。创建者 Agent 从一个极简的种子和少量开发样例出发,搭出完整框架,再根据下游反馈不断修订。候选版本会被冻结,在隐藏任务上同时评成功率和执行器 token 成本。创建者和执行器分开,这样不同框架可以在同一个固定执行器上公平比较。</li>
+<li><strong>ASPIRE。</strong> 测模型在只有模糊目标时能否自我改进。数据怎么选、更新方法怎么定、验证信号用什么,全部交给 Agent 决定,范围同时覆盖权重和外围框架。一个分数门控控制器负责兜底:验证分数没有提高的改动一律回滚。</li>
+<li><strong>S3Gym。</strong> 把问题限定在经验通道上。它不提供验证器结果,Agent 必须自己判断轨迹好坏。在此条件下,比较三种改进途径:原始历史、压缩摘要、参数训练。</li>
+</ul>
+<p><strong>3. 修订收益分析<span class="src">p.30</span>。</strong> "修订了"是否等于"受益了",本身就是一个问题。有一项分析认为这两者常被混为一谈。</p>
+<p>《Harness Updating Is Not Harness Benefit》把两种能力拆开:一是产出有用的持久更新,二是在求解时真正利用这些更新。实验采用固定的"求解—演化"流程,提示词和预算完全相同,覆盖多个基座模型和三个 Agent 基准。结论有三点:</p>
+<ul>
+<li><strong>更新能力基本与基座模型强弱无关。</strong> 小模型做出的更新,带来的收益可以和前沿模型相当。</li>
+<li><strong>从更新后的框架中获益的能力随模型呈非单调变化。</strong> 失败集中在两种模式:相关制品根本没被激活;或者被激活了,但没有被忠实执行。</li>
+<li><strong>实践启示。</strong> 能力上的投入应该放在负责解题的 Agent 上,而不是放在负责演化的模块上。</li>
+</ul>
+<h3>六、§3.5.3 更新的选择性保留与部署</h3>
+<p><strong>这一类关注改动提出之后的事<span class="src">p.30</span>。</strong> 轨迹蒸馏和系统修订最终都只产出一个"候选改动"。本节关心的是:哪些候选能成为持久状态,哪些能一直供后续任务使用。作者在三个时间点上讨论这种控制:准入前、持续使用中、发布到生产系统时。</p>
+<p><strong>1. 候选验证(candidate validation)<span class="src">p.30</span>。</strong> 更新必须先拿出证据,才能进入持久状态。</p>
+<ul>
+<li><strong>HDSO。</strong> 要防的是两种坏技能:从噪声轨迹里蒸馏出的虚假捷径,以及执行器根本做不到的规则。做法是:策展模型(curator)观察精简的执行器轨迹,提出一个假设,并附上明确的验证计划。每个候选都把同一批任务执行两次:一次只用当前已批准的技能库,作为对照组;一次加上候选技能,作为实验组。只有两次结果的差异支持假设时,候选才进入已批准库。对比分阶段进行,规模逐步扩大,最后在独立任务上确认。</li>
+<li><strong>Metis 的类似门槛。</strong> 它的门槛设在文本计划已经进入记忆之后:一条文本计划要在多个任务中反复出现,并通过依赖检查和编译检查,才能升级成可执行代码。</li>
+</ul>
+<p><strong>2. 库维护(library maintenance)<span class="src">p.30</span>。</strong> 准入之后,要关注技能库本身的健康,因为任务和模型变化后,曾经有用的技能也可能退化。</p>
+<p><strong>Library Drift</strong> 研究发现,无节制的积累会逐渐降低检索质量,让进展停滞,而且这种退化往往在任务分数上显现之前就已经发生。它提出三部分的生命周期管理:</p>
+<ul>
+<li><strong>只追加的证据日志。</strong> 记录每个技能对任务结果的贡献;贡献减弱到一定程度,技能就被退役。</li>
+<li><strong>活跃技能数量设上限。</strong> 新技能必须和已有条目竞争名额。</li>
+<li><strong>元技能(meta-skill)。</strong> 新技能要在一份存储好的指南指导下撰写,这份指南规定以后的技能该怎么写。</li>
+</ul>
+<p>该研究还表明,治理方式的选择很关键:退役得过于激进,效果反而比完全不管还差。另一项分析(Rethinking Skill Evolution)发现,仔细筛选技能修改,比根据任务结果反复重写技能,更能提升任务表现。</p>
+<p><strong>3. 受治理的部署(governed deployment)<span class="src">p.30–31</span>。</strong> 在生产环境里,一个错误的更新会影响真实用户,所以需要严格的门槛。</p>
+<p><strong>Tax AI</strong> 是一个实际运行的报税系统,改进的驱动力来自税务从业者的纠正:</p>
+<ul>
+<li>纠正被记录为结构化的字段级证据,反复出现的失败被归并成评测目标。</li>
+<li>编码 Agent 调查执行轨迹、评测和代码仓库,实现修复,并用定向评测和回归评测加以验证。</li>
+<li>循环只能改动产品中有边界的部分:抽取模式(extraction schema)、数据源选择、税务引擎映射器和评分器。架构和产品设计的决定权留在工程师手里。</li>
+<li>每个修复以 pull request 的形式提交,经工程审查后才发布。Agent 解决不了的案例退回给从业者。</li>
+</ul>
+<p>因此最终的接受决定由人做出,而审查带来的延迟,也被作者算作这个循环的运行成本。</p>
+<h3>七、§3.5.4 如何评测 L4 部署自主</h3>
+<p><strong>自主程度不等于改进质量<span class="src">p.31</span>。</strong> 部署后自主适应的程度更高,本身并不能证明改进可靠。L4 系统可能保留了很多更新,却没有证明它们在任务、环境或执行器变化后仍然有用。评测应把"部署自主的程度"和"所产生的适应过程的质量"分开看。</p>
+<p><strong>典型风险:持久更新失败(persistent update failure)<span class="src">p.31</span>。</strong> 一个已被接受的改动,可能在弱点暴露之前就已经影响了大量后续决策。在各种形式的保留状态中,失败的原因可能有四种:</p>
+<ul>
+<li>从噪声证据中推出了错误的教训;</li>
+<li>教训本身是对的,但被用到了它的有效范围之外;</li>
+<li>有相关更新,却没被调用;</li>
+<li>获得了新行为,却牺牲了原有能力。</li>
+</ul>
+<p>只看最终任务分数,无法区分这四种机制。作者主张,可信的评测必须把每个保留下来的改动和三样东西关联起来:产生它的证据、它后来被如何使用、它对新任务和已解决旧任务的影响。</p>
+<p><strong>现有证据的不确定性<span class="src">p.31</span>。</strong> 部署适应能否长期有效,目前还不清楚:</p>
+<ul>
+<li>多数评测只覆盖有限长度的任务流,以及有限的模型、任务、环境组合;反复评测又让更长期的研究很昂贵。</li>
+<li>反馈可能不完整,或者是循环内生的:结果标签可能有噪声,评测器可能随系统一起变,有用的保留制品也可能没能影响执行。</li>
+</ul>
+<p>所以 L4 的评测应考察跨时间、跨分布变化的适应情况,包括"保留的改动从哪个时刻开始改变后续行为"。</p>
+<p><strong>L4 的边界<span class="src">p.31</span>。</strong> L4 的自主仍受外围部署流程约束。Agent 可以决定交互证据如何改变持久状态,而目标、访问边界、受保护评测和发布权仍由人来定。用原文的话说,L4 关乎 "autonomy over operational adaptation within a deployed system"(在已部署系统内部、对运行时适应的自主)。</p>
+<p><strong>本节结论(Finding)<span class="src">p.31</span>。</strong> L4 把自主从"选择经验"推进到"决定经验的哪些后果在部署中留存"。Agent 把交互历史转化为对记忆、技能、外围框架、代码或模型参数的保留改动,这些改动会影响后续任务和后续反馈。人类保留目标、受保护的验收标准、访问边界,以及对重要发布的最终决定权。</p>
+</section>
+<section id="n08">
+<h2>§3.6 L5:元改进</h2>
+<h2>本部分要点</h2>
+<ul>
+<li><strong>L5 的定义</strong>:L5(元改进,meta-improvement)的门槛是,AI 不只改进"任务本身",而是持久地修改"负责产生未来改进的机制",并在后续轮次里实际使用修改后的机制。这个机制可以是改进器、评测器、搜索策略或研究策略。作者把 L5 分成两层:<strong>结构性 L5</strong> 只证明改动被继承并控制了下一轮;<strong>有效 L5</strong> 还要证明改动在同等预算下确实产出了更好的后继。</li>
+<li><strong>三类代表系统</strong>:分别改进搜索过程(STOP、Gödel Agent、DGM、HyperAgents)、改进后继评测器(RQGM)、改进研究目标与策略(A-Evolve-Training)。工业界有 AIRA2、AAR、AIDE2。现有证据只支持"有界的元改进"(bounded meta-improvement)。在可比资源下跨代、统计上可靠的累积加速,目前仍未被证实。</li>
+<li><strong>评测与边界</strong>:评测必须区分"当前更强的智能体"和"能可靠产出更强后继的过程"。作者提出机制审计、匹配预算对照、固定机制做迁移测试等要求。人类始终掌握总体目标、受保护的验收标准和资源权限。</li>
+</ul>
+<hr/>
+<h3>1. 为什么需要 L5:改进过程本身会成为瓶颈 <span class="src">p.31</span></h3>
+<p>作者先用两个例子说明,改进流程本身可能就是瓶颈:</p>
+<ul>
+<li>一个编码智能体反复生成类似的失败补丁。原因是它的搜索过程把有用的候选方案丢掉了。</li>
+<li>一个研究智能体在开发集分数已经不再能预测外部表现之后,仍在继续优化这个分数。</li>
+</ul>
+<p>要修复这类问题,就得改"指挥实验、评判结果的那套程序"。但设计这类程序代价很高:一次修改好不好,只能通过它之后产出的改进来评估,而且往往要跨多个任务、重复多次运行才能看清<span class="src">p.31</span>。</p>
+<h3>2. L5 的边界与闭环 <span class="src">p.31–32</span></h3>
+<p><strong>L5 从何时开始</strong>:AI 持久地修改某个"负责未来改进"的机制,并在后续轮次中使用修改后的版本。可编辑的机制包括改进器(improver)、后继评测器(successor evaluator)、搜索策略(search policy)和指导研究的程序。</p>
+<p>作者把它和前几级放在一起对比<span class="src">p.31</span>:</p>
+<ul>
+<li>L2 搜索候选干预;</li>
+<li>L3 决定获取什么经验;</li>
+<li>L4 把部署反馈纳入持久适应;</li>
+<li>L5 再进一步,把"支配后续改进的程序"本身变成被改进的对象。</li>
+</ul>
+<p>文中的区分例子是:一个已部署的智能体用<strong>不变的</strong>学习程序保留下新的调试技能,这是 L4;如果它修改并复用的是"诊断失败、构建这些技能的那套程序",就可能跨入 L5。</p>
+<p>通俗地说:L4 是"学到了新本事",L5 是"改进了自己学本事的方法,并且下次真的用上了"。</p>
+<p><strong>闭环何时成立</strong>:修改后的机制回过头来,支配后续后继的生成、评估或选择。被继承的状态包括已接受的代码、提示词、评测器或研究策略,以及后续修订要用到的证据。</p>
+<p>人类设计者仍负责设定总体使命、受保护的评测、可编辑组件和资源权限,也可以保留否决权和部署权。其中一部分决定由固定的基础设施强制执行,并不需要人逐轮审批<span class="src">p.31–32</span>。</p>
+<p><strong>结构性 L5 与有效 L5</strong><span class="src">p.32</span>:</p>
+<ul>
+<li><strong>结构性 L5</strong>(structural L5):证明某个由 AI 主导的改动被持久保留,并控制了后来的某一轮改进。</li>
+<li><strong>有效 L5</strong>(effective L5):在可比预算和独立评估下,证明修改后的机制确实能产出或选出更好的后继。</li>
+</ul>
+<p>作者还给了两条判定细则:</p>
+<ul>
+<li>只是"自我修改任务代码"还不够。如果负责后续修订的过程本身没变,就不算 L5。</li>
+<li>反过来,即使任务智能体的代码完全没变,一个被演化的后继评测器也可以构成结构性 L5。</li>
+</ul>
+<p>因此,"是不是 L5"要针对<strong>具体被考察的那个机制</strong>来判定,而不是给整个系统贴标签。</p>
+<h3>3. 图 8:从环境适应到递归元改进 <span class="src">p.32</span></h3>
+<p>图 8 左右两栏对比:</p>
+<ul>
+<li><strong>(a) L4·适应</strong>:智能体在适应,但改进流程本身固定不变。流程是"生成候选 → 打分 → 选择",朝着预先定义的目标推进,输入是环境反馈。</li>
+<li><strong>(b) L5·递归元改进</strong>:流程是"诊断失败 → 定向修订 → 独立验证 → 继承"。之前尝试留下的证据会指出当前改进瓶颈;修订后的流程指导下一代,由新机制产出后继。图中一条上升路径表示,通过不断继承元更新,可能逐步推进到"更高的智能前沿",甚至实现自主的前沿发现。</li>
+</ul>
+<p>图下方列出元层面可以演化的三类东西:</p>
+<ul>
+<li><strong>后继生成</strong>:修改智能体的构建与训练策略;</li>
+<li><strong>候选评估</strong>:修改内部测试与打分方法;</li>
+<li><strong>研究控制</strong>:修改实验选择与资源分配策略。</li>
+</ul>
+<p>这些元更新会被后继继承和复用。整张图最底层始终是人类掌握的约束:使命、安全边界、受保护评测、最终验收。</p>
+<h3>4. 表 7 概览:L5 机制与外部控制 <span class="src">p.33</span></h3>
+<p>表 7 从三个角度比较代表系统:闭环落在哪里、继承了什么状态、哪些控制仍在外部。系统分三类:</p>
+<ul>
+<li><strong>搜索与自我修订</strong>:4 个(STOP、Gödel Agent、DGM、HyperAgents);</li>
+<li><strong>后继评估</strong>:1 个(RQGM);</li>
+<li><strong>研究策略与外围框架</strong>:3 条(A-Evolve-Training、AIRA2/AAR 合并为一条、AIDE2)。</li>
+</ul>
+<p>几个典型例子:</p>
+<ul>
+<li>STOP 继承的是改进器代码,外部控制是效用函数、基础语言模型和预算。</li>
+<li>RQGM 继承的是评测器和智能体代码,外部控制是锚点和替换日程。</li>
+<li>A-Evolve-Training 继承的是搜索策略和发现日志,外部控制是"宪法"、基准和底层执行环境。</li>
+</ul>
+<p>表注特别说明:各系统的 L5 资格都要以正文中的限定为准,表格本身不代表认定。</p>
+<h3>5. §3.6.1 改进搜索过程 <span class="src">p.32–33</span></h3>
+<p>这一类让 AI 修改"未来候选改进如何生成和探索"。问题在于,固定的优化器可能把预算浪费在无效提议上,即使底层模型本可以写出更好的搜索算法。难点是:评价一个优化器,只能看它改进<strong>其他程序</strong>的能力。</p>
+<p><strong>STOP</strong><span class="src">p.32</span>把这个问题做成了可执行的形式:</p>
+<ul>
+<li>它的改进器是一个 Python 程序:调用一个固定的语言模型,生成候选代码,用给定的效用函数评估,返回选中的候选。</li>
+<li>关键设计是:当前改进器把<strong>自己的源码</strong>当作优化目标。</li>
+<li>后继改进器按它在下游任务上产出的程序质量打分,选中者执行下一轮自我改进。</li>
+<li>被继承的是一套搜索过程,里面可能长出束搜索(beam search)、替代采样等候选选择逻辑。</li>
+</ul>
+<p>结果与局限:</p>
+<ul>
+<li>选出的<strong>第四代</strong>改进器在<strong>全部 5 个</strong>未参与自我改进的迁移任务上都优于初始版本。</li>
+<li>任务分布、效用函数、基础模型和资源上限都由外部指定。</li>
+<li>换用较弱的模型时,平均表现反而退步。</li>
+<li>有些生成的程序绕过了软预算,或利用了评估中的漏洞。</li>
+</ul>
+<p><strong>Gödel Agent</strong><span class="src">p.33</span>把任务策略和递归更新逻辑放在同一个 Python 程序里,AI 两者都能改。执行反馈驱动重写,改后的程序(包括被修改过的自我更新程序)在下一次递归调用中运行。</p>
+<ul>
+<li>好处是搜索范围超出了开发者预设的固定编辑流程。</li>
+<li>坏处是错误也会被继承:100 次 MGSM 优化试验中,有 <strong>14 次</strong>最终低于初始策略。</li>
+<li>不受限的运行还会去调用更强的模型。</li>
+<li>所以任务目标和执行权限仍是关键的外部控制。</li>
+</ul>
+<p><strong>达尔文哥德尔机(DGM)</strong><span class="src">p.33</span>保留编码智能体的各种变体并探索其后代,但档案管理和父代选择不在自我修改的范围内。作者把它定位为<strong>过渡案例</strong>:任务表现变好,并不能证明改进程序本身变好了。</p>
+<p><strong>HyperAgents</strong><span class="src">p.33</span>直接把任务智能体和元智能体(meta-agent)的代码都开放修改。</p>
+<ul>
+<li>演化出的元智能体会自己搭建性能追踪器和持久记忆,用来指导后续修改。</li>
+<li>预印本报告:在论文评审和机器人任务上演化出的元智能体,能为<strong>从未见过的数学批改任务</strong>生成更好的智能体。这支持"改进程序本身可以迁移"。</li>
+<li>但在更长的 <strong>200 轮</strong>实验中,用迁移来的初始化并没有取得统计显著的最终优势。</li>
+<li>主实验中父代选择和评估仍是固定的。</li>
+</ul>
+<h3>6. §3.6.2 改进后继评测 <span class="src">p.33</span></h3>
+<p>这一类让 AI 改进"决定哪些后继被保留"的评测器。这里有一对矛盾:</p>
+<ul>
+<li>评测器固定不变:反复优化会集中压向评委的盲点,偏向那些利用其错误的提议。</li>
+<li>评测器随意修改:前后分数可能反映的是不断变化的标准,失去可比性。</li>
+</ul>
+<p><strong>红皇后哥德尔机(RQGM)</strong>用"评测器协同演化"来处理这个矛盾:</p>
+<ul>
+<li>学到的评测器在一个周期(epoch)内冻结。</li>
+<li>到预定边界时,用一个独立的真值锚点(ground-truth anchor)比较各个挑战者评测器,选中者支配下一个周期。</li>
+<li>依赖被替换评测器的分数全部作废,受影响的智能体在被再次访问时重新评估。</li>
+</ul>
+<p>通俗地说:比赛中途换裁判可以,但必须拿一套公认的标准答案先考新裁判;换了裁判以后,旧裁判打的分一律作废重评。</p>
+<p>结果:在留出的 Polyglot 编码任务上,预印本报告通过率 <strong>71.7%</strong>,对比 HGM-H 的 <strong>69.9%</strong>,而且搜索消耗的 token 更少。</p>
+<p>局限:锚点、替换日程和编排逻辑都是外部固定的,正是它们提供了评判评测器变化的参照。论文中形式化的稳定性论证只在每个冻结周期<strong>内部</strong>成立,不适用于目标被任意改变的情形。</p>
+<h3>7. §3.6.3 修订研究目标与策略 <span class="src">p.33–34</span></h3>
+<p>这一类让 AI 用积累的实验证据,修改后续研究该追求什么。难点在于:当可用的代理奖励鼓励的是在<strong>错误瓶颈</strong>上进步时,很难选出更高的目标。</p>
+<p>以模型后训练为例,检验这类假设需要比较多次训练运行、识别失败的搜索方向,并判断是否该修改研究策略本身。一个不断变化的课程只有在其持久的<strong>选择程序</strong>也被修改并复用时,才算达到 L5。</p>
+<p><strong>A-Evolve-Training</strong><span class="src">p.34</span>:预印本报告对一个 <strong>30B</strong> 模型进行了 <strong>4 轮</strong>自主后训练。</p>
+<ul>
+<li>工作者(workers)返回配方修改、检查点评估和失败记录;收集器汇总结果;元智能体修订下一轮的搜索策略。</li>
+<li>策略中包含三样东西:一份常设配方、被提升或淘汰的搜索方向、一份失败方法登记册。</li>
+<li>当开发分数上升而外部指标没有跟着提升时,修订后的策略会引导工作者去做那些<strong>即便压低代理分数、也能提升外部目标</strong>的干预。</li>
+<li>最终排行榜得分 <strong>0.86</strong>,人类最佳提交为 <strong>0.87</strong>。</li>
+</ul>
+<p>定位:跨轮继承存放在研究策略和发现日志中,底层工作者环境和"宪法"保持固定。因此这个案例支持的是"在人类设定目标之内的策略级 L5",并没有展示 AI 自主修改目标本身。</p>
+<p><strong>改进螺旋</strong>:当继承来的程序帮助暴露出新的局限,又被再次修改去解决它,就形成螺旋式上升。作者对"下一个目标"提出三条要求:</p>
+<ul>
+<li>指向一个可检验的能力缺口;</li>
+<li>保住已有能力;</li>
+<li>能证明继续投入是值得的。</li>
+</ul>
+<p>光是"改了目标"证据很弱,必须证明修订后的策略确实改变了后续研究,并改善了结果。</p>
+<h3>8. §3.6.4 工业实践 <span class="src">p.34</span></h3>
+<p>工业系统把改进过程的不同部分开放修改。判断它们和 L5 是否相关,要看被保留的产物是否改变了后续的研究决策。</p>
+<p><strong>研究基础设施</strong>:</p>
+<ul>
+<li>Meta 的 <strong>AIRA2</strong> 采用异步实验和隐藏的一致性评估。</li>
+<li>Anthropic 的<strong>自动对齐研究员(AAR)</strong>针对指定的对齐失败,生成并测试缓解措施。</li>
+<li>两者都是在研究者设计好的工作流里自动执行实验。报告的成果是研究产出,并未证明"执行研究的程序"被继承性地改变。所以作者不把它们当作 L5 的直接证据。</li>
+</ul>
+<p><strong>研究智能体的自我修订</strong>:Weco 的 <strong>AIDE2</strong> 用一个研究智能体去改进研究智能体的外围框架(harness)。</p>
+<ul>
+<li>候选框架在私有打分和固定成本预算下跑下游任务;被接受的版本保留下来供后续研究使用。</li>
+<li>另一项实验把演化出的框架装成外层改进器。</li>
+<li>公司报告在 <strong>100 个无人值守步骤</strong>中接受了 <strong>7 次</strong>改进,并能迁移到外部任务。</li>
+<li>但更严格的检验,即"演化后的智能体能否让外层搜索更快",没有发现统计显著的效率优势。</li>
+</ul>
+<p>结论:这些由公司自报的结果支持"有界的框架改进"。私有评估、任务族和成本约束仍由人类设计,"后继改进器可靠地越来越快"尚未成立。</p>
+<p>作者最后补充:这类做法潜在的节省来自复用更好的研究程序。但要证明真的减少了人类开发工作量,必须把设计评测器、排查失败、维护演化代码所花的人力也算进去。只看任务表现或无人值守时长,无法量化这种节省。</p>
+<h3>9. §3.6.5 如何评测 L5 递归改进 <span class="src">p.34–35</span></h3>
+<p>核心原则是:要区分"当前智能体更强了"和"这个程序能可靠地产出更强的后继"。SEA-Eval 和 SEAGym 提供了基于轨迹的评估,包括跨轮表现、留出迁移、能力保留和资源消耗。</p>
+<p><strong>表 8</strong><span class="src">p.35</span>列出 <strong>6 个评估维度</strong>:</p>
+<ul>
+<li>前 5 个综合自上述两个基准:</li>
+<li>适应性(看增益曲线和达标时间,用来发现进步与平台期);</li>
+<li>保留(看回放损失、修好或弄坏了哪些任务,用来发现被挤掉的能力);</li>
+<li>迁移(领域内和跨领域的留出增益);</li>
+<li>效率(每个经验证增益消耗的 token、时间和成本);</li>
+<li>稳定性(有害更新次数、最大的临时下滑)。</li>
+<li>第 6 个"元递归"(meta-recursion)是作者为 L5 <strong>新增</strong>的:看机制是否被复用、后继质量如何,以及目标选择与停止决策。表注说明,所引系统只示范了机制复用和改进能力;目标选择和停止目前仍只是评估<strong>要求</strong>,还没有被现有工作实现。</li>
+</ul>
+<p><strong>机制审计</strong>(mechanism audit)的做法<span class="src">p.34</span>:</p>
+<ul>
+<li>指出被修改的产物是什么;</li>
+<li>记录促成修改的证据;</li>
+<li>核实它确实在后来某一轮改进中被调用。</li>
+</ul>
+<p><strong>证明有效性</strong>的做法:</p>
+<ul>
+<li>原机制和新机制从可比的智能体和证据出发,在匹配的预算下比较,预算里要包括评估机制本身的成本。</li>
+<li>做迁移测试时固定住新机制,这样才能分离出它"学到的关于改进的东西"。HyperAgents 正是用这种设计,把可迁移的智能体生成能力和原任务上的表现区分开。</li>
+</ul>
+<p><strong>目标选择的补充评估</strong><span class="src">p.34–35</span>:</p>
+<ul>
+<li>用自适应的前沿任务,检验系统能否找到有用的下一个挑战;</li>
+<li>用受保护的参考任务保持可比性,并暴露遗忘或奖励投机(reward hacking);</li>
+<li>用规则事先未公开的私有任务,检验系统能否在熟悉分布之外做出发现;</li>
+<li>记录系统是否会在预期收益低于成本或风险时主动停下。</li>
+</ul>
+<p>作者强调,这些是评估"更完整 L5 自主性"的<strong>拟议要求</strong>,并不是现有 RSI 基准已经证实的能力。</p>
+<p><strong>总体判断</strong><span class="src">p.35</span>:</p>
+<ul>
+<li>现有结果支持有界的元改进:被接受的改进器、评测器或研究策略的修改能支配后续轮次,部分修改能跨任务迁移(STOP、RQGM、HyperAgents)。</li>
+<li>在可比资源下跨代、统计可靠的累积仍是开放问题(HyperAgents 200 轮实验、AIDE2 都没有显著优势)。</li>
+<li>实际追求的目标是:提高每单位算力和人力换来的经验证改进。强大的基础模型、执行基础设施和独立评估,依然是这些改进得以发生的资源和约束。</li>
+</ul>
+<p><strong>本节结论</strong>(原文 Finding):L5 让改进程序本身变得"可继承"("makes the improvement procedure inheritable")。闭环是通过复用修订后的改进器、评测器或研究策略来完成的,后继同时继承这套程序和支撑它的证据。人类保留总体目标、受保护的验收标准和资源权限。</p>
+<hr/>
+<h3>概括表:L5 三条路线的代表与最关键证据</h3>
+<table>
+<thead>
+<tr>
+<th>被改进的机制</th>
+<th>代表系统</th>
+<th>最能说明问题的结果</th>
+<th>主要保留在外部的控制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>搜索/改进过程</td>
+<td>STOP、Gödel Agent、HyperAgents(DGM 为过渡案例)</td>
+<td>STOP 第 4 代在 5/5 迁移任务上胜过初始版本;Gödel Agent 100 次中 14 次退步;HyperAgents 200 轮无显著优势</td>
+<td>效用函数、基础模型、预算、父代选择</td>
+</tr>
+<tr>
+<td>后继评测器</td>
+<td>RQGM</td>
+<td>Polyglot 71.7% 对 69.9%,且 token 更少</td>
+<td>真值锚点、替换日程</td>
+</tr>
+<tr>
+<td>研究策略/外围框架</td>
+<td>A-Evolve-Training、AIDE2(AIRA2/AAR 仅为实验自动化)</td>
+<td>30B 模型 4 轮后训练得 0.86,人类最佳 0.87;AIDE2 100 步接受 7 次改进,但加速不显著</td>
+<td>宪法、基准、私有评分、成本预算</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="n09">
+<h2>§3.7 跨级综合 与 第 4 章 四个应用领域</h2>
+<h2>§3.7 跨级综合与第 4 章 四个应用领域 精读笔记(原文 p.35–37)</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li>§3.7 对整套 B0–L5 自主等级做总结。作者把它理解为“改进回路的责任逐级移交给 AI”。相邻两级之间各有一条清晰的分界线。作者特别强调:等级高不代表改进质量好,“自主范围”和“改进质量”是两件事。</li>
+<li>第 4 章把分级框架用到科学、具身智能、软件工程、医疗四个领域。四个领域的主要差别在于:用什么样的反馈来验证一次改进,并让它被后续继承。</li>
+<li>总体结论是:目前证据最强的是“有边界的、组件级的”持久改进。改进机制本身被自动改进(即 L5)的证据很少。各领域的评测器、筛选规则等外层约束基本仍由人设定。</li>
+</ul>
+<blockquote>
+<p>说明:p.35 上半页的表 8(递归改进的评测维度)和 L5 小节的结论属于前一节 §3.6;p.37 下半页的 §5.1 Theseus 属于下一章。这两处本笔记不展开。</p>
+</blockquote>
+<hr/>
+<h3>1. §3.7 跨级综合:自主等级就是“改进责任的逐步移交”<span class="src">p.35</span></h3>
+<p>作者先给出一个统一视角:从 B0 到 L5,可以看成<strong>改进回路(improvement loop)中的责任一步步从人转交给 AI</strong>。各级的区别主要不在“用了哪种算法”或“优化的是哪种产物”,而在三个问题上:</p>
+<ol>
+<li>哪些改进决策由 AI 自己做;</li>
+<li>哪些状态会被保留到后面的轮次;</li>
+<li>哪些验收条件(acceptance conditions)仍由外部保护、AI 改不了。</li>
+</ol>
+<p>通俗地说:看一个系统属于哪一级,要问的是“这一轮的改进由谁拍板、结果能不能留下来、谁说了算合格”,而不是它用了什么技术。</p>
+<p><strong>相邻两级的分界线</strong><span class="src">p.35</span>,作者各用一个关键词概括:</p>
+<ul>
+<li><strong>B0 → L1:持久性(persistence)。</strong> 被采纳的改动要能在当前任务结束后继续存在,不能做完就丢。</li>
+<li><strong>L1 → L2:策略选择权移交。</strong> AI 不再只执行人规定好的改进方法,而是自己决定尝试哪种干预。</li>
+<li><strong>L2 → L3:掌控未来的学习议程。</strong> 正在进化的学习者开始影响“接下来获取什么经验”,也就是自己决定学什么。</li>
+<li><strong>L3 → L4:进入持续部署与环境交互。</strong> 反馈过程延伸到真实运行环境,系统的改动要在不断变化的运行条件下依然有用。</li>
+<li><strong>L4 → L5:递归继承(recursive inheritance)。</strong> 负责后续改进的那套机制本身,也成为被改进、被继承的对象。</li>
+</ul>
+<p><strong>等级不等于质量</strong><span class="src">p.35</span>。作者明确提醒,更高的自主等级本身并不意味着改进过程更好。授予 AI 更多权限的同时,完全可能出现以下问题:</p>
+<ul>
+<li>搜索效率低;</li>
+<li>反馈不可靠;</li>
+<li>能力退化(regression);</li>
+<li>钻评测器的空子(evaluator exploitation);</li>
+<li>迁移性差。</li>
+</ul>
+<p>因此作者把两个维度分开:一个是“AI 内化了多大范围的改进责任”,另一个是“改进结果的质量与效率”。通俗地说,“权力大”和“干得好”是两回事,评价时要分开看。</p>
+<p><strong>现有证据的分布</strong><span class="src">p.35</span>:</p>
+<ul>
+<li>低级和中级:有较广泛的系统支撑。</li>
+<li>L3–L4:能力更依赖具体领域。</li>
+<li>端到端的 L5:证据集中在有边界的原型系统,以及新兴的工业或研究系统中。</li>
+</ul>
+<p>正因为不同领域差异大,作者在下一章按应用领域分别分析。</p>
+<hr/>
+<h3>2. 第 4 章总述与图 9<span class="src">p.36</span></h3>
+<p><strong>总论点</strong>:第 4 章考察 RSI(递归自我改进)在四种领域特定的“反馈机制”(feedback regime)下如何落地。四个领域共同的判断标准是:<strong>反复打磨一个外部产物是不够的</strong>,反馈必须让 AI 系统本身发生持久改变,并在之后的任务中被复用。作者据此给出全章结论:目前证据最强的是有边界的组件级改进,改进机制本身的自适应仍然罕见。各领域更详细的综述被放在附录(原文此处的附录编号显示为“Appendix ??”,是排版时的引用错误)。</p>
+<p><strong>图 9</strong><span class="src">p.36</span>的标题意思是:各应用领域的差别,主要在于验证并继承一次改进需要哪种反馈。图中内容如下(PDF 文字提取有些错乱,下面的对应关系按排列顺序整理):</p>
+<ul>
+<li><strong>底部阶梯</strong>:列出六级各自的含义。</li>
+<li>B0:优化输出;</li>
+<li>L1:执行持久改进;</li>
+<li>L2:发现如何改进;</li>
+<li>L3:生成要学习的素材;</li>
+<li>L4:从实时反馈中适应;</li>
+<li>L5:改进改进机制本身。</li>
+<li><strong>四个领域</strong>:各自标出“进化的对象”和“当前所处等级”。</li>
+<li>科学:进化对象是假设、实验(相关文字提取不完整);当前为“强 L2、早期 L3”。</li>
+<li>具身智能:进化对象是课程、技能与外围框架(harness)、策略;L2–L3 是主要前沿,L4 只在仿真中出现。</li>
+<li>医疗:进化对象是临床记忆、推理、工作流;L2 成熟,有有限的“类 L3”,L4 只在仿真中出现。</li>
+<li>软件工程:进化对象是外围框架、技能、改进流程本身;L2 成熟,L3 正在出现,并已有“有边界的结构性 L5”。</li>
+<li><strong>图中标出的核心瓶颈</strong>:为“持久继承”提供安全的证据。</li>
+</ul>
+<p>从图中可见,软件工程是唯一被标到 L5 的领域,其余三个领域最多到 L3,L4 则只出现在仿真里。</p>
+<p>下面是四个领域的概括(这是本部分唯一的概括表):</p>
+<table>
+<thead>
+<tr>
+<th>领域</th>
+<th>验证改进所依赖的反馈</th>
+<th>代表系统</th>
+<th>主要局限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>科学</td>
+<td>实验证据 / 证伪</td>
+<td>HypoForge、Test-Time Tool Evolution、DrugSAGE、SIA</td>
+<td>评测器与晋升标准基本固定</td>
+</tr>
+<tr>
+<td>具身智能</td>
+<td>物理交互与因果反馈</td>
+<td>POET、Voyager、World-VLA-Loop</td>
+<td>依赖仿真,真实试验昂贵且不安全</td>
+</tr>
+<tr>
+<td>软件工程</td>
+<td>代码执行、测试、版本回滚</td>
+<td>SWE-Exp、Self-Harness、Darwin Gödel Machine</td>
+<td>测试只是用户意图的不完整代理,外层“改进契约”固定</td>
+</tr>
+<tr>
+<td>医疗</td>
+<td>专家、指南、诊断证据、患者结局</td>
+<td>MedAgent-Zero、EvoClinician、MACRO、HealthFlow</td>
+<td>多为仿真或回顾性数据,真实结局有延迟、有混杂</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h3>3. §4.1 科学领域的 RSI<span class="src">p.36</span></h3>
+<p><strong>为什么重要</strong>:科学进步不只是解决一个个具体问题,还在于改进“以后如何生成、检验、修正假设”。所以科学是 RSI 很有分量的应用场景。</p>
+<p><strong>典型回路</strong>:用实验证据或证伪结果来更新 AI4Sci 系统。具体步骤是:</p>
+<ol>
+<li>研究智能体提出假设;</li>
+<li>执行计算实验或物理实验;</li>
+<li>对观察到的结果做归因;</li>
+<li>把经过验证的改动保留下来,改动可以落在生成策略、工具、技能、记忆或脚手架(scaffold)上。</li>
+</ol>
+<p><strong>代表系统</strong>:</p>
+<ul>
+<li><strong>HypoForge</strong>:把评审意见和执行结果提炼成可复用的技能,用于生成和检验假设。</li>
+<li><strong>Test-Time Tool Evolution</strong>:合成并验证可执行的科学工具,供以后复用。</li>
+<li><strong>DrugSAGE</strong>:把经过验证的建模流程和错误恢复策略迁移到其他任务。</li>
+<li><strong>SIA</strong>:把可编辑的范围扩展到智能体脚手架、工具、搜索逻辑,甚至模型权重。</li>
+</ul>
+<p><strong>作者的判断</strong>:这些系统确实展示了科学智能体组件的持久改进,但它们的评测器、更新选择规则和晋升标准(promotion criteria)基本固定。作者还指出,只优化一个分子、一个方程或一个假设,只能算“RSI 邻近”(RSI-adjacent),不能证明科学智能体本身变强了。通俗地说,论文写得好不代表研究员水平提高了,要看研究员自己的方法有没有长进并被保留下来。</p>
+<hr/>
+<h3>4. §4.2 具身智能领域的 RSI<span class="src">p.36–37</span></h3>
+<p><strong>特点</strong>:改进建立在物理交互和因果反馈之上。</p>
+<p><strong>典型回路</strong>:</p>
+<ol>
+<li>选择或生成经验;</li>
+<li>执行策略;</li>
+<li>评估得到的轨迹;</li>
+<li>把经过验证的更新提交到下一次交互要用的组件中,包括策略、世界模型(world model)、技能库、外围框架或课程(curriculum)。</li>
+</ol>
+<p><strong>代表系统</strong>:</p>
+<ul>
+<li><strong>POET</strong>:让环境和智能体共同进化。新生成的挑战既暴露当前能力的不足,也推动能力扩展。</li>
+<li><strong>Voyager</strong>:把成功的行为转成可执行的技能库,供后续探索使用。</li>
+<li><strong>World-VLA-Loop</strong>:交替进行两件事,一是根据策略的失败改进世界模型,二是在改进后的模型里优化策略。</li>
+</ul>
+<p>这些工作已经超越了“回合内纠错”,走向智能体与环境之间的持久共同适应。</p>
+<p><strong>三大难点</strong><span class="src">p.37</span>:</p>
+<ol>
+<li><strong>经验是内生的</strong>:采到什么经验取决于当前策略本身,所以容易被当前策略的局限带偏。</li>
+<li><strong>失败难以归因</strong>:很难判断失败出在感知、规划、控制还是硬件。</li>
+<li><strong>真实试验代价高</strong>:真实世界试验昂贵,而且无法安全地“重来”。</li>
+</ol>
+<p>因此,大多数已报道的回路依赖仿真,或依赖外部指定的奖励、评测器、接口和安全约束。真实世界中的自主验证,以及“具身改进者”本身的进化,都还没有解决。</p>
+<hr/>
+<h3>5. §4.3 软件工程领域的 RSI<span class="src">p.37</span></h3>
+<p><strong>为什么反馈特别直接</strong>:被开发的产物和编程智能体本身都可以用代码表示,都可以执行、版本化、回滚。通俗地说,改坏了能一键退回,好坏能用测试直接跑出来,这是其他领域很难具备的条件。</p>
+<p><strong>典型回路</strong>:开发挑战 → 对智能体本身做修改 → 在真实代码仓库上执行 → 考虑能力退化的筛选 → 按版本继承。</p>
+<p><strong>代表系统</strong>:</p>
+<ul>
+<li><strong>SWE-Exp</strong>:从成功和失败的问题修复轨迹中提取经验教训,在不同代码仓库之间复用。</li>
+<li><strong>Self-Harness</strong>:利用执行轨迹提出对自身外围框架的修改,只有通过回归测试后才保留。</li>
+<li><strong>Darwin Gödel Machine</strong>:维护多条“自我修改编程智能体”的谱系,按可执行任务的表现挑选变体。被采纳的后代成为下一步改进的起点。</li>
+</ul>
+<p><strong>作者的判断</strong>:这些系统提供了源码级、外围框架级、经验级持久进化的最清晰证据。但仍有两方面限制:</p>
+<ul>
+<li>仓库测试只是不完整的代理指标,不能完全代表用户意图、安全性、可维护性和后代质量;</li>
+<li>基准、效用函数、沙箱和选择规则仍由外部定义。</li>
+</ul>
+<p>结论是:软件工程中的 RSI 相对<strong>可审计</strong>,但仍受一份固定的外层“改进契约”(outer improvement contract)约束。这也解释了图 9 为什么只给它“有边界的结构性 L5”。</p>
+<hr/>
+<h3>6. §4.4 医疗领域的 RSI<span class="src">p.37</span></h3>
+<p><strong>特点</strong>:医疗中的 RSI 必须建立在长期纵向的反馈上,来源包括专家意见、临床指南、诊断证据和患者结局。</p>
+<p><strong>典型回路</strong>:</p>
+<ol>
+<li>执行任务;</li>
+<li>获得经过验证的反馈;</li>
+<li>更新某个持久组件,如记忆、推理策略、工具库或工作流;</li>
+<li>在之后的病例中复用经批准的更新。</li>
+</ol>
+<p><strong>代表系统</strong>:</p>
+<ul>
+<li><strong>MedAgent-Zero</strong>(在 Agent Hospital 环境中):存储成功病例,并从失败中推导出可复用的诊断规则。</li>
+<li><strong>EvoClinician</strong>:用过程级评分(process-level grading)修正智能体获取和整合诊断证据的方式。</li>
+<li><strong>MACRO</strong>:把经过验证的医学影像处理轨迹组合成可复用工具。</li>
+<li><strong>HealthFlow</strong>:从已完成的健康数据分析中保留经过验证的安全措施、工作流和代码。</li>
+</ul>
+<p>这些方法说明,临床经验可以改进智能体未来的行为,而且不一定需要改动基础模型的权重。</p>
+<p><strong>局限</strong>:</p>
+<ul>
+<li>证据主要来自仿真或回顾性(retrospective)场景;</li>
+<li>真实临床结局有延迟、高度异质,并且存在混杂因素。</li>
+</ul>
+<p>因此作者提出,持久的临床更新必须满足以下条件:</p>
+<ul>
+<li>可追溯来源(provenance-aware);</li>
+<li>针对特定人群;</li>
+<li>接受前瞻性监测;</li>
+<li>可撤回;</li>
+<li>须经专家和医疗机构批准。</li>
+</ul>
+<p>“临床改进者”本身的自主进化尚未得到证实。</p>
+<hr/>
+<h3>7. 小结</h3>
+<p>§3.7 用“责任移交”统一了六个等级,并强调等级与质量要分开评价。第 4 章的四个领域分别验证了这一判断:</p>
+<ul>
+<li>四个领域都已有不错的组件级持久改进,即“改的东西能留下来、下次能用”;</li>
+<li>评测器、验收标准、安全约束这些外层环节,普遍仍由人设定;</li>
+<li>软件工程反馈最直接、最可回滚,走得最远;</li>
+<li>具身智能和医疗受限于真实世界的代价和风险,目前主要停留在仿真中。</li>
+</ul>
+<p>图 9 标出的共同瓶颈,就是如何为“持久继承”提供安全可靠的证据。</p>
+</section>
+<section id="n10">
+<h2>§5.1 Theseus 与 §5.2 飞书(Lark)</h2>
+<h2>本部分要点</h2>
+<ul>
+<li><strong>Theseus</strong> 主张"环境—数据—模型协同进化"(environment–data–model co-evolution):先把环境改造好,再从中挖掘真正的难题、生成训练数据,用来训练模型;更强的模型再反过来推动环境迭代。目前只完成了这个循环的第一步,即"工作区/环境"阶段。早期实验显示,在不换模型的前提下,仅改善环境就能把通过率或评分提高约 18–52 个百分点。</li>
+<li><strong>飞书(Lark)</strong> 认为,智能体要自我改进,先得有一个持续更新的数据底座(data substrate)。为此它搭建了企业知识图谱和自动化数据质量评测两套机制。前者使人工评定可用率从 52% 升到 65%,后者与人工判断的一致率约为 84%。</li>
+<li>两家都把实际工作中产生的数据当作持续改进的来源,但都只走出了"初步实践"的几步。其中飞书明确保持人工把关(human-gated):标准制定和重要变更由人负责。</li>
+</ul>
+<hr/>
+<h3>5.1 Theseus:核心设想<span class="src">p.37</span></h3>
+<p>Theseus 把"环境—数据—模型协同进化"视为通往下一代递归自我改进(RSI)智能的路径。它的基本逻辑分三环:</p>
+<ol>
+<li><strong>环境</strong>让知识可以被获取,也让动作可以被验证;</li>
+<li><strong>任务执行</strong>会产生证据,这些证据可以拿来学习;</li>
+<li><strong>改进后的模型</strong>能探索更大范围的问题。</li>
+</ol>
+<p>在这个设想下,每一轮工作都应为后续轮次留下可复用的能力,让真实世界的实践成为智能持续增长的来源<span class="src">p.37</span>。</p>
+<p>通俗地说:不只是"模型做题、做错了再训练",而是把"出题的环境"也一起改进。环境越好,越能暴露模型真正不会的东西;模型越强,又能帮着造出更难的环境和题目。</p>
+<h3>四步循环与图 10<span class="src">p.37–38</span></h3>
+<p>原文把这一设想落实为四步:</p>
+<ol>
+<li><strong>重建环境(Reconstruct Environment)</strong>:把过去"改进环境"的经验转化为环境改进任务,用来训练一个环境改进模型(environment-refinement model),由它产出"任务就绪"的环境。</li>
+<li><strong>发现难例(Discover Hard Cases)</strong>:智能体在重建后的环境里做任务,找出真正的能力短板(genuine capability gaps),并据此生成有针对性的训练数据。</li>
+<li><strong>训练任务模型(Train Task Model)</strong>:用这些难例数据训练任务模型,提升它的能力。</li>
+<li><strong>演化环境(Evolve Environment)</strong>:用更强的模型进一步迭代环境,生成更多任务。</li>
+</ol>
+<p>后续每一轮都会同时产出两样东西:新的任务训练数据,以及新的环境改进经验。这样,"解题能力的进步"就和"为未来学习创造条件的能力的进步"绑在了一起<span class="src">p.38</span>。</p>
+<p><strong>图 10</strong> 的结构是上下两个环<span class="src">p.38</span>:</p>
+<ul>
+<li><strong>上环</strong>是"学习如何重建环境"。依次为:收集环境改进经验 → 生成环境改进任务 → 训练环境改进器(Environment Refiner)→ 应用 → 得到新的改进经验,如此往复。环境改进器的作用是"学会如何重塑环境"。</li>
+<li><strong>下环</strong>就是上面的四步主循环。任务模型的目标是"学会解更难的任务",每轮结束时为下一轮带来"更多任务和新挑战"。</li>
+</ul>
+<p>需要注意,图注用的是 "proposed"(提出的)这个词。也就是说,完整的四步循环还是设想,并没有全部跑通。</p>
+<h3>早期实验(表 9)<span class="src">p.38–39</span></h3>
+<p>早期结果只覆盖循环中的<strong>工作区(workspace)阶段</strong>,共两组实验。评分采用细粒度评分细则(rubric),即把一个任务拆成很多条可逐项判定的检查点。</p>
+<p><strong>(a)干净 vs 噪声工作区的先导实验(pilot)</strong></p>
+<ul>
+<li>设置:8 种前沿"模型 + 外围框架(harness)"组合,在 30 个改编自 Workspace-Bench 的工作区任务上测试,共 1,280 条评分细则。用到的外围框架有 DSH(2 组)、Codex(2 组)和 ClaudeCode(4 组)。</li>
+<li>比较对象:同一组合在"干净工作区"和"充满噪声的工作区"下的通过率。</li>
+<li>结果:8 种组合全部是干净工作区更好,提升幅度为 21.7–51.6 个百分点。几个代表例子:</li>
+<li>幅度最大:DeepSeek-V4-Pro + DSH,干净时 98.2%,有噪声时只有 46.6%,相差 +51.6。</li>
+<li>GPT-5.6-Luna + Codex 从 84.6% 跌到 38.1%,相差 +46.5。</li>
+<li>幅度最小:Grok-4.6 + ClaudeCode,84.7% vs 63.0%,相差 +21.7。</li>
+<li>结论:决定智能体表现上限的,可能是工作区状态,而不仅仅是模型能力。原文的说法是 "workspace state, rather than model capability alone, can bound agent performance"<span class="src">p.38</span>。</li>
+</ul>
+<p><strong>(b)生产力工作区研究</strong></p>
+<ul>
+<li>问题:模型和外围框架都固定不变,只把环境"变丰富",任务表现会不会提升?</li>
+<li>设置:5 组固定的模型–框架搭配,在 30 个任务上测试,共 547 条评分细则。对比两种环境:</li>
+<li>"裸工作区"(bare workspace);</li>
+<li>"重建环境"(reconstructed environment),即多提供一个共享包,内含<strong>集合地图(Collection Map)</strong>和<strong>事件日志(Event Log)</strong>。通俗地说,就是给智能体一张"东西都放在哪"的索引,外加一份"之前发生过什么"的记录。</li>
+<li>结果:5 组全部提升,总评分增幅为 18.65–39.67 个百分点。几个代表例子:</li>
+<li>增幅最大:PI + GPT-5.6-Sol,从 50.27% 升到 89.95%,+39.67。</li>
+<li>Codex CLI + GPT-5.6-Sol,从 60.51% 升到 92.50%,+31.99。</li>
+<li>增幅最小:Claude Code + DeepSeek-V4-Flash,从 61.06% 升到 79.71%,+18.65。</li>
+<li>任务层面:表中按"胜/平/负"统计 30 个任务,各组大约是 22–24 胜、2–6 平、2–5 负。</li>
+<li>评分细则层面:"从不通过变通过"的条数远多于"从通过变不通过"。前者在 140–240 之间,后者在 10–38 之间。例如 PI + GPT-5.6-Sol 是 240 比 23,Claude Code + DeepSeek-V4-Flash 是 140 比 38。</li>
+</ul>
+<p><strong>负面现象</strong>:少数任务出现了"范围蔓延式退步"(scope-creep regressions),即智能体做出的改动比任务实际要求的多得多,反而导致失分<span class="src">p.38–39</span>。</p>
+<p><strong>其他进展与定位</strong>:团队还训练完成了一个可复用的文件校验模块(file-verification module)。作者把这些结果定位为协同进化循环的"第一步",并表示后续会把环境重建、数据生成和模型训练连成一个持续复利的循环<span class="src">p.39</span>。</p>
+<h3>5.2 飞书(Lark):为企业级可靠 RSI 打数据底座<span class="src">p.39</span></h3>
+<p>飞书切入 RSI 的角度,是一个常被忽视的前提:智能体要自我改进,先得有一个持续演化的数据底座。</p>
+<p>在企业协作场景中,文档、消息、会议和任务不断产生新信息;智能体一边消费这些数据,一边又产生新的交互痕迹(interaction traces)。因此,飞书把三件事当作 RSI 流水线的地基:</p>
+<ul>
+<li>数据生产;</li>
+<li>质量评测;</li>
+<li>失败归因(failure attribution)。</li>
+</ul>
+<p>目标不是单纯堆数据,而是保证每一轮迭代都满足三个条件<span class="src">p.39</span>:</p>
+<ol>
+<li>有新鲜的经验可以学;</li>
+<li>有可靠的标准来判断是否进步;</li>
+<li>有足够细的诊断来确定该改哪里。</li>
+</ol>
+<p><strong>图 11</strong> 给出了五步数据底座循环<span class="src">p.39</span>:</p>
+<ol>
+<li><strong>数据收集</strong>:来自内部协作,是实际工作中持续产生的异构数据。</li>
+<li><strong>数据组织</strong>:抽取实体、事件和关系,构建以时间为驱动的上下文图谱。</li>
+<li><strong>质量评测</strong>:自动化评测(绝对判断 + GSB),识别错误并做归因。</li>
+<li><strong>反馈构建</strong>:修正后的数据和标准回流到前面的环节,使用痕迹补充新证据,整个过程有人工把关。</li>
+<li><strong>在真实工作中改进智能体</strong>:提升产品内的任务表现和用户体验。</li>
+</ol>
+<p>这五步的产出又会成为下一轮"更好的数据与评测"。</p>
+<h3>企业知识图谱<span class="src">p.39</span></h3>
+<p>飞书把散落在文档、消息和会议记录里的信息,串成实体、事件、人物和时间关系,让智能体能回答需要跨来源推理的问题。</p>
+<p>由于图谱里的错误会直接传到下游答案,图谱构建本身就被当作一个需要反复迭代的数据质量问题。具体做法有两类:</p>
+<ul>
+<li><strong>可扩展性</strong>:用分批构建图谱(batched graph construction)和委托式权限校验(delegated authorization checks)来解决;</li>
+<li><strong>持续验证</strong>:不断评估基于图谱的检索是否真的改善了下游问答。</li>
+</ul>
+<p>内部评测结果,与基于 RAG 的基线相比:</p>
+<ul>
+<li>人工评定的任务可用率从 <strong>52% 升到 65%</strong>;</li>
+<li>自动评测的可用率从 <strong>47% 升到 56%</strong>。</li>
+</ul>
+<h3>自动化数据质量评测<span class="src">p.39</span></h3>
+<p>这套系统是后续改进的"测量层"。它的目的是不再完全依赖昂贵且标准不一的人工审核,做法分两步:</p>
+<ol>
+<li>先用<strong>绝对判断</strong>筛掉明显不可用的输出;</li>
+<li>再用<strong>比较式的 GSB 评测</strong>决定新的系统变体是否应该上线推广(promote)。</li>
+</ol>
+<p>通俗地说:第一步是"及格线",先把不合格的挡掉;第二步是"新旧对比",新版本要比旧版本好才能替换。</p>
+<p>关键设计是<strong>评测与明确的失败归因绑定</strong>。坏例子(bad cases)会被分门别类,例如时间不一致、查询被扭曲、信息源质量差。这样每一种失败都能对应到一个具体的改进方向。原文举了两个例子:</p>
+<ul>
+<li>对时效性问题,在查询时间点做过滤,避免用到"未来的信息";</li>
+<li>质量差的合成查询,先改写,再重新进入评测流水线。</li>
+</ul>
+<p>最初的自动评测器与人工判断的一致率约为 <strong>84%</strong>。分歧大多出在自动评测器比人工审核<strong>更严格</strong>,这正好为后续校准提供了具体信号。</p>
+<h3>从 RSI 角度看飞书实践的意义<span class="src">p.39–40</span></h3>
+<p>作者认为,这些尝试的价值在于它们搭起了一个反馈结构:</p>
+<ul>
+<li>企业活动不断产出新的图谱数据和交互痕迹;</li>
+<li>自动评测判断哪些输出和数据可靠;</li>
+<li>错误归因定位流水线在哪一环出了问题;</li>
+<li>修正后的数据和评测标准又成为后续迭代的输入。</li>
+</ul>
+<p>这个循环把生产数据从"被动的资源"变成了"不断演化的改进底座"<span class="src">p.39–40</span>。</p>
+<p>同时,飞书目前的做法<strong>刻意保持人工把关</strong>。重复性的数据处理和评测大多交给智能体,而定义标准、审阅关键样本、批准重要变更这三件事仍由人负责<span class="src">p.40</span>。</p>
+<h3>两家实践对比</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Theseus</th>
+<th>飞书(Lark)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RSI 切入点</td>
+<td>环境—数据—模型协同进化</td>
+<td>先建持续演化的数据底座</td>
+</tr>
+<tr>
+<td>改进对象</td>
+<td>环境(以及计划中的任务模型)</td>
+<td>知识图谱、评测标准、数据质量</td>
+</tr>
+<tr>
+<td>关键数字</td>
+<td>干净工作区提升 21.7–51.6 pp;重建环境提升 18.65–39.67 pp</td>
+<td>可用率:人工 52%→65%,自动 47%→56%;评测器与人工一致率约 84%</td>
+</tr>
+<tr>
+<td>已暴露问题</td>
+<td>少数任务出现范围蔓延式退步</td>
+<td>自动评测器比人工更严格,需要校准</td>
+</tr>
+<tr>
+<td>当前进度</td>
+<td>只完成循环第一步(工作区阶段),另训练了文件校验模块</td>
+<td>循环在运转,但明确保持人工把关</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="n11">
+<h2>§5.3 小红书 与 §5.4 Humanlaya</h2>
+<h2>本部分要点</h2>
+<ul>
+<li><strong>小红书</strong>把推荐系统做成"双时间尺度"的递归自我改进(RSI)。快的一层按用户实时反馈更新结构化记忆,慢的一层把难例审核后用于后训练,更新智能体参数。公司报告的排序分数提升在 4.8%–13.1% 之间,作者特别强调这只是初步结果。</li>
+<li><strong>Humanlaya</strong> 把数据质检系统本身(规则、提示词、少样本示例、技能)当作持续改进对象。内循环修当前批次的数据,外循环跨批次改"质检方法"。经过 4 轮更新,关键缺陷率从 9.0% 降到 3.7%,人工处理时间从 48 分钟降到 27 分钟。</li>
+<li>两个案例都保留了<strong>人工把关</strong>:智能体做大部分重复工作,人负责抽检、定标准和最终批准。它们不是无约束的自我改进闭环。</li>
+</ul>
+<hr/>
+<h3>§5.3 小红书:总体思路——推荐结果变成"下一轮更新的信号"</h3>
+<p><span class="src">p.40</span>本节标题是"面向推荐的双时间尺度 RSI"。对象是小红书的<strong>商业化推荐系统</strong>,核心组件叫<strong>意图-记忆智能体(Intent-Memory Agent, IMA)</strong>。</p>
+<p>图 12 顶部一句话点出核心变化:推荐不再是流水线的终点,而是"下一轮记忆更新(Memory update)的信号"。</p>
+<p>传统做法把"理解用户"当成一次性推断:看一遍历史行为,得出画像,然后推荐。IMA 则把以下五步串成一个持续循环:</p>
+<ol>
+<li>反馈解读</li>
+<li>记忆更新</li>
+<li>经验检索</li>
+<li>需求推理</li>
+<li>推荐</li>
+</ol>
+<p>推荐发出后,用户的后续行为包括点击、停留时长、收藏、搜索、转化和负反馈。这些行为有两重作用:</p>
+<ul>
+<li>它们是新的行为输入。</li>
+<li>它们也是<strong>检验证据</strong>,用来核对系统先前对"用户状态和意图"的估计对不对。</li>
+</ul>
+<p>根据这些观察,系统对记忆做五种操作:<strong>新增、强化、替换、衰减</strong>,以及<strong>忽略</strong>没有信息量的证据。</p>
+<p>所以作者说,这个系统持续改进的目标是"决定未来推荐的用户表示(user representation)",而不只是当前这一次推荐的输出。</p>
+<p>通俗地说:系统每推荐一次,就"押了一个注",看用户的反应是否验证这个判断,再据此修正它对这个人的认识。</p>
+<h3>图 12:双环结构</h3>
+<p><span class="src">p.40</span>图 12 画了两个环。</p>
+<p><strong>(1)内环:用户在线适应。</strong> 流程是:用户行为 → 反馈理解 → 记忆更新 → 经验检索 → 需求推理 → 推荐 → 在线反馈,再回到起点。这一环的节奏很快,跟着单个用户的实时行为转。</p>
+<p><strong>(2)外环:系统级持续自我改进。</strong> 流程是:在线反馈 → 难例挖掘(Hard Case Mining)→ 评判与验证(Judge and Verify)→ 规则/数据精修 → 后训练(Post Training)→ 新版本智能体,再重新部署。</p>
+<p>图注补充了两点:</p>
+<ul>
+<li>难例要经过<strong>自动评判、人工抽检和数据重构</strong>。</li>
+<li>后训练的作用是把"已验证的经验"沉淀进智能体参数。</li>
+</ul>
+<h3>结构化记忆与经验复用</h3>
+<p><span class="src">p.40</span>IMA 把中间状态拆成三个语义层(semantic layers):</p>
+<ul>
+<li><strong>Content</strong>:内容主题是什么;</li>
+<li><strong>Who</strong>:用户处于什么状态;</li>
+<li><strong>Need</strong>:推断出的需求是什么。</li>
+</ul>
+<p>这三层同时决定知识库的存储和检索方式。召回历史经验时,可以分别按"内容相似""用户状态相似"或"需求相似"来找。</p>
+<p>这样拆分有两个目的:</p>
+<ul>
+<li><strong>减少检索错误。</strong> 如果把不同语义因素混在一段描述文本(caption)里,检索时容易张冠李戴。</li>
+<li><strong>精准修正。</strong> 后续反馈可以只改某个具体的状态变量,不必把整个用户画像推倒重写。</li>
+</ul>
+<p>通俗地说:与其给用户写一段笼统的"人设描述",不如分成三个格子分别记。哪个格子错了就只改那个格子。</p>
+<h3>快速适应与慢速能力固化</h3>
+<p><span class="src">p.40–41</span>系统组合了两个互补的改进周期。</p>
+<p><strong>用户层(快)。</strong> 实时反馈更新记忆,用来适应兴趣变化和临时需求。这是非参数化的适应,不改模型权重。</p>
+<p><strong>系统层(慢)。</strong> 从线上交互中收集高价值难例,依次经过:</p>
+<ol>
+<li>自动评判</li>
+<li>人工抽检</li>
+<li>规则修正</li>
+<li>训练数据重构</li>
+</ol>
+<p>得到的样本用于 IMA 的后训练,更新后的智能体再回到推荐流水线。</p>
+<p>两层分工的结果是:</p>
+<ul>
+<li><strong>长尾经验</strong>可以通过知识库立即生效;</li>
+<li><strong>反复被验证的模式</strong>则逐步固化进模型参数。</li>
+</ul>
+<p>作者把这种设计概括为:把"快速的非参数适应"和"更持久的模型级学习"连接起来。</p>
+<h3>报告的结果(表 10)及其局限</h3>
+<p>〔p.40 表 10;p.41 正文〕表 10 比较了线上基线(A)和 RSI 模型(B),涉及两个模块、三项指标。指标都是 @16 的排序分数(score_mean / score_median)。</p>
+<ul>
+<li><strong>发现页(Discovery Feed)</strong>:</li>
+<li>score_mean@16 从 2.211 升到 2.366,提升 <strong>+7.0%</strong>;</li>
+<li>score_median@16 从 1.587 升到 1.663,提升 <strong>+4.8%</strong>。</li>
+<li><strong>视频内流(In-video Feed)</strong>:</li>
+<li>score_mean@16 从 1.537 升到 1.739,约 <strong>+13.1%</strong>,带星号。</li>
+<li>这个结果来自一次<strong>小规模离线评测</strong>,基线 470 个样本,RSI 模型 447 个样本。</li>
+</ul>
+<p>作者明确提醒:</p>
+<ul>
+<li>这些是<strong>初步的、公司自报的排序分数提升</strong>;</li>
+<li>所给材料<strong>没有证明</strong>点击率或转化率有相应提升。</li>
+</ul>
+<h3>案例意义小结</h3>
+<p><span class="src">p.41</span>作者认为这是一种工业 RSI 模式:推荐结果反过来成为修改"产生后续推荐的系统"的证据。具体分两条路径:</p>
+<ul>
+<li>在线反馈修正持久的用户记忆;</li>
+<li>经审核的难例通过后训练改进后续版本的智能体。</li>
+</ul>
+<p>它的实际贡献在于把三件事耦合在一起:即时状态修正、结构化经验复用、长期能力固化。同时,训练数据精修环节保留了人工检查。</p>
+<hr/>
+<h3>§5.4 Humanlaya:背景与动机</h3>
+<p><span class="src">p.41</span>Humanlaya 为基础模型开发者提供<strong>训练和评测数据</strong>。生产核心是复杂的<strong>多文件任务包(task package)</strong>,一个包里通常包括:</p>
+<ul>
+<li>任务描述</li>
+<li>输入附件</li>
+<li>参考答案</li>
+<li>评分细则(rubric)</li>
+<li>可执行或流程化的验证要求</li>
+</ul>
+<p>这类数据的质量问题往往很<strong>隐蔽</strong>:单看某个文件似乎没问题,但它可能和任务规格、评分逻辑或下游评测协议对不上。</p>
+<p>另外,任务类型和客户需求一直在变。只靠一个个修坏样本不够,<strong>质控系统本身必须从反复出现的失败中学习</strong>。</p>
+<p>因此,Humanlaya 把以下对象当作持久的改进目标:</p>
+<ul>
+<li>数据质检智能体本身;</li>
+<li>与之配套的规则、提示词、少样本示例(few-shot examples)和技能(skills)。</li>
+</ul>
+<h3>图 13:交付驱动的双环</h3>
+<p><span class="src">p.41</span>图 13 标题是"从交付反馈中学习,改进质量体系"。</p>
+<p><strong>(1)内环:改进当前批次。</strong> 任务包依次经过三道关:</p>
+<ol>
+<li><strong>质量检查器(Quality Checker)</strong>:查内容质量和各组件之间的一致性。</li>
+<li><strong>修复器(Refiner)</strong>:修复已确认的缺陷。</li>
+<li><strong>交付检查器(Delivery Checker)</strong>:查格式、结构和交付约束。</li>
+</ol>
+<p>任何一步不通过,就进入"定位 → 修改 → 复查"的循环,通过后才交付。</p>
+<p><strong>(2)外环:更新质量体系。</strong> 流程是:</p>
+<ol>
+<li><strong>反馈与现实</strong>:收集人工审核、客户反馈、失败修复记录和下游使用情况。</li>
+<li><strong>分析并提出更新</strong>:更新对象是规则、提示词、少样本示例和技能。</li>
+<li><strong>验证与人工把关</strong>:在留出任务包上测试,再经人工审核批准。</li>
+<li><strong>发布新版本</strong> v(t+1)。</li>
+</ol>
+<h3>以数据为中心的内环</h3>
+<p><span class="src">p.41</span>内环只在当前交付批次内运行,目标是修好正在生产的数据。</p>
+<p>原文举了一个例子:几个本可以<strong>独立打分</strong>的结果,被错误地合并成一条粗糙的评分项。检查器会判定这条评分细则"不够原子化(insufficiently atomic)",要求拆分重组,之后才接受这个任务包。</p>
+<p>作者强调,这个环只改进当前产物,<strong>本身不构成持久的系统改进</strong>。</p>
+<h3>以改进为中心的外环(核心 RSI 机制)</h3>
+<p><span class="src">p.41–42</span>外环跨交付批次运行,作者称它是"核心 RSI 机制"。步骤如下:</p>
+<ol>
+<li>交付后汇总证据,包括内部审核、客户反馈和下游使用情况。</li>
+<li>一个智能体分析这些案例,找出<strong>反复出现的根因</strong>。</li>
+<li>针对质控系统提出<strong>带版本号的修改</strong>,涉及 Refiner 指令、提示词、少样本示例和可复用技能。</li>
+<li>候选更新放到<strong>未参与生成这次修改的任务包</strong>上评测(即留出验证)。</li>
+<li>再经人工审核,通过后才晋升。</li>
+<li>新版本替换旧版本,用于后续生产批次。</li>
+<li>新任务又产生新证据,进入下一轮循环。</li>
+</ol>
+<p>通俗地说:内环是"改作业",外环是"改批改作业的方法"。</p>
+<h3>代表性案例:扫描 PDF 误判</h3>
+<p><span class="src">p.42</span>一个三页的扫描 PDF,抽取工具解析失败,质量检查器就把附件标成"不可用"。人工复核发现扫描件本身很清晰。错误的根源在于系统把"<strong>抽取失败</strong>"和"<strong>文档质量差</strong>"当成了一回事。</p>
+<p>于是系统生成了一条新的判定规则和配套的少样本示例,用来区分这两种情况。经过留出验证和人工审核后,这条更新并入下一版本,在之后的任务中复用。</p>
+<p>作者据此总结:Humanlaya 是一种由生产反馈驱动的、<strong>脚手架层面(scaffold-level)的 RSI</strong>。也就是说,改进的是模型外围的规则和提示,不是模型权重。</p>
+<h3>量化结果</h3>
+<p><span class="src">p.42</span>Humanlaya 报告了一次内部对比:V0 与经过 <strong>4 次反馈驱动更新</strong>后的 V4。</p>
+<p>对比条件是:</p>
+<ul>
+<li>基础模型、工具和处理预算都相同;</li>
+<li>评测集是 <strong>600 个未参与更新过程的任务包</strong>。</li>
+</ul>
+<p>结果:</p>
+<ul>
+<li>自动修复后仍含关键缺陷的任务包比例,从 <strong>9.0% 降到 3.7%</strong>;</li>
+<li>每个任务的平均人工处理时间,从 <strong>48 分钟降到 27 分钟</strong>。</li>
+</ul>
+<h3>人机协同的定位</h3>
+<p><span class="src">p.42</span>作者指出,现阶段模型能力仍在快速进步,有些任务智能体还无法完全自主完成。因此 Humanlaya 的做法是:</p>
+<ul>
+<li>智能体承担大部分自我改进过程;</li>
+<li>人在关键环节提供部分真值(ground truth)、审核和最终批准。</li>
+</ul>
+<p>作者把它视为"RSI + 人类监督"的实践范例,而不是让自我改进循环无约束地运行。</p>
+<hr/>
+<h3>两个案例对照(自制概括)</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>小红书 IMA</th>
+<th>Humanlaya</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>持续改进的对象</td>
+<td>用户表示(记忆)+ 智能体参数</td>
+<td>质检系统的规则/提示/示例/技能</td>
+</tr>
+<tr>
+<td>快环做什么</td>
+<td>实时反馈更新结构化用户记忆</td>
+<td>当前批次:检查 → 修复 → 交付检查</td>
+</tr>
+<tr>
+<td>慢环做什么</td>
+<td>难例评判、抽检、重构数据 → 后训练</td>
+<td>跨批次根因分析 → 版本化更新</td>
+</tr>
+<tr>
+<td>人工角色</td>
+<td>难例抽检、数据精修</td>
+<td>留出验证后审核、最终批准</td>
+</tr>
+<tr>
+<td>报告效果</td>
+<td>排序分数 +4.8% ~ +13.1%(初步,未证明点击/转化提升)</td>
+<td>关键缺陷率 9.0% → 3.7%;人工时间 48 → 27 分钟</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="n12">
+<h2>§5.5 面壁智能 与 §5.6 腾讯混元</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li><strong>面壁智能</strong>的判断是:AI 工程会比开放式 AI 研究更早实现自主。它提出「锻造工程(Forge Engineering)」,让 AI 从一个空代码库出发,无人参与地做出可上线的实现。整个流程是两层循环:内层把一个场景做到底,外层把经验写回知识库,留给下一个场景用。代表成果 ForgeTrain 大约 8 小时追平 Megatron-LM v0.15。</li>
+<li><strong>腾讯混元的 Hyra</strong> 走「轻流程、重经验」路线。核心是一个经验库(Experience Bank),里面存的是可执行的经验,包括代码、日志、分数和评测反馈,不只是文字记忆。它还允许根据搜索积累的经验改进评测器(evaluator)本身。也就是说,「什么算改进」这个标准也可以被改。</li>
+<li>两家都给出了量化结果。共同点是都依靠执行反馈(跑得通吗、跑多快),这种反馈便宜而且客观,用来驱动递归自我改进(RSI)。</li>
+</ul>
+<blockquote>
+<p>说明:第 42 页前半段是上一节 Humanlaya 案例的结尾,第 44 页后半段是 §5.7 Agent-Native Research Lab,都不属于本部分,这里不讲。</p>
+</blockquote>
+<hr/>
+<h3>一、面壁智能的出发点:工程比研究更容易先自动化<span class="src">p.42</span></h3>
+<p>面壁智能推进 RSI 的切入点是<strong>把 AI 工程自动化</strong>。前提判断是:AI 工程很可能比开放式的 AI 研究更早变得自主。理由有两点:</p>
+<ul>
+<li>工程任务很耗人力,例如实现训练框架、优化算子(kernel)、配置并行策略、跑基准测试;</li>
+<li>但这类任务的反馈可以通过「执行」直接拿到,相对便宜,也客观。代码对不对、快不快,跑一下就知道。</li>
+</ul>
+<p>通俗地说:研究问题「好不好」很难判定,工程问题「过没过、快了多少」一测便知。所以工程更适合让 AI 自己闭环迭代。</p>
+<p>基于这个判断,面壁提出<strong>锻造工程(Forge Engineering)</strong>,这是一种端到端范式:</p>
+<ul>
+<li><strong>输入</strong>:目标模型、硬件平台、并行化需求;</li>
+<li><strong>过程</strong>:AI 系统从一个<strong>初始为空的代码库</strong>出发,自己构建、测试、打磨实现;</li>
+<li><strong>目标</strong>:在没有人工干预的情况下,产出可用于生产的实现。</li>
+</ul>
+<h3>二、图 14:两层 RSI 循环<span class="src">p.42</span></h3>
+<p>图 14 把锻造工程画成两层循环,标题是「在内层循环中锻造一个场景;把经过验证的工程经验写回,供未来场景使用」。</p>
+<p><strong>(1)内层循环:锻造一个场景</strong></p>
+<ol>
+<li>场景需求:模型、硬件、并行策略;</li>
+<li>系统设计 + 参考知识库:给出约束条件和评测标准;</li>
+<li>深度优化 + 自动研究(Auto Research):生成实现、测量、诊断;</li>
+<li>交付:必须同时通过正确性和性能两项验证;</li>
+<li>如果失败,就「分析 → 修改 → 重新测量」,回到循环里继续。</li>
+</ol>
+<p><strong>(2)外层循环:跨场景提炼经验</strong></p>
+<ol>
+<li>一个场景完成交付;</li>
+<li>提炼经验:关键指标、最佳实践、参考实现;</li>
+<li>更新知识库:维护约束条件和架构经验(图中把 Update 误拼成 "Undate");</li>
+<li>下一个场景直接从更新后的知识库起步。</li>
+</ol>
+<h3>三、内层:约束架构 + 自主底层优化<span class="src">p.42–43</span></h3>
+<p>在单个目标场景里,系统把两件事结合起来:<strong>受约束的架构设计</strong>和<strong>自主的底层优化</strong>。</p>
+<ul>
+<li><strong>知识库</strong>由人和 AI 共同维护,里面有规格说明、评测标准,以及积累下来的工程经验。</li>
+<li>智能体先依据这些知识确定一个合理的<strong>高层架构</strong>,同时把搜索空间收窄。</li>
+<li>然后进入<strong>自动研究循环(AutoResearch loop)</strong>:反复生成实现、测量正确性和性能、诊断失败、修复瓶颈。</li>
+<li>优化成功的部分会逐步并入主执行路径,文中举的算子例子是 GEMM(通用矩阵乘)和 FlashAttention。</li>
+</ul>
+<p>这样设计的用意是:全局架构约束保持稳定,实现层面则可以放手做激进的自主优化。</p>
+<p>通俗地说:人和知识库先把房子的框架定死,AI 在框架里面随便折腾装修,装得好的部分就固定下来。这样既快,又不会把整体结构搞乱。</p>
+<h3>四、外层:跨场景写回经验<span class="src">p.43</span></h3>
+<p>每个项目里成功和失败的工程经验都会<strong>写回共享知识库</strong>,具体包括:</p>
+<ul>
+<li>性能测量数据;</li>
+<li>有效的优化策略;</li>
+<li>参考实现;</li>
+<li>失败规则,即哪些做法不行。</li>
+</ul>
+<p>上一个项目的这些产出,就成为下一个项目的起始知识。因此同一套工程流程可以在不同模型、不同硬件、不同负载之间复用。</p>
+<p>面壁称已经把这一范式用在多个领域:预训练框架、算子库、强化学习基础设施、推理引擎、微调、压缩、量化、端侧部署,并且覆盖了若干个硬件生态。</p>
+<h3>五、面壁的量化成果<span class="src">p.43</span></h3>
+<p><strong>ForgeTrain [168]:自动生成预训练框架</strong></p>
+<ul>
+<li>起点:一个空目录,加上参考脚本和模型规格说明;</li>
+<li>约 <strong>8 小时</strong>生成的预训练框架追平了 <strong>Megatron-LM v0.15</strong>,据称在 <strong>1.5–2.5 天</strong>内超过了它;</li>
+<li>对照估算:同等程度的人工开发大约需要 <strong>3–5 名工程师干 6–12 个月</strong>;</li>
+<li>模型 FLOPs 利用率(MFU,即算力实际用上的比例):MiniCPM4-0.5B 从 <strong>40.1% 提到 44.1%</strong>,8B 模型从 <strong>47.0% 提到 50.9%</strong>,两者各提高约 4 个百分点。</li>
+</ul>
+<p><strong>ForgeStencil [169]:扩展到科学计算算子</strong></p>
+<ul>
+<li>方法相同,对象换成科学计算的 kernel;</li>
+<li>公司报告相比公开的最先进实现提速 <strong>1.15–1.9 倍</strong>,端到端提速的中位数为 <strong>1.41 倍</strong>。</li>
+</ul>
+<p>注意原文措辞,如 "reportedly surpassed"、"with the company reporting",这些数字都是公司自报。</p>
+<hr/>
+<h3>六、腾讯混元 Hyra:轻量化设计哲学<span class="src">p.43</span></h3>
+<p>腾讯混元的 <strong>Hyra(Hunyuan Research Agent,混元研究智能体)</strong> 在<strong>以性能为导向的研究和工程任务</strong>上探索 RSI,整体是一个「经验驱动的搜索循环」,见图 15。</p>
+<p>它的设计哲学<strong>刻意保持轻量</strong>:</p>
+<ul>
+<li>不去编写越来越复杂的人工设计工作流;</li>
+<li>而是给智能体一个宽广的解空间,反复用实验证据引导后续搜索;</li>
+<li>接到任务后,系统一直探索,直到它自己决定停止或者资源预算耗尽,最后返回过程中找到的最佳方案。</li>
+</ul>
+<h3>七、核心组件:经验库 + 上下文智能体 + 提议智能体<span class="src">p.43</span></h3>
+<p><strong>经验库(Experience Bank)</strong> 是核心。它保存的状态比常规的文本记忆丰富得多,包括:以往的解决方案代码、生成的产物、执行日志、分数、评测器的反馈。</p>
+<p>围绕经验库,有两类智能体分工:</p>
+<ul>
+<li><strong>上下文智能体(Context Agent)</strong>:把经验库里的证据重新组合,构造出多样化的「灵感上下文」(inspiration contexts);</li>
+<li><strong>多个提议智能体(Proposal Agents)</strong>:<strong>异步</strong>读取这些上下文,构造新方案,并在<strong>全新的隔离沙箱</strong>中执行。</li>
+</ul>
+<p>执行产物和评测结果再写回经验库。后续的提议因此可以直接<strong>复用、组合或避开</strong>早先尝试中发现的模式。</p>
+<p>通俗地说:像一个研究组共享一本带完整代码和日志的实验记录本。每个人每次动手前,组长都会从记录本里挑几页不同的经验给他参考。做完的新实验,不管成败,也都记回本子里。</p>
+<h3>八、图 15:Hyra 的流程细节<span class="src">p.43</span></h3>
+<p>图 15 的流程可以按顺序梳理:</p>
+<ul>
+<li><strong>输入(任务与资源)</strong>:研究问题、工具与环境、评测标准、约束条件;</li>
+<li><strong>上下文智能体</strong>:检索并整理过去的经验(以往方案、失败案例、洞见),构造多样的灵感上下文;</li>
+<li><strong>提议智能体(并行探索,图中示意为 P1、P2、P3……)</strong>:基于不同上下文生成不同方案;</li>
+<li><strong>执行</strong>:在隔离环境(沙箱)里实现方案、跑实验,产出输出和日志;</li>
+<li><strong>评测</strong>:用预先定义的标准,或者经过改进的标准来评估结果;</li>
+<li><strong>产出</strong>:最佳方案、改进后的方案,以及可复用的产物(代码实现、技术报告、研究知识);</li>
+<li><strong>经验库</strong>:保存方案与代码、执行日志、成功模式、失败案例,为下一轮探索提供「新洞见」。</li>
+</ul>
+<p>图注还特别指出,经验库在需要时也用来<strong>支持评测器的改进</strong>。</p>
+<h3>九、关键延伸:连评测器也能被改进<span class="src">p.43–44</span></h3>
+<p>Hyra 把「经验驱动」的思路扩展到了<strong>评测本身</strong>。</p>
+<p><strong>适用场景</strong>:开放式任务。这类任务的初始评测器往往不完整,或者会被钻空子(exploitable)。</p>
+<p><strong>做法</strong>:利用积累的搜索经验修订评测机制,然后在改进后的标准下继续搜索。修订方式举例:</p>
+<ul>
+<li>提高评测粒度;</li>
+<li>加强对比基线;</li>
+<li>堵住奖励投机(reward hacking)的漏洞。</li>
+</ul>
+<p>通俗地说:如果发现考题出得有漏洞,智能体可以用「抄近道」拿高分,那就先把考题修好,再接着考。</p>
+<p>作者认为这一点对 RSI 尤其重要。被持续更新的不再只是「一个更好的解」,而是<strong>决定哪些未来方案算作改进的那套机制本身</strong>也在变化。用原文的话说,"the mechanism that determines which future solutions are considered improvements can also change"。</p>
+<h3>十、表 11:Hyra 的量化成果<span class="src">p.44</span></h3>
+<p>表 11 在 <strong>3 个 AI 研发基准</strong>上,对比了标为 "Recursive" 的一列和 <strong>hyra-1.0</strong>。正文把前者称为「引用的此前最佳结果」。正文说,这些成绩来自 Hyra 发布的配套产物,覆盖 AI-for-AI 和 AI-for-Science 两类任务。三项基准分别是:</p>
+<ul>
+<li><strong>模型训练</strong>:NanoChat Autoresearch [170],指标是验证集 BPB(每字节比特数,越低越好)。Hyra 为 <strong>0.9015</strong>,此前最佳为 0.9109。</li>
+<li><strong>模型训练加速</strong>:NanoGPT Speedrun [171],指标是把损失训练到 3.28 所需时间(越短越好)。Hyra 为 <strong>76.4 秒</strong>,此前为 77.5 秒。</li>
+<li><strong>GPU 算子优化</strong>:SOL-ExecBench [172],指标是平均 SOL(越高越好)。Hyra 为 <strong>0.771</strong>,此前为 0.754。表中 0.771 带有一个 † 标记,本节给出的原文没有解释它。</li>
+</ul>
+<p>三项都是<strong>小幅但一致的超越</strong>,差距分别约为 BPB 低 0.009、快 1.1 秒、SOL 高 0.017。</p>
+<p>作者的结论是:作为一种工业级 RSI 实践,Hyra 体现了<strong>保留可执行经验、而不只保留最终答案</strong>的价值。</p>
+<hr/>
+<h3>十一、两家对比小结</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>面壁智能 Forge Engineering</th>
+<th>腾讯混元 Hyra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>核心判断</td>
+<td>AI 工程比开放研究更早可自主</td>
+<td>少写人工流程,用实验证据驱动搜索</td>
+</tr>
+<tr>
+<td>循环结构</td>
+<td>内层锻造单场景 + 外层跨场景写回知识库</td>
+<td>上下文智能体 → 并行提议 → 沙箱执行 → 评测 → 经验库</td>
+</tr>
+<tr>
+<td>持久化载体</td>
+<td>人与 AI 共同维护的知识库(规格、标准、经验、失败规则)</td>
+<td>经验库(代码、产物、日志、分数、评测反馈)</td>
+</tr>
+<tr>
+<td>特色机制</td>
+<td>架构受约束、实现层激进优化</td>
+<td>可以改进评测器本身,堵住奖励投机漏洞</td>
+</tr>
+<tr>
+<td>代表数字</td>
+<td>约 8 小时追平 Megatron-LM;MFU 约 +4 个百分点;ForgeStencil 中位端到端 1.41 倍</td>
+<td>三项基准小幅超越此前最佳(如 BPB 0.9109 → 0.9015)</td>
+</tr>
+</tbody>
+</table>
+<p>两者的共同点是:被持续改进的都是<strong>外围框架(harness)与经验层</strong>。面壁改的是知识库,Hyra 改的是经验库乃至评测器,底座模型本身没有改动。反馈信号都来自客观的执行结果。</p>
+</section>
+<section id="n13">
+<h2>§5.7 Agent-Native Research Lab 与 §5.8 Frontis.AI</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li><strong>§5.7 Agent-Native Research Lab</strong> 关注的不是让研究智能体更聪明,而是递归自我改进(RSI)需要的<strong>基础设施层</strong>。它包含三件事:用"智能体原生研究产物(ARA)"替代传统论文,保存完整的研究经验;用 rit 协议对研究结论做确定性验证;用"认知进展"信号引导探索。该方案在芯片设计上落地,Chip-Bench 得分 5.8416。</li>
+<li><strong>§5.8 Frontis.AI</strong> 是一个企业内部的智能体进化平台,采用 ME–WE–MA 三层架构。它除了改进 300 多个专家智能体,还把"怎么改进智能体"的经验跨任务积累下来。两个月内,76 个可比任务的平均分从 5.25 升到 5.87;积累元经验后,进化速度约快 20%。这些都是公司自报数据。</li>
+<li>两个案例的共同主张是:RSI 要持续,关键在于把<strong>经过验证的经验</strong>(包括失败的经验、改进方法本身)可靠地保存下来并传给下一代,同时配套验证关卡和人工审批来治理这个过程。</li>
+</ul>
+<blockquote>
+<p>说明:第 44 页开头的表 11 和"Measured Improvement"一段属于上一节 §5.6 的 Hyra 案例,第 46 页后半起属于第 6 章,这两部分都不在本笔记范围内。</p>
+</blockquote>
+<hr/>
+<h3>5.7 Agent-Native Research Lab:为 RSI 提供可验证的研究基础设施</h3>
+<p><strong>核心立场</strong><span class="src">p.44</span>:作者认为,要实现持续的递归自我改进,光有越来越自主的研究智能体不够。还需要一套基础设施,让研究经验能被可靠地<strong>记录、验证、继承、复用</strong>,并跨越多代传递。Agent-Native Research Lab 专门做这一层,整体结构见图 16。</p>
+<h4>图 16:智能体原生的 RSI 闭环</h4>
+<p>图 16 把整个流程画成一个循环<span class="src">p.44</span>,各环节如下:</p>
+<ul>
+<li><strong>研究与设计(Research &amp; Design)</strong>:提出假设、做规划。</li>
+<li><strong>执行(Execute)</strong>:调用 EDA 工具链(芯片设计自动化工具),做测试和验证。</li>
+<li><strong>rit 验证(Rit Verification)</strong>:从日志中重新提取结果,只保留已验证的结论。</li>
+<li><strong>验证与筛选(Verify &amp; Select)</strong>:执行 rit 检查,只留下有效的设计。</li>
+<li><strong>整理与学习(Curate &amp; Learn)</strong>:整理执行轨迹,用来训练下一代模型。</li>
+<li><strong>知识继承(Knowledge Inheritance)</strong>:把已验证的结果和代码传下去,指导下一代。</li>
+<li><strong>引导式探索(Guided Exploration)</strong>:以认知进展为导向,做结构化搜索。</li>
+<li>循环的产出是<strong>改进后的模型或策略</strong>。</li>
+</ul>
+<p>整个循环的底座是 <strong>ARA</strong>,它包含形式化逻辑与规格说明、探索图。图注把这个循环概括为四个要素的整合:引导探索、确定性验证、知识继承、下一代学习,目的是在多个研究周期之间持续改进。</p>
+<h4>(1) 以人为中心 vs. 智能体原生的研究产物</h4>
+<p><strong>问题</strong><span class="src">p.44</span>:传统论文是写给人看的,会丢掉大量智能体接手工作所需的"操作状态",例如失败的实验、中间证据、可执行的规格说明、实现细节。对 RSI 来说,这种信息损失会直接削弱跨代的知识积累。</p>
+<p><strong>方案</strong>:提出<strong>智能体原生研究产物(Agent-Native Research Artifact, ARA)</strong>,作为传统科学文档的"可执行替代品"。它同时保存四类内容:</p>
+<ul>
+<li>形式化的科学逻辑;</li>
+<li>可执行的代码和规格说明;</li>
+<li><strong>探索图(exploration graph)</strong>,其中既有成功的分支,也有被放弃的分支;</li>
+<li>原始实验证据。</li>
+</ul>
+<p>这样,后继智能体不只是拿到一份润色过的最终叙述,还能查到三件事:结果是怎么得到的,哪些替代方案失败了,实际用了哪些假设和参数。</p>
+<p>通俗地说:传统论文像一份"成品菜谱",ARA 像"厨房全程录像加原料清单加失败记录",下一位厨师可以直接接着做。</p>
+<p><strong>评估数字</strong><span class="src">p.44</span>:</p>
+<ul>
+<li>针对已有工作做问答,用 ARA 的准确率是 <strong>93.7%</strong>,用传统论文是 <strong>72.4%</strong>。</li>
+<li>在 RE-Bench 上复现成功率从 <strong>57.4%</strong> 提升到 <strong>64.4%</strong>。</li>
+</ul>
+<p>作者强调,这对 RSI 的意义不只是"文档写得更好",而是为后续研究周期提供了更丰富的<strong>继承基底(inheritance substrate)</strong>。</p>
+<h4>(2) 对研究结论的确定性验证</h4>
+<p><strong>问题</strong><span class="src">p.44</span>:智能体以机器速度产出实验和结论,瓶颈就从"生成"转到了"验证"。</p>
+<p><strong>rit 协议</strong>分两种情况处理:</p>
+<ul>
+<li><strong>实证类结论</strong>:直接锚定到执行轨迹,从日志里重新提取报告的结果并核对。</li>
+<li><strong>分析类结论</strong>:可以交给 Lean 4 这类形式化验证系统检查。</li>
+</ul>
+<p>只有通过这些可机器验证的关卡的结论,才能写入共享研究状态。这样做的目的是防止幻觉或误报的结果被后续各代递归继承、层层放大。</p>
+<p>通俗地说:每条结论都要"拿日志对账"或"拿证明器过一遍",没对上就不准入库,避免错误像滚雪球一样传下去。</p>
+<h4>(3) 认知进展引导的探索</h4>
+<p><strong>做法</strong><span class="src">p.44–45</span>:系统在稀疏的、只看最终结果的优化信号之外,再加入两类引导:</p>
+<ul>
+<li><strong>认知进展(epistemic-progress)</strong>信号;</li>
+<li>从人类科学推理中提炼出的结构化先验。</li>
+</ul>
+<p>智能体不再只追求最终基准分数,而是被鼓励优先做那些能<strong>降低不确定性、揭示问题结构</strong>的实验。</p>
+<p><strong>动机</strong>:在很大的假设空间里,朴素的爬山法(hill climbing)会反复在熟悉的参数上"刷分",却得不到更深的理解。</p>
+<p>通俗地说:不奖励"碰运气提高一点分",而奖励"做完这个实验后我们对问题懂得更多了"。</p>
+<h4>实测:芯片设计</h4>
+<p><strong>为什么选芯片设计</strong><span class="src">p.45</span>:这个领域的反馈回路格外快,而且结果确定。</p>
+<p><strong>流程</strong>:</p>
+<ol>
+<li>智能体生成可综合的 SystemVerilog,搭建测试平台(testbench),提出微架构修改方案。</li>
+<li>候选设计交给工业级 EDA 工具,依次做综合、布局布线、时序分析、形式等价性检查。</li>
+<li>无效设计被自动过滤。</li>
+<li>已验证的实现、执行轨迹、失败分支,以及更优的功耗-性能-面积(PPA)轨迹,都会保留下来,作为后续各代的训练和研究证据。</li>
+</ol>
+<p><strong>结果</strong>:在 Chip-Bench 上,Level-3 CPU 优化得分为 <strong>5.8416</strong>。与基于同一底座模型的标准智能体基线相比,设计<strong>快 2.7%、面积小 21.5%</strong>,并通过了全部 <strong>97 个定向测试</strong>和 <strong>350 个随机差分程序</strong>。</p>
+<hr/>
+<h3>5.8 Frontis.AI:企业智能体进化与跨任务元改进</h3>
+<p><strong>定位</strong><span class="src">p.45</span>:Frontis Horizon 是一套由企业自己持有的基础设施。它改进的对象有两层:专家智能体本身,以及"用来改进它们的方法"。核心目标是让改进经验能<strong>跨任务复用</strong>,而不是困在单个智能体内部。</p>
+<h4>ME–WE–MA 架构(图 17)</h4>
+<p>原文从文字和图 17 两方面描述了三层分工<span class="src">p.45</span>,概括如下:</p>
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>职责</th>
+<th>图中要点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ME(个人与组织接口)</td>
+<td>人机交互、上下文记忆、发布审批</td>
+<td>长期记忆、任务与反馈、人在回路(human-in-the-loop)、调度专家</td>
+</tr>
+<tr>
+<td>WE(规模化专家智能体)</td>
+<td>由 300 多个异构专家智能体执行任务</td>
+<td>图中列出金融、法律、工程、研究、数据分析等智能体;正文提到的领域是金融、法律、工程、人力资源</td>
+</tr>
+<tr>
+<td>MA(元智能体,Meta-Agent)</td>
+<td>构建、评测、持续进化智能体</td>
+<td>Benchmark OS、轨迹分析、生成改进、三道关卡验证、两层进化循环</td>
+</tr>
+</tbody>
+</table>
+<p>图 17 里的数据流是:</p>
+<ul>
+<li>ME 把任务、上下文和人类反馈交给 WE。</li>
+<li>WE 把跨领域的执行轨迹、日志、失败案例交给 MA。</li>
+<li>MA 产出经验证的新版本,返回给专家智能体。</li>
+<li>底部的"在线轨迹 + 人类协作"持续给整个系统供料。</li>
+</ul>
+<p>图中还标出两层循环:</p>
+<ul>
+<li><strong>L1 智能体进化循环</strong>:提升 WE 的能力。</li>
+<li><strong>L2 元进化循环</strong>:改进 MA 自己的改进方法。具体是积累"问题、归因、修改、验证结果"等跨任务知识,提炼出带适用条件的改进模式,再反过来优化 MA 的归因方法和改进策略。</li>
+</ul>
+<p>图注的概括是:专家智能体进化与跨任务元改进相结合,共享评测设施,发布需人工批准。</p>
+<h4>面向业务的专家进化</h4>
+<p><strong>Benchmark OS</strong> 把以下几类要素组织成共享评测设施<span class="src">p.45</span>:</p>
+<ul>
+<li>企业任务:既有真实任务,也有离线构造的任务;</li>
+<li>可复现的执行环境;</li>
+<li>隔离执行的沙箱;</li>
+<li>验证器(verifier)。</li>
+</ul>
+<p>验证时<strong>优先用程序化检查</strong>。语义质量交给模型评审(model judge)判断,而且评审模型与被评测的智能体相互隔离。</p>
+<p><strong>改进流程</strong>:</p>
+<ol>
+<li>MA 拿到运行反馈后先做归因,判断失败出在<strong>路由、执行机制,还是专家能力本身</strong>。</li>
+<li>制定有边界的改进目标和验收标准。</li>
+<li><strong>先取得人类确认</strong>,再去修改提示词、技能、工具或外围框架(harness)。</li>
+<li>候选版本与前一版本对比,必须过<strong>三道关卡</strong>:回归安全(原本会的没变差)、目标达成、异常场景下的鲁棒性。</li>
+<li>获批的更新回到生产环境,并附带带版本号的测试报告,支持审计和回滚。</li>
+</ol>
+<h4>跨任务元改进</h4>
+<p><strong>保留什么</strong><span class="src">p.45–46</span>:每一次改进都会记录问题背景、诊断理由、候选修改、验证结果和适用条件。这些经验分两种用途:</p>
+<ul>
+<li>针对某个智能体的经验,用于它的后续版本;</li>
+<li>可迁移的教训,用于 MA 在新任务上的诊断和改进策略。</li>
+</ul>
+<p><strong>迁移不是照搬</strong>,必须经过适配和重新验证。原文的例子是:"优先采用实时证据"这条教训搬到新任务时,仍要先确定新任务里哪些是权威来源,以及这些来源的时效性。</p>
+<p>作者据此区分两件事:<strong>学会做某项业务</strong>,和<strong>学会更有效地改进智能体</strong>。</p>
+<p>通俗地说:前者是员工变熟练,后者是"带新人的方法论"越来越好。</p>
+<h4>报告的结果</h4>
+<p>时间跨度为两个月<span class="src">p.46</span>:</p>
+<ul>
+<li>共发起 <strong>216 个改进任务</strong>,涉及 <strong>117 个专家智能体</strong>,其中 <strong>63 个</strong>完成了至少一个完整进化周期。</li>
+<li>在 <strong>76 个</strong>用同一评测器评估的可比任务上,平均分从 <strong>5.25 提升到 5.87</strong>;每个完成的周期,机器处理时间的中位数是 <strong>27.8 分钟</strong>。</li>
+<li>另外,积累了 100 多个任务的元进化经验后,在此前没见过的内部测试任务上,进化速度比没有跨任务经验时<strong>快约 20%</strong>。</li>
+</ul>
+<p><strong>评估协议</strong>把"专家表现"和"改进效率"分开衡量:从完全相同的初始智能体版本出发,追踪迭代次数、耗时、token 消耗和回归情况。</p>
+<p>作者明确提醒,这些都是<strong>公司自报的证据,没有独立复现</strong>。</p>
+<h4>把改进能力学进模型权重</h4>
+<p>Frontis-MA1 另外尝试把"改进能力"直接训练进一个 <strong>35B 模型</strong><span class="src">p.46</span>:</p>
+<ul>
+<li>在固定外围框架下,MLE-Bench Lite 得分从 <strong>39.39% 升到 60.61%</strong>;</li>
+<li>加入额外搜索后达到 <strong>71.21%</strong>。</li>
+</ul>
+<p>这些结果针对的是机器学习和深度学习工程任务。让模型直接从平台上的企业智能体进化轨迹中学习,目前仍是未来工作。</p>
+<h4>案例启示</h4>
+<p>作者总结出一种实用的 RSI 模式<span class="src">p.46</span>:不仅保留改进后的智能体,还要保留<strong>经过验证的、关于如何改进它们的知识</strong>。支撑这种积累的治理框架包括四样东西:共享评测设施、对上下文敏感的经验迁移、带版本号的更新,以及由人控制的发布。</p>
+</section>
+<section id="n14">
+<h2>第 6 章 挑战与未来方向、第 7 章 结论</h2>
+<h2>第 6 章 挑战与未来方向、第 7 章 结论 · 中文精读笔记</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li>第 6 章先承认现状:前面各章介绍的进展都只是"局部突破"。作者从自主性分级(L1–L5)、四个应用领域和工业实践出发,提出 <strong>8 个研究方向</strong>,目标是把这些零散进展串成能够持续进行的递归自我改进(Recursive Self-Improvement, RSI)。</li>
+<li>8 个方向有一条共同主线:光看"分数涨了"不够,必须讲清楚 <strong>改进来自哪里、能不能迁移、花了多少成本、由谁负责批准</strong>。全章最终落在一句判断上:真正的 RSI 要表现为"改进能力本身"被反复、可归因、可迁移地提升。</li>
+<li>第 7 章结论回顾全文路线图:五个阶段、以改进回路为分析单位、四个应用领域、工业实践。作者强调还需要长周期评测,并给出愿景:每一代 AI 都让下一代的改进更可靠、更高效、更容易带来新发现。</li>
+</ul>
+<blockquote>
+<p>说明:p.46 开头关于 Frontis 案例的结果数据(216 个改进任务、评分从 5.25 升到 5.87、Frontis-MA1 在 MLE-Bench Lite 上的成绩等)属于上一章 5.x 节,不在本部分讲解范围内。</p>
+</blockquote>
+<hr/>
+<h3>6 章开篇:三大瓶颈只解决了一部分 <span class="src">p.46</span></h3>
+<p>作者先回顾前文。现有研究已经在五件事上实现了一定程度的自动化:</p>
+<ul>
+<li>执行改进;</li>
+<li>选择改进策略;</li>
+<li>获取经验;</li>
+<li>适应部署环境;</li>
+<li>修改"改进机制"本身。</li>
+</ul>
+<p>前文同时确立了一个重要区分:<strong>自主程度更高、能力获得持久提升、改进过程本身更有效,是三种不同的性质</strong>,不能混为一谈。</p>
+<p>本综述最初提出的三大瓶颈仍然只解决了一部分:</p>
+<ol>
+<li>基础模型开发需要大量资源和协调;</li>
+<li>可扩展的学习依赖有用的经验和可靠的验证;</li>
+<li>已部署的系统需要持续投入人力,去诊断问题、验证更新、发布更新。</li>
+</ol>
+<p>基于自主性分级、四个应用领域和工业实践,作者提出下面 8 个研究方向。</p>
+<hr/>
+<h3>方向一:跨组件诊断与协同改进(对应 L1→L2) <span class="src">p.46</span></h3>
+<p><strong>问题</strong>:从 L1 走向 L2 时会遇到一个诊断难题。观察到一次失败,往往无法判断该改哪个组件。一个错误答案可能来自:源数据有缺陷、上下文缺失、工具接口有问题、模型本身不行,或者评测器(evaluator)判错了。</p>
+<ul>
+<li><strong>Humanlaya 案例(5.4 节)</strong>:一次信息抽取失败,起初被归因为文档质量差。实际上真正该改的是质量检查器的判定规则。</li>
+<li>在科学和具身智能领域,可能出错的环节还要再加上实验协议、感知、控制和环境条件。</li>
+<li>当多个组件同时在自适应时,改动其中一个,可能破坏另一个组件所依赖的前提。</li>
+</ul>
+<p><strong>未来做法</strong>:</p>
+<ul>
+<li>把诊断结论变成<strong>可检验的干预假设</strong>,用对照实验分别估计单个改动的效果和改动之间的交互作用;</li>
+<li>借助选择性冻结部分组件、定向消融(ablation)、显式记录组件依赖关系等手段,区分"真正的修复"和"只是在补偿上游的缺陷";</li>
+<li>随着约束条件变化,在数据、模型、外围框架(harness)、环境之间分配搜索精力。</li>
+</ul>
+<p>通俗地说:不要"头痛医头",要先做对照实验,确认病根到底在哪个环节。</p>
+<ul>
+<li><strong>Theseus 案例(5.1 节)</strong>:它的工作区实验说明,必须把"环境改进"和"任务模型的改动"分开看。不过它报告的只是组件级收益,完整的学习闭环尚未得到证明。</li>
+</ul>
+<p><strong>研究目标</strong>:弄清哪种干预能改善整个系统、在什么条件下有效,以及得到的这些知识能否指导后续的改进决策。</p>
+<hr/>
+<h3>方向二:以学习者为条件的经验获取与可靠学习信号(对应 L3) <span class="src">p.46–47</span></h3>
+<p>L3 的分析把经验区分为三个属性:</p>
+<ol>
+<li>是否<strong>有效</strong>(内容是否正确);</li>
+<li>对当前学习者来说<strong>难度</strong>如何;</li>
+<li>学了之后能否带来<strong>持久收益</strong>。</li>
+</ol>
+<p>两个代表系统:</p>
+<ul>
+<li><strong>AZR</strong>:用可执行检查来保证有效性,同时根据学习者当前状态来出题;</li>
+<li><strong>R-Zero</strong>:用求解器答案的一致性作为难度的代理指标。</li>
+</ul>
+<p>作者的判断是:<strong>单看"正确"或单看"难度估计",都不能证明一道题有学习价值。</strong> 自适应课程(adaptive curriculum)可能出现以下问题:</p>
+<ul>
+<li>反复挑选有歧义的题;</li>
+<li>强化评测器自身的错误;</li>
+<li>扎堆在某个"容易测出进步"的狭窄区域。</li>
+</ul>
+<p>这些错误既会进入学习者,也会进入"决定下一批经验"的状态,从而形成恶性循环。<span class="src">p.47</span></p>
+<p><strong>未来做法</strong>:</p>
+<ul>
+<li>跨多轮估计学习价值,同时保持经验的有效性、多样性,并覆盖已经学会的能力(防止遗忘);</li>
+<li>经验来源包括:从已有数据中挑选、生成新任务、主动寻求交互,以及在内部判断不够用时请求更强的外部反馈;</li>
+<li>核心难题有两个:昂贵的验证什么时候值得做?不确定的经验应该怎样影响后续训练?</li>
+</ul>
+<p><strong>评测设计建议</strong>:允许不同方法获取到的数据分布不同,但必须对齐数据源访问权限和"获取+学习"的总预算。还可以做两种对照,来检验"以学习者为条件"本身是否带来了超出"多训练一些"的迁移收益:</p>
+<ul>
+<li>冻结输入给获取机制的学习者状态;</li>
+<li>改用与学习者无关的固定课程表。</li>
+</ul>
+<hr/>
+<h3>方向三:持久状态管理与可靠复用(对应 L4) <span class="src">p.47</span></h3>
+<p>L4 系统会继承参数、记忆、技能、工具和外围框架代码。但"保留了某个产物"不等于"后来的智能体真的从中受益"。失败分两类:</p>
+<ul>
+<li><strong>激活失败</strong>:相关技能从未被检索出来;</li>
+<li><strong>执行失败</strong>:技能被检索出来了,但没有被正确执行。</li>
+</ul>
+<p>积累本身也会带来麻烦:</p>
+<ul>
+<li><strong>Library Drift</strong> 的研究显示,技能库不断膨胀会让检索变差、改进停滞;</li>
+<li>但过于激进地淘汰旧技能同样有害。</li>
+</ul>
+<p>所以,持久化的关键在于持续管理这些产物是否仍然适用,以及它们之间如何相互影响。</p>
+<p>通俗地说:技能库就像公司知识库,存得越多不等于越好用,还得有人定期整理、核实、下架。</p>
+<p><strong>未来做法</strong>:</p>
+<ul>
+<li>给每个继承下来的产物附上支持证据、适用条件、依赖关系,以及它在后续任务上的实际效果;</li>
+<li><strong>HDSO</strong> 的配对评测可以作为"准入测试"的起点。但当任务分布、执行者或周边系统发生变化时,验证必须持续进行;</li>
+<li>分别测量四件事:更新质量、激活情况、是否忠实执行、下游收益;再研究什么时候该合并、修订、淘汰或重新验证一个产物;</li>
+<li><strong>跨模型复用</strong>是另一个问题:对作者模型有用的技能,换一个执行者可能就不适用了。</li>
+</ul>
+<p>解决这些问题,才能把"成功生成更新"和"能力在会话之间、代际之间可靠传递"连接起来。</p>
+<hr/>
+<h3>方向四:领域特定反馈下的受控适应 <span class="src">p.47</span></h3>
+<p>同一个改进回路放到四个领域,需要不同的验证策略:</p>
+<ul>
+<li><strong>科学</strong>:实验失败可能源于假设、实验协议或仪器;证据必须保留其前提假设和不确定性。</li>
+<li><strong>具身智能</strong>:当前策略决定了能观察到哪些状态;物理试验消耗资源,且可能造成不可逆的后果。</li>
+<li><strong>软件</strong>:有可执行的反馈,但"测试通过"仍然取决于需求规格和测试覆盖率。</li>
+<li><strong>医疗</strong>:结果反馈有延迟、混杂因素多;在一个人群或一家机构验证过的更新,不一定能迁移到别处。</li>
+</ul>
+<p>这些差异同时限制了两件事:系统能自主学到什么,以及什么样的证据足以支持部署。</p>
+<p><strong>未来做法</strong>:</p>
+<ul>
+<li>制定更新策略时,区分偶发失败和反复出现的能力局限,并针对不同类型的改动选择相应的验证流程;</li>
+<li>先用仿真、历史回放、沙箱执行做初筛,再在目标运行条件下进行有监督或分阶段的评估;</li>
+<li>持续监控:当需求、人群、工具、环境变化后,收益是否还在;</li>
+<li>软件出问题可以回滚检查点,但物理世界和临床上的后果无法撤销,因此在这些场景中,<strong>发布前验证必不可少</strong>;</li>
+<li>对于后果重大的发布、访问权限和安全约束,人类的决定权必须保持明确。</li>
+</ul>
+<p><strong>开放问题</strong>:如何在增加有用适应的同时,控制错误向未来交互的传播。</p>
+<hr/>
+<h3>方向五:改进机制的可信演化(对应 L5) <span class="src">p.47–48</span></h3>
+<p>到了 L5,被修改的对象变成了改进器、评测器或研究策略本身,这会改变后续继任者"如何产生、如何被接受"。由此出现一个<strong>耦合验证问题</strong>:</p>
+<ul>
+<li>更强的求解器可能暴露出评测器的弱点;</li>
+<li>但改动评测器,又可能让新旧分数不可比,或者让系统钻评测器的空子(reward exploitation)。</li>
+</ul>
+<p>两个相关系统:</p>
+<ul>
+<li><strong>RQGM</strong> 解决了其中一部分:在一个周期(epoch)内冻结评测器;新评测器要对照一个独立的"锚点"来验证;对受评测器替换影响的分数进行回溯重评。</li>
+<li><strong>Hyra</strong> 中的评测器改进引出了同一个更大的问题:当搜索不断推进时,自适应的度量标准怎样保持可信?</li>
+</ul>
+<p>通俗地说:如果"考生"和"出题阅卷人"一起进化,就必须留一把外部的、不随之变化的尺子。</p>
+<p><strong>未来做法</strong>:</p>
+<ul>
+<li>把"可编辑的内部反馈机制"和"独立维护的验收标准"分开;</li>
+<li>保留证据链,把每一次机制修改和之后的决策对应起来;</li>
+<li>先分别评估"候选生成"和"评估"两部分改动的效果,再把收益归因于二者的联合演化;<span class="src">p.48</span></li>
+<li><strong>A-Evolve-Training</strong> 展示了在固定高层目标下的策略继承,但这种策略能否迁移到它所演化的研究场景之外,尚待检验。</li>
+</ul>
+<p><strong>开放问题</strong>:</p>
+<ul>
+<li>在被反复自适应访问的情况下,如何保持独立评估?</li>
+<li>如何发现提议者和评测器"串通"式的协同错误?</li>
+<li>如何撤销有害的机制改动,又不丢掉有用的经验?</li>
+</ul>
+<p>作者特别强调:调整操作层面的研究优先级,<strong>不必、也不应该</strong>把系统总体使命的决定权一并交出去。</p>
+<hr/>
+<h3>方向六:被继承的改进能力的长周期评测 <span class="src">p.48</span></h3>
+<p>这里的核心是区分两种 L5:</p>
+<ul>
+<li><strong>结构上的 L5</strong>:能证明修改后的机制被继承下来,并且确实被调用了;</li>
+<li><strong>有效的 L5</strong>:必须证明这个机制产生或挑选出了更好的后续改进。</li>
+</ul>
+<p>后者目前是一个实质性的实证空白。例子有两个:</p>
+<ul>
+<li>本综述回顾的 <strong>AIDE2</strong> 实验中,把演化出来的外围框架装作外层改进器后,<strong>并没有</strong>得到统计显著的效率优势;</li>
+<li>软件谱系研究提示,要把"当前任务表现"和"产生有用后代的能力"分开看,因为暂时较弱的变体可能促成后来的进步。</li>
+</ul>
+<p><strong>评测建议</strong>:</p>
+<ul>
+<li>从可比的初始系统和证据出发,比较原始机制与修改后的机制,并在总预算对齐的条件下比较。总预算要算上开发和评估这些机制本身的成本;</li>
+<li>把演化出的机制固定住,放到新任务上测试,看它的改进策略能否迁移,<strong>HyperAgents</strong> 就是这样做的;</li>
+<li>长期研究应报告多次重复运行的完整轨迹,包括被拒绝的更新、性能回退、恢复过程、保留下来的能力和资源消耗;</li>
+<li>用受保护的参考任务保证结果可比,用新任务和陌生约束测试迁移与发现能力。</li>
+</ul>
+<p>这些评测协议最终要回答三个问题:继承来的改动是否改变了后续的改进能力?收益在何时进入平台期?把额外的搜索和评估开销算进去之后,表面上的"加速"是否还成立?</p>
+<hr/>
+<h3>方向七:资源感知的改进与人机协作 <span class="src">p.48</span></h3>
+<p>RSI 的出发点是提高效率,所以必须核算<strong>整个改进过程</strong>的成本。更快的算子(kernel)、更好的训练配方、更长时间的无人值守运行,背后可能仍然需要大量的候选生成、评估、基础设施维护和人工审查。</p>
+<ul>
+<li><strong>Meta</strong> 的回归分析工作流,对系统提出的改动保留了工程师审查;</li>
+<li><strong>Humanlaya</strong> 保留人工验证,并且在报告质量的同时报告处理耗时。</li>
+</ul>
+<p>这说明评价自主性时,必须同时看需要多少人工投入、需要什么类型的人工投入。此外,更强的基础模型和更多的并行试验,也会混淆不同改进策略之间的比较。</p>
+<p><strong>未来做法</strong>:</p>
+<ul>
+<li>研究如何把总预算分配给诊断、经验获取、候选搜索、验证和部署监控;</li>
+<li>廉价初筛可以减少昂贵试验,前提是它的预测要持续用独立结果来校准;</li>
+<li>复用已验证的工具和过去的失败记录可以减少重复劳动,但其维护成本也要计入;</li>
+<li>评测应报告"达到某个经过验证的能力目标"所需的时间和总成本,以及审查投入和返工量;</li>
+<li><strong>自适应停止</strong>是研究重点:系统要用预期学习价值和不确定性来证明"值得继续实验",并且明确设定暂停、上报给人类、终止无效搜索的条件。</li>
+</ul>
+<hr/>
+<h3>方向八:支持跨轮继承的可复现基础设施 <span class="src">p.48–49</span></h3>
+<p>继任系统需要知道一项改进<strong>是怎么得来的</strong>,包括那些失败的备选方案,以及证据成立的条件。四个工业案例各自体现了一部分需求:</p>
+<ul>
+<li><strong>Lark</strong>:强调带时间锚点的数据和失败归因;</li>
+<li><strong>Humanlaya</strong>:保留质量体系的版本化更新;</li>
+<li><strong>Hyra</strong>:存储可执行的经验;</li>
+<li><strong>Agent-Native Research Lab</strong>:提出一种研究产物形式,保留代码、规格、探索历史和实证痕迹。</li>
+</ul>
+<p>这些实践说明需要一套共享的基础设施,把研究证据一轮一轮传下去。但这种继承在长期上究竟能带来多大收益,还有待证明。</p>
+<p><strong>设计建议</strong>:</p>
+<ul>
+<li>可复用的产物格式应串起完整链条:父状态 → 提议的改动 → 驱动改动的证据 → 评测配置 → 接受决策 → 后续使用情况;</li>
+<li>对数据、环境和评测器做版本化,方便回放,也能说清楚一次更新之后哪些比较仍然有效;</li>
+<li>确定性的重新提取可以核对报告中的测量值,形式化验证可以证明系统相对于某个规格满足某些性质。但两者都不能证明实验或规格本身真正刻画了想要的能力;</li>
+<li>公开评测应把可检查的产物和回放研究结合起来,并<strong>分开报告</strong>结果出处、产物可获得性和独立复现情况;</li>
+<li>数据保密时,可以提供可共享的评测子集和受控的回放接口,做部分验证,同时说明清楚哪些内容是无法核查的。<span class="src">p.49</span></li>
+</ul>
+<hr/>
+<h3>第 6 章收尾:什么才算真正的 RSI <span class="src">p.49</span></h3>
+<p>作者给出全章的判定标准:迈向真正 RSI 的进展,必须表现为"改进能力"本身得到<strong>反复的、可归因的、可迁移的</strong>提升。原文称之为 "repeated, attributable, and transferable improvements in the capacity to improve"。</p>
+<p>最关键的证据是:在明确的资源约束和权限约束下,继承来的改动让后面的轮次做得更好,具体是以下三点之一:</p>
+<ul>
+<li>获取更有用的经验;</li>
+<li>发现更好的干预手段;</li>
+<li>更有效地验证继任者。</li>
+</ul>
+<p>通俗地说:不是"这一代变强了"就够了,而是要证明"这一代让下一代更会变强"。</p>
+<hr/>
+<h3>第 7 章 结论 <span class="src">p.49</span></h3>
+<p>结论回顾了全文的主要贡献:</p>
+<ol>
+<li><strong>以自主性为中心的 RSI 路线图</strong>,分五个阶段:改进执行、策略选择、经验获取、环境适应、递归式元改进。</li>
+<li><strong>以改进回路为分析单位</strong>,借此厘清三件事:系统改变了什么、继任者继承了什么、哪些决策仍由人类控制。</li>
+<li><strong>连接四个应用领域</strong>:科学发现、具身智能、软件工程、医疗。说明反馈是否可得、验证成本高低、部署约束如何,共同决定了各领域走向 RSI 的进度。</li>
+<li><strong>用工业实践和初步实证结果</strong>,把路线图落到已经展示出来的能力和当前局限上。</li>
+</ol>
+<p>作者再次强调,需要长周期评测来确认:在明确的资源约束和人类监督下,这些机制能否带来可迁移的收益。</p>
+<p>最后是愿景:RSI 的前景在于让每一代 AI 都使未来的改进更可靠、更高效、更有利于产生新发现。</p>
+</section>
+<section id="n15">
+<h2>附录 A:RSI 全景(文献分布)</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li>作者把调研到的 <strong>491 篇论文</strong>按两个维度做了分布统计:<strong>自主性等级(autonomy level,L1–L5)</strong> 和 <strong>改进目标(improvement target)</strong>,结果画成一张三层环形图(图 18)。论文高度集中在低自主性:L1 和 L2 合计约 75%。<span class="src">p.63</span></li>
+<li>表 12 给出了"改进目标"的完整分类法(taxonomy):<strong>10 个一级目标、共 44 个子目标</strong>。每个子目标都写明了"具体改的是系统里的哪个部件"。<span class="src">p.63–65</span></li>
+<li>这套分类的价值在于划清边界。它区分了"改提示词""改记忆""改外围框架""改模型权重""改训练系统""改评测器""改数据与环境""改外部产出物""整体协同进化"等不同层次,方便判断一个系统到底在"自我改进"什么。</li>
+</ul>
+<hr/>
+<h3>图 18:491 篇论文的分布<span class="src">p.63</span></h3>
+<p>图 18 是三层同心环:</p>
+<ul>
+<li><strong>内环</strong>:自主性等级 L1–L5;</li>
+<li><strong>中环</strong>:一级改进目标,共 10 类,外加"其他(Other)";</li>
+<li><strong>外环</strong>:各一级目标下的子目标。</li>
+</ul>
+<p>作者交代了两条统计口径:</p>
+<ul>
+<li><strong>自主性百分比按论文篇数计算</strong>,每篇论文只落在一个等级里。</li>
+<li><strong>改进目标按"分数权重"计算</strong>:一篇论文如果同时涉及多个改进目标,会把权重拆开分给这几类。通俗地说,这样一篇论文不会在目标统计里被重复算成好几篇。</li>
+</ul>
+<p>自主性分布如下(五级篇数相加正好 491):</p>
+<table>
+<thead>
+<tr>
+<th>自主性等级</th>
+<th>论文数</th>
+<th>占比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1</td>
+<td>215</td>
+<td>43.8%</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>155</td>
+<td>31.6%</td>
+</tr>
+<tr>
+<td>L3</td>
+<td>64</td>
+<td>13.0%</td>
+</tr>
+<tr>
+<td>L4</td>
+<td>28</td>
+<td>5.7%</td>
+</tr>
+<tr>
+<td>L5</td>
+<td>29</td>
+<td>5.9%</td>
+</tr>
+</tbody>
+</table>
+<p>从表中可以读出三点:</p>
+<ul>
+<li><strong>低自主性占绝对多数</strong>。L1 加 L2 共 370 篇,约 75.4%。</li>
+<li><strong>高自主性很少</strong>。L3 及以上合计约 24.6%,L4 和 L5 各只占不到 6%。</li>
+<li><strong>L5(29 篇)略多于 L4(28 篇)</strong>,两者基本持平。</li>
+</ul>
+<p>需要说明三处原文的限制:</p>
+<ul>
+<li>本附录没有重新定义 L1–L5 各级的含义,定义在正文中。</li>
+<li>图中中环、外环各扇区的具体数值在原文提取中是零散数字,无法可靠对应到各类别。</li>
+<li>因此,各改进目标的具体占比本笔记不做推断。</li>
+</ul>
+<h3>表 12:改进目标分类法总览<span class="src">p.63</span></h3>
+<p>表 12 把图 18 中、外环的类别展开。它有三列:一级目标、子目标、被修改的部件(modified component)。10 个一级目标下的子目标数量是:</p>
+<ul>
+<li>提示与上下文 5 个,记忆与知识 5 个;</li>
+<li>外围框架/工作流与控制 6 个,是最多的一类;</li>
+<li>工具与技能 5 个,模型 4 个,训练/优化系统 5 个;</li>
+<li>评测与反馈系统 4 个,数据与环境 4 个;</li>
+<li>外部产出物 3 个,全系统/协同进化 3 个。</li>
+</ul>
+<p>下面按原文顺序逐类讲解。</p>
+<h3>1. 提示与上下文(Prompt &amp; Context)<span class="src">p.63</span></h3>
+<p>这一类改的是"喂给模型的文字"本身,不碰模型参数。共 5 个子目标:</p>
+<ul>
+<li><strong>1.1 指令(Instruction)</strong>:系统提示词、角色设定、行为规则、约束和高层指令。</li>
+<li><strong>1.2 任务提示/模板(Task Prompt / Template)</strong>:任务描述、问题表述方式、提示模板,以及可复用的任务规格。</li>
+<li><strong>1.3 推理提示/协议(Reasoning Prompt / Protocol)</strong>:显式的推理指令和规程,包括思维链(chain-of-thought)、反思、批评、辩论等。</li>
+<li><strong>1.4 示例(Demonstrations / Exemplars)</strong>:放进上下文的少样本示例(few-shot)、演示、成功轨迹和解题范例。</li>
+<li><strong>1.5 上下文组织(Context Composition)</strong>:决定上下文里放什么、按什么顺序放、怎么压缩和摘要,以及有限的上下文预算怎么分配。</li>
+</ul>
+<h3>2. 记忆与知识(Memory &amp; Knowledge)<span class="src">p.64</span></h3>
+<p>这一类改的是系统跨任务保留下来的东西。共 5 个子目标:</p>
+<ul>
+<li><strong>2.1 情景/经验记忆(Episodic / Experience Memory)</strong>:过去的交互记录、执行轨迹、成功和失败的尝试,以及针对具体任务的反思。</li>
+<li><strong>2.2 语义/知识记忆(Semantic / Knowledge Memory)</strong>:持久保存的事实、概念和领域知识,包括结构化存储或外部知识库。</li>
+<li><strong>2.3 程序性记忆(Procedural Memory)</strong>:可复用的策略、从经验中提炼的规则、启发式方法、操作流程和"打法手册"(playbook)。通俗地说,2.1 记的是"发生过什么",2.3 记的是"以后该怎么做"。</li>
+<li><strong>2.4 记忆表示/组织(Memory Representation / Organization)</strong>:记忆的结构本身,如模式(schema)、层级结构、摘要、图、索引和向量表示。</li>
+<li><strong>2.5 记忆操作(Memory Operations)</strong>:管理记忆读写的策略,涵盖写入、检索、更新、合并、优先级排序和遗忘。</li>
+</ul>
+<h3>3. 外围框架 / 工作流与控制(Harness / Workflow &amp; Control)<span class="src">p.64</span></h3>
+<p>这是子目标最多的一类,共 6 个,改的是模型外面那层"怎么调度和组织模型"的结构:</p>
+<ul>
+<li><strong>3.1 工作流/图(Workflow / Graph)</strong>:智能体图(agent graph)和流水线,包括节点、边,以及各计算阶段之间的执行依赖。</li>
+<li><strong>3.2 规划/分解(Planning / Decomposition)</strong>:任务分解方式、规划模块、子目标结构和执行顺序。</li>
+<li><strong>3.3 路由/调度(Routing / Scheduling)</strong>:任务交给哪个模型、哪个智能体、哪个工具,执行顺序怎么排,算力怎么分。</li>
+<li><strong>3.4 校验/反思循环(Verification / Reflection Loop)</strong>:检查并修改中间或最终输出的控制回路,例如"批评—修改"(critic–revise)、"校验—重试"(verify–retry)和各种反思流程。</li>
+<li><strong>3.5 多智能体结构/协议(Multi-agent Structure / Protocol)</strong>:智能体数量、角色分配、交互拓扑、协调机制和通信协议。</li>
+<li><strong>3.6 框架实现/脚手架代码(Harness Implementation / Scaffold Code)</strong>:实现智能体脚手架、编排逻辑、工作流控制器和运行时协调机制的源代码。通俗地说,前 5 项改的是"设计",这一项是直接改"实现这个设计的代码"。</li>
+</ul>
+<h3>4. 工具与技能(Tools &amp; Skills)<span class="src">p.64</span></h3>
+<p>共 5 个子目标:</p>
+<ul>
+<li><strong>4.1 工具集/清单(Tool Set / Inventory)</strong>:系统能调用哪些工具、API、外部服务和能力。</li>
+<li><strong>4.2 工具定义/接口(Tool Definition / Interface)</strong>:工具描述、函数签名、schema、API 封装,以及输入输出规格。</li>
+<li><strong>4.3 工具实现(Tool Implementation)</strong>:工具内部的可执行代码和逻辑。</li>
+<li><strong>4.4 技能/宏库(Skill / Macro Library)</strong>:可复用的技能、宏、子程序、流程和更高层的行为模块。</li>
+<li><strong>4.5 技能组合(Skill Composition)</strong>:把低层技能组装成高层流程或能力的规则与结构。</li>
+</ul>
+<p>这一类内部是逐层递进的:4.1 是"有哪些工具",4.2 是"工具怎么被描述",4.3 是"工具内部怎么实现",4.4–4.5 则是在工具之上沉淀和组合技能。</p>
+<h3>5. 模型(Model)<span class="src">p.64</span></h3>
+<p>共 4 个子目标:</p>
+<ul>
+<li><strong>5.1 模型权重(Model Weights)</strong>:主干模型(backbone)的可训练参数。</li>
+<li><strong>5.2 适配器/辅助模块(Adapter / Auxiliary Module)</strong>:LoRA、适配器、记忆模块等附加组件的可训练参数。</li>
+<li><strong>5.3 架构(Architecture)</strong>:网络结构、模块组合、连接方式和计算结构。</li>
+<li><strong>5.4 推理策略/配置(Inference Policy / Configuration)</strong>:持久性的解码策略、测试时(test-time)策略、推理配置和运行时设置。原文用 "persistent" 强调"持久",即这类改动会被固定下来,不是单次调用时的临时调整。</li>
+</ul>
+<h3>6. 训练/优化系统(Trainer / Optimization System)<span class="src">p.65</span></h3>
+<p>这一类改的是"负责改进模型的那套训练机制"本身。共 5 个子目标:</p>
+<ul>
+<li><strong>6.1 训练目标(Training Objective)</strong>:损失函数、训练奖励、学习目标和优化准则。</li>
+<li><strong>6.2 优化器/更新规则(Optimizer / Update Rule)</strong>:优化器、参数更新算法、学习率策略和相关超参数。</li>
+<li><strong>6.3 训练日程/流水线(Training Schedule / Pipeline)</strong>:微调、强化学习、蒸馏等训练阶段的先后顺序、配置和相互衔接。</li>
+<li><strong>6.4 数据选择/课程(Data Selection / Curriculum)</strong>:训练样本的选取规则、数据配比、难度递进安排和课程策略。</li>
+<li><strong>6.5 搜索/元优化流程(Search / Meta-optimization Procedure)</strong>:用来生成和挑选候选改进的进化、搜索、选择和元优化过程。</li>
+</ul>
+<h3>7. 评测与反馈系统(Evaluator &amp; Feedback System)<span class="src">p.65</span></h3>
+<p>共 4 个子目标:</p>
+<ul>
+<li><strong>7.1 评测器/裁判(Evaluator / Judge)</strong>:评估候选输出或系统变体的评测器、批评者、打分器和裁判模型。</li>
+<li><strong>7.2 奖励/适应度函数(Reward / Fitness Function)</strong>:奖励模型、适应度函数、效用函数、偏好模型和计分规则。</li>
+<li><strong>7.3 验证器(Verifier)</strong>:正确性验证器、测试生成器、证明检查器、一致性检查和其他校验机制。</li>
+<li><strong>7.4 反馈/信用分配(Feedback / Credit Assignment)</strong>:把观察到的结果转换成改进信号的机制。信号可以是局部的、汇总的,也可以按时间分配。通俗地说,它回答的是"任务做好了或搞砸了,该归功或归咎于哪一步"。</li>
+</ul>
+<h3>8. 数据与环境(Data &amp; Environment)<span class="src">p.65</span></h3>
+<p>共 4 个子目标:</p>
+<ul>
+<li><strong>8.1 训练/经验数据(Training / Experience Data)</strong>:训练集、回放缓冲区(replay buffer)、经验池、交互轨迹,以及其他供后续学习使用的数据。</li>
+<li><strong>8.2 任务/课程生成器(Task / Curriculum Generator)</strong>:为下一轮改进生成任务、题目、挑战或训练回合的组件。</li>
+<li><strong>8.3 环境/模拟器(Environment / Simulator)</strong>:环境动力学、模拟器、交互规则、任务世界,以及系统与环境交互的结构。</li>
+<li><strong>8.4 世界模型(World Model)</strong>:学到的、用于表示、预测、生成或模拟环境状态与动态的模型。</li>
+</ul>
+<h3>9. 外部产出物(External Artifact)<span class="src">p.65</span></h3>
+<p>这一类改进的对象不是系统自身,而是系统产出的东西。共 3 个子目标:</p>
+<ul>
+<li><strong>9.1 程序/解答代码(Program / Solution Code)</strong>:系统产出的任务级程序、补丁或解答代码。原文特别注明这里<strong>不包括实现智能体本身的代码</strong>;那部分属于 3.6。这是一条关键边界:改自己的代码算框架层改进,改任务代码只算外部产出。</li>
+<li><strong>9.2 算法(Algorithm)</strong>:算法、计算内核(kernel)、数学过程、符号方法和计算技术。</li>
+<li><strong>9.3 科学/设计产出物(Scientific / Design Artifact)</strong>:科学假设、实验设计、架构、电路、工程设计等研究产出。</li>
+</ul>
+<h3>10. 全系统 / 协同进化(Full-system / Co-evolution)<span class="src">p.65</span></h3>
+<p>这一类处理"同时改好几样东西"的情况。共 3 个子目标:</p>
+<ul>
+<li><strong>10.1 多目标框架(Multi-target Harness)</strong>:在同一个改进过程中,同时修改提示、记忆、工作流、工具等多个框架层组件。</li>
+<li><strong>10.2 模型—框架协同进化(Model–Harness Co-evolution)</strong>:在多轮改进中,模型参数和外围框架/脚手架一起被修改。</li>
+<li><strong>10.3 改进回路 / 元 RSI(Improvement-loop / Meta-RSI)</strong>:负责在连续多轮改进中生成、评估、选择并应用候选改动的那个机制本身。通俗地说,这是"改进'改进的方法'"。</li>
+</ul>
+<p>10.3 和 6.5 的区别要看对象。6.5 针对训练优化中"生成和挑选候选"的搜索流程。10.3 针对的是贯穿整个多轮自我改进的总回路。</p>
+<hr/>
+<p><strong>边界说明</strong>:原文第 66 页起是附录 B「产业全景」(表 13,按公司类型整理工业界系统),不属于本部分,留待下一部分讲解。<span class="src">p.66</span></p>
+</section>
+<section id="n16">
+<h2>附录 B:产业全景</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li>附录 B 只有一张大表(表 13)。它把 <strong>72 家公司或团队</strong>中与递归自我改进(RSI)/自我改进相关的产品或代表性工作排成一张"产业地图",数据是截至 <strong>2026 年 9 月</strong>的公开资料快照。<span class="src">p.66</span></li>
+<li>表的分组依据是<strong>公司类型(archetype)</strong>,不是国家或地区。共分 A–F 六类:前沿大模型实验室、RSI 原生公司、自主科研公司、智能体优化基础设施、具身/世界模型、持久记忆。<span class="src">p.66–71</span></li>
+<li>每个条目都按综述自己的 <strong>B0–L5 分级</strong>打了标签。作者特意声明,这只是作者做的映射,不代表这些公司自己这么称呼。大多数条目落在 L1–L2,真正接近 L4/L5 的只有少数,而且多数标着"候选"或"目标"。</li>
+</ul>
+<hr/>
+<h3>一、表 13 的结构与读法〔p.66、p.71〕</h3>
+<p><strong>表头声明<span class="src">p.66</span></strong></p>
+<ul>
+<li>每一行对应一个产品或一项代表性工作,共涉及 72 家不同的公司或团队。</li>
+<li>组织原则写得很明确:按"公司类型",不按地域。</li>
+<li>RSI 标签是"紧凑映射"(compact mapping),作者强调它"is not a claim that the company itself uses that label"。</li>
+<li>表中带图标的条目可以点击跳转到一手来源。</li>
+</ul>
+<p><strong>六个列</strong></p>
+<ol>
+<li>公司;</li>
+<li>产品或代表性工作;</li>
+<li>子场景(sub-scenario);</li>
+<li>改进目标/产物(improvement target / artifact),即"被改进的是什么东西",比如代码、提示词、权重、技能文件;</li>
+<li>AI 控制的部分(AI-controlled part),即闭环里哪些步骤交给 AI 做,比如生成、评测、训练;</li>
+<li>与 RSI 的关系,也就是 B0–L5 标签。</li>
+</ol>
+<p><strong>阅读指南(表尾,p.71)</strong></p>
+<ul>
+<li><strong>B0</strong>:只有任务内自主(task-local autonomy)。通俗地说:AI 能自己把这一个任务做完,但做完后自身不会因此变强。</li>
+<li><strong>L1–L5</strong>:沿用综述正文的自主程度递增量表,数字越大,交给 AI 控制的"改进环节"越多。</li>
+<li><strong>adj.</strong>(adjacent):与 RSI 相邻的基础设施或行为。它本身不构成自我改进闭环,但为闭环提供支撑。</li>
+<li><strong>cand.</strong>(candidate):看起来可能达到该级别,但还没有被充分证明。</li>
+<li><strong>target</strong>:明确的未来目标,不是已经展示出来的能力。</li>
+<li><strong>enabler</strong>(表中常见):赋能型组件。</li>
+<li><strong>星号 *</strong>:公司身份或公开技术边界仍需更强的核实。</li>
+</ul>
+<hr/>
+<h3>二、六类公司概览(作者统计 + 笔记归纳)</h3>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>家数</th>
+<th>典型代表</th>
+<th>标签分布特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A 前沿基础模型与通用智能体实验室</td>
+<td>17</td>
+<td>OpenAI、Anthropic、DeepMind、DeepSeek</td>
+<td>跨度最大,从 B0 到 L5 target</td>
+</tr>
+<tr>
+<td>B RSI 原生 / AI4AI 公司</td>
+<td>14</td>
+<td>Sakana、Weco、Imbue、EvoMap</td>
+<td>多为 L2–L3,L5 候选/愿景集中在此</td>
+</tr>
+<tr>
+<td>C 自主研发与科学发现公司</td>
+<td>14</td>
+<td>Periodic Labs、Lila、Axiom、Prime Intellect</td>
+<td>以 L2 为主,实验室类为 L3 候选</td>
+</tr>
+<tr>
+<td>D 智能体优化、评测与学习基础设施</td>
+<td>15</td>
+<td>Factory、Warp、LangChain、Mechanize</td>
+<td>多为 L1–L2 或 "enabler",Factory 达 L4</td>
+</tr>
+<tr>
+<td>E 具身、世界模型与持续适应</td>
+<td>8</td>
+<td>X Square、Galaxea、Wuya Zhiyuan</td>
+<td>多为 L2–L3(常带 adj.)</td>
+</tr>
+<tr>
+<td>F 持久记忆与个人 AI</td>
+<td>4</td>
+<td>EverMind、Mindverse</td>
+<td>L1–L2 到 L2–L3</td>
+</tr>
+</tbody>
+</table>
+<p>(以上家数为按表逐家清点所得,合计恰好 72,与表头一致。)</p>
+<hr/>
+<h3>三、A 类:前沿基础模型与通用智能体实验室<span class="src">p.66–68</span></h3>
+<p>作者对这一类的定位是:模型/平台型大实验室,RSI 只是它们的"一个能力前沿",不是公司的唯一主张。</p>
+<p><strong>OpenAI(7 个条目)<span class="src">p.66</span></strong></p>
+<ul>
+<li>跨度很大。"研究加速/自动化研究实习生"由 AI 写研究代码、跑实验和评测,定为 L2。</li>
+<li>GPT-Red 通过自博弈(self-play)提升鲁棒性,让 AI 自己攻击、防御、训练、评测,也是 L2。</li>
+<li>最高的是"自我改进的报税智能体"(self-improving tax agents):在生产环境中挖掘失败案例、打补丁再评测,标为 <strong>L4 候选</strong>。</li>
+<li>外围框架工程(Harness Engineering)、Symphony(智能体编排)、AgentKit/提示词优化器/强化微调(RFT)属于 L1–L2 或"相邻"。</li>
+<li>Deep Research 只是任务内的搜索与综合,定为 <strong>B0</strong>。</li>
+</ul>
+<p><strong>Anthropic(9 个条目)<span class="src">p.66</span></strong></p>
+<ul>
+<li>标签最高的是路线图式文章 "When AI builds itself",被标为 <strong>L5 target</strong>,即明确把"AI 设计自己的后继者"作为未来目标,而不是现有能力。</li>
+<li>已落地的 L2 有两项:自动化弱到强(Weak-to-Strong)研究员,由 AI 提假设、训练、评测、共享;以及"用 Claude 优化工具",由 AI 分析轨迹、重写工具说明和实现。</li>
+<li>长时运行应用的外围框架设计、Agent Skills(持久技能载体)、Managed Agents 等被视为 L1 或 L2 级的"赋能/相邻"。</li>
+<li>多智能体研究为 B0;并行 Claude 写编译器的项目为 B0–L1 相邻。</li>
+</ul>
+<p><strong>Google DeepMind<span class="src">p.66</span></strong></p>
+<ul>
+<li>AlphaEvolve 被定为 <strong>B0</strong>,理由是它是"任务特定的程序搜索",即对算法、内核、系统代码做生成、变异、评测、选择。通俗地说:它很会为某个具体问题找到更好的程序,但找程序的方法本身没有被 AI 改进。</li>
+<li>AI Co-Scientist(假设生成—辩论—排序—精炼)和 AlphaChip(芯片布局)都是 L2 相邻。</li>
+</ul>
+<p><strong>NVIDIA 与 Microsoft / Meta<span class="src">p.66–67</span></strong></p>
+<ul>
+<li>NVIDIA 的 Eureka 和 ASPIRE 都是让 AI 合成奖励代码、在仿真中训练机器人策略,定为 L2。</li>
+<li>微软的 Agent Lightning 及其 v1.0 版本(智能体强化学习)、SkillOpt(技能优化)、ReVeal(自验证代码智能体)均为 L2。Universal Verifier/自动研究为 L2 相邻。</li>
+<li>版面上随后的两项归在 Meta 名下:Self-Taught Evaluator(评测器自训练,L2)和 <strong>HyperAgents</strong>。HyperAgents 是"元智能体自我修改",包含任务智能体、元智能体、自我编辑和存档,标为 <strong>L5 候选</strong>。这是 A 类里少见的高等级条目。</li>
+</ul>
+<p><strong>中国及其他模型公司<span class="src">p.67–68</span></strong></p>
+<ul>
+<li><strong>阿里/通义</strong>:Qwen-Agent、AgentWorld、Qwen-Scope 三项,做智能体训练和合成环境,L1–L2。</li>
+<li><strong>DeepSeek</strong>:R1、Math-V2,推理自举(self-bootstrapping),即用自生成推理加 RL 加验证器迭代,L2。</li>
+<li><strong>腾讯 AI Lab</strong>:R-Zero,自博弈推理,AI 自己出题、解题、投票再做 RL,标为 <strong>L2–L3</strong>,在这一组里偏高。</li>
+<li><strong>字节 Seed</strong>:Seed-Thinking、Seed1.5-VL,做推理后训练(数据过滤、奖励验证、RL),L1–L2。</li>
+<li><strong>MiniMax</strong>:M2、MaxHermes、MaxClaw 三项,以持久云端智能体为核心(记忆、技能、长时执行),L1–L2。</li>
+<li><strong>月之暗面</strong>:Kimi K3、Agent Swarm,长时程智能体与群体协作,L1–L2 相邻。</li>
+<li><strong>智谱</strong>:AutoGLM 和 AgentRL,在虚拟手机环境中训练"电脑操作"智能体,L2。</li>
+<li>其余几家:</li>
+<li>Deep Cogito(Cogito v2、IDA,搜索加蒸馏的迭代对齐)、Poolside(Model Factory,自动化模型研发,含合成数据、RL 和架构)、Thinking Machines Lab(Tinker Agent RL、Inkling)均为 L1–L2;</li>
+<li>Nous Research 的 Hermes Agent 等(持久智能体、技能与记忆网关)也是 L1–L2。</li>
+</ul>
+<p><strong>小结</strong>:A 类绝大多数是 L1–L2。它们更多是在训练流水线、外围框架和技能上做"局部自动化",离完整的递归闭环还有距离。</p>
+<hr/>
+<h3>四、B 类:RSI 原生 / AI4AI 公司<span class="src">p.68–69</span></h3>
+<p>作者的定义是:自我改进、用 AI 研究 AI(AI-for-AI)、自我进化或递归改进,是这类公司的<strong>核心主张</strong>。</p>
+<p><strong>标签最高的几家</strong></p>
+<ul>
+<li><strong>Weco AI 的 AIDE2</strong>:做"研究者的元改进",AI 重写改进器本身,并做评测和继承,标为 <strong>L5 候选</strong>。通俗地说:不只是改进研究结果,而是改进"做研究的那个程序"。</li>
+<li><strong>Sakana AI 的 Darwin Gödel Machine 和 AI Scientist</strong>:能自我修改智能体源代码,做基准测试和存档,同样是 <strong>L5 候选</strong>。</li>
+<li><strong>Ricursive Intelligence</strong>:做 AI 与芯片协同设计(EDA 设计、算力栈),现有能力为 L2,但有 <strong>L5 愿景</strong>。</li>
+<li><strong>MetaCircle</strong>:ComfyResearch、OPHIS 做训练工作流与研究假设的自动化,同样是 "L2; L5 vision"。</li>
+</ul>
+<p><strong>大量 L2–L3 的进化型系统</strong></p>
+<ul>
+<li><strong>Imbue</strong>:Catalyst、Darwinian Evolver,对训练配方和代码做种群搜索。</li>
+<li><strong>Evolvent AI</strong>:组织级自进化智能体、RSIBench、Terrarium,进化技能、记忆、代码和环境。</li>
+<li><strong>Frontis AI/先元</strong>:OpenRSI、Frontis-MA1,同时更新技能、记忆、外围框架和权重。</li>
+<li><strong>EvoMap</strong>:Evolver、GEP、GeneBench,把代码资产包装成"基因/胶囊"共享和复用。</li>
+<li><strong>Endless Frontier</strong>:BigBang-v1,生成 AI 研究数据,含元批判(meta-critique)。</li>
+<li><strong>潮岩智能*</strong>:TUMIX、R1-Code-Interpreter、AI Scientist,即自进化的研究模型;带星号,表示身份待核实。</li>
+<li><strong>Theseus</strong>:Argus 为 L2–L3,SetupX 达到 <strong>L3</strong>。它做长时程自进化智能体,会把经验写回记忆。</li>
+</ul>
+<p><strong>纯 L2 的几家</strong></p>
+<ul>
+<li>Recursive(自动化 AI 研究,含训练配方、内核和分支合并);</li>
+<li>Mirendil(自加速 AI、AI Scientist);</li>
+<li>Adaption Labs(AutoScientist、Forge,自动化研究规划与实验选择)。</li>
+</ul>
+<p><strong>小结</strong>:L5 级的"候选"和"愿景"几乎都集中在 B 类。但作者用 cand./vision 明确区分了"宣称/目标"和"已证明"。</p>
+<hr/>
+<h3>五、C 类:自主研发与科学发现公司<span class="src">p.69</span></h3>
+<p>这类公司的主产品是自动化研究或发现。它们与 RSI 的关系,来自"把实验和知识生产闭环自动化"。</p>
+<p><strong>L3 候选:接入真实实验的平台</strong></p>
+<ul>
+<li>Periodic Labs(自主实验室);</li>
+<li>Discovery Loop(假设、实验、分析、下一步的闭环);</li>
+<li>Lila Sciences(把实验室执行结果实时用于学习)。</li>
+</ul>
+<p>这三家都被打成 L3 候选,原因是实验结果能回流成训练数据。</p>
+<p><strong>L2–L3</strong></p>
+<ul>
+<li>Edison Scientific 的 Kosmos(自主科学);</li>
+<li>Analemma 的 FARS,从选题、实验、分析一路做到写论文。</li>
+</ul>
+<p><strong>形式化数学</strong></p>
+<ul>
+<li>Axiom Math(Putnam 2025、IMO 2026,做猜想、证明搜索和形式验证)为 L2;</li>
+<li>Harmonic 的 Aristotle(定理证明)为 L1–L2。</li>
+</ul>
+<p><strong>模型研发类</strong></p>
+<ul>
+<li>Karpathy 的 autoresearch,被描述为窄范围的"编辑—训练—测量—保留"循环,L2;</li>
+<li>Prime Intellect 的自主研究和 Speedrun Frontier,做 GPU 实验和消融,L2;</li>
+<li>Novix 的 AutoAgent、OpenHarness、AI-Researcher,L2;</li>
+<li>Core Automation(AI 系统研究栈),L2 候选。</li>
+</ul>
+<p><strong>其他</strong></p>
+<ul>
+<li>FutureHouse 的 BixBench 是 AI 科学家评测基准,B0–L2 相邻;</li>
+<li>UniPat 的 UniScientist、UniSwarm、UniMath 为 L1–L2;</li>
+<li>"Kai Chen / venture" 的 Intern-S1 只标为"相邻",公司实体待定(TBD*)。</li>
+</ul>
+<hr/>
+<h3>六、D 类:智能体优化、评测与学习基础设施<span class="src">p.69–70</span></h3>
+<p>这类公司为自我改进提供反馈、技能、RL、评测、仿真器、训练数据,或做生产环境中的智能体改进。</p>
+<p><strong>最突出:Factory</strong></p>
+<ul>
+<li>它的 Signals 和 Software Factory 被标为 <strong>L4</strong>,没有加"候选",是全表中少有的 L4。</li>
+<li>做法是挖掘生产会话、对失败聚类,再自动提交补丁 PR。</li>
+<li>通俗地说:在真实用户使用中自动发现问题、自动修,修完再上线,形成持续循环。</li>
+</ul>
+<p><strong>L2 级的技能与评测器闭环</strong></p>
+<ul>
+<li>Warp 的技能优化循环:挖掘反馈、重写技能、评测,L2;</li>
+<li>LangChain 的 LangSmith 自我改进评测器:根据反馈更新评判提示词,L1–L2;</li>
+<li>Replit Agent 3:长时构建、测试、修复,L1–L2。</li>
+</ul>
+<p><strong>大量"赋能者(enabler)"</strong></p>
+<ul>
+<li>Mechanize 的 RL 环境和 GBA Eval 是 <strong>L3 enabler</strong>;</li>
+<li>Patronus AI 的生成式仿真器和 Percival 是 L2–L3 enabler;</li>
+<li>Ineffable Intelligence 的 RL 基础设施、Entropy Order* 的数据专家平台是 L1–L3 enabler。</li>
+</ul>
+<p><strong>其他 L1–L2</strong></p>
+<ul>
+<li>DatologyAI(BeyondWeb、DatBench,数据优化);</li>
+<li>Goodfire(Ember、RLFR,用可解释性特征做奖励信号);</li>
+<li>Braintrust(Loop、Autoevals,生产反馈与提示词优化);</li>
+<li>MorphMind 的 Caliper(L1–L2 相邻)。</li>
+</ul>
+<p><strong>待核实条目</strong></p>
+<ul>
+<li>Compounding Intelligence/CORAL*(多智能体研究、共享笔记)为 L2–L3;</li>
+<li>Kando AI 只标"unverified";</li>
+<li>Naive.ai* 标为"RSI claim; unverified"。</li>
+</ul>
+<p>作者用这些标记,把"公司自称在做 RSI"和"有公开证据"区分开。</p>
+<hr/>
+<h3>七、E 类:具身、世界模型与持续适应公司<span class="src">p.70–71</span></h3>
+<p>这类公司的持续适应能力绑定在世界模型、机器人、环境或测试时/持续学习上。</p>
+<ul>
+<li><strong>机器人策略与世界模型</strong>:</li>
+<li>AI2 Robotics(FiS-VLA、Video2Act,视觉-语言-动作 VLA 策略)、TARS Robotics(AWE、TacForeSight,触觉世界模型)为 L2–L3 相邻;</li>
+<li>X Square Robot(WALL、HOST,从视频中获取技能)、Synapx Dynamics(SYNWorld、OctoMind、OctoSense,具身数据/模型栈)为 L2–L3;</li>
+<li>Galaxea AI(G0/G0.5、GForge,VLA 研发与真机部署平台)为 L2 相邻。</li>
+<li><strong>测试时适应</strong>:</li>
+<li>MirrOS 的 Code as Worlds、Spatial-TTT,用"世界代码"和快权重(fast weights)做测试时更新,L1–L2;</li>
+<li>无涯智元*(Wuya Zhiyuan)的 SHINE、LIFT、PaST,做 LoRA/技能向量的持续学习,L1–L2。</li>
+<li><strong>最高的一项</strong>:Singularity Escape/Nexus* 的 Nexus,做协作式自进化智能体(共享状态、组织知识、外围框架自适应),标为 <strong>L3–L4 候选</strong>,但带星号待核实。</li>
+</ul>
+<hr/>
+<h3>八、F 类:持久记忆与个人 AI 公司<span class="src">p.71</span></h3>
+<p>这类公司以跨任务记忆、身份或可复用技能作为适应的主要载体。</p>
+<ul>
+<li><strong>EverMind</strong>:EverOS、Raven、EverMemOS,即智能体记忆/操作系统,含技能锻造(skill forge)和主动任务评测,为 <strong>L2–L3</strong>,是本类最高。</li>
+<li><strong>Engram</strong>:Knowledge Cartridges,企业持久记忆模块,L1–L2 相邻。</li>
+<li><strong>Lemon AI/Hexdo</strong>:LemonAI Evolving,本地持久智能体与经验库,L1–L2。</li>
+<li><strong>Mindverse</strong>:Second Me、Me.bot,基于身份模型、记忆和 LoRA 的个性化,L1–L2。</li>
+</ul>
+<hr/>
+<h3>九、整体观察(笔记归纳,基于表中标签)</h3>
+<ul>
+<li><strong>主体在 L1–L2</strong>:大多数产业系统只把改进流程的一部分交给 AI,例如优化提示词或技能、在固定流水线里做 RL、自动修代码。</li>
+<li><strong>高等级很少且多有保留</strong>:</li>
+<li>L5 只出现在 Anthropic(target)、Meta HyperAgents、Weco AIDE2、Sakana 的两项(均为 cand.),以及 Ricursive、MetaCircle(vision);</li>
+<li>L4 只有 Factory(已标定)、OpenAI 报税智能体(cand.)和 Nexus(L3–L4 cand.)。</li>
+<li><strong>知名系统也可能只是 B0</strong>:如 AlphaEvolve、Deep Research、Anthropic 多智能体研究。这说明作者的分级看的是"改进机制本身是否被 AI 控制",而不是任务完成得多强。</li>
+<li><strong>用星号和 unverified 标注证据强弱</strong>:作者没有把公司的自我宣传直接当作证据。</li>
+</ul>
+<hr/>
+<p><em>注:原文 p.72 已进入「附录 C:RSI 在各应用场景中的情况」(含 C.1 科学 RSI 的开头)。页眉上的 "APPENDIX A" 只是排版遗留。p.72 不属于附录 B,留待下一部分讲解。</em></p>
+</section>
+<section id="n17">
+<h2>附录 C:四个应用领域的细节</h2>
+<p><strong>本部分要点</strong></p>
+<ul>
+<li>附录 C 把递归自我改进(Recursive Self-Improvement,RSI)放到四个应用场景里考察:科学研究(S1)、具身智能(S2)、软件工程(S3)、医疗(S4)。每个场景都按同一套路写:先讲这个领域的典型工作流和三大难点,再按“哪个部件在进化”给代表系统分组,最后用 B0–L5 等级评估离“真正的 RSI”还有多远。</li>
+<li>四个领域的共同结论高度一致:B0(任务内的输出修正)已经很普遍;L1(持久化更新)已被证明可行;<strong>L2 是目前最扎实的前沿</strong>,即系统能自主选择并应用更新,但目标和评测器是外部固定的;L3、L4 只有零星或局限于仿真的例子;L5(改进器本身的进化)基本没有实现,最多是“有边界的 L5”。</li>
+<li>作者反复强调,判断进化是否真实,要看改进能否在后续新任务上被验证地复用,而不是看工具库或记忆库变大了多少。改进被继承之前,需要来源记录(provenance)、适用范围、不确定性、版本管理和回滚(rollback)机制。</li>
+</ul>
+<hr/>
+<h3>一、附录 C 的总体框架<span class="src">p.72</span></h3>
+<p>正文已经按“交给 AI 控制的改进功能有哪些”,把系统分成 B0 到 L5 几个等级。附录 C 换一个角度,看 RSI 在不同场景里怎么用。作者指出(配合 Fig. 9),各场景的区别主要在两点:</p>
+<ul>
+<li><strong>改进的对象</strong>不同;</li>
+<li><strong>验证并保留一次更新所需的反馈</strong>不同。</li>
+</ul>
+<p>四个场景并不互斥。例如一个“医疗 AI 科学家”可以同时属于 S1 和 S4。</p>
+<p>每个小节的写法统一,分三步:</p>
+<ol>
+<li>先描述该场景的 AI 工作流,说明 RSI 循环如何从任务和可用反馈中产生,以及该场景特有的挑战;</li>
+<li>再按“改进哪个部件或流程”给代表系统分组,比较它们介入循环的位置、更新的内容、保留改进的方式;</li>
+<li>最后评估现有研究和完整 RSI 循环之间的差距,包括证据强弱、场景特有风险和主要障碍。</li>
+</ol>
+<p>下面四节都按这个结构展开。</p>
+<hr/>
+<h3>二、S1:科学研究中的 RSI<span class="src">p.72–74</span></h3>
+<h4>为什么科学场景特殊<span class="src">p.72</span></h4>
+<p>作者认为科学是 RSI 后果最重大的场景之一。原因是科学进步不只靠解决孤立问题,还靠改进“未来如何提出问题、假设和实验”的机制。</p>
+<p>所以科学 RSI 和普通的自动发现要区分开。只是搜索出一个更好的分子、方程或假设,不算科学 RSI。科学 RSI 循环的流程是:</p>
+<ol>
+<li>从研究挑战出发,生成候选假设和实验;</li>
+<li>通过计算或物理实验做评估;</li>
+<li>用得到的证据或证伪结果,反过来诊断这个 AI 科研系统(AI4Sci)本身。</li>
+</ol>
+<p><strong>三大挑战:</strong></p>
+<ul>
+<li><strong>开放性(open-ended)</strong>:相关假设的空间、需要的工具和实验,事先都不知道。实验又很昂贵,所以“怎么探索”本身也成了改进问题的一部分。</li>
+<li><strong>反馈稀疏、延迟且不可辨识(non-identifying)</strong>:一次实验失败,可能是假设错了,也可能是模型不合适、实验方案无效或仪器不可靠。通俗地说:你只知道“失败了”,却不知道该怪谁。</li>
+<li><strong>有效性是有条件的</strong>:一个结论依赖于假设、领域和测量流程。在一处成功的更新,如果没有记录来源、适用范围和不确定性,就不能安全地被继承。</li>
+</ul>
+<p>因此作者把科学 RSI 概括为三重问题:证据获取、能力进化、认知控制(epistemic control)。现有工作按三个可进化部件来组织:假设模块、实验智能体、反思系统/改进器。</p>
+<h4>C.1.1 进化“假设模块”<span class="src">p.72</span></h4>
+<p>假设模块决定提出哪些解释或候选方法,以及先尝试哪些。真正的进化要求反馈改变的是<strong>未来生成假设的机制</strong>,而不只是给当前问题挑出一个更好的假设。</p>
+<p>第一类做法是积累经验和记忆:</p>
+<ul>
+<li><strong>HypoForge</strong>:把科研经验持续提炼成可复用的“程序性技能”,覆盖假设生成、实验设计和执行。缺少直接实验反馈时,它用判别器(discriminator)的批评来更新生成技能;测试类技能则根据真实执行结果和失败归因来修正。</li>
+<li><strong>EvoScientist</strong>:维护一个“构思记忆”,记录有前景和已失败的研究方向,后续任务检索它来调整提案。这是持久的、基于记忆的适应,但底层模型、记忆结构和更新流程都是固定的。</li>
+</ul>
+<p>第二类做法更直接,改的是候选生成器本身:</p>
+<ul>
+<li><strong>TTT-Discover</strong>:在测试时做强化学习,解新问题的过程中让科学反馈直接修改模型权重。</li>
+<li><strong>可自我改进的聚合物发现框架</strong>:把经过仿真评估的候选加入训练数据,再重训生成模型。</li>
+</ul>
+<p><strong>作者的判断:</strong> 这些系统的进化都是任务或领域特定的,而且由固定的训练和选择流程产生。现有证据只能支持“有边界的假设层面改进”,还没有出现一种跨领域、越来越会提出科学假设的通用机制。</p>
+<h4>C.1.2 进化“实验智能体”<span class="src">p.73</span></h4>
+<p>实验智能体负责把假设变成可执行的步骤,包括选工具、写代码、操作实验设备。当执行反馈被转化为可复用的动作时,它就发生了进化。</p>
+<p><strong>(a)进化工具与技能,让动作空间可以扩展:</strong></p>
+<ul>
+<li><strong>Test-Time Tool Evolution</strong>:在推理时合成、验证并复用科学工具。它的 SciEvo 基准包含 <strong>1,590 个任务</strong>,由 <strong>925 个进化出来的工具</strong>支撑。</li>
+<li><strong>CASCADE</strong>:面向化学和材料科学,创建、修复并积累可执行技能。</li>
+<li><strong>S1-NexusAgent</strong>:把完整的研究轨迹提炼成可复用的“科学技能”。</li>
+<li><strong>SkillFoundry</strong>:从论文、代码仓库、文档、API 等异构资源中挖掘技能,编译成可执行的技能包,再根据执行效果和下游效用做验证、合并或剪枝,持续维护技能库。</li>
+</ul>
+<p>这些方法让智能体的动作空间变得持久且可扩展。不足在于,工具生成和准入规则仍是外部规定的。</p>
+<p><strong>(b)进化更大范围的实验策略和工作流:</strong></p>
+<ul>
+<li><strong>DrugSAGE</strong>:把验证过的建模流程、训练策略和反复出现的错误修复存进跨任务记忆。从 <strong>16 个任务</strong>积累的经验,提升了 <strong>17 个留出任务(held-out)</strong>上的表现。作者认为这是“继承的经验确实改变了新问题上的行为”的直接证据。</li>
+<li><strong>STELLA</strong>:面向生物医学研究,更新推理模板,并扩充名为 Tool Ocean 的工具库。</li>
+<li><strong>EarthLink</strong>:面向气候科学,保留成功的脚本和分析流程。</li>
+<li><strong>OriGene</strong>:利用人类和实验反馈,修正思维模板、工具组合和分析协议。</li>
+<li><strong>自进化流体控制智能体</strong>:在物理仿真里同时修改“智能体定义”和它产出的白盒控制器。</li>
+</ul>
+<p>流体控制这个例子还揭示了一条<strong>评测边界</strong>:智能体本身的改进,必须和它产出的科学成果(这里是控制器)的改进分开衡量。通俗地说:控制器变好了,不一定说明“造控制器的人”变强了。</p>
+<p><strong>本节小结:</strong> 最强的证据来自后续任务上被验证的复用,而不是工具库或记忆库规模的增长。要让实验智能体可靠地进化,需要明确的技能前置条件、执行测试、来源记录、版本管理和回滚。否则,一个只在局部成功过的工作流,可能被套用到它从未验证过的条件下。</p>
+<h4>C.1.3 进化“反思系统与改进器”<span class="src">p.73</span></h4>
+<p>先区分两个角色:</p>
+<ul>
+<li><strong>反思系统(reflection system)</strong>:解读证据,找出失败原因;</li>
+<li><strong>改进器(improver)</strong>:决定改哪个部件、怎么改、改完是否保留。</li>
+</ul>
+<p>一个只会修正当前输出的固定批评器(critic),执行的是预先定义好的改进流程。而“会进化的改进器”要根据以往改进的结果,更新自己的诊断、干预或晋升(promotion)策略。</p>
+<p>代表系统:</p>
+<ul>
+<li><strong>SIA</strong>:在现有 AI4Sci 系统中,部件级更新循环覆盖面最广。它的 FeedbackAgent 根据任务结果,在几种修改之间做选择:改智能体脚手架(scaffold)、改工具、改重试和搜索逻辑,或者用不同策略改 LoRA(低秩适配器)权重。</li>
+<li><strong>CORAL</strong>:用长期运行的异步智能体,取代固定的进化搜索启发式。这些智能体自主查看以往尝试,决定何时测试、何时调用评测器,并把发现外化为共享的尝试记录、笔记和可复用技能。它还用“心跳”触发反思和方向调整,来维持长周期探索。</li>
+<li><strong>SAGA</strong>:把可编辑范围扩展到<strong>目标层</strong>。在固定的高层科学目标下,它诊断已优化候选群体的失败模式,提出或重新加权具体的子目标,并把这些子目标实现为可执行的打分函数,引导后续搜索。</li>
+</ul>
+<h4>C.1.4 走向递归改进的科学智能体<span class="src">p.73–74</span></h4>
+<p>科学 RSI 的终极形态,是一个<strong>越来越会做有原创性科学</strong>的系统,而不只是产出更好的假设或结果。它要同时改进假设生成、实验执行和证据解读,让每一轮研究既产出科学发现,也产出对未来发现有用的可复用改进。</p>
+<p>按等级看现状:</p>
+<ul>
+<li><strong>B0</strong>:输出修正已经很普遍。</li>
+<li><strong>L1</strong>:持久更新已通过模型重训和记忆积累实现,例子是 EvoScientist、TTT-Discover、聚合物框架。</li>
+<li><strong>L2</strong>:目前最强的前沿。系统能自主选择或应用对权重、工具、技能、工作流、脚手架的更新,例子是 Test-Time Tool Evolution、SIA、CASCADE。</li>
+<li><strong>L3</strong>:少数系统通过自适应探索和跨任务经验复用,表现出部分特征,例子是 DrugSAGE、CORAL。</li>
+<li><strong>L4、L5</strong>:端到端的环境适应(L4)和改进器自身的进化(L5)基本没人做过。</li>
+</ul>
+<p><strong>离真正的科学 RSI 还有多远?</strong> 需要三件事:更可靠地归因实验结果,更有选择地跨任务迁移改进,更有力地评估“一次次更新是否真的让未来研究变好”。同样重要的是,随着改进流程中越来越强的部件变得自适应,必须守住来源记录、可复现性以及稳定的科学和安全约束。</p>
+<hr/>
+<h3>三、S2:具身智能中的 RSI<span class="src">p.74–76</span></h3>
+<h4>场景特点与三大挑战<span class="src">p.74</span></h4>
+<p>具身智能里,智能体的动作会在物理或仿真环境中产生可观察的后果,所以天然适合 RSI。但有三大挑战:</p>
+<ul>
+<li><strong>经验是内生的(endogenous)</strong>:当前策略决定了智能体能到达哪些状态,也就决定了它能拿到什么证据来进一步改进。通俗地说:你只能从自己“走得到的地方”学习。</li>
+<li><strong>能力分散在整个感知–运动系统</strong>:感知、规划、控制乃至身体本身都参与其中,失败很难归到某一个部件上。</li>
+<li><strong>物理试验不能随意重放、撤销或重置</strong>:候选更新必须在安全、硬件和资源约束下评估。</li>
+</ul>
+<p>因此具身 RSI 要同时解决三个问题:经验生成、跨部件的信用分配(credit assignment)、安全继承。</p>
+<p>作者描述的交互循环是:</p>
+<ol>
+<li>环境和课程(curricula)提供学习任务;</li>
+<li>外围框架(agent harness)组织相关能力;</li>
+<li>策略(policy)执行动作;</li>
+<li>世界模型(world model)和评测器(evaluator)解读结果;</li>
+<li>验证过的反馈写回各部件,进入下一轮。</li>
+</ol>
+<p>后面四个小节正好对应这四类部件。</p>
+<h4>C.2.1 进化环境与课程<span class="src">p.74</span></h4>
+<p>循环的第一步是决定智能体经历什么、从中学什么。</p>
+<p><strong>在已有模拟器内调整任务:</strong></p>
+<ul>
+<li><strong>POET</strong>:针对人工设计的固定课程,让“环境–智能体对”组成的群体共同进化。它变异环境,用“最低标准”只接纳既不太简单、也不是无解的挑战,优化对应策略,并定期把策略迁移到别的环境,以复用行为上的“垫脚石”。</li>
+<li><strong>EnvGen</strong>:直接把大语言模型(LLM)部署成具身智能体成本很高,而静态课程又无法针对个体弱点。它的做法是让 LLM 当课程设计者:LLM 生成模拟器配置,一个较小的强化学习(RL)智能体在其中训练,技能层面的表现再反馈给 LLM,生成专门针对剩余弱点的环境。</li>
+<li><strong>GenEnv</strong>:针对“静态训练数据跟不上不断变强的学习者”这一错配,把环境模拟器参数化成一个可训练的课程策略。它用 α-Curriculum Reward 偏向学习者当前能力边界附近的任务,学习者用 GRPO 优化,模拟器则通过奖励加权回归(reward-weighted regression)更新。</li>
+</ul>
+<p><strong>突破预定义的环境空间:</strong></p>
+<ul>
+<li><strong>OMNI-EPIC</strong>:针对人工预定义环境分布限制搜索空间的问题,用 LLM 直接生成可执行的环境代码和奖励代码。后续提案会参考历史任务档案和当前智能体的学习进度,寻找既可学又新颖的挑战。</li>
+<li><strong>SimWorld Studio</strong>:针对生成的 3D 内容往往是静态的、无法验证、不适合具身训练的问题。它的 SimCoder 智能体编写可执行的 Unreal Engine 代码,依据编译错误、物理检查和视觉语言模型(VLM)的批评来修改环境,并保存成功的工具和技能供以后使用。学习者的表现再引导它生成越来越难、且兼容 Gym 接口的世界。</li>
+</ul>
+<p><strong>本节小结:</strong> 这些方法把学习者的表现,变成了进化“未来具身经验的分布及其生成器”的机制。</p>
+<h4>C.2.2 进化技能、记忆与外围框架<span class="src">p.75</span></h4>
+<p>外围框架决定记忆、技能、工具和执行规则如何组装成一个能行动的系统。</p>
+<p><strong>技能层面:</strong></p>
+<ul>
+<li><strong>Voyager</strong>:把 Minecraft 里成功的行为写进可执行技能库。</li>
+<li><strong>LRLL</strong>:通过自我引导探索和“醒–睡(wake–sleep)”过程,扩充并重组可组合的机器人程序库。</li>
+<li><strong>EmbodiSkill</strong>:区分两种失败,一种是技能本身错了,另一种是智能体没有遵循有效指导。只有轨迹提供了相关证据时,它才更新技能。</li>
+</ul>
+<p><strong>架构层面,更新对象从单个技能扩展到整个外围架构:</strong></p>
+<ul>
+<li><strong>SHAPER</strong>:通过环境 rollout,同时进化可复用技能和“上下文–代码”框架。</li>
+<li><strong>ASPIRE</strong>:诊断机器人执行失败,验证候选修复,并把成功的修复保留为可迁移的技能。</li>
+<li><strong>ENPIRE</strong>:更进一步,允许编码智能体通过反复的真实世界实验,修改机器人策略、训练流程和支撑基础设施。</li>
+</ul>
+<p><strong>本节小结:</strong> 这些系统把进化看成系统级的事。经验改变的不只是智能体“知道什么”,还有它的能力“如何被选择、组合与改进”。最终形成的框架,决定了策略如何把观察和指令转化为动作。</p>
+<h4>C.2.3 进化策略与动作模型<span class="src">p.75</span></h4>
+<p><strong>整体改进策略:</strong></p>
+<ul>
+<li><strong>Self-Improving Embodied Foundation Models</strong>:从预训练模型中导出奖励和成功信号,让机器人在有限人工监督下练习任务、改进策略。</li>
+<li><strong>MEDAL++</strong>:同时学“完成任务”和“撤销任务”,减少人工重置环境的需要,从而支持自主练习。</li>
+</ul>
+<p><strong>只改更有针对性的部件:</strong></p>
+<ul>
+<li><strong>Q-Planning</strong>:固定一个大的行为克隆(behavior-cloning)策略,用成功和失败的部署轨迹持续训练一个较小的价值函数。</li>
+<li><strong>SERP</strong>:在重新规划之前,根据近期导航失败调整动作模型。</li>
+</ul>
+<p>这些方法的共同点是:当前策略产生的交互,成为下一代策略的训练证据。</p>
+<p><strong>局限:</strong> 更新算法、奖励定义和允许修改的模型部件都是事先规定的,所以它们主要属于“策略级自我改进”。此外,经验要被安全继承,系统得先能预测和评估自己的动作到底造成了什么后果。这一点引出了下一节。</p>
+<h4>C.2.4 进化世界模型与评测器<span class="src">p.75</span></h4>
+<p>世界模型和评测器把交互结果变成预测、结果判断和学习信号。</p>
+<ul>
+<li><strong>VLAW</strong>:用真实机器人的 rollout 改进一个动作条件视频世界模型,再用这个模型生成合成经验,训练视觉–语言–动作(VLA)策略。</li>
+<li><strong>World-VLA-Loop</strong>:把上面的关系做成迭代循环。策略的失败用来完善世界模型,完善后的模型又为下一轮策略优化提供更可靠的环境。</li>
+<li><strong>Motus2</strong>:把策略、仿真、评估三种功能整合进一个共享模型,用失败和次优的交互改进动力学预测和价值预测。</li>
+<li><strong>SAIL</strong>:视频规划器执行自己生成的计划,再用得到的轨迹微调自己。</li>
+</ul>
+<p><strong>本节小结:</strong> 这些方法改进的不只是策略,还有“预测后果、产生未来训练信号”的机制。它们的反馈可以更新下一轮的策略、框架或课程,从而闭合具身 RSI 循环。但目标和更新流程仍由外部固定,所以属于“有边界的模型–策略共同进化”,不是无限制的递归改进。</p>
+<h4>C.2.5 走向递归改进的具身智能体<span class="src">p.75–76</span></h4>
+<p>理想的具身循环分工如下:</p>
+<ul>
+<li>环境生成器提出接近能力边界的任务;</li>
+<li>外围框架组装相关的记忆、技能、工具和模型;</li>
+<li>策略与环境交互;</li>
+<li>世界模型和评测器解读结果;</li>
+<li>验证过的改进被策略、世界模型或框架继承。</li>
+</ul>
+<p>这样,每一轮交互既改进当前行为,也改进未来的学习。</p>
+<p>按等级看现状:</p>
+<ul>
+<li><strong>B0</strong>:回合内的反思和重新规划很普遍。</li>
+<li><strong>L1</strong>:基于具身经验的策略和模型更新,例子是 Self-Improving Embodied Foundation Models、MEDAL++、SAIL。</li>
+<li><strong>L2</strong>:主要前沿。在固定评测流程下,选择并应用对技能、提示、控制程序、外围框架的更新,例子是 SHAPER、EmbodiSkill、ASPIRE。</li>
+<li><strong>L3</strong>:按学习者状态生成经验,并跨任务保留验证过的技能,例子是 Voyager、LRLL。</li>
+<li><strong>L4</strong>:智能体–环境共同进化已经出现,但主要在仿真中,例子是 POET、EnvGen、GenEnv、SimWorld Studio。</li>
+<li><strong>有边界的 L5</strong>:<strong>ENPIRE</strong> 让编码智能体修改策略、训练流程和基础设施,已接近这一级。但它的环境接口、评测器和安全约束仍是外部规定的。</li>
+</ul>
+<p><strong>离真正的具身 RSI 还有多远?</strong> 智能体需要主动获取有信息量的经验,在整个感知–运动系统中归因结果,并在无法随意重置的物理条件下验证更新。改进要能跨任务、跨环境、跨身体形态(embodiment)保持有效,并带有明确的来源记录、不确定性和回滚。系统还要学会改进自己的外围框架和评测流程,同时不削弱固定的安全约束。这些能力目前都被分别演示过,但还没有整合成一个安全、持久、自主的真实世界改进循环。</p>
+<hr/>
+<h3>四、S3:软件工程中的 RSI<span class="src">p.76–78</span></h3>
+<h4>场景特点与三大挑战<span class="src">p.76</span></h4>
+<p>软件工程是研究 RSI 最具体的场景,因为<strong>产品和开发它的智能体都是可执行代码</strong>。典型循环是:</p>
+<ol>
+<li>编码智能体尝试解决一个 issue;</li>
+<li>观察来自代码仓库的反馈,如测试失败、运行轨迹、代码评审;</li>
+<li>用这些证据修改自身某个持久部分,可能是技能、工作流或实现代码;</li>
+<li>被接受的修改在后续任务中复用。</li>
+</ol>
+<p><strong>三大挑战:</strong></p>
+<ul>
+<li><strong>出题难</strong>:要持续生成针对当前能力短板的软件任务,而且这些任务既要可验证,又要对未来学习有价值。</li>
+<li><strong>评估要看两层</strong>:一个修改现在是否有效,以及它是否提升了“继续改进的能力”。一个修改可能马上提高基准分数,却让后续搜索停滞;反过来,一个暂时较弱的变体,可能繁衍出更强的后代。</li>
+<li><strong>多部件协同进化</strong>:多个部件同时进化时,还要守住外层契约(outer contract),例如评测标准和改进目标。</li>
+</ul>
+<p>现有工作按三个进化部件组织:智能体实现与外围框架、开发经验与协作、改进过程本身。</p>
+<h4>C.3.1 进化编码智能体的实现与外围框架<span class="src">p.76–77</span></h4>
+<p>最直接的做法,是把编码智能体本身当成一个可编辑的软件项目。</p>
+<ul>
+<li><strong>SICA</strong>:智能体可以查看以前的版本和基准结果,修改自己的 Python 代码库,并在下一轮使用选中的版本。由于同一个系统既是开发者又是被开发对象,对文件编辑工具、子智能体或上下文管理的改动,既能提升普通编码,也能提升后续的自我修改。但它的基准、效用函数和沙箱是外部固定的。</li>
+</ul>
+<p>更近的工作把自我修改范围收窄到外围框架,包括中间件、验证规则、控制逻辑等:</p>
+<ul>
+<li><strong>Self-Harness</strong>:用执行轨迹找出反复出现的弱点,让同一个底层模型对当前框架提出小改动,只有通过回归测试(regression testing)才保留。</li>
+<li><strong>Agentic Harness Engineering</strong>:把框架各部件暴露为可单独编辑、可回退的文件,把长轨迹提炼成结构化证据,并检查每个改动是否产生了它所预测的效果。它设有单独的“进化者”角色,所以自指程度不如 Self-Harness 直接,但被接受的框架同样在后续执行中持续存在。</li>
+<li><strong>Ouroboros</strong>:把这个思路延伸到部署环节。对工具、上下文组装、提示和核心实现的改动,经评审后直接成为后续工作所用的运行时。</li>
+</ul>
+<p><strong>本节小结:</strong> 版本控制、回归测试和回滚,可以把智能体的自我修改变成一个持久、可审计的过程。</p>
+<h4>C.3.2 进化开发经验、技能与协作<span class="src">p.77</span></h4>
+<p>一种更轻量的自我进化,是不重写完整实现,只改变智能体使用过往开发经验的方式。</p>
+<ul>
+<li><strong>SWE-Exp</strong>:把成功和失败的 issue 解决轨迹都提取进经验库,在后续仓库任务中检索相关教训。</li>
+<li><strong>CODESKILL</strong>:不只存案例,而是学习一个管理策略,在多个层次上提取程序性技能,随新轨迹到来更新或删除技能,维护一个紧凑的技能库。</li>
+</ul>
+<p>这两者的持久产出都是可复用的开发知识,支持跨任务适应。但它们的提取和更新流程是固定的,不会因为使用而变得更好。</p>
+<p><strong>团队组织层面:</strong></p>
+<ul>
+<li><strong>EvoMAC</strong>:把多智能体编码工作流表示成“角色提示 + 通信连接”构成的网络,用测试反馈和文本反向传播(textual back-propagation)同时修改智能体和它们之间的连接。这改进了构建当前程序的工作流,但报告中的更新只发生在每个任务的测试时。</li>
+</ul>
+<h4>C.3.3 进化改进过程本身<span class="src">p.77</span></h4>
+<p>最强的系统不只沿着一条“已接受修改”的序列前进,还会在多条进化路径之间做搜索。</p>
+<p><strong>多谱系搜索:</strong></p>
+<ul>
+<li><strong>Darwin Gödel Machine(DGM)</strong>:维护一个编码智能体变体的档案库,从中选出亲代,让亲代修改自己的实现,再在可执行编码任务上评估后代。保留多条谱系有两个好处:一次有害修改不会永久堵死进展,暂时较弱的变体也能成为有用的垫脚石。</li>
+<li><strong>Huxley–Gödel Machine(HGM)</strong>:进一步指出,当前基准表现不等于“产生更好后代的能力”。它从智能体的后代谱系中估计<strong>元生产力(metaproductivity)</strong>,把评估资源分配给长期改进潜力更强的智能体。通俗地说:不看你现在考多少分,看你的“徒子徒孙”能有多强。</li>
+</ul>
+<p><strong>群体方法,扩大跨谱系可继承的内容:</strong></p>
+<ul>
+<li><strong>Group-Evolving Agents</strong>:多个亲代在产生新群体时共享成功修改和失败经验,让有用的发现不被困在某一个分支里。</li>
+<li><strong>DarwinX</strong>:围绕一个冻结的模型,进化完整外围框架的群体。只有当变体扩大了任务覆盖面、又没有在已解决的案例上退步时,才被接纳。</li>
+<li><strong>HELIX</strong>:提出模型–框架循环。框架进化既改进当前执行,又产生经过验证的轨迹去更新模型;模型变了之后,再为它重建框架。</li>
+</ul>
+<h4>C.3.4 走向递归改进的软件工程智能体<span class="src">p.77–78</span></h4>
+<p>作者把软件工程 RSI 循环概括为五步:<strong>开发挑战 → 智能体级修改 → 基于仓库的试验 → 关注回归的选择 → 版本化继承</strong>。仓库反馈触发一次持久的智能体更新,更新先在当前任务和留出任务上评估,再作为可追溯、可回退的版本,被未来的开发和自我改进继承。</p>
+<p>按等级看现状:</p>
+<ul>
+<li><strong>B0</strong>:任务内修正普遍存在。</li>
+<li><strong>L1</strong>:跨任务经验和技能学习,例子是 SWE-Exp、CODESKILL。</li>
+<li><strong>L2</strong>:最扎实的一级。在固定目标和评测器下选择对框架、工具、工作流的修改,例子是 Self-Harness、Agentic Harness Engineering、DarwinX。</li>
+<li><strong>L3</strong>:正在出现,表现为按学习者状态生成任务,例子是 Self-play SWE-RL 和 Socratic-SWE。</li>
+<li><strong>L4</strong>:环境适应基本缺失。</li>
+<li><strong>L5</strong>:SICA 和 DGM 修改了会影响后续自我改进的代码,具有有边界的 L5 特征。HGM 引入了基于谱系的元选择,但没有让选择规则本身自适应。完整的 L5 尚未实现。</li>
+</ul>
+<p><strong>离真正的软件工程 RSI 还有多远?</strong> 需要稳健的规格说明(specifications)、可归因的改进,以及跨仓库、跨软件版本的可靠迁移。随着测试生成和改进策略变得自适应,用户意图、安全约束、可审计性和回滚必须继续受到外部保护。</p>
+<hr/>
+<h3>五、S4:医疗中的 RSI<span class="src">p.78–79</span></h3>
+<h4>场景特点与三大挑战<span class="src">p.78</span></h4>
+<p>医疗涵盖诊断、医学影像分析、治疗规划等任务。典型循环是:</p>
+<ol>
+<li>智能体执行临床任务;</li>
+<li>从诊断结果、医生纠正或临床指南获得可验证的反馈;</li>
+<li>持久更新临床知识、推理策略、工作流等部件;</li>
+<li>改进保存在记忆、技能库或模型参数里,供后续病例复用。</li>
+</ol>
+<p><strong>三大挑战:</strong></p>
+<ul>
+<li><strong>不允许无限制试错</strong>:诊疗行为可能伤害患者,必须有专家、伦理和机构层面的监督。</li>
+<li><strong>临床反馈延迟、异质且混杂(confounded)</strong>:很难把患者结局归因到某一个决策或某一次更新上。</li>
+<li><strong>改进依赖人群和机构</strong>:在一处验证过的更新,不记录来源、范围和不确定性,就不能安全地被继承。</li>
+</ul>
+<p>因此医疗 RSI 是三重问题:安全地获取反馈、可靠地分配信用、受治理地继承能力。可进化部件分三类:临床记忆与知识、临床推理策略、医疗工具与工作流。</p>
+<h4>C.4.1 进化临床记忆与知识<span class="src">p.78</span></h4>
+<p>这是医疗中最常见的 RSI 形式:把已完成病例的反馈转化为持久知识,影响后续患者的决策。</p>
+<p><strong>早期系统:保留病例级经验。</strong></p>
+<ul>
+<li><strong>MedAgent-Zero(Agent Hospital 中)</strong>:存储成功的治疗病例,并反思失败病例,提炼出可复用的诊断规则。这样,模型权重冻结的医生智能体也能在后续模拟问诊中检索这些经验。</li>
+<li><strong>Agent Mental Clinic</strong>:由监督模块把精神科智能体的诊断和标注结果做比较,把得到的诊断经验写入分层记忆。</li>
+<li><strong>MedAgentSim</strong>:把病历和经验记录结合,让诊断智能体复用早期模拟医患互动中积累的知识。</li>
+</ul>
+<p>这些系统的共同点是:一次问诊的产出,成为未来推理时持久上下文的一部分。</p>
+<p><strong>近期方法:进化记忆的结构和可靠性,而不只是堆积原始轨迹。</strong></p>
+<ul>
+<li><strong>DxEvolve</strong>:把诊断过程提炼为“诊断认知原语”,编码信息获取和诊断推理的可复用模式,可在新病例中检索。</li>
+<li><strong>GSEM</strong>:把经验组织成双层图,用后续反馈重新校准节点质量和经验之间的边权。这样它既改变“记住什么”,也改变“哪些记忆被认为适用”。</li>
+<li><strong>Evo-MedAgent</strong>:维护三类互补的存储,分别是回顾性临床片段、程序性启发规则、工具可靠性。每完成一个胸片病例,就通过反思更新这些存储,让后续病例既继承临床教训,也继承对诊断工具的修正信任度。</li>
+</ul>
+<p><strong>局限:</strong> 大多数证据来自模拟或回顾性病例,标签由外部提供,还缺少在真实病例中验证进化效果的工作。</p>
+<h4>C.4.2 进化临床推理策略<span class="src">p.78–79</span></h4>
+<p>除了临床事实,智能体还可以进化“如何获取、解读、整合证据”的策略。</p>
+<ul>
+<li><strong>EvoClinician</strong>:采用“诊断–评分–进化(Diagnose–Grade–Evolve)”循环。Actor 依次提问并开检查;Process Grader 按临床收益和资源成本给每个动作打分;Evolver 根据反馈,在下一个病例之前修改 Actor 的提示和记忆。被继承的对象是一套诊断策略,例如该先澄清哪个症状、该优先做哪项检查。</li>
+<li><strong>EvoMDT</strong>:在多智能体协调层面进化推理。它把肿瘤决策分给不同专科角色的智能体,用专家评估和结局导向的信号更新提示、共识权重和检索范围。因此反馈不仅改变单个智能体的推理,还改变后续病例中各专科意见如何被加权和调和。</li>
+<li><strong>PsychAgent</strong>:面向心理咨询,从历史咨询轨迹中提取基于实践的技能,加入不断进化的技能库,再通过拒绝采样微调(rejection fine-tuning)把选中的技能内化进模型。</li>
+</ul>
+<h4>C.4.3 进化医疗工具与工作流<span class="src">p.79</span></h4>
+<p>第三条路线是把成功执行转化为可复用的工具、技能或临床工作流,从而进化智能体的动作库。</p>
+<p><strong>动作空间层面:</strong></p>
+<ul>
+<li><strong>MACRO</strong>:从一组固定的医学影像工具出发,在验证过的执行轨迹中识别反复出现的多步模式,合成为复合工具,并注册成新的高层动作。所以它改变的是“能直接调用什么”,而不只是检索以前的解法。</li>
+<li><strong>SkeMex</strong>:在程序性技能层面做类似的事。它把有信息量的临床轨迹提炼为通用、任务特定、动作级三层技能,根据环境反馈估计技能在不同情境下的效用,并通过“读–写–评估–治理(Read–Write–Assess–Govern)”生命周期来提升、合并、更新或删除条目。</li>
+</ul>
+<p>两者的继承都通过一个不断进化的动作空间进行,其中的部件按后续任务中实际证明的效用来选择。</p>
+<p><strong>更大的分析工作流:</strong></p>
+<ul>
+<li><strong>TissueLab</strong>:允许领域专家检查医学影像的中间结果并给出纠正,这些纠正引导主动学习、分类器改进和后续工作流构建,覆盖病理、放射、空间组学等任务。</li>
+<li><strong>HealthFlow</strong>:把完成的电子病历(EHR)分析转化为持久的安全防护规则、可复用工作流、数据集特定锚点和代码片段。评测器先找出执行或方法上的缺陷,然后反思器对经验做验证、更新或淘汰,之后才供后续分析检索。</li>
+</ul>
+<p><strong>本节小结:</strong> 这些系统让医疗 RSI 从“挑选预定义工具”走向“构建可复用流程”。但技术上的成功,或针对单个病例的医生反馈,都不能保证在整个患者群体中是安全的。所以进化出的工作流在跨病例继承之前,必须经过验证且可回退。</p>
+<h4>C.4.4 走向递归改进的医疗智能体<span class="src">p.79</span></h4>
+<p>医疗 RSI 的终极形态,是在保持临床有效性和安全性的前提下,越来越会做医疗任务的系统。每个病例都应产出两样东西:任务结果,以及对记忆、推理策略或动作库的一次经过验证的改进。</p>
+<p>按等级看现状:</p>
+<ul>
+<li><strong>B0</strong>:病例内反思和答案修正普遍存在,但不会持久改变未来行为。</li>
+<li><strong>L1</strong>:通过病例记忆、诊断规则和可复用临床知识实现了持久继承,例子是 Agent Mental Clinic、MedAgentSim、DxEvolve。</li>
+<li><strong>L2</strong>:最强前沿。系统能诊断失败,并自主选择或应用对提示、记忆、推理策略、工具、工作流、协调机制的更新,但目标、评测器和部署闸门(deployment gates)仍由外部固定。例子包括 EvoClinician、MACRO、HealthFlow、GSEM、Evo-MedAgent、EvoMDT、SkeMex。</li>
+<li><strong>L3-like</strong>:少数系统用当前不确定性或积累的经验,来塑造后续的证据获取、模拟问诊或专家标注,例子是 Agent Hospital、TissueLab。但患者群体、任务分布和准入标准基本仍是外部规定的。</li>
+<li><strong>L4-style</strong>:<strong>EvoPatient</strong> 让模拟患者和模拟医生共同进化,但模拟器的临床真实性和评估标准仍由外部决定。</li>
+<li><strong>真正的 L4 和 L5</strong>:基于真实纵向结局的端到端 L4 适应,以及临床改进器自身的 L5 进化,基本没人做过。</li>
+</ul>
+<p><strong>离真正的医疗 RSI 还有多远?</strong> 需要三件事:可靠地归因纵向的患者结局,在不进行无限制临床探索的前提下安全获取反馈,以及有选择地跨人群、跨机构迁移更新。同样重要的是一个受治理的“能力承诺”过程:每一次持久更新都要经过临床验证、前瞻性监测、可追溯到支撑证据,并且当它的假设或安全保证不再成立时可以撤回。</p>
+<hr/>
+<h3>六、四个领域横向对比(自制概括)</h3>
+<table>
+<thead>
+<tr>
+<th>领域</th>
+<th>核心难点(各三条)</th>
+<th>按什么部件分组</th>
+<th>目前到达的最高等级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1 科学</td>
+<td>开放性;反馈稀疏且不可辨识;有效性有条件</td>
+<td>假设模块 / 实验智能体 / 反思与改进器</td>
+<td>L2 为主,部分 L3;L4、L5 基本空白</td>
+</tr>
+<tr>
+<td>S2 具身</td>
+<td>经验内生;能力分散难归因;物理试验不可重置</td>
+<td>环境课程 / 技能与框架 / 策略 / 世界模型与评测器</td>
+<td>L4 已在仿真出现;ENPIRE 接近有边界的 L5</td>
+</tr>
+<tr>
+<td>S3 软件工程</td>
+<td>出题难;要评估“继续改进的能力”;多部件协同且需守住外层契约</td>
+<td>实现与框架 / 经验与协作 / 改进过程本身</td>
+<td>L2 最扎实;SICA、DGM 有边界 L5;L4 缺失</td>
+</tr>
+<tr>
+<td>S4 医疗</td>
+<td>不能随意试错;反馈混杂难归因;依赖人群与机构</td>
+<td>临床记忆 / 推理策略 / 工具与工作流</td>
+<td>L2 为主;L3、L4 雏形仅在模拟中</td>
+</tr>
+</tbody>
+</table>
+<p><strong>一句话总结:</strong> 四个领域都已能做到“在外部固定的目标和评测器下,自主挑选并应用更新”(L2)。真正的瓶颈是三件事:可靠归因、跨场景安全迁移,以及让改进器自身进化的同时守住外部安全边界。</p>
+</section>
+<p class="dim small">AI 整理:由 Claude Opus 5.5 依据原文逐章讲解,未经逐句核对,数字以原文为准。</p>
+</main>
+<a data-cur="zh" data-to="en" href="../../../../en/rsi/paper/lastai/notes/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>
