@@ -175,6 +175,14 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 .rv.in figure.ch .dot,figure.ch.rv.in .dot{animation:pop .6s ease both}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 .charts2>figure.ch,.charts2>.cardx{min-width:0}
+.tree{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:20px;align-items:center;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:1em 0}
+.tree .rs-img{margin:0}.tree .rs-img img{max-width:none}
+.trk{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--amb)}
+.trt h4{font-size:18px;color:#fff;margin:.2em 0 .6em}
+.trm{display:grid;grid-template-columns:84px minmax(0,1fr) 22px minmax(0,1.3fr);gap:8px;align-items:baseline;font-size:14px;border-top:1px dashed var(--line);padding:7px 0}
+.trm>b{color:var(--amb)}.trm>span{color:var(--ink2)}.trm>i{font-style:normal;color:var(--amb);text-align:center}
+.trm.diff>b,.trm.diff>i{color:var(--ok)}
+@media (max-width:820px){.tree{grid-template-columns:minmax(0,1fr)}.tree .rs-img img{max-width:340px;margin:0 auto}.trm{grid-template-columns:72px minmax(0,1fr)}.trm>i{display:none}.trm>span:last-child{grid-column:2}}
 .lanes{display:flex;flex-direction:column;gap:10px;margin:.8em 0 1.1em}
 .lane{display:grid;grid-template-columns:190px minmax(0,1fr);gap:12px;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px}
 .lh{display:flex;flex-direction:column;gap:2px}.lh b{color:#fff;font-size:16px}.lh span{font-size:12.5px;color:var(--ink3)}
@@ -271,6 +279,16 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="blk rv"><h3>下一步:达尔文哥德尔机(DGM)—— 先从达尔文讲起</h3>
 <p>autoresearch 只留一条线:变好就留,变差就撤。DGM 借的是<b>达尔文进化论</b>的做法 —— 先把几个词对上,后面就好懂了。</p>
 <div class="rv"><div class="sp"><div class="sp-h"><img alt="Charles Darwin 头像" class="sp-ava" src="img/darwin.jpg"/><div><div class="sp-n">Charles Darwin <a href="https://en.wikipedia.org/wiki/On_the_Origin_of_Species">《物种起源》</a> <span class="sp-badge">1859</span></div><div class="sp-q">书里唯一的一张图,画的就是「分支、淘汰、保留」</div></div></div><div class="sp-g"><figure><img alt="《物种起源》1859 年唯一的插图:横线代表一代代,物种不断分叉,大多数分支中途断掉,只有 a、f、m 几支走到第 10 代" loading="lazy" src="img/darwin-origin-1859.png"/><figcaption>每条横线 = 一代(就像 DGM 的一轮)。每个点都分出很多小枝,<b>大多数很快断掉</b>;只有 a、f、m 几支一直走到第 10 代。<b>DGM 的档案就是这样一棵树</b>:先留下所有分支,让时间来选。</figcaption></figure><div class="sp-r"><figure><img alt="加拉帕戈斯群岛的四种达尔文雀,喙的形状各不相同" loading="lazy" src="img/darwin-finches.jpg"/><figcaption>达尔文雀:同一个祖先,喙长成不同形状,适应不同的食物 —— 变异 + 选择</figcaption></figure><div class="sp-p"><b>变异</b><span>后代和父母不完全一样 → <b>DGM</b>:agent 改一下自己的代码,得到一个新版本</span></div><div class="sp-p"><b>选择</b><span>更适应的个体留下更多后代 → <b>DGM</b>:benchmark 分数 = 适应度,高分的更容易当<b>亲本</b></span></div><div class="sp-p"><b>遗传</b><span>好的变化一代代累积 → <b>DGM</b>:<b>子代</b>从亲本的代码继续改,改进会叠加</span></div><div class="sp-p"><b>多样性</b><span>今天没用的分支可能是以后的祖先 → <b>DGM</b>:所有能跑的版本都进<b>档案</b>,不淘汰旧分支(开放式探索)</span></div></div></div><div class="sp-src">图:达尔文像(Julia Margaret Cameron 摄,1869);《物种起源》(1859)插图;达尔文雀(John Gould 绘,载于达尔文 1845 年《研究日志》)。均为公有领域,来自 Wikimedia Commons。</div></div></div>
+<div class="tree rv">
+<figure class="rs-img"><img alt="海克尔 1874 年的人类谱系树:一棵橡树,树根是最早的单细胞生物,往上分出各类动物,枝头是人类" loading="lazy" src="img/haeckel-tree-1874.jpg"/><figcaption>海克尔《人类的谱系树》(Stammbaum des Menschen),1874。公有领域,来自 Wikimedia Commons。</figcaption></figure>
+<div class="trt"><div class="trk">生命之树 ↔ DGM 的档案树</div>
+<h4>进化是一棵不断分叉的树,DGM 的档案也是</h4>
+<div class="trm"><b>树根</b><span>最早的单细胞生物</span><i>→</i><span><b>初始 agent</b>(第 0 代,一个很简单的 coding agent)</span></div>
+<div class="trm"><b>每个分叉</b><span>一次变异,长出一个新物种</span><i>→</i><span><b>一次自我修改</b>,长出一个子代 agent</span></div>
+<div class="trm"><b>树的高度</b><span>时间,一代又一代</span><i>→</i><span><b>迭代轮数</b>(DGM 跑了约 80 轮)</span></div>
+<div class="trm"><b>枝头</b><span>今天活着的物种</span><i>→</i><span><b>档案里的所有版本</b>,最好的那个拿去用</span></div>
+<div class="trm diff"><b>一个区别</b><span>自然界里,断掉的枝就灭绝了</span><i>≠</i><span>DGM <b>不砍枝</b>:看着差的分支也留着,以后可能长出更好的</span></div>
+</div></div>
 <div class="eq rv">
 <div class="eqi"><img alt="达尔文" src="img/darwin.jpg"/><b>达尔文</b><span>档案 + 选择 + 变异<br/>开放式探索,不只留第一名</span></div>
 <div class="eqo">+</div>

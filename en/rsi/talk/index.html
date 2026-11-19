@@ -175,6 +175,14 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 .rv.in figure.ch .dot,figure.ch.rv.in .dot{animation:pop .6s ease both}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 .charts2>figure.ch,.charts2>.cardx{min-width:0}
+.tree{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:20px;align-items:center;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:1em 0}
+.tree .rs-img{margin:0}.tree .rs-img img{max-width:none}
+.trk{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--amb)}
+.trt h4{font-size:18px;color:#fff;margin:.2em 0 .6em}
+.trm{display:grid;grid-template-columns:84px minmax(0,1fr) 22px minmax(0,1.3fr);gap:8px;align-items:baseline;font-size:14px;border-top:1px dashed var(--line);padding:7px 0}
+.trm>b{color:var(--amb)}.trm>span{color:var(--ink2)}.trm>i{font-style:normal;color:var(--amb);text-align:center}
+.trm.diff>b,.trm.diff>i{color:var(--ok)}
+@media (max-width:820px){.tree{grid-template-columns:minmax(0,1fr)}.tree .rs-img img{max-width:340px;margin:0 auto}.trm{grid-template-columns:72px minmax(0,1fr)}.trm>i{display:none}.trm>span:last-child{grid-column:2}}
 .lanes{display:flex;flex-direction:column;gap:10px;margin:.8em 0 1.1em}
 .lane{display:grid;grid-template-columns:190px minmax(0,1fr);gap:12px;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px}
 .lh{display:flex;flex-direction:column;gap:2px}.lh b{color:#fff;font-size:16px}.lh span{font-size:12.5px;color:var(--ink3)}
@@ -271,6 +279,16 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="blk rv"><h3>Next: the Darwin Gödel Machine (DGM) — starting with Darwin</h3>
 <p>autoresearch keeps only a single line: keep it if it improves, revert if it gets worse. What DGM borrows is<b> Darwinian evolution</b> approach — line up a few terms first, and the rest is easy to follow.</p>
 <div class="rv"><div class="sp"><div class="sp-h"><img alt="Charles Darwin portrait" class="sp-ava" src="../../../rsi/talk/img/darwin.jpg"/><div><div class="sp-n">Charles Darwin <a href="https://en.wikipedia.org/wiki/On_the_Origin_of_Species">On the Origin of Species</a> <span class="sp-badge">1859</span></div><div class="sp-q"> The only figure in the book shows exactly this: "branching, elimination, retention"</div></div></div><div class="sp-g"><figure><img alt="The only illustration in On the Origin of Species (1859): horizontal lines mark successive generations; species keep branching, most branches die out partway, and only a few (a, f and m) reach generation 10" loading="lazy" src="../../../rsi/talk/img/darwin-origin-1859.png"/><figcaption>Each horizontal line = one generation (like one round of DGM). Each point splits into many small twigs,<b>most die out quickly</b>; only a few, a, f and m, make it all the way to generation 10.<b>DGM's archive is exactly this kind of tree</b>: keep every branch for now and let time decide.</figcaption></figure><div class="sp-r"><figure><img alt="Four species of Darwin's finches from the Galápagos Islands, each with a differently shaped beak" loading="lazy" src="../../../rsi/talk/img/darwin-finches.jpg"/><figcaption>Darwin's finches: one common ancestor, with beaks evolving into different shapes for different foods — variation + selection</figcaption></figure><div class="sp-p"><b> Variation</b><span> Offspring aren't exact copies of their parents → <b>DGM</b>: the agent modifies its own code, producing a new version</span></div><div class="sp-p"><b> Selection</b><span> Fitter individuals leave more offspring → <b>DGM</b>: benchmark score = fitness; high scorers are more likely to serve as<b> parent</b></span></div><div class="sp-p"><b> Inheritance</b><span> Good changes accumulate across generations → <b>DGM</b>:<b>Child</b> Keep editing from the parent's code, so improvements compound</span></div><div class="sp-p"><b> Diversity</b><span> A branch that's useless today may be a future ancestor → <b>DGM</b>: every version that runs goes into<b> Archive</b>, without discarding old branches (open-ended exploration)</span></div></div></div><div class="sp-src">Images: portrait of Darwin (photographed by Julia Margaret Cameron, 1869); illustration from On the Origin of Species (1859); Darwin's finches (drawn by John Gould, from Darwin's 1845 Journal of Researches). All public domain, via Wikimedia Commons.</div></div></div>
+<div class="tree rv">
+<figure class="rs-img"><img alt="Haeckel's 1874 family tree of humans: an oak tree rooted in the earliest single-celled organisms, branching upward into various animals, with humans at the top" loading="lazy" src="../../../rsi/talk/img/haeckel-tree-1874.jpg"/><figcaption>Haeckel, The Pedigree of Man (Stammbaum des Menschen), 1874. Public domain, via Wikimedia Commons.</figcaption></figure>
+<div class="trt"><div class="trk">Tree of life ↔ DGM's archive tree</div>
+<h4>Evolution is a tree that keeps branching, and so is the DGM archive</h4>
+<div class="trm"><b>Root</b><span> The earliest single-celled organisms</span><i>→</i><span><b>Initial agent</b>(Generation 0, a very simple coding agent)</span></div>
+<div class="trm"><b>Each fork</b><span> A single mutation gives rise to a new species</span><i>→</i><span><b>A single self-modification</b>, producing a child agent</span></div>
+<div class="trm"><b>Height of the tree</b><span> Time, generation after generation</span><i>→</i><span><b>Iterations</b>(DGM ran for about 80 iterations)</span></div>
+<div class="trm"><b>Branch tips</b><span> Species alive today</span><i>→</i><span><b>All versions in the archive</b>, and the best one is put to use</span></div>
+<div class="trm diff"><b>One difference</b><span> In nature, a broken branch goes extinct</span><i>≠</i><span>DGM <b>No pruning</b>: branches that look worse are kept too, since they may later produce better ones</span></div>
+</div></div>
 <div class="eq rv">
 <div class="eqi"><img alt="Darwin" src="../../../rsi/talk/img/darwin.jpg"/><b>Darwin</b><span> Archive + selection + mutation<br/> Open-ended exploration, not just keeping the winner</span></div>
 <div class="eqo">+</div>
