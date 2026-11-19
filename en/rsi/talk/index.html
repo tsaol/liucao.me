@@ -498,14 +498,19 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="cardx plan"><div class="k">Constant ⑤</div><div class="t"> Start with the cheap layers</div><div class="d"> Prompts, context, and harness first; weights last. Do what can be rolled back first.</div></div>
 <div class="cardx plan"><div class="k">Constant ⑥</div><div class="t"> Humans set the goals</div><div class="d"> At least for now, goals, eval sets, and thresholds still have to be set by humans — and that's the most valuable thing we can do.</div></div>
 </div></div>
-<div class="blk rv"><h3>The five examples side by side</h3>
-<div class="tw"><table class="rs-t"><tr><th></th><th>What to change</th><th> Signal</th><th> Gate (Verify)</th></tr>
-<tr><td><b>autoresearch</b></td><td>train.py</td><td>val_bpb</td><td> Fixed metric; only one file may be changed</td></tr>
-<tr><td><b>Play</b></td><td> Search harness code</td><td>NDCG@5</td><td> hold-out + typo + code penalty</td></tr>
-<tr><td><b>Inference cluster</b></td><td> Cluster configuration</td><td> Throughput, latency, stability</td><td> Canary + risk checklist</td></tr>
-<tr><td><b>Harvey</b></td><td>agent harness</td><td> Rubric scoring</td><td> Leakage audit + cost penalty + threshold</td></tr>
-<tr><td><b>Software factory</b></td><td> Software (next: the factory itself)</td><td>Acceptance tests</td><td> Spec gating + independent scoring</td></tr>
-</table></div></div>
+<div class="blk rv"><h3>All six examples side by side</h3>
+<div class="tw"><table class="rs-t"><tr><th></th><th>What to change</th><th> Where the signal comes from</th><th> Gate (Verify)</th><th>Where the human is</th></tr>
+<tr><td><b>autoresearch</b></td><td>train.py</td><td> val_bpb (offline)</td><td>Fixed metric; only one file may be changed</td><td> Outside the loop: define metrics</td></tr>
+<tr><td><b>Play</b></td><td> Search harness code</td><td> NDCG@5 (offline)</td><td>hold-out + typo + code penalty</td><td> Outside the loop: define the eval set</td></tr>
+<tr><td><b>Inference cluster</b></td><td> Cluster configuration</td><td> Throughput, latency, stability (load testing)</td><td>Canary + risk checklist</td><td> Outside the loop: define the risk list</td></tr>
+<tr><td><b>Harvey</b></td><td>agent harness</td><td> Rubric scoring (offline dev set)</td><td>Leakage audit + cost penalty + threshold</td><td> Outside the loop: define evaluation and thresholds</td></tr>
+<tr><td><b>Software factory</b></td><td> Software (next: the factory itself)</td><td>Acceptance tests (offline)</td><td>Spec gating + independent scoring</td><td> Outside the loop: approve the spec</td></tr>
+<tr><td><b>Feishu</b></td><td><b> Data foundation and evaluation standards</b>(knowledge graph, data quality)</td><td><b>Real usage logs from production</b></td><td> Automated evaluation + error attribution, with the evaluator itself being calibrated</td><td><b> In the loop</b>: set standards, review samples, approve changes</td></tr>
+</table></div>
+<div class="cards2">
+<div class="cardx"><div class="k">Where they differ</div><div class="t"> Our examples are in the lab; Feishu is in production</div><div class="d"> The first five all use offline evaluation, with a fixed, isolated evaluator, and humans only set the rules before the loop starts. Feishu uses real usage data, its evaluator must itself be aligned with human judgment (about 84% agreement), and humans stay in the loop throughout.</div></div>
+<div class="cardx plan"><div class="k">Taken together</div><div class="t"> First prove it runs, then lay the foundation</div><div class="d"> Our examples show that "the loop runs and the gates hold"; Feishu shows that "before going to production, you need reliable data and evaluation first." The evaluator can evolve, but it needs humans as an anchor.</div></div>
+</div></div>
 <div class="blk rv"><h3>Questions for discussion</h3>
 <ul>
 <li>Which of your scenarios has the most trustworthy "verify" step? Could you build a minimal two-week closed loop first?</li>

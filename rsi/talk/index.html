@@ -498,14 +498,19 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="cardx plan"><div class="k">不变 ⑤</div><div class="t">从便宜的层开始</div><div class="d">先 prompt、上下文、harness,权重最后动。能回滚的先做。</div></div>
 <div class="cardx plan"><div class="k">不变 ⑥</div><div class="t">人定目标</div><div class="d">至少到今天,目标、评测集和门槛还得人来定 —— 这也是我们能做的最有价值的事。</div></div>
 </div></div>
-<div class="blk rv"><h3>五个例子放在一起</h3>
-<div class="tw"><table class="rs-t"><tr><th></th><th>改什么</th><th>信号</th><th>门(Verify)</th></tr>
-<tr><td><b>autoresearch</b></td><td>train.py</td><td>val_bpb</td><td>指标固定,只许改一个文件</td></tr>
-<tr><td><b>Play</b></td><td>搜索 harness 代码</td><td>NDCG@5</td><td>hold-out + typo + 代码惩罚</td></tr>
-<tr><td><b>推理集群</b></td><td>集群配置</td><td>吞吐、延迟、稳定性</td><td>金丝雀 + 风险清单</td></tr>
-<tr><td><b>Harvey</b></td><td>agent harness</td><td>rubric 判分</td><td>泄漏审计 + 成本罚 + 门槛</td></tr>
-<tr><td><b>软件工厂</b></td><td>软件(下一步:工厂本身)</td><td>验收测试</td><td>规格门禁 + 独立判分</td></tr>
-</table></div></div>
+<div class="blk rv"><h3>六个例子放在一起</h3>
+<div class="tw"><table class="rs-t"><tr><th></th><th>改什么</th><th>信号从哪来</th><th>门(Verify)</th><th>人在哪</th></tr>
+<tr><td><b>autoresearch</b></td><td>train.py</td><td>val_bpb(离线)</td><td>指标固定,只许改一个文件</td><td>循环外:定指标</td></tr>
+<tr><td><b>Play</b></td><td>搜索 harness 代码</td><td>NDCG@5(离线)</td><td>hold-out + typo + 代码惩罚</td><td>循环外:定评测集</td></tr>
+<tr><td><b>推理集群</b></td><td>集群配置</td><td>吞吐、延迟、稳定性(压测)</td><td>金丝雀 + 风险清单</td><td>循环外:定风险清单</td></tr>
+<tr><td><b>Harvey</b></td><td>agent harness</td><td>rubric 判分(离线 dev 集)</td><td>泄漏审计 + 成本罚 + 门槛</td><td>循环外:定评测和门槛</td></tr>
+<tr><td><b>软件工厂</b></td><td>软件(下一步:工厂本身)</td><td>验收测试(离线)</td><td>规格门禁 + 独立判分</td><td>循环外:批准规格</td></tr>
+<tr><td><b>飞书</b></td><td><b>数据底座和评估标准</b>(知识图谱、数据质量)</td><td><b>生产环境的真实使用记录</b></td><td>自动评估 + 错误归因,评估器本身也在校准</td><td><b>循环里</b>:定标准、审样本、批改动</td></tr>
+</table></div>
+<div class="cards2">
+<div class="cardx"><div class="k">差别在哪</div><div class="t">我们的例子在实验室,飞书在生产里</div><div class="d">前五个都是离线评测、评估器固定隔离、人只在循环之前定规则;飞书用的是真实使用数据,评估器自己也要和人工对齐(约 84% 一致),人一直在循环里。</div></div>
+<div class="cardx plan"><div class="k">合起来看</div><div class="t">先证明能跑,再打好地基</div><div class="d">我们的例子证明了「循环能跑、门能拦」;飞书说明了「进生产之前,得先有可靠的数据和评估」。评估器可以进化,但要有人这个锚。</div></div>
+</div></div>
 <div class="blk rv"><h3>留给讨论的问题</h3>
 <ul>
 <li>你手上哪个场景的「验」最可信?能不能先做一个两周的最小闭环?</li>
