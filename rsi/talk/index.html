@@ -177,6 +177,7 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 .rv.in figure.ch .dot,figure.ch.rv.in .dot{animation:pop .6s ease both}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 .charts2>figure.ch,.charts2>.cardx{min-width:0}
+.eyebrow2{font-family:var(--mono);font-size:12.5px;letter-spacing:2px;color:var(--amb);margin:24px 0 -14px}.eyebrow2 a{color:var(--amb);border-bottom:1px dotted rgba(255,176,32,.5)}
 .case5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:.6em 0 .4em}
 .c5{position:relative;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px}
 .c5.gate{border-color:rgba(255,176,32,.65);box-shadow:0 0 22px rgba(255,176,32,.12) inset}
@@ -448,7 +449,7 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="st"><div class="n">1</div><b>先建评估</b><p>golden set + 评估器。这是自进化最贵、也最值钱的前置资产(AgentCore Evaluations)</p></div>
 <div class="st"><div class="n">2</div><b>接上可观测</b><p>生产轨迹和在线评估分,作为进化信号(AgentCore Observability)</p></div>
 <div class="st gate"><div class="n">3</div><b>再做进化</b><p>离线进化 + 门禁 + 人工审批后发布,可回滚(AgentCore Optimization)</p></div>
-</div></div><div class="blk rv"><h3>案例:飞书 —— 先把数据底座和评估做可靠,再谈自我改进</h3>
+</div></div><div class="blk rv"><div class="eyebrow2"><a href="../paper/lastai/">The Last AI Built by Humans</a> · §5.2</div><h3>案例:飞书 —— 先把数据底座和评估做可靠,再谈自我改进</h3>
 <div class="lead"><b>一句话</b>:agent 要越用越好,前提是每天产生的文档、消息、会议记录被整理成<b>可靠、带时间的知识</b>,并且有一套能自动发现「答错了、错在哪」的评估。</div>
 <h4 class="sub4">举个例子(示意):员工问「上周和某客户的会上,交付时间定的是哪天?」</h4>
 <div class="case5 rv">
