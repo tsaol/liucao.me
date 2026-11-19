@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>从 AutoResearch 到 Agent 自进化 · 25 分钟分享</title>
+<style>:root{--bg:#0b1016;--bg2:#111821;--bg3:#16202c;--line:#223041;--ink:#e8edf3;--ink2:#b7c2cf;--ink3:#7f8da0;--amb:#ffb020;--amb2:#ff8a3c;--cy:#4cc2ff;--ok:#38d39f;--mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:62px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;font-size:16.5px;line-height:1.75}
+a{color:var(--cy);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.45)}a:hover{border-bottom-style:solid}
+b,strong{color:#fff}
+/* top bar */
+.gtop{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:18px;padding:10px 24px;background:rgba(11,16,22,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.gtop a{border:none;color:var(--ink2);font-size:14px}.gtop .gt{flex:1;text-align:center;font-size:14px;color:var(--ink2);letter-spacing:1px}.gtop .gt b{color:var(--amb);letter-spacing:3px}
+.gtop .gl{border:1px solid rgba(255,176,32,.5);border-radius:999px;padding:3px 12px;color:var(--amb)}
+/* hero */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+  background:radial-gradient(900px 420px at 18% 10%,rgba(255,138,60,.20),transparent 60%),radial-gradient(800px 400px at 85% 30%,rgba(76,194,255,.16),transparent 60%),var(--bg)}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(76,194,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(76,194,255,.07) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 75%)}
+.hin{position:relative;max-width:1180px;margin:0 auto;padding:64px 28px 54px}
+.eye{position:absolute;right:28px;top:46px;width:200px;height:200px;filter:drop-shadow(0 0 28px rgba(255,138,60,.45))}
+.eye .ring{fill:none;stroke:rgba(255,176,32,.35);stroke-width:1.2;stroke-dasharray:3 7;transform-origin:60px 60px}
+.eye .r1{animation:spin 26s linear infinite}.eye .r2{stroke:rgba(76,194,255,.35);animation:spin 18s linear infinite reverse}
+.eye .lid{fill:rgba(255,255,255,.04);stroke:#ffb020;stroke-width:2}
+.eye .iris{animation:look 7s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes look{0%,100%{transform:translate(0,0)}20%{transform:translate(-9px,-2px)}45%{transform:translate(8px,2px)}70%{transform:translate(2px,-3px)}}
+.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:3px;color:var(--amb)}
+.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.15;margin:14px 0 14px;letter-spacing:-.5px;max-width:860px}
+.grad{background:linear-gradient(90deg,#ffd27a,#ff8a3c 45%,#4cc2ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:18px;color:var(--ink2);max-width:820px}.hero .sub b{color:var(--amb)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:30px 0 26px;max-width:980px}
+.kpi{background:linear-gradient(180deg,rgba(22,32,44,.9),rgba(17,24,33,.9));border:1px solid var(--line);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;height:2px;width:100%;background:linear-gradient(90deg,var(--amb2),transparent)}
+.kn{font-family:var(--mono);font-size:clamp(26px,3.4vw,40px);font-weight:700;color:#fff;line-height:1.1;text-shadow:0 0 22px rgba(255,176,32,.35)}
+.kl2{font-size:13.5px;color:var(--ink3);margin-top:6px}
+.hcta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;border:none;background:linear-gradient(90deg,var(--amb),var(--amb2));color:#1a0d00!important;font-weight:800;border-radius:999px;padding:9px 20px;font-size:14.5px;box-shadow:0 6px 24px rgba(255,138,60,.35)}
+.btn.ghost{background:transparent;color:var(--ink)!important;border:1px solid var(--line);box-shadow:none}
+/* layout */
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:34px;max-width:1380px;margin:0 auto;padding:0 24px}
+.toc{position:sticky;top:60px;align-self:start;max-height:calc(100vh - 70px);overflow:auto;padding:26px 0 30px}
+.toc .tt{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;color:var(--ink3);margin:0 0 10px 8px}
+.toc a{display:flex;gap:9px;align-items:baseline;border:none;border-left:2px solid transparent;color:var(--ink3);font-size:13.5px;line-height:1.45;padding:6px 10px}
+.toc a .n{font-family:var(--mono);font-size:11px;color:#4b5a6d}
+.toc a:hover{color:var(--ink)}
+.toc a.on{color:#fff;border-left-color:var(--amb);background:linear-gradient(90deg,rgba(255,176,32,.12),transparent)}.toc a.on .n{color:var(--amb)}
+main.g{min-width:0;padding:30px 0 70px;overflow-wrap:anywhere}
+/* chapters */
+.chapter{padding:54px 0 16px;border-bottom:1px solid var(--line)}
+.chead{display:flex;align-items:center;gap:18px;margin-bottom:14px}
+.chead .big{font-family:var(--mono);font-size:64px;font-weight:800;line-height:1;background:linear-gradient(180deg,rgba(255,176,32,.9),rgba(255,138,60,.15));-webkit-background-clip:text;background-clip:text;color:transparent}
+.chead .cn{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;color:var(--ink3)}
+.chead h2{font-size:28px;line-height:1.3;margin:4px 0 0;color:#fff}
+.blk{margin:16px 0 8px}
+.blk>h3,.blk h3{font-size:19px;color:#fff;margin:26px 0 12px;display:flex;align-items:center;gap:10px}
+.blk h3::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--amb);box-shadow:0 0 10px var(--amb)}
+p{margin:0 0 .9em;color:var(--ink2)}ul,ol{margin:0 0 1em;padding-left:1.35em;color:var(--ink2)}li{margin:.35em 0}
+.dim{color:var(--ink3)}.small{font-size:13.5px}
+code{font-family:var(--mono);font-size:.85em;background:var(--bg3);border:1px solid var(--line);border-radius:5px;padding:0 .35em;color:#ffd27a}
+mark{background:linear-gradient(transparent 55%,rgba(255,176,32,.38) 55%);color:#fff;padding:0 .1em}
+.lead{font-size:17px;padding:1em 1.2em;border:1px solid rgba(255,176,32,.35);border-left:4px solid var(--amb);background:linear-gradient(90deg,rgba(255,176,32,.10),rgba(17,24,33,.6));border-radius:0 12px 12px 0;margin:.5em 0 1em;color:var(--ink)}
+.lead b{color:var(--amb)}
+.note{font-size:14px;color:var(--ink2);background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:.7em 1em;margin:1em 0}
+.legend2{font-size:13px;color:var(--ink3);margin:.4em 0 0}
+.kbox{display:inline-block;background:var(--amb);color:#1a0d00;font-size:11.5px;font-weight:800;border-radius:4px;padding:0 6px}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.5px;border:1px solid var(--line);border-radius:999px;padding:0 .6em;color:var(--ink3);margin-left:.3em;white-space:nowrap;line-height:1.7;vertical-align:2px}
+.tag.ok{color:var(--ok);border-color:rgba(56,211,159,.5);background:rgba(56,211,159,.08)}
+.tag.top{color:var(--amb);border-color:rgba(255,176,32,.5);background:rgba(255,176,32,.08)}
+.key{background:linear-gradient(135deg,rgba(255,176,32,.10),rgba(76,194,255,.05));border:1px solid rgba(255,176,32,.35);border-radius:14px;padding:.9em 1.2em;margin:.4em 0 1.2em;box-shadow:0 0 0 1px rgba(255,176,32,.05),0 10px 30px rgba(0,0,0,.25)}
+.key .kl{display:inline-block;font-size:11.5px;font-weight:800;color:#1a0d00;background:var(--amb);border-radius:4px;padding:0 .5em}
+.key ul{margin:.5em 0 0;color:var(--ink)}
+.tw{overflow-x:auto}
+table.rs-t{width:100%;border-collapse:separate;border-spacing:0;font-size:14px;margin:.6em 0 1.1em;background:var(--bg2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--line);padding:.6em .75em;text-align:left;vertical-align:top;color:var(--ink2)}
+table.rs-t th{background:var(--bg3);color:var(--ink3);font-weight:600;font-size:12.5px;letter-spacing:.5px}
+table.rs-t tr:last-child td{border-bottom:none}
+table.rs-t td b{color:var(--amb)}
+pre.rs-f{font-family:var(--mono);font-size:13.5px;background:#0a0f15;border:1px solid var(--line);border-radius:12px;padding:1em 1.2em;overflow-x:auto;line-height:1.75;color:#9fe3c6}
+/* cards & flow */
+.cards2,.cards3,.cards4{display:grid;gap:14px;margin:.9em 0 1.3em}
+.cards2{grid-template-columns:repeat(2,minmax(0,1fr))}.cards3{grid-template-columns:repeat(3,minmax(0,1fr))}.cards4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.cardx{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:1em 1.1em;transition:transform .25s,border-color .25s,box-shadow .25s}
+.cardx:hover{transform:translateY(-3px);border-color:rgba(255,176,32,.5);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.cardx.plan{border-style:dashed;border-color:rgba(76,194,255,.45)}
+.cardx .k{font-family:var(--mono);font-size:11.5px;letter-spacing:2px;color:var(--amb)}
+.cardx .t{font-size:17px;font-weight:700;margin:.2em 0 .3em;color:#fff}.cardx .d{font-size:14px;color:var(--ink2);line-height:1.6}
+.flowx{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:.9em 0 1.3em}
+.flowx .st{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:.8em .85em;position:relative}
+.flowx .st.gate{border-color:rgba(255,176,32,.65);box-shadow:0 0 24px rgba(255,176,32,.15) inset}
+.flowx .st .n{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--amb),var(--amb2));color:#1a0d00;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:8px;font-family:var(--mono)}
+.flowx .st b{display:block;font-size:15px;margin-bottom:4px}.flowx .st p{font-size:13px;line-height:1.55;margin:0}
+.flowx .st:not(:last-child)::after{content:"";position:absolute;right:-12px;top:50%;width:12px;height:2px;background:linear-gradient(90deg,var(--amb),transparent);box-shadow:0 0 8px var(--amb)}
+/* charts */
+.charts2,.charts4{display:grid;gap:14px;margin:.9em 0 1.4em}
+.charts2{grid-template-columns:repeat(2,minmax(0,1fr))}.charts4{grid-template-columns:repeat(4,minmax(0,1fr))}
+figure.ch{margin:0;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 12px 10px}
+figure.ch figcaption{font-size:13.5px;font-weight:700;color:#fff;margin:0 0 2px 4px}
+figure.ch figcaption span{font-weight:400;color:var(--ink3);font-size:12px;margin-left:6px}
+figure.ch svg{width:100%;height:auto;display:block}
+figure.ch .grid{stroke:#1d2a39;stroke-width:1}figure.ch .axis{stroke:#3a4a5e;stroke-width:1}
+figure.ch .bar{cursor:pointer;transition:opacity .2s,filter .2s;transform-box:fill-box;transform-origin:bottom}
+figure.ch .bar:hover{filter:brightness(1.25) drop-shadow(0 0 6px rgba(255,255,255,.25))}
+figure.ch .val{fill:#e8edf3;font-size:12.5px;font-weight:700;text-anchor:middle;font-family:var(--mono)}
+figure.ch .lab{fill:#9aa8b8;font-size:12px;text-anchor:middle}
+figure.ch .cnote{font-size:12px;color:var(--ink3);margin:2px 4px 0}
+.rv.in figure.ch .bar,figure.ch.rv.in .bar{animation:grow .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.lgd{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--ink2);margin:.6em 0 0}
+.lgd i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.tip{position:fixed;z-index:50;pointer-events:none;opacity:0;transition:opacity .12s;background:rgba(10,15,21,.95);border:1px solid rgba(255,176,32,.5);color:#fff;font-size:13px;padding:5px 10px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.4);font-family:var(--mono)}
+/* reveal */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}.rv.in{opacity:1;transform:none}
+.gfoot{font-size:12.5px;color:var(--ink3);margin-top:30px}
+.dl,.dlb{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+@media (max-width:1100px){.eye{display:none}.charts4{grid-template-columns:repeat(2,minmax(0,1fr))}.flowx{grid-template-columns:repeat(3,minmax(0,1fr))}.flowx .st::after{display:none}}
+@media (max-width:1000px){.layout{grid-template-columns:minmax(0,1fr)}.toc{display:none}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cards3,.cards4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.charts2,.charts4,.cards2,.cards3,.cards4,.flowx{grid-template-columns:1fr}.chead .big{font-size:44px}table.rs-t{display:block;overflow-x:auto}}
+@media print{.toc,.gtop,.eye,.hgrid{display:none}.rv{opacity:1;transform:none}body{background:#fff;color:#111}}
+
+.tchip{display:inline-block;font-family:var(--mono);font-size:12px;color:var(--amb);border:1px solid rgba(255,176,32,.45);border-radius:999px;padding:1px 10px;margin-top:6px}
+.loop{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:.9em 0 1.2em}
+.lpc{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--ink3);margin-bottom:8px}
+.lps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.lp{background:#0d141c;border:1px solid var(--line);border-radius:10px;padding:8px 10px;position:relative}
+.lp.lv{border-color:rgba(255,176,32,.7);box-shadow:0 0 18px rgba(255,176,32,.14) inset}
+.lp:not(:last-child)::after{content:"→";position:absolute;right:-10px;top:8px;color:var(--amb);font-size:13px}
+.lpv{font-family:var(--mono);font-size:13px;font-weight:800;color:#fff}.lpv i{font-style:normal;color:var(--amb);margin-left:6px;font-size:12px}
+.lpt{font-size:13px;color:var(--ink2);line-height:1.55;margin-top:3px}
+.lpg{margin-top:10px;font-size:14px;color:var(--ink2);border-top:1px dashed var(--line);padding-top:8px}
+.strip{display:flex;gap:4px;margin:.6em 0 .3em}
+.sg{min-width:0;background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:8px 8px;cursor:default;overflow:hidden}
+.sg b{display:block;font-size:12.5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sg span{font-family:var(--mono);font-size:11.5px;color:var(--ink3)}
+.sg.dm{background:rgba(255,176,32,.16);border-color:rgba(255,176,32,.6)}.sg.bf{border-style:dashed;background:transparent}
+.pyr{display:flex;flex-direction:column;align-items:center;gap:6px;margin:.8em 0 1em}
+.py{border:1px solid var(--line);border-radius:10px;padding:8px 14px;background:var(--bg2);text-align:center}
+.py b{display:block;color:#fff;font-size:14.5px}.py span{font-size:13px;color:var(--ink2)}
+.p5{width:52%;border-color:rgba(217,89,38,.6)}.p4{width:64%}.p3{width:76%}.p2{width:88%;border-color:rgba(56,211,159,.55)}.p1{width:100%}
+.flowx.f4{grid-template-columns:repeat(4,minmax(0,1fr))}.flowx.f3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.flowx .st .n{width:auto;min-width:28px;padding:0 6px;border-radius:999px}
+.demo{border:1px solid rgba(255,176,32,.55);border-radius:14px;padding:14px 18px;margin:1em 0;background:linear-gradient(135deg,rgba(255,176,32,.10),rgba(76,194,255,.04))}
+.demo .dk{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;color:var(--amb)}.demo .dt{font-size:17px;font-weight:700;color:#fff;margin:.2em 0 .3em}
+.demo ul{margin:.3em 0 .8em}
+.cardx.pp .k{margin:.1em 0 .35em}.cardx.pp .t{margin:0}
+.cardx .rd{font-size:13px;color:var(--ink3);margin-top:.5em;border-top:1px dashed var(--line);padding-top:.4em}
+figure.ch .hb{transform-origin:left}
+.rv.in figure.ch .hb,figure.ch.rv.in .hb{animation:growx .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes growx{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+figure.ch .dot{transform-origin:center;transform-box:fill-box}
+.rv.in figure.ch .dot,figure.ch.rv.in .dot{animation:pop .6s ease both}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.charts2>figure.ch,.charts2>.cardx{min-width:0}
+@media (max-width:900px){.lps{grid-template-columns:repeat(2,minmax(0,1fr))}.lp::after{display:none}.flowx.f4{grid-template-columns:repeat(2,minmax(0,1fr))}.strip{flex-wrap:wrap}.sg{flex:1 1 30%!important}}
+@media (max-width:640px){.lps,.flowx.f4,.flowx.f3{grid-template-columns:1fr}.p5,.p4,.p3,.p2{width:100%}}
+</style></head><body>
+<header class="gtop"><a class="brand" href="../">← RSI 资料包</a><span class="gt"><b>SELF-EVOLVE</b> · 25 分钟分享</span><a class="gl" href="../demo/play/">Play →</a></header>
+<div class="hero"><div class="hgrid"></div><div class="hin">
+<div class="eyebrow">TALK · 25 MIN · 2026-11</div>
+<h1>从 AutoResearch 到<br/><span class="grad">Agent 自进化</span></h1>
+<p class="sub">一个循环:<b>跑 → 看 → 提 → 验 → 定</b>。改的东西在变,节奏不变;<b>真正难的是「验」</b>。这一页是分享的预读版:领域全景、谁做得深、我们自己跑出来的结果、下一步。</p>
+<div class="kpis"><div class="kpi rv"><div class="kn" data-count="779">779</div><div class="kl2">篇 2026 自进化论文(1–8 月)</div></div><div class="kpi rv"><div class="kn" data-count="19">19</div><div class="kl2">篇真正的递归自指</div></div><div class="kpi rv"><div class="kn" data-count="8">8</div><div class="kl2">个百分点:Harvey 81.5 → 89.5</div></div><div class="kpi rv"><div class="kn" data-count="86">86</div><div class="kl2">% 推理吞吐提升</div></div></div>
+<div class="hcta"><a class="btn" href="#c0">从结构开始 ↓</a><a class="btn ghost" href="#c3">直接看人和论文</a></div>
+</div></div>
+<div class="layout">
+<nav class="toc"><div class="tt">CONTENTS · 时间</div><a href="#c0"><span class="n">0:00</span>这场分享讲什么</a><a href="#c1"><span class="n">0:30</span>千篇「一律」:2026 年的领域全景</a><a href="#c2"><span class="n">2:00</span>方法:循环怎么转</a><a href="#c3"><span class="n">5:00</span>人和论文:谁做得深,先读哪篇</a><a href="#c4"><span class="n">7:00</span>Demo 1 · Play:亲眼看一圈循环</a><a href="#c5"><span class="n">10:00</span>三个场景:哪里的「验」越可信,哪里先落地</a><a href="#c6"><span class="n">18:30</span>限制与落地:先把「验」做好</a><a href="#c7"><span class="n">21:30</span>总结:变的是对象和信号,不变的是节奏</a></nav>
+<main class="g">
+<div class="legend2 rv"><span class="kbox">本章要点</span> 每章关键信息 · <mark>高亮</mark> 核心结论 · 每章标题下是分享时的时间段 · 图表悬停看数值</div>
+<section class="chapter" id="c0"><div class="chead rv"><span class="big">00</span><div><span class="cn">CHAPTER 00</span><h2>这场分享讲什么</h2><span class="tchip">⏱ 0:00–0:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>一句话:<b>几乎所有自进化方法都是同一个循环 —— 跑、看、提、验、定;真正难的是「验」</b>。</li><li>内容分四块:领域在做什么、谁做得深、我们自己跑出了什么、怎么落地。内部和外部都能讲,内部多留讨论时间。</li></ul></div>
+<div class="blk rv"><h3>时间怎么分</h3><div class="strip rv"><div class="sg" data-tip="开场:0–0.5 分钟" style="flex:0.5"><b>开场</b><span>0.5′</span></div><div class="sg" data-tip="01 全景:0.5–2 分钟" style="flex:1.5"><b>01 全景</b><span>1.5′</span></div><div class="sg" data-tip="02 方法:2–5 分钟" style="flex:3"><b>02 方法</b><span>3′</span></div><div class="sg" data-tip="03 人和论文:5–7 分钟" style="flex:2"><b>03 人和论文</b><span>2′</span></div><div class="sg dm" data-tip="Play:7–10 分钟" style="flex:3"><b>Play</b><span>3′</span></div><div class="sg" data-tip="04 三个场景:10–18.5 分钟" style="flex:8.5"><b>04 三个场景</b><span>8.5′</span></div><div class="sg" data-tip="05 落地:18.5–21.5 分钟" style="flex:3"><b>05 落地</b><span>3′</span></div><div class="sg bf" data-tip="提问 / 余量:21.5–25 分钟" style="flex:3.5"><b>提问 / 余量</b><span>3.5′</span></div></div><div class="cnote">一共 25 分钟。黄色 = 现场 demo,虚线 = 留给提问和意外。悬停看起止时间。</div></div>
+<div class="blk rv"><h3>主线:五步循环</h3>
+<p>后面每一章都会用同一个五步框套一遍。<mark>变的是「改什么」和「信号从哪来」,不变的是这五步</mark>。</p>
+<div class="loop rv"><div class="lpc">通用 · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">让当前版本在评测集上真跑,留下轨迹</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">读轨迹和错题,找到机制性的原因</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt">提一个最小的改动(diff)</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">用确定性的门决定要不要它:held-out、成本、泄漏审计</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">接受就入档,能回滚;拒绝也记下来</div></div></div></div>
+</div></section><section class="chapter" id="c1"><div class="chead rv"><span class="big">01</span><div><span class="cn">CHAPTER 01</span><h2>千篇「一律」:2026 年的领域全景</h2><span class="tchip">⏱ 0:30–2:00</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>2026 年 1–8 月:1,001 篇候选,779 篇入选,439 篇是核心贡献;分成 11 个方向。</li><li>最大的方向是记忆与技能(151 篇),Harness 与工作流已经和权重并列(112 篇)。</li><li><mark>真正「改进自己的改进机制」的只有 19 篇 —— 瓶颈在验证,不在想法</mark>。</li></ul></div>
+<div class="blk rv"><h3>论文有多少、在哪儿</h3><figure class="ch rv"><figcaption>11 个方向的论文数<span>篇 · 括号里是核心贡献篇数</span></figcaption><svg aria-label="11 个方向的论文数" role="img" viewbox="0 0 720 302"><line class="axis" x1="190" x2="190" y1="8" y2="294"></line><text class="lab" style="text-anchor:end" x="180" y="25.0">记忆与技能进化</text><path class="bar hb" d="M190,13 H596.0 Q600.0,13 600.0,17 V25 Q600.0,29 596.0,29 H190 Z" data-tip="记忆与技能进化:共 151 篇,核心 121 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="608.0" y="25.0">151(121)</text><text class="lab" style="text-anchor:end" x="180" y="51.0">领域应用</text><path class="bar hb" d="M190,39 H509.1 Q513.1,39 513.1,43 V51 Q513.1,55 509.1,55 H190 Z" data-tip="领域应用:共 119 篇,核心 21 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="521.1" y="51.0">119(21)</text><text class="lab" style="text-anchor:end" x="180" y="77.0">权重级自我改进</text><path class="bar hb" d="M190,65 H492.8 Q496.8,65 496.8,69 V77 Q496.8,81 492.8,81 H190 Z" data-tip="权重级自我改进:共 113 篇,核心 71 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="504.8" y="77.0">113(71)</text><text class="lab" style="text-anchor:end" x="180" y="103.0">Harness 与工作流</text><path class="bar hb" d="M190,91 H490.1 Q494.1,91 494.1,95 V103 Q494.1,107 490.1,107 H190 Z" data-tip="Harness 与工作流:共 112 篇,核心 75 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="502.1" y="103.0">112(75)</text><text class="lab" style="text-anchor:end" x="180" y="129.0">基准与评测</text><path class="bar hb" d="M190,117 H405.9 Q409.9,117 409.9,121 V129 Q409.9,133 405.9,133 H190 Z" data-tip="基准与评测:共 81 篇,核心 46 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="417.9" y="129.0">81(46)</text><text class="lab" style="text-anchor:end" x="180" y="155.0">安全、对齐与治理</text><path class="bar hb" d="M190,143 H357.1 Q361.1,143 361.1,147 V155 Q361.1,159 357.1,159 H190 Z" data-tip="安全、对齐与治理:共 63 篇,核心 29 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="369.1" y="155.0">63(29)</text><text class="lab" style="text-anchor:end" x="180" y="181.0">LLM 驱动的进化搜索</text><path class="bar hb" d="M190,169 H310.9 Q314.9,169 314.9,173 V181 Q314.9,185 310.9,185 H190 Z" data-tip="LLM 驱动的进化搜索:共 46 篇,核心 9 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="322.9" y="181.0">46(9)</text><text class="lab" style="text-anchor:end" x="180" y="207.0">提示词与上下文进化</text><path class="bar hb" d="M190,195 H275.6 Q279.6,195 279.6,199 V207 Q279.6,211 275.6,211 H190 Z" data-tip="提示词与上下文进化:共 33 篇,核心 30 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="287.6" y="207.0">33(30)</text><text class="lab" style="text-anchor:end" x="180" y="233.0">综述与立场</text><path class="bar hb" d="M190,221 H243.0 Q247.0,221 247.0,225 V233 Q247.0,237 243.0,237 H190 Z" data-tip="综述与立场:共 21 篇,核心 10 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="255.0" y="233.0">21(10)</text><text class="lab" style="text-anchor:end" x="180" y="259.0">多智能体协同进化</text><path class="bar hb" d="M190,247 H243.0 Q247.0,247 247.0,251 V259 Q247.0,263 243.0,263 H190 Z" data-tip="多智能体协同进化:共 21 篇,核心 11 篇" fill="#3987e5"></path><text class="val" style="text-anchor:start" x="255.0" y="259.0">21(11)</text><text class="lab" style="text-anchor:end" x="180" y="285.0">递归自指</text><path class="bar hb" d="M190,273 H237.6 Q241.6,273 241.6,277 V285 Q241.6,289 237.6,289 H190 Z" data-tip="递归自指:共 19 篇,核心 16 篇" fill="#ffb020"></path><text class="val" style="text-anchor:start" x="249.6" y="285.0">19(16)</text></svg><div class="cnote">黄色 = 真正「改进自己的改进机制」的递归自指,只有 19 篇。数据:《自进化智能体 2026》综述,检索窗口 2026-01-01 至 08-21。</div></figure><div class="charts2"><figure class="ch rv"><figcaption>每月入选论文<span>篇</span></figcaption><svg aria-label="每月入选论文" role="img" viewbox="0 0 360 200"><line class="grid" x1="10" x2="350" y1="131.0" y2="131.0"></line><line class="grid" x1="10" x2="350" y1="96.0" y2="96.0"></line><line class="grid" x1="10" x2="350" y1="61.0" y2="61.0"></line><line class="grid" x1="10" x2="350" y1="26.0" y2="26.0"></line><line class="axis" x1="10" x2="350" y1="166" y2="166"></line><path class="bar" d="M28.7,166 V142.1 Q28.7,138.1 32.7,138.1 H72.3 Q76.3,138.1 76.3,142.1 V166 Z" data-tip="1 月:35 篇" fill="#3987e5"></path><text class="val" x="52.5" y="131.1">35</text><text class="lab" x="52.5" y="183">1 月</text><path class="bar" d="M113.7,166 V51.4 Q113.7,47.4 117.7,47.4 H157.3 Q161.3,47.4 161.3,51.4 V166 Z" data-tip="5 月:149 篇(峰值)" fill="#3987e5"></path><text class="val" x="137.5" y="40.4">149</text><text class="lab" x="137.5" y="183">5 月</text><path class="bar" d="M198.7,166 V57.7 Q198.7,53.7 202.7,53.7 H242.3 Q246.3,53.7 246.3,57.7 V166 Z" data-tip="7 月:141 篇" fill="#3987e5"></path><text class="val" x="222.5" y="46.7">141</text><text class="lab" x="222.5" y="183">7 月</text><path class="bar" d="M283.7,166 V76.0 Q283.7,72.0 287.7,72.0 H327.3 Q331.3,72.0 331.3,76.0 V166 Z" data-tip="8 月前 21 天:118 篇" fill="#3987e5"></path><text class="val" x="307.5" y="65.0">118</text><text class="lab" x="307.5" y="183">8 月*</text></svg><div class="cnote">* 8 月只统计到 21 日。只列综述里给出的月份。</div></figure><div class="cardx"><div class="k">千篇「一律」</div><div class="t">数量在涨,骨架没变</div><div class="d">「千篇一律」是双关:论文接近一千篇,而且方法骨架惊人地一致 —— 都是「执行 → 评估 → 反思 → 改写」这一个循环的变体。5 月以后每月都在 120–150 篇的高位。</div></div></div></div>
+<div class="blk rv"><h3>能改的东西:五层,从便宜到贵</h3>
+<div class="pyr rv">
+<div class="py p5"><b>第 5 层 · 权重</b><span>SEAL、RL —— 能力真正内化,但最贵,有遗忘风险</span></div>
+<div class="py p4"><b>第 4 层 · Harness</b><span>DGM、Meta-Harness、AHE —— 自由度最大,审计成本也最大</span></div>
+<div class="py p3"><b>第 3 层 · 工具 / 工作流</b><span>AFlow、ADAS —— 自动搜索编排</span></div>
+<div class="py p2"><b>第 2 层 · 上下文 / 技能 / 记忆</b><span>ACE、Voyager、Mem0 —— 2026 公认性价比最高,可回滚、可跨模型</span></div>
+<div class="py p1"><b>第 1 层 · Prompt</b><span>GEPA、MIPRO、TextGrad —— 几百个 rollout 就有收益</span></div>
+</div>
+<p><b>读法:从下往上</b>。先把便宜的层榨干,再考虑上一层;权重永远最后动。改进机制本身也可以被进化(HGM 进化「怎么选亲本」,MemEvolve 进化「记忆系统架构」),但这更需要严格的门。</p>
+<div class="note">注意:这里的「第 1–5 层」是<b>改什么</b>。网站上 <a href="../landscape/">RSI 全景</a> 的 L1–L5 是另一套东西(AI 的<b>自主程度</b>,来自 Last-AI 论文),两者不要混。</div></div></section><section class="chapter" id="c2"><div class="chead rv"><span class="big">02</span><div><span class="cn">CHAPTER 02</span><h2>方法:循环怎么转</h2><span class="tchip">⏱ 2:00–5:00</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>autoresearch 是最小的循环:改 train.py → 训 5 分钟 → 变好就 commit,否则 reset。</li><li>DGM 加了「档案」:不扔差的分支;Meta-Harness 把全部历史(约 1000 万 token/轮)喂给提案 agent。</li><li><mark>涨的分要拆三块:租来的(多花算力)、借来的(钻评测空子)、挣来的</mark>。只有挣来的才值得上线。</li></ul></div>
+<div class="blk rv"><h3>最小的循环:autoresearch(Karpathy)</h3>
+<p>一个 AI agent 反复改 train.py,每次训 5 分钟,val_bpb 降了就 git commit,否则 git reset。83 个实验,留下 15 个改进。</p>
+<div class="loop rv"><div class="lpc">autoresearch · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">训 5 分钟</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">看 val_bpb</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt">改 train.py(只许改这一个文件)</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">val_bpb 降没降 —— 指标固定,作弊不了</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">git commit 或 git reset</div></div></div></div>
+<p class="dim small">值得学的三点:实验单元压到 5 分钟(评估快,进化才快);用 git 管 keep / discard;从不停下来问人,护栏全靠一个作弊不了的指标。</p></div>
+<div class="blk rv"><h3>方法谱系:从 DGM 到 Meta-Harness</h3>
+<div class="cards2">
+<div class="cardx"><div class="k">2025-05 · <a href="https://arxiv.org/abs/2505.22954">DGM</a></div><div class="t">Darwin Gödel Machine</div><div class="d">从档案里选一个 agent → 读自己的代码并修改 → SWE-bench 评测 → 新变体<b>放回</b>档案(不淘汰旧分支)。SWE-bench 20% → 50%。<mark>去掉自改写或去掉开放式档案,曲线都马上停住</mark>。后续:HGM 按「后代表现」选亲本;SGM 加统计门控。</div></div>
+<div class="cardx"><div class="k">2026-03 · <a href="https://arxiv.org/abs/2603.28052">Meta-Harness</a></div><div class="t">Meta-Harness</div><div class="d">外面套一个循环,专门给另一个 agent 设计 harness。所有历史候选的源码、轨迹、得分都放在文件系统里,提案 agent 每轮读约 1000 万 token 的原始记录(比 OPRO / GEPA 多三个数量级)。Terminal-Bench 2 上 76.4%,超过手工最好的 74.7%;小模型获益更大。</div></div>
+</div>
+<p class="dim small">AlphaEvolve 也属于这一类(改的是一道题的解法程序,不是自己),详见 <a href="../alphaevolve/">AlphaEvolve 详解</a>。</p></div>
+<div class="blk rv"><h3>Delta Attribution:涨的分有多少是挣来的</h3>
+<div class="flowx f4 rv">
+<div class="st"><div class="n">B</div><b>原始基线</b><p>什么都不改</p></div>
+<div class="st"><div class="n">Bcc</div><b>预算匹配基线</b><p>给基线同样多的算力(多采样、重试)</p></div>
+<div class="st"><div class="n">E′</div><b>去掉捷径后</b><p>删掉硬编码、评测伪影</p></div>
+<div class="st gate"><div class="n">E</div><b>进化后</b><p>表面上的分数</p></div>
+</div>
+<div class="cards3">
+<div class="cardx"><div class="k">T · Bcc − B</div><div class="t">租来的分</div><div class="d">更多采样、重试、验证。可能迁移,但每次都要继续付钱。<b>对策:预算匹配基线 + 成本进综合分</b>。</div></div>
+<div class="cardx"><div class="k">O · E − E′</div><div class="t">借来的分</div><div class="d">硬编码测例特征、判据关键词。离开这套评测立刻失效。<b>对策:泄漏审计 + held-out</b>。</div></div>
+<div class="cardx plan"><div class="k">G · 剩下的</div><div class="t">挣来的分</div><div class="d">分解、护栏、通用编排这类真改进。最值得追,但仍要跨模型 / 跨数据集检验。</div></div>
+</div>
+<div class="lead">真正的问题不是「分数涨没涨」,而是「<b>涨分的机制值不值得信、付出了什么成本、离开搜索集还能不能工作</b>」。</div></div></section><section class="chapter" id="c3"><div class="chead rv"><span class="big">03</span><div><span class="cn">CHAPTER 03</span><h2>人和论文:谁做得深,先读哪篇</h2><span class="tchip">⏱ 5:00–7:00</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>源头和理论:Schmidhuber 组(Gödel Machine → HGM)。开放式进化:Jeff Clune 组(ADAS、DGM)。</li><li>工程化:DeepMind AlphaEvolve 团队、Sakana(ShinkaEvolve,我们的 demo 用它)、Khattab 一线(DSPy → GEPA → Meta-Harness)。</li><li>国内:复旦 AHE 最接近我们做的 harness 进化;字节 Seed 的 HarnessDev 给出了最冷静的结论。</li></ul></div>
+<div class="blk rv"><h3>值得跟的人和团队</h3>
+<div class="cards3">
+<div class="cardx pp"><div class="t">Jürgen Schmidhuber 组</div><div class="k">KAUST · 理论源头</div><div class="d">2003 年前后提出 Gödel Machine:证明改了更好才改。2025 年的 HGM 用「全体后代的表现」选亲本;2026 年又和合作者写了 agent 自改进综述。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2510.21614">HGM</a> · <a href="https://arxiv.org/abs/2607.13104">综述</a></div></div>
+<div class="cardx pp"><div class="t">Jeff Clune 组</div><div class="k">UBC / Vector · 开放式进化</div><div class="d">ADAS(自动设计 agent)、DGM(agent 改自己的代码 + 档案)的核心作者;DGM 一作 Jenny Zhang。后来参与创办 Recursive。核心思想:<mark>保留「现在看着差」的分支,它们是后来的踏脚石</mark>。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2505.22954">DGM</a></div></div>
+<div class="cardx pp"><div class="t">Google DeepMind AlphaEvolve 团队</div><div class="k">Novikov、Balog、Kohli 等</div><div class="d">FunSearch(进化单个函数)→ AlphaEvolve(进化整个代码库)。最值得学的是<b>评估级联</b>:便宜的测试先筛,过了才进贵的测试。产业落地最多。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2506.13131">AlphaEvolve</a></div></div>
+<div class="cardx pp"><div class="t">Sakana AI · Robert Lange</div><div class="k">东京 · 开源引擎</div><div class="d">ShinkaEvolve:目前最容易直接用的开源程序进化框架(Apache 2.0),我们的 Play demo 跑的就是它。Lange 也是 DGM 的作者之一。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2509.19349">ShinkaEvolve</a></div></div>
+<div class="cardx pp"><div class="t">Omar Khattab 一线</div><div class="k">Stanford → MIT · 提示词到 harness</div><div class="d">DSPy(把 LM 程序「编译」优化)→ GEPA(反思式提示词进化,和 Berkeley / Databricks 合作)→ Meta-Harness(和 Chelsea Finn、Yoonho Lee 等)。<mark>和我们做 agent 优化最贴近的一条线</mark>。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2507.19457">GEPA</a> · <a href="https://arxiv.org/abs/2603.28052">Meta-Harness</a></div></div>
+<div class="cardx pp"><div class="t">Stanford Olukotun / Zou 组</div><div class="k">Stanford + SambaNova · 上下文进化</div><div class="d">ACE:把上下文当成会不断增长、整理的「手册」,不压缩成一段摘要。第 2 层(上下文 / 记忆)的代表作,Play demo 的方法参考之一。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2510.04618">ACE</a></div></div>
+</div></div>
+<div class="blk rv"><h3>国内值得看的</h3>
+<div class="cards3">
+<div class="cardx pp"><div class="t">复旦 · 桂韬、姜育刚等</div><div class="k">AHE</div><div class="d">把 coding agent 的 harness 拆成七类组件(七个固定挂载点),按「哪里出错」映射到「哪里可改」。<mark>最接近我们 Harvey 实验的做法</mark>。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2604.25850">AHE</a></div></div>
+<div class="cardx pp"><div class="t">字节 Seed 等</div><div class="k">HarnessDev</div><div class="d">测模型能不能自己搭 harness、再自己进化。结论偏冷静:有提升但不稳定,迁移到新任务有限;自我评判几乎预测不了下一轮提升。<b>适合用来泼冷水</b>。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2609.01437">HarnessDev</a></div></div>
+<div class="cardx pp"><div class="t">字节、清华、上海 AI Lab 等 35 人</div><div class="k">The Last AI Built by Humans</div><div class="d">给 RSI 分五级自主(L1–L5),今天的云产品停在 L2,AlphaEvolve 被放在 B0。<b>拿来给自己定坐标</b>。</div><div class="rd">先读:<a href="https://arxiv.org/abs/2609.11873">Last AI</a></div></div>
+</div></div>
+<div class="blk rv"><h3>读书顺序(建议)</h3>
+<ol>
+<li><b>入门(1 小时)</b>:autoresearch 的 README;Lilian Weng 的 Harness Engineering 长文(2026-07)。</li>
+<li><b>方法核心</b>:DGM → Meta-Harness → GEPA → ACE。读完就知道第 1–4 层各自怎么进化。</li>
+<li><b>对标我们</b>:AHE(harness 怎么拆)、ShinkaEvolve(引擎怎么用)。</li>
+<li><b>定坐标</b>:Last AI(分级)、<a href="../ai4ai/">AI4AI 解读</a>(看「谁做决定」而不是「谁执行」)。</li>
+<li><b>泼冷水</b>:HarnessDev;以及 Phantom Gains(未训练的模型也会因为批处理伪影「凭空变强」)。</li>
+</ol>
+<p class="dim small">作者和机构都按 arXiv 页面核对过。更全的论文表见 <a href="../demo/papers/">Papers</a> 和 <a href="../guide/">RSI 全景长文</a>。</p></div></section><section class="chapter" id="c4"><div class="chead rv"><span class="big">04</span><div><span class="cn">CHAPTER 04</span><h2>Demo 1 · Play:亲眼看一圈循环</h2><span class="tchip">⏱ 7:00–10:00</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>电商搜索 agent:用户搜「apple 128gb」,起点版返回红富士苹果。</li><li>一圈循环里能看到:<mark>一次泄漏被拦、一次花钱买分被拒、一次真改进晋升</mark> —— 正好对上「借来的、租来的、挣来的」。</li></ul></div>
+<div class="loop rv"><div class="lpc">Play demo · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">父代代码在 31 道题上真跑</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">选亲本 + 附上它做错的题</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt">Claude 先推理,再给出 diff</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">31 公开 + 5 hold-out + 31 typo 三套测试</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">综合分 &gt; 0 才晋升入档</div></div></div></div>
+<div class="demo rv"><div class="dk">DEMO</div><div class="dt">看什么(限时 3 分钟)</div><ul><li>五步各走一遍,每一步屏幕上都有说明</li><li>一次被拒:把答案写进代码(泄漏),或者每题跑 20 个候选重排(花钱买分)</li><li>一次晋升:先识别意图、再抽属性、再检索,「apple 128gb」终于返回 iPhone</li><li>卡住超过 20 秒就切到备份结果</li></ul><a class="btn" href="../demo/play/">打开 Play →</a></div>
+<div class="note">Play 每次都真调 Bedrock,结果每次不同。讲之前先跑一次存好备份。剧情总结见 <a href="../demo/">Demo 介绍页</a>。</div></section><section class="chapter" id="c5"><div class="chead rv"><span class="big">05</span><div><span class="cn">CHAPTER 05</span><h2>三个场景:哪里的「验」越可信,哪里先落地</h2><span class="tchip">⏱ 10:00–18:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>Infra:指标最客观。coding agent 自己诊断并调配置,decode 吞吐 +86%。</li><li>Agent:Harvey 法律 agent 81.5% → 89.5%,<mark>门真的拦下过泄漏和花钱买分</mark>。</li><li>Software:128 个 agent 一起写软件;<mark>最好的组织方式取决于产品的耦合度</mark>。但现在改的是软件,还不是工厂本身。</li></ul></div>
+<div class="blk rv"><h3>场景一 · Infra:用 coding agent 进化推理集群配置</h3>
+<p>一个开源 coding agent 接 Bedrock 上的 Claude Fable 5,优化 GLM-5.2-FP8 的 PD 分离推理集群,无人值守 1 小时 53 分钟。</p>
+<div class="loop rv"><div class="lpc">推理集群 · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">压测,记录 TTFT / ITL / 吞吐</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">先算账:prefill 已在理论极限,49.8s 的首字等待里 43s 是排队 —— 这里调参没用</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt">找到能修的:ITL 尾部停顿来自 GC 持锁;打开 dp-attention,KV 有效容量 ×3.4</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">金丝雀 + 风险清单,5 轮高压约 1,000 个请求,零错误</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">采纳新配置</div></div></div></div>
+<div class="charts2"><figure class="ch rv"><figcaption>推理集群 decode 吞吐<span>tok/s · 并发 96</span></figcaption><svg aria-label="推理集群 decode 吞吐" role="img" viewbox="0 0 360 200"><line class="grid" x1="10" x2="350" y1="131.0" y2="131.0"></line><line class="grid" x1="10" x2="350" y1="96.0" y2="96.0"></line><line class="grid" x1="10" x2="350" y1="61.0" y2="61.0"></line><line class="grid" x1="10" x2="350" y1="26.0" y2="26.0"></line><line class="axis" x1="10" x2="350" y1="166" y2="166"></line><path class="bar" d="M67.0,166 V106.2 Q67.0,102.2 71.0,102.2 H119.0 Q123.0,102.2 123.0,106.2 V166 Z" data-tip="调整前:1,028 tok/s" fill="#7f8da0"></path><text class="val" x="95.0" y="95.2">1,028</text><text class="lab" x="95.0" y="183">之前</text><path class="bar" d="M237.0,166 V51.4 Q237.0,47.4 241.0,47.4 H289.0 Q293.0,47.4 293.0,51.4 V166 Z" data-tip="调整后:1,911 tok/s(+86%)" fill="#38d39f"></path><text class="val" x="265.0" y="40.4">1,911</text><text class="lab" x="265.0" y="183">之后</text></svg><div class="cnote">c64 时 +60%;c128 已饱和;TPOT 全程 14.5–15.6ms。</div></figure><div class="cardx"><div class="k">值得学的</div><div class="t">先诊断,不在没救的地方浪费时间</div><div class="d">agent 第一件事是用 Little's law 算出「这部分只能加机器」,然后才去修真正能修的地方。部署场景里的「门」就是金丝雀加风险清单。</div></div></div></div>
+<div class="blk rv"><h3>场景二 · Agent:Harvey 法律 agent 5 轮自进化</h3>
+<p>Sonnet 5 权重全程冻结,只改 harness。dev 集 72 次运行,LLM judge 按 rubric 判分。</p>
+<div class="loop rv"><div class="lpc">Harvey · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">72 次运行,记录轨迹和 token</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">读失败轨迹</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt">proposer 改 harness</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">泄漏审计 + 成本罚 + 晋升门槛</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">晋升进 frontier,名字里能看到继承链</div></div></div></div>
+<figure class="ch rv"><figcaption>Harvey 法律 agent:每轮候选的得分<span>pooled 判据通过率 %</span></figcaption><svg aria-label="Harvey 法律 agent:每轮候选的得分" role="img" viewbox="0 0 720 230"><line class="grid" x1="44" x2="704" y1="178.0" y2="178.0"></line><text class="lab" style="text-anchor:end" x="36" y="182.0">80</text><line class="grid" x1="44" x2="704" y1="152.3" y2="152.3"></line><text class="lab" style="text-anchor:end" x="36" y="156.3">82</text><line class="grid" x1="44" x2="704" y1="126.7" y2="126.7"></line><text class="lab" style="text-anchor:end" x="36" y="130.7">84</text><line class="grid" x1="44" x2="704" y1="101.0" y2="101.0"></line><text class="lab" style="text-anchor:end" x="36" y="105.0">86</text><line class="grid" x1="44" x2="704" y1="75.3" y2="75.3"></line><text class="lab" style="text-anchor:end" x="36" y="79.3">88</text><line class="grid" x1="44" x2="704" y1="49.7" y2="49.7"></line><text class="lab" style="text-anchor:end" x="36" y="53.7">90</text><line class="grid" x1="44" x2="704" y1="24.0" y2="24.0"></line><text class="lab" style="text-anchor:end" x="36" y="28.0">92</text><polyline fill="none" points="110.0,158.8 374.0,130.5 506.0,56.1" stroke="#38d39f" stroke-dasharray="4 4" stroke-width="2"></polyline><circle class="bar dot" cx="110.0" cy="158.8" data-tip="R0 种子:81.5%" fill="#38d39f" r="7" stroke="#111821" stroke-width="2"></circle><text class="val" x="110.0" y="145.8">81.5</text><text class="lab" x="110.0" y="196">R0</text><text class="lab" style="fill:#38d39f" x="110.0" y="213">起点</text><circle class="bar dot" cx="242.0" cy="154.9" data-tip="R1a:81.8%,泄漏审计拦下" fill="#7f8da0" r="7" stroke="#111821" stroke-width="2"></circle><text class="val" x="242.0" y="141.9">81.8</text><text class="lab" x="242.0" y="196">R1a</text><text class="lab" style="fill:#9aa8b8" x="242.0" y="213">✕ 泄漏</text><circle class="bar dot" cx="374.0" cy="130.5" data-tip="R2:83.7%,晋升(bash 输出截断上限 +2.2pp)" fill="#38d39f" r="7" stroke="#111821" stroke-width="2"></circle><text class="val" x="374.0" y="117.5">83.7</text><text class="lab" x="374.0" y="196">R2</text><text class="lab" style="fill:#38d39f" x="374.0" y="213">✓ 晋升</text><circle class="bar dot" cx="506.0" cy="56.1" data-tip="R3:89.5%,晋升(截断恢复 +5.8pp),终版" fill="#38d39f" r="7" stroke="#111821" stroke-width="2"></circle><text class="val" x="506.0" y="43.1">89.5</text><text class="lab" x="506.0" y="196">R3</text><text class="lab" style="fill:#38d39f" x="506.0" y="213">✓ 终版</text><circle class="bar dot" cx="638.0" cy="48.4" data-tip="R4:90.1%,但 tokens +46%,成本罚后为负,拒绝" fill="#7f8da0" r="7" stroke="#111821" stroke-width="2"></circle><text class="val" x="638.0" y="35.4">90.1</text><text class="lab" x="638.0" y="196">R4</text><text class="lab" style="fill:#9aa8b8" x="638.0" y="213">✕ 成本</text></svg><div class="cnote">绿点 = 被接受的版本(虚线是 frontier),灰点 = 被门拒绝。R1(+0.2pp 未过门槛)没有画。纵轴从 80 开始,所以用点不用柱。</div></figure>
+<div class="cards3">
+<div class="cardx"><div class="k">最大单项</div><div class="t">输出截断恢复 +5.8pp</div><div class="d">模型输出被截断时自动续写。和 bash 输出截断上限(+2.2pp)、交付物错位找回一起,都是<b>基建级修复</b>,不是 prompt 玄学。</div></div>
+<div class="cardx"><div class="k">最值得讲的一次判罚</div><div class="t">R4:+0.6pp 但 tokens +46%</div><div class="d">表面涨了,成本罚之后实际为负,门拒绝了「花钱买微弱提升」。这就是上一章的「租来的分」。</div></div>
+<div class="cardx plan"><div class="k">诚实的遗留</div><div class="t">整任务全对没涨</div><div class="d">all-pass 9.7% → 8.3%,在噪声内。进化学会的是「少崩盘、多拿分」,还没学会「做全对」。</div></div>
+</div>
+<div class="note"><b>跨模型的初步观察</b>:同一个进化后的 harness 换到 Fable 5 上,得分更高、token 更少。但这还不能证明 harness 可以迁移 —— 缺少「Fable 5 + 原始 harness」这个基线,目前只能说明 Fable 5 更强。补上基线之前不下结论。</div>
+<p>我们把这套做法抽象成了一个原型框架:Dataset、Agent(一段代码目录,和框架无关)、Evaluator(独立打分)、Job;一次运行设预算、跑多代多子代,输出<b>成本 × 通过率的帕累托前沿</b>和每个变体的 diff。</p></div>
+<div class="blk rv"><h3>场景三 · Software:让一群 agent 自己写软件</h3>
+<p>Argus 原型:planner 写规格和验收测试 → 规格门禁(测试在空脚手架上必须全部失败)→ 团队在共享 git + 空数据库里自组织开发 → 双容器判分。最大跑到 <b>128 个 worker、640 条验收全部通过</b>。</p>
+<div class="lgd rv"><span><i style="background:#3987e5"></i>A 扁平</span><span><i style="background:#d95926"></i>B 涌现分层</span><span><i style="background:#199e70"></i>C 纯蜂群</span></div><div class="charts2"><figure class="ch rv"><figcaption>电商平台(模块独立):团队用时<span>分钟</span></figcaption><svg aria-label="电商平台(模块独立):团队用时" role="img" viewbox="0 0 360 200"><line class="grid" x1="10" x2="350" y1="131.0" y2="131.0"></line><line class="grid" x1="10" x2="350" y1="96.0" y2="96.0"></line><line class="grid" x1="10" x2="350" y1="61.0" y2="61.0"></line><line class="grid" x1="10" x2="350" y1="26.0" y2="26.0"></line><line class="axis" x1="10" x2="350" y1="166" y2="166"></line><path class="bar" d="M38.7,166 V51.4 Q38.7,47.4 42.7,47.4 H90.7 Q94.7,47.4 94.7,51.4 V166 Z" data-tip="电商 · A 扁平:16.3 分钟" fill="#3987e5"></path><text class="val" x="66.7" y="40.4">16.3</text><text class="lab" x="66.7" y="183">A</text><path class="bar" d="M152.0,166 V72.5 Q152.0,68.5 156.0,68.5 H204.0 Q208.0,68.5 208.0,72.5 V166 Z" data-tip="电商 · B 涌现分层:13.4 分钟" fill="#d95926"></path><text class="val" x="180.0" y="61.5">13.4</text><text class="lab" x="180.0" y="183">B</text><path class="bar" d="M265.3,166 V70.3 Q265.3,66.3 269.3,66.3 H317.3 Q321.3,66.3 321.3,70.3 V166 Z" data-tip="电商 · C 纯蜂群:13.7 分钟" fill="#199e70"></path><text class="val" x="293.3" y="59.3">13.7</text><text class="lab" x="293.3" y="183">C</text></svg><div class="cnote">B ≈ C,比 A 快约 18%</div></figure><figure class="ch rv"><figcaption>工作流引擎(模块耦合):团队用时<span>分钟</span></figcaption><svg aria-label="工作流引擎(模块耦合):团队用时" role="img" viewbox="0 0 360 200"><line class="grid" x1="10" x2="350" y1="131.0" y2="131.0"></line><line class="grid" x1="10" x2="350" y1="96.0" y2="96.0"></line><line class="grid" x1="10" x2="350" y1="61.0" y2="61.0"></line><line class="grid" x1="10" x2="350" y1="26.0" y2="26.0"></line><line class="axis" x1="10" x2="350" y1="166" y2="166"></line><path class="bar" d="M38.7,166 V103.0 Q38.7,99.0 42.7,99.0 H90.7 Q94.7,99.0 94.7,103.0 V166 Z" data-tip="工作流 · A 扁平:21.5 分钟" fill="#3987e5"></path><text class="val" x="66.7" y="92.0">21.5</text><text class="lab" x="66.7" y="183">A</text><path class="bar" d="M152.0,166 V95.6 Q152.0,91.6 156.0,91.6 H204.0 Q208.0,91.6 208.0,95.6 V166 Z" data-tip="工作流 · B 涌现分层:23.9 分钟" fill="#d95926"></path><text class="val" x="180.0" y="84.6">23.9</text><text class="lab" x="180.0" y="183">B</text><path class="bar" d="M265.3,166 V51.4 Q265.3,47.4 269.3,47.4 H317.3 Q321.3,47.4 321.3,51.4 V166 Z" data-tip="工作流 · C 纯蜂群:38.1 分钟" fill="#199e70"></path><text class="val" x="293.3" y="40.4">38.1</text><text class="lab" x="293.3" y="183">C</text></svg><div class="cnote">A 最快,C 最慢 —— 结论反转</div></figure></div>
+<div class="loop rv"><div class="lpc">软件工厂 · 五步怎么走</div><div class="lps"><div class="lp"><div class="lpv">Run<i>跑</i></div><div class="lpt">团队开发</div></div><div class="lp"><div class="lpv">Observe<i>看</i></div><div class="lpt">判分结果、读写流、冲突</div></div><div class="lp"><div class="lpv">Propose<i>提</i></div><div class="lpt">提修订需求</div></div><div class="lp lv"><div class="lpv">Verify<i>验</i></div><div class="lpt">规格门禁 + 判分;服务端钩子保护测试</div></div><div class="lp"><div class="lpv">Commit<i>定</i></div><div class="lpt">合入 main</div></div></div><div class="lpg"><b>离 RSI 还差一步</b>:现在每轮改的是<b>软件</b>,不是<b>工厂</b>。下一步是把 lead / worker 的工作手册当成进化对象,用多个项目的通过率和成本打分(Argus 的 Evolve 方案)。</div></div>
+<div class="demo rv"><div class="dk">DEMO</div><div class="dt">Demo 2 · 回放(限时 2 分钟)</div><ul><li>拖动时间轴,看 agent 怎么读写共享表、分工怎么形成</li><li>看一次 rebase 冲突和它怎么被解决</li><li>最后看判分:640 条一条条变绿</li></ul><a class="btn" href="../argus-intro/">Argus 介绍 →</a></div>
+</div></section><section class="chapter" id="c6"><div class="chead rv"><span class="big">06</span><div><span class="cn">CHAPTER 06</span><h2>限制与落地:先把「验」做好</h2><span class="tchip">⏱ 18:30–21:30</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>最常见的假进步:过拟合搜索集、花钱买分、评估器被拖着走、reward hacking、测试时扩展冒充改进。</li><li><mark>任何收益先测 null 分布再谈提升</mark>:未训练的模型也会因为批处理伪影「凭空变强」(Phantom Gains)。</li><li>落地顺序:先建评估 → 接上可观测 → 再做进化,不跳级。</li></ul></div>
+<div class="blk rv"><h3>五种假进步,和对应的门</h3>
+<div class="tw"><table class="rs-t"><tr><th>假进步</th><th>长什么样</th><th>对策</th></tr>
+<tr><td><b>过拟合</b></td><td>收益依赖任务顺序和运行方差;默认顺序本身就是隐藏的课程</td><td>多次运行 + 打乱顺序 + held-out</td></tr>
+<tr><td><b>花钱买分</b></td><td>进化学会多试几次、想更久 —— 我们 R4 就是</td><td>预算匹配基线 + 成本进综合分</td></tr>
+<tr><td><b>评估器漂移</b></td><td>评估器进了循环,会被一起拖着走,最后变成「永远说对」</td><td>评估器可以进化,但要有一个不进化的锚</td></tr>
+<tr><td><b>Reward hacking</b></td><td>已经编目了 13 种模式;分数涨,真实质量不涨</td><td>独立验证器 + 泄漏审计 + 对抗审计</td></tr>
+<tr><td><b>测试时扩展</b></td><td>预算一收紧,租来的分就消失</td><td>Delta Attribution 三分账</td></tr>
+</table></div></div>
+<div class="blk rv"><h3>落地顺序:不跳级</h3>
+<div class="flowx f3 rv">
+<div class="st"><div class="n">1</div><b>先建评估</b><p>golden set + 评估器。这是自进化最贵、也最值钱的前置资产(AgentCore Evaluations)</p></div>
+<div class="st"><div class="n">2</div><b>接上可观测</b><p>生产轨迹和在线评估分,作为进化信号(AgentCore Observability)</p></div>
+<div class="st gate"><div class="n">3</div><b>再做进化</b><p>离线进化 + 门禁 + 人工审批后发布,可回滚(AgentCore Optimization)</p></div>
+</div></div></section><section class="chapter" id="c7"><div class="chead rv"><span class="big">07</span><div><span class="cn">CHAPTER 07</span><h2>总结:变的是对象和信号,不变的是节奏</h2><span class="tchip">⏱ 21:30–25:00</span></div></div><div class="key rv"><span class="kl">本章要点</span><ul><li>今天看到的五个例子,五步都一样;不一样的只是「改什么」和「信号从哪来」。</li><li>三条带走:<b>① 先从最好验证的地方开始;② 每个涨分都拆成租来 / 借来 / 挣来;③ 先建评估,再谈进化</b>。</li></ul></div>
+<div class="blk rv"><h3>五个例子放在一起</h3>
+<div class="tw"><table class="rs-t"><tr><th></th><th>改什么</th><th>信号</th><th>门(Verify)</th></tr>
+<tr><td><b>autoresearch</b></td><td>train.py</td><td>val_bpb</td><td>指标固定,只许改一个文件</td></tr>
+<tr><td><b>Play</b></td><td>搜索 harness 代码</td><td>NDCG@5</td><td>hold-out + typo + 代码惩罚</td></tr>
+<tr><td><b>推理集群</b></td><td>集群配置</td><td>吞吐、延迟、稳定性</td><td>金丝雀 + 风险清单</td></tr>
+<tr><td><b>Harvey</b></td><td>agent harness</td><td>rubric 判分</td><td>泄漏审计 + 成本罚 + 门槛</td></tr>
+<tr><td><b>软件工厂</b></td><td>软件(下一步:工厂本身)</td><td>验收测试</td><td>规格门禁 + 独立判分</td></tr>
+</table></div></div>
+<div class="blk rv"><h3>留给讨论的问题</h3>
+<ul>
+<li>你手上哪个场景的「验」最可信?能不能先做一个两周的最小闭环?</li>
+<li>Harvey 的跨模型结论:补上「Fable 5 + 原始 harness」基线后还成立吗?</li>
+<li>软件工厂要变成「进化工厂本身」,评测成本怎么压下来(每打一次分都要做完一个真项目)?</li>
+<li>想深入的话,按第 03 章的读书顺序,从哪一篇开始?</li>
+</ul></div></section>
+<footer class="gfoot">个人研究整理,不代表任何雇主立场。论文作者与机构按 arXiv 核对;实验数字来自我们自己的运行记录;Argus 细节见 <a href="../argus-intro/">Argus 介绍</a>。</footer>
+</main></div>
+<div class="tip" id="tip"></div>
+<script>
+const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('.rv').forEach(el=>rm?el.classList.add('in'):io.observe(el));
+document.querySelectorAll('.kn[data-count]').forEach(el=>{const raw=el.dataset.count;if(!/^\d+$/.test(raw)||rm)return;const end=+raw;let t0=null;const step=ts=>{t0=t0||ts;const p=Math.min(1,(ts-t0)/1200);el.textContent=Math.round(end*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step)};el.textContent='0';setTimeout(()=>requestAnimationFrame(step),300)});
+const tip=document.getElementById('tip');
+document.querySelectorAll('[data-tip]').forEach(b=>{b.addEventListener('mousemove',e=>{tip.textContent=b.dataset.tip;tip.style.opacity=1;tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-10)+'px'});b.addEventListener('mouseleave',()=>tip.style.opacity=0)});
+const links=[...document.querySelectorAll('.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io2=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-20% 0px -70% 0px'});
+secs.forEach(s=>s&&io2.observe(s));
+</script><a data-cur="zh" data-to="en" href="../../en/rsi/talk/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body></html>
