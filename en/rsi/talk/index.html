@@ -327,7 +327,7 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <main class="g">
 <div class="legend2 rv"><mark>Highlight</mark> Key conclusions · Each chapter title shows its time slot in the talk · Hover over charts to see values</div>
 <section class="chapter" id="c0"><div class="chead rv"><span class="big">00</span><div><span class="cn">CHAPTER 00</span><h2> What this talk covers</h2><span class="tchip">⏱ 0:00–0:30</span></div></div><div class="blk rv"><div class="ag rv"><a class="agi" href="#cw"><span class="agn">01</span><span class="agt"> WHY RSI: Why let AI improve itself</span><span class="agm">0:30–1:30</span></a><a class="agi" href="#c1"><span class="agn">02</span><span class="agt"> The landscape of the field in 2026</span><span class="agm">1:30–2:30</span></a><a class="agi" href="#c2"><span class="agn">03</span><span class="agt"> Method: from autoresearch to the Darwin Gödel Machine</span><span class="agm">2:30–5:00</span></a><a class="agi dm" href="#c4"><span class="agn">04</span><span class="agt"> Demo 1 · Play: running through DGM's evolutionary logic</span><span class="agm">5:00–7:30</span></a><a class="agi" href="#c2b"><span class="agn">05</span><span class="agt"> Methods (cont.): AlphaEvolve, and how to count the gains</span><span class="agm">7:30–9:00</span></a><a class="agi" href="#c3"><span class="agn">06</span><span class="agt"> People and papers: three threads, who went deep, and what to read first</span><span class="agm">9:00–10:30</span></a><a class="agi" href="#c5"><span class="agn">07</span><span class="agt"> Three scenarios: the more trustworthy the "verify" step, the sooner it ships</span><span class="agm">10:30–18:30</span></a><a class="agi dm sub" href="#demo2"><span class="agn">▶</span><span class="agt">Demo 2 · Argus Replay: 128 Agents Writing Software Together</span><span class="agm">16:30–18:30</span></a><a class="agi" href="#c6"><span class="agn">08</span><span class="agt"> Limitations and adoption: get “Verify” right first</span><span class="agm">18:30–21:30</span></a><a class="agi" href="#c7"><span class="agn">09</span><span class="agt"> Summary: all alike — what changes in RSI, and what doesn't</span><span class="agm">21:30–25:00</span></a></div><p class="dim small"> 25 minutes in total; the last chapter includes Q&amp;A. Yellow = live demo. Click any row to jump to that chapter.</p></div></section><section class="chapter" id="cw"><div class="chead rv"><span class="big">01</span><div><span class="cn">CHAPTER 01</span><h2> WHY RSI: Why let AI improve itself</h2><span class="tchip">⏱ 0:30–1:30</span></div></div>
-<div class="slide rv"><div class="sk">WHY RSI · 1 / 3</div>
+<div class="slide rv"><div class="sk">WHY RSI · 1 / 2</div>
 <h3 class="st">In more and more scenarios,<span class="hl">Humans have become the bottleneck in model improvement</span></h3>
 <div class="sg2">
 <div class="sl"><p class="sb">deciding what to change, preparing data and environments, checking whether each change helps — <b>every step needs humans coordinating back and forth outside the system</b>.</p>
@@ -339,21 +339,7 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="stile"><div class="sn">4–15×</div><div class="su">Token usage</div><div class="sd"> Agent / multi-agent vs. regular chat</div></div>
 </div></div>
 <div class="sf">Source:<a href="../paper/lastai/">The Last AI Built by Humans</a> Public reports cited in §1.1</div></div>
-<div class="slide rv"><div class="sk">WHY RSI · 2 / 3</div>
-<h3 class="st">RSI: turns part of the "coordination"<span class="hl">into the system's own capabilities</span></h3>
-<div class="sflow">
-<div class="sfi"><div class="sfn">1</div><b> find its own weaknesses</b></div><div class="sfa">→</div>
-<div class="sfi"><div class="sfn">2</div><b> make and verify improvements</b></div><div class="sfa">→</div>
-<div class="sfi hot"><div class="sfn">3</div><b> use new capabilities to improve "the process of improvement"</b></div>
-</div>
-<div class="sback">↺ Improvements are kept and carried into the next round</div>
-<div class="s3">
-<div><b>autonomous</b><span> Humans hand off more and more: from carrying out human-defined updates to finding its own weaknesses, proposing changes, and verifying them</span></div>
-<div><b>Efficiency</b><span> The same data, compute, and human review yield more verified improvements</span></div>
-<div><b>Innovation</b><span> searches beyond human-prescribed methods and carries findings into later rounds</span></div>
-</div>
-<div class="sf">Source: definition from The Last AI Built by Humans §1.2</div></div>
-<div class="slide rv"><div class="sk">WHY RSI · 3 / 3</div>
+<div class="slide rv"><div class="sk">WHY RSI · 2 / 2</div>
 <h3 class="st">Conventional approaches change "this result",<span class="hl">RSI changes "how future improvements are made"</span></h3>
 <div class="scmp">
 <div class="sc2"><div class="sck2">Training the base model · A-Evolve-Training</div>
