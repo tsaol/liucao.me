@@ -2969,6 +2969,8 @@
 "zh2en:Demo 1 · Play:亲眼看一圈循环": "Demo 1 · Play: watch one loop live",
 "zh2en:Demo 1 · Play:把 DGM 的进化逻辑跑一遍": "Demo 1 · Play: running through DGM's evolutionary logic",
 "zh2en:Demo 1 · 达尔文哥德尔机,再看 Play 的进化逻辑": "Demo 1 · Darwin Gödel Machine, then Play's evolution logic",
+"zh2en:Demo 2 · Argus 回放:128 个 agent 一起写软件": "Demo 2 · Argus Replay: 128 Agents Writing Software Together",
+"zh2en:Demo 2 · Argus 回放:128 个 agent 一起写软件(限时 2 分钟)": "Demo 2 · Argus Replay: 128 Agents Writing Software Together (2-Minute Time Limit)",
 "zh2en:Demo 2 · 回放(限时 2 分钟)": "Demo 2 · Replay (2-minute limit)",
 "zh2en:Demo Tier H 那 4 道 functional-intent 题——「给要坐长途飞机的人的安静礼物 → 降噪耳机」「14 寸 MacBook 在飞机上充电 → USB-C 65W」——**灵感直接来自 BRIGHT 的 reasoning-intensive 设计**。query 里完全没有「headphones」「USB-C」这种关键词，用户说的是场景和功能诉求，需要一层推理才能落到具体商品。BRIGHT 已经证明这类题会把所有 BM25 变体和多数 embedder 打到 20 分以下，这正是我们 demo 想在电商检索场景里复现和攻克的核心难题。": "The 4 functional-intent questions in Demo Tier H (\"a quiet gift for someone taking a long flight → noise-canceling headphones\", \"charging a 14-inch MacBook on a plane → USB-C 65W\") **were directly inspired by BRIGHT's reasoning-intensive design**. The queries contain no keywords like \"headphones\" or \"USB-C\". Users describe scenarios and functional needs, which take a layer of reasoning to map to specific products. BRIGHT has already shown that questions like these push all BM25 variants and most embedders below 20 points, and that is exactly the core challenge our demo aims to reproduce and solve for e-commerce retrieval.",
 "zh2en:Demo 介绍页": "Demo overview page",
