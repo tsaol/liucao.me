@@ -231,7 +231,6 @@ figure.ch .dot{transform-origin:center;transform-box:fill-box}
 <div class="arp"><b>No human</b><span> About 12 experiments per hour · about 100 overnight · never stops to ask a human</span></div>
 <div class="arp"><b>The metric is the guardrail</b><span> Fixed val_bpb + only one file can be edited, so no cheating</span></div>
 </div></div>
-<div class="arw"><b>Why it's worth a look:</b>Make a change → test it → keep it if it's better, revert if not. This is the minimal skeleton of every self-improving system, and it's where the title of this talk, "From AutoResearch to Agent Self-Improvement," comes from.</div>
 <div class="arsrc">Figure: left, a diagram of the loop (based on the repo's documentation); right, the repo's own progress.png. The repo README lists the MIT License; star count as of 2026-11-19.</div>
 </div>
 <div class="loop rv"><div class="lpc">autoresearch · the five steps</div><div class="lps"><div class="lp"><div class="lpv">Run<i> Run</i></div><div class="lpt"> Train for 5 minutes</div></div><div class="lp"><div class="lpv">Observe<i> See</i></div><div class="lpt"> Watch val_bpb</div></div><div class="lp"><div class="lpv">Propose<i> Propose</i></div><div class="lpt"> Edit train.py (the only file allowed to change)</div></div><div class="lp lv"><div class="lpv">Verify<i> Verify</i></div><div class="lpt"> Did val_bpb go down? The metric is fixed, so there's no cheating</div></div><div class="lp"><div class="lpv">Commit<i> Commit</i></div><div class="lpt"> git commit or git reset</div></div></div></div>
