@@ -7318,6 +7318,7 @@
 "zh2en:场景三 · 推荐:小红书 —— 用户的反应,反过来改进 agent": "Scenario 3 · Recommendation: Xiaohongshu — user reactions feed back to improve the agent",
 "zh2en:场景二 · Agent": "Scenario 2 · Agent",
 "zh2en:场景二 · Agent:Harvey 法律 agent 5 轮自进化": "Scenario 2 · Agent: 5 rounds of self-evolution for the Harvey legal agent",
+"zh2en:场景二 · Agent:飞书 —— 为可靠的企业级 RSI 构建数据基础": "Scenario 2 · Agent: Feishu — Building the Data Foundation for Reliable Enterprise-Grade RSI",
 "zh2en:场景二 · Agent:飞书 —— 先把数据底座和评估做可靠,再谈自我改进": "Scenario 2 · Agent: Feishu — Make the data foundation and evaluation reliable first, then talk about self-improvement",
 "zh2en:场景二 · Software": "Scenario 2 · Software",
 "zh2en:场景二 · Software:让一群 agent 自己写软件": "Scenario 2 · Software: letting a swarm of agents write software on their own",
