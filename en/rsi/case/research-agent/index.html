@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Case study: Xiaohongshu × AWS AI Lab's recommendation model Research Agent · RSI resource pack</title>
+<style>:root{--bg:#0b1016;--bg2:#111821;--bg3:#16202c;--line:#223041;--ink:#e8edf3;--ink2:#b7c2cf;--ink3:#7f8da0;--amb:#ffb020;--amb2:#ff8a3c;--cy:#4cc2ff;--ok:#38d39f;--mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:62px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;font-size:16.5px;line-height:1.75}
+a{color:var(--cy);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.45)}a:hover{border-bottom-style:solid}
+b,strong{color:#fff}
+/* top bar */
+.gtop{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:18px;padding:10px 24px;background:rgba(11,16,22,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.gtop a{border:none;color:var(--ink2);font-size:14px}.gtop .gt{flex:1;text-align:center;font-size:14px;color:var(--ink2);letter-spacing:1px}.gtop .gt b{color:var(--amb);letter-spacing:3px}
+.gtop .gl{border:1px solid rgba(255,176,32,.5);border-radius:999px;padding:3px 12px;color:var(--amb)}
+/* hero */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+  background:radial-gradient(900px 420px at 18% 10%,rgba(255,138,60,.20),transparent 60%),radial-gradient(800px 400px at 85% 30%,rgba(76,194,255,.16),transparent 60%),var(--bg)}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(76,194,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(76,194,255,.07) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 30%,#000 30%,transparent 75%)}
+.hin{position:relative;max-width:1180px;margin:0 auto;padding:64px 28px 54px}
+.eye{position:absolute;right:28px;top:46px;width:200px;height:200px;filter:drop-shadow(0 0 28px rgba(255,138,60,.45))}
+.eye .ring{fill:none;stroke:rgba(255,176,32,.35);stroke-width:1.2;stroke-dasharray:3 7;transform-origin:60px 60px}
+.eye .r1{animation:spin 26s linear infinite}.eye .r2{stroke:rgba(76,194,255,.35);animation:spin 18s linear infinite reverse}
+.eye .lid{fill:rgba(255,255,255,.04);stroke:#ffb020;stroke-width:2}
+.eye .iris{animation:look 7s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes look{0%,100%{transform:translate(0,0)}20%{transform:translate(-9px,-2px)}45%{transform:translate(8px,2px)}70%{transform:translate(2px,-3px)}}
+.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:3px;color:var(--amb)}
+.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.15;margin:14px 0 14px;letter-spacing:-.5px;max-width:860px}
+.grad{background:linear-gradient(90deg,#ffd27a,#ff8a3c 45%,#4cc2ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:18px;color:var(--ink2);max-width:820px}.hero .sub b{color:var(--amb)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:30px 0 26px;max-width:980px}
+.kpi{background:linear-gradient(180deg,rgba(22,32,44,.9),rgba(17,24,33,.9));border:1px solid var(--line);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;height:2px;width:100%;background:linear-gradient(90deg,var(--amb2),transparent)}
+.kn{font-family:var(--mono);font-size:clamp(26px,3.4vw,40px);font-weight:700;color:#fff;line-height:1.1;text-shadow:0 0 22px rgba(255,176,32,.35)}
+.kl2{font-size:13.5px;color:var(--ink3);margin-top:6px}
+.hcta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;border:none;background:linear-gradient(90deg,var(--amb),var(--amb2));color:#1a0d00!important;font-weight:800;border-radius:999px;padding:9px 20px;font-size:14.5px;box-shadow:0 6px 24px rgba(255,138,60,.35)}
+.btn.ghost{background:transparent;color:var(--ink)!important;border:1px solid var(--line);box-shadow:none}
+/* layout */
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:34px;max-width:1380px;margin:0 auto;padding:0 24px}
+.toc{position:sticky;top:60px;align-self:start;max-height:calc(100vh - 70px);overflow:auto;padding:26px 0 30px}
+.toc .tt{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;color:var(--ink3);margin:0 0 10px 8px}
+.toc a{display:flex;gap:9px;align-items:baseline;border:none;border-left:2px solid transparent;color:var(--ink3);font-size:13.5px;line-height:1.45;padding:6px 10px}
+.toc a .n{font-family:var(--mono);font-size:11px;color:#4b5a6d}
+.toc a:hover{color:var(--ink)}
+.toc a.on{color:#fff;border-left-color:var(--amb);background:linear-gradient(90deg,rgba(255,176,32,.12),transparent)}.toc a.on .n{color:var(--amb)}
+main.g{min-width:0;padding:30px 0 70px;overflow-wrap:anywhere}
+/* chapters */
+.chapter{padding:54px 0 16px;border-bottom:1px solid var(--line)}
+.chead{display:flex;align-items:center;gap:18px;margin-bottom:14px}
+.chead .big{font-family:var(--mono);font-size:64px;font-weight:800;line-height:1;background:linear-gradient(180deg,rgba(255,176,32,.9),rgba(255,138,60,.15));-webkit-background-clip:text;background-clip:text;color:transparent}
+.chead .cn{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;color:var(--ink3)}
+.chead h2{font-size:28px;line-height:1.3;margin:4px 0 0;color:#fff}
+.blk{margin:16px 0 8px}
+.blk>h3,.blk h3{font-size:19px;color:#fff;margin:26px 0 12px;display:flex;align-items:center;gap:10px}
+.blk h3::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--amb);box-shadow:0 0 10px var(--amb)}
+p{margin:0 0 .9em;color:var(--ink2)}ul,ol{margin:0 0 1em;padding-left:1.35em;color:var(--ink2)}li{margin:.35em 0}
+.dim{color:var(--ink3)}.small{font-size:13.5px}
+code{font-family:var(--mono);font-size:.85em;background:var(--bg3);border:1px solid var(--line);border-radius:5px;padding:0 .35em;color:#ffd27a}
+mark{background:linear-gradient(transparent 55%,rgba(255,176,32,.38) 55%);color:#fff;padding:0 .1em}
+.lead{font-size:17px;padding:1em 1.2em;border:1px solid rgba(255,176,32,.35);border-left:4px solid var(--amb);background:linear-gradient(90deg,rgba(255,176,32,.10),rgba(17,24,33,.6));border-radius:0 12px 12px 0;margin:.5em 0 1em;color:var(--ink)}
+.lead b{color:var(--amb)}
+.note{font-size:14px;color:var(--ink2);background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:.7em 1em;margin:1em 0}
+.legend2{font-size:13px;color:var(--ink3);margin:.4em 0 0}
+.kbox{display:inline-block;background:var(--amb);color:#1a0d00;font-size:11.5px;font-weight:800;border-radius:4px;padding:0 6px}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.5px;border:1px solid var(--line);border-radius:999px;padding:0 .6em;color:var(--ink3);margin-left:.3em;white-space:nowrap;line-height:1.7;vertical-align:2px}
+.tag.ok{color:var(--ok);border-color:rgba(56,211,159,.5);background:rgba(56,211,159,.08)}
+.tag.top{color:var(--amb);border-color:rgba(255,176,32,.5);background:rgba(255,176,32,.08)}
+.key{background:linear-gradient(135deg,rgba(255,176,32,.10),rgba(76,194,255,.05));border:1px solid rgba(255,176,32,.35);border-radius:14px;padding:.9em 1.2em;margin:.4em 0 1.2em;box-shadow:0 0 0 1px rgba(255,176,32,.05),0 10px 30px rgba(0,0,0,.25)}
+.key .kl{display:inline-block;font-size:11.5px;font-weight:800;color:#1a0d00;background:var(--amb);border-radius:4px;padding:0 .5em}
+.key ul{margin:.5em 0 0;color:var(--ink)}
+.tw{overflow-x:auto}
+table.rs-t{width:100%;border-collapse:separate;border-spacing:0;font-size:14px;margin:.6em 0 1.1em;background:var(--bg2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--line);padding:.6em .75em;text-align:left;vertical-align:top;color:var(--ink2)}
+table.rs-t th{background:var(--bg3);color:var(--ink3);font-weight:600;font-size:12.5px;letter-spacing:.5px}
+table.rs-t tr:last-child td{border-bottom:none}
+table.rs-t td b{color:var(--amb)}
+pre.rs-f{font-family:var(--mono);font-size:13.5px;background:#0a0f15;border:1px solid var(--line);border-radius:12px;padding:1em 1.2em;overflow-x:auto;line-height:1.75;color:#9fe3c6}
+/* cards & flow */
+.cards2,.cards3,.cards4{display:grid;gap:14px;margin:.9em 0 1.3em}
+.cards2{grid-template-columns:repeat(2,minmax(0,1fr))}.cards3{grid-template-columns:repeat(3,minmax(0,1fr))}.cards4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.cardx{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:1em 1.1em;transition:transform .25s,border-color .25s,box-shadow .25s}
+.cardx:hover{transform:translateY(-3px);border-color:rgba(255,176,32,.5);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.cardx.plan{border-style:dashed;border-color:rgba(76,194,255,.45)}
+.cardx .k{font-family:var(--mono);font-size:11.5px;letter-spacing:2px;color:var(--amb)}
+.cardx .t{font-size:17px;font-weight:700;margin:.2em 0 .3em;color:#fff}.cardx .d{font-size:14px;color:var(--ink2);line-height:1.6}
+.flowx{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:.9em 0 1.3em}
+.flowx .st{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:.8em .85em;position:relative}
+.flowx .st.gate{border-color:rgba(255,176,32,.65);box-shadow:0 0 24px rgba(255,176,32,.15) inset}
+.flowx .st .n{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--amb),var(--amb2));color:#1a0d00;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:8px;font-family:var(--mono)}
+.flowx .st b{display:block;font-size:15px;margin-bottom:4px}.flowx .st p{font-size:13px;line-height:1.55;margin:0}
+.flowx .st:not(:last-child)::after{content:"";position:absolute;right:-12px;top:50%;width:12px;height:2px;background:linear-gradient(90deg,var(--amb),transparent);box-shadow:0 0 8px var(--amb)}
+/* charts */
+.charts2,.charts4{display:grid;gap:14px;margin:.9em 0 1.4em}
+.charts2{grid-template-columns:repeat(2,minmax(0,1fr))}.charts4{grid-template-columns:repeat(4,minmax(0,1fr))}
+figure.ch{margin:0;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 12px 10px}
+figure.ch figcaption{font-size:13.5px;font-weight:700;color:#fff;margin:0 0 2px 4px}
+figure.ch figcaption span{font-weight:400;color:var(--ink3);font-size:12px;margin-left:6px}
+figure.ch svg{width:100%;height:auto;display:block}
+figure.ch .grid{stroke:#1d2a39;stroke-width:1}figure.ch .axis{stroke:#3a4a5e;stroke-width:1}
+figure.ch .bar{cursor:pointer;transition:opacity .2s,filter .2s;transform-box:fill-box;transform-origin:bottom}
+figure.ch .bar:hover{filter:brightness(1.25) drop-shadow(0 0 6px rgba(255,255,255,.25))}
+figure.ch .val{fill:#e8edf3;font-size:12.5px;font-weight:700;text-anchor:middle;font-family:var(--mono)}
+figure.ch .lab{fill:#9aa8b8;font-size:12px;text-anchor:middle}
+figure.ch .cnote{font-size:12px;color:var(--ink3);margin:2px 4px 0}
+.rv.in figure.ch .bar,figure.ch.rv.in .bar{animation:grow .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.lgd{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--ink2);margin:.6em 0 0}
+.lgd i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.tip{position:fixed;z-index:50;pointer-events:none;opacity:0;transition:opacity .12s;background:rgba(10,15,21,.95);border:1px solid rgba(255,176,32,.5);color:#fff;font-size:13px;padding:5px 10px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.4);font-family:var(--mono)}
+/* reveal */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}.rv.in{opacity:1;transform:none}
+.gfoot{font-size:12.5px;color:var(--ink3);margin-top:30px}
+.dl,.dlb{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+@media (max-width:1100px){.eye{display:none}.charts4{grid-template-columns:repeat(2,minmax(0,1fr))}.flowx{grid-template-columns:repeat(3,minmax(0,1fr))}.flowx .st::after{display:none}}
+@media (max-width:1000px){.layout{grid-template-columns:minmax(0,1fr)}.toc{display:none}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cards3,.cards4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.charts2,.charts4,.cards2,.cards3,.cards4,.flowx{grid-template-columns:1fr}.chead .big{font-size:44px}table.rs-t{display:block;overflow-x:auto}}
+@media print{.toc,.gtop,.eye,.hgrid{display:none}.rv{opacity:1;transform:none}body{background:#fff;color:#111}}
+.sp{--sp-bg1:#16202c;--sp-bg2:#111821;--sp-line:#223041;--sp-ink:#e8edf3;--sp-ink2:#b7c2cf;--sp-ink3:#7f8da0;--sp-acc:#ffb020;--sp-link:#4cc2ff;--sp-on-acc:#1a0d00;--sp-head:#fff;background:linear-gradient(180deg,var(--sp-bg1),var(--sp-bg2));border:1px solid var(--sp-line);border-radius:16px;padding:16px 18px;margin:.6em 0 1em;color:var(--sp-ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;line-height:1.6;box-sizing:border-box;overflow-wrap:anywhere}
+.sp *{box-sizing:border-box}
+.sp a{color:var(--sp-link);text-decoration:none;border-bottom:1px dotted currentColor}
+.sp-h{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+.sp-ava{width:54px;height:54px;border-radius:50%;border:2px solid var(--sp-acc);box-shadow:0 0 16px color-mix(in srgb,var(--sp-acc) 30%,transparent);flex:none;object-fit:cover}
+.sp-n{font-weight:700;color:var(--sp-head);font-size:16px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.sp-n a{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;font-weight:400}
+.sp-badge{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:12px;color:var(--sp-on-acc);background:var(--sp-acc);border-radius:999px;padding:1px 10px;font-weight:800}
+.sp-q{font-size:13.5px;color:var(--sp-ink3);font-style:italic;margin-top:2px}
+.sp-g{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.sp-g.one,.sp-g.stack{grid-template-columns:minmax(0,1fr)}
+.sp-g.stack .sp-r{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}
+.sp a.sp-z{border:none;display:block;cursor:zoom-in}
+.sp figure{margin:0}
+.sp figure img{display:block;width:100%;height:auto;border-radius:12px;background:#fff;border:1px solid var(--sp-line)}
+.sp figcaption{font-size:12.5px;color:var(--sp-ink3);margin-top:4px}
+.sp-r{display:flex;flex-direction:column;gap:8px}
+.sp-p{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;font-size:13.5px;border-top:1px dashed var(--sp-line);padding-top:7px}
+.sp-p b{color:var(--sp-acc)}.sp-p span{color:var(--sp-ink2)}
+.sp-src{font-size:12px;color:var(--sp-ink3);margin-top:10px}
+.sp-l{display:flex;flex-direction:column;gap:8px}
+.sp-ct{font-size:13px;font-weight:700;color:var(--sp-acc);margin-top:4px}
+.sp-cs{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.sp-c{border:1px solid var(--sp-line);border-radius:10px;padding:6px 9px;background:color-mix(in srgb,var(--sp-bg2) 70%,transparent)}
+.sp-c b{display:block;color:var(--sp-head);font-size:13.5px}.sp-c span{font-size:12px;color:var(--sp-ink2);line-height:1.45}
+.sp-cn{font-size:12.5px;color:var(--sp-ink2)}.sp-cn b{color:var(--sp-acc)}
+@media (max-width:900px){.sp-g{grid-template-columns:minmax(0,1fr)}.sp-g.stack .sp-r{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:480px){.sp-p{grid-template-columns:minmax(0,1fr);gap:2px}}
+.tchip{display:inline-block;font-family:var(--mono);font-size:12px;color:var(--amb);border:1px solid rgba(255,176,32,.45);border-radius:999px;padding:1px 10px;margin-top:6px}
+.loop{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:.9em 0 1.2em}
+.lpc{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--ink3);margin-bottom:8px}
+.lps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.lp{background:#0d141c;border:1px solid var(--line);border-radius:10px;padding:8px 10px;position:relative}
+.lp.lv{border-color:rgba(255,176,32,.7);box-shadow:0 0 18px rgba(255,176,32,.14) inset}
+.lp:not(:last-child)::after{content:"→";position:absolute;right:-10px;top:8px;color:var(--amb);font-size:13px}
+.lpv{font-family:var(--mono);font-size:13px;font-weight:800;color:#fff}.lpv i{font-style:normal;color:var(--amb);margin-left:6px;font-size:12px}
+.lpt{font-size:13px;color:var(--ink2);line-height:1.55;margin-top:3px}
+.lpg{margin-top:10px;font-size:14px;color:var(--ink2);border-top:1px dashed var(--line);padding-top:8px}
+.strip{display:flex;gap:4px;margin:.6em 0 .3em}
+.sg{min-width:0;background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:8px 8px;cursor:default;overflow:hidden}
+.sg b{display:block;font-size:12.5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sg span{font-family:var(--mono);font-size:11.5px;color:var(--ink3)}
+.sg.dm{background:rgba(255,176,32,.16);border-color:rgba(255,176,32,.6)}.sg.bf{border-style:dashed;background:transparent}
+.pyr{display:flex;flex-direction:column;align-items:center;gap:6px;margin:.8em 0 1em}
+.py{border:1px solid var(--line);border-radius:10px;padding:8px 14px;background:var(--bg2);text-align:center}
+.py b{display:block;color:#fff;font-size:14.5px}.py span{font-size:13px;color:var(--ink2)}
+.p5{width:52%;border-color:rgba(217,89,38,.6)}.p4{width:64%}.p3{width:76%}.p2{width:88%;border-color:rgba(56,211,159,.55)}.p1{width:100%}
+.flowx.f4{grid-template-columns:repeat(4,minmax(0,1fr))}.flowx.f3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.flowx .st .n{display:inline-flex;width:auto;min-width:28px;padding:0 8px;border-radius:999px}
+.demo{border:1px solid rgba(255,176,32,.55);border-radius:14px;padding:14px 18px;margin:1em 0;background:linear-gradient(135deg,rgba(255,176,32,.10),rgba(76,194,255,.04))}
+.demo .dk{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;color:var(--amb)}.demo .dt{font-size:17px;font-weight:700;color:#fff;margin:.2em 0 .3em}
+.demo ul{margin:.3em 0 .8em}
+.cardx.pp .k{margin:.1em 0 .35em}.cardx.pp .t{margin:0}
+.cardx .rd{font-size:13px;color:var(--ink3);margin-top:.5em;border-top:1px dashed var(--line);padding-top:.4em}
+figure.ch .hb{transform-origin:left}
+.rv.in figure.ch .hb,figure.ch.rv.in .hb{animation:growx .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes growx{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+figure.ch .dot{transform-origin:center;transform-box:fill-box}
+.rv.in figure.ch .dot,figure.ch.rv.in .dot{animation:pop .6s ease both}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.charts2>figure.ch,.charts2>.cardx{min-width:0}
+.cs1{border:1px solid rgba(255,176,32,.45);border-radius:14px;padding:14px 16px;background:rgba(10,15,21,.7)}
+.cs1k{font-family:var(--mono);font-size:12px;color:var(--amb);letter-spacing:1px}.cs1t{font-size:17px;font-weight:700;color:#fff;margin:.2em 0 .5em}
+.cs1o{margin:0 0 .6em;padding-left:1.3em;font-size:13.5px;color:var(--ink2)}.cs1o li{margin:.3em 0}.cs1o b{color:#fff}
+.cs1r{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--ink3);border-top:1px dashed var(--line);padding-top:7px}.cs1r b{color:var(--ok);font-family:var(--mono)}
+.cs1q{margin-top:8px;font-size:13.5px;color:var(--ink)}.cs1q b{color:var(--amb)}
+.cl3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;flex:1}
+.clv{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(10,15,21,.6);border-top:3px solid #4cc2ff;display:flex;flex-direction:column}
+.clv.m{border-top-color:#7fb4ff}.clv.a{border-top-color:#ffb020}
+.clk{font-family:var(--mono);font-size:12.5px;letter-spacing:1.5px;color:var(--amb)}.clt{font-size:17px;font-weight:700;color:#fff;margin:.2em 0 .5em}
+.clv p{font-size:14px;line-height:1.6;color:var(--ink2);margin:0 0 .7em}
+.clr{margin-top:auto;font-size:13.5px;color:var(--ink2);border-top:1px dashed var(--line);padding-top:7px}.clr b{color:var(--amb);margin-right:6px}
+.s3.s4{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 22px}
+@media (max-width:900px){.cl3,.s3.s4{grid-template-columns:minmax(0,1fr)}}
+.slide{position:relative;background:radial-gradient(700px 300px at 85% 0%,rgba(76,194,255,.10),transparent 60%),radial-gradient(600px 300px at 0% 100%,rgba(255,138,60,.10),transparent 60%),linear-gradient(180deg,#121a24,#0d131b);border:1px solid var(--line);border-radius:18px;padding:26px 30px 18px;margin:18px 0 22px;min-height:440px;display:flex;flex-direction:column;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.sk{font-family:var(--mono);font-size:12px;letter-spacing:3px;color:var(--amb)}
+.st{font-size:clamp(22px,2.6vw,32px)!important;line-height:1.3;color:#fff;margin:10px 0 22px!important;display:block!important}
+.st::before{display:none!important}.st .hl{background:linear-gradient(90deg,#ffd27a,#ff8a3c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sg2{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:26px;align-items:center;flex:1}
+.sb{font-size:19px;line-height:1.6;color:var(--ink)}.sb b{color:var(--amb)}.sb2{font-size:17px;color:#fff;font-weight:700;border-left:3px solid var(--amb);padding-left:10px}
+.sp3{font-size:16px;color:var(--ink2)}.sp3 li{margin:.4em 0}
+.sr{display:flex;flex-direction:column;gap:10px}
+.stile{border:1px solid var(--line);border-radius:14px;padding:12px 16px;background:rgba(10,15,21,.6);display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:baseline}
+.sn{font-family:var(--mono);font-size:34px;font-weight:800;color:#fff;text-shadow:0 0 18px rgba(255,176,32,.35);grid-row:span 2}
+.su{font-size:15px;color:var(--amb);font-weight:700}.sd{font-size:13px;color:var(--ink3)}
+.sf{margin-top:auto;padding-top:14px;font-size:12px;color:var(--ink3)}
+.sflow{display:flex;align-items:stretch;gap:10px;margin:8px 0 6px}
+.sfi{flex:1;border:1px solid var(--line);border-radius:14px;padding:16px;background:rgba(10,15,21,.6);text-align:center}
+.sfi b{display:block;font-size:18px;color:#fff;margin-top:6px}.sfi.hot{border-color:rgba(255,176,32,.7);box-shadow:0 0 26px rgba(255,176,32,.15) inset}
+.sfn{width:30px;height:30px;margin:0 auto;border-radius:50%;background:linear-gradient(135deg,var(--amb),var(--amb2));color:#1a0d00;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--mono)}
+.sfa{display:flex;align-items:center;font-size:26px;color:var(--amb)}
+.sback{text-align:center;font-family:var(--mono);color:var(--amb);font-size:14px;margin:4px 0 16px}
+.s3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.s3>div{border-top:2px solid var(--amb);padding-top:8px}.s3 b{display:block;font-size:17px;color:#fff}.s3 span{font-size:14px;color:var(--ink2)}
+.scmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;flex:1}
+.sc2{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(10,15,21,.6)}
+.sck2{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px}
+.row2{display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;font-size:14.5px;padding:6px 0;border-top:1px dashed var(--line)}
+.row2 i{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--ink3);padding-top:2px}.row2.r i{color:var(--amb)}.row2 span{color:var(--ink2)}.row2 b{color:var(--amb)}
+.big2{margin-top:10px;font-family:var(--mono);font-size:22px;font-weight:800;color:#fff}.big2 small{display:block;font-family:inherit;font-size:12.5px;font-weight:400;color:var(--ink3)}
+@media (max-width:900px){.slide{min-height:0;padding:20px}.sg2,.scmp,.s3{grid-template-columns:minmax(0,1fr)}.sflow{flex-direction:column}.sfa{justify-content:center;transform:rotate(90deg)}}
+#demo2{scroll-margin-top:70px}
+.rx{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:.8em 0 .4em}
+.rxi{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 14px;border-top:3px solid #38d39f}
+.rxi.r2{border-top-color:#9ccf5a}.rxi.r3{border-top-color:#ffb020}.rxi.r4{border-top-color:#d95926}
+.rxk{font-family:var(--mono);font-size:12px;color:var(--amb);letter-spacing:1px}.rxt{font-size:15.5px;font-weight:700;color:#fff;margin:.2em 0 .5em}
+.rxi p{font-size:13.5px;line-height:1.6;margin:0 0 .5em}.rxi p b{color:var(--amb)}
+@media (max-width:1100px){.rx{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:600px){.rx{grid-template-columns:minmax(0,1fr)}}
+.eyebrow2{font-family:var(--mono);font-size:12.5px;letter-spacing:2px;color:var(--amb);margin:24px 0 -14px}.eyebrow2 a{color:var(--amb);border-bottom:1px dotted rgba(255,176,32,.5)}
+.case5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:.6em 0 .4em}
+.c5{position:relative;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px}
+.c5.gate{border-color:rgba(255,176,32,.65);box-shadow:0 0 22px rgba(255,176,32,.12) inset}
+.c5:not(:last-child)::after{content:"→";position:absolute;right:-10px;top:14px;color:var(--amb);font-size:14px}
+.c5n{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--amb),var(--amb2));color:#1a0d00;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px;font-family:var(--mono);margin-bottom:6px}
+.c5>b{display:block;color:#fff;font-size:15px;margin-bottom:4px}.c5 p b{color:#fff}.c5 p{font-size:13.5px;line-height:1.6;margin:0}
+@media (max-width:1000px){.case5{grid-template-columns:repeat(2,minmax(0,1fr))}.c5::after{display:none}}
+@media (max-width:560px){.case5{grid-template-columns:minmax(0,1fr)}}
+.ag{display:flex;flex-direction:column;gap:8px;margin:.4em 0 .6em}
+.agi{display:grid;grid-template-columns:44px minmax(0,1fr) 110px;align-items:center;gap:12px;border:1px solid var(--line)!important;border-radius:12px;padding:10px 14px;background:linear-gradient(180deg,var(--bg3),var(--bg2));color:var(--ink)!important;transition:border-color .2s,transform .2s}
+.agi:hover{border-color:rgba(255,176,32,.6)!important;transform:translateX(3px)}
+.agi.dm{border-color:rgba(255,176,32,.55)!important;background:linear-gradient(90deg,rgba(255,176,32,.14),var(--bg2))}
+.agn{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--amb)}
+.agt{font-size:16px;color:#fff;font-weight:600}
+.agm{font-family:var(--mono);font-size:12.5px;color:var(--ink3);text-align:right}
+@media (max-width:640px){.agi{grid-template-columns:34px minmax(0,1fr)}.agm{grid-column:2;text-align:left}}
+.scs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:.6em 0 .4em}
+.sc{display:block;border:1px solid var(--line)!important;border-radius:16px;padding:14px 16px;background:linear-gradient(180deg,var(--bg3),var(--bg2));color:var(--ink)!important;transition:transform .25s,border-color .25s}
+.sc:hover{transform:translateY(-3px);border-color:rgba(255,176,32,.6)!important}
+.sck{font-family:var(--mono);font-size:12px;letter-spacing:1.5px;color:var(--amb)}
+.scn{font-family:var(--mono);font-size:38px;font-weight:800;color:#fff;line-height:1.15;margin-top:6px;text-shadow:0 0 22px rgba(255,176,32,.3)}
+.scl{font-size:13px;color:var(--ink3);margin-bottom:8px}
+.scr{display:grid;grid-template-columns:56px minmax(0,1fr);gap:8px;font-size:13.5px;border-top:1px dashed var(--line);padding:6px 0}
+.scr b{color:var(--amb)}.scr span{color:var(--ink2)}
+.sct{display:inline-block;margin-top:8px;font-size:12px;font-weight:800;color:#1a0d00;background:var(--amb);border-radius:999px;padding:1px 10px}
+.scbar{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink3);margin:6px 4px}
+.scbar i{flex:1;height:3px;border-radius:2px;background:linear-gradient(90deg,#38d39f,#ffb020,#d95926);position:relative}
+.scbar i::after{content:"";position:absolute;right:-2px;top:-4px;border-left:9px solid #d95926;border-top:5.5px solid transparent;border-bottom:5.5px solid transparent}
+@media (max-width:900px){.scs{grid-template-columns:minmax(0,1fr)}}
+.ringw{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:24px;align-items:center}
+.ring{margin:0}.ring svg{width:100%;height:auto;display:block}
+.ring .seg{stroke:#0b1016;stroke-width:2;cursor:pointer;transition:filter .2s}
+.ring .seg:hover{filter:brightness(1.35)}
+.ring .so{fill:#173149}.ring .sm{fill:#3a2a0c}
+.ring .rt{fill:#bfe6ff;font-size:17px;font-weight:700;text-anchor:middle}.ring .rs{fill:#8fb4cc;font-size:12.5px;text-anchor:middle}
+.ring .mt{fill:#ffd27a;font-size:14px;font-weight:700;text-anchor:middle}
+.ring .core{fill:#111821;stroke:#ffb020;stroke-width:2}
+.ring .vb{fill:#16202c;stroke:#ffb020;stroke-width:1.5}.ring .vb.vv{fill:#ffb020}
+.ring .vt{fill:#fff;font-size:17px;font-weight:800;text-anchor:middle}
+.ring .arr{fill:none;stroke:#ffb020;stroke-width:1.6}
+.ring .ct{fill:#fff;font-size:17px;font-weight:800;text-anchor:middle}.ring .cs{fill:#9aa8b8;font-size:12.5px;text-anchor:middle}
+.ring figcaption{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;font-size:13px;color:var(--ink2);margin-top:6px}
+.lg{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}.lg.lo{background:#173149;border:1px solid #4cc2ff}.lg.lm{background:#3a2a0c;border:1px solid #ffb020}.lg.lc{background:#111821;border:1px solid #ffb020}
+.ringt p{font-size:15px;color:var(--ink2)}.ringt b{color:#fff}
+@media (max-width:900px){.ringw{grid-template-columns:minmax(0,1fr)}}
+.sub4{font-size:16.5px;color:#fff;margin:1.2em 0 .4em}
+.tree{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:20px;align-items:center;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:1em 0}
+.tree .rs-img{margin:0}.tree .rs-img img{max-width:none}
+.trk{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--amb)}
+.trt h4{font-size:18px;color:#fff;margin:.2em 0 .6em}
+.trm{display:grid;grid-template-columns:84px minmax(0,1fr) 22px minmax(0,1.3fr);gap:8px;align-items:baseline;font-size:14px;border-top:1px dashed var(--line);padding:7px 0}
+.trm>b{color:var(--amb)}.trm>span{color:var(--ink2)}.trm>i{font-style:normal;color:var(--amb);text-align:center}
+.trm.diff>b,.trm.diff>i{color:var(--ok)}
+@media (max-width:820px){.tree{grid-template-columns:minmax(0,1fr)}.tree .rs-img img{max-width:340px;margin:0 auto}.trm{grid-template-columns:72px minmax(0,1fr)}.trm>i{display:none}.trm>span:last-child{grid-column:2}}
+.lanes{display:flex;flex-direction:column;gap:10px;margin:.8em 0 1.1em}
+.lane{display:grid;grid-template-columns:190px minmax(0,1fr);gap:12px;background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px}
+.lh{display:flex;flex-direction:column;gap:2px}.lh b{color:#fff;font-size:16px}.lh span{font-size:12.5px;color:var(--ink3)}
+.lk{display:inline-flex!important;width:30px;height:30px;border-radius:50%;align-items:center;justify-content:center;font-family:var(--mono);font-weight:800;color:#1a0d00!important;background:linear-gradient(135deg,var(--amb),var(--amb2));font-size:14px!important;margin-bottom:4px}
+.lt{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;position:relative}
+.ln{position:relative;background:#0d141c;border:1px solid var(--line);border-radius:10px;padding:7px 9px;min-width:0}
+.ln:not(:last-child)::after{content:"→";position:absolute;right:-9px;top:6px;color:var(--amb);font-size:12px}
+.ln.us{border-color:rgba(56,211,159,.6);box-shadow:0 0 16px rgba(56,211,159,.12) inset}
+.ly{display:block;font-family:var(--mono);font-size:11.5px;color:var(--amb)}.ln.us .ly{color:var(--ok)}
+.ln b{display:block;font-size:14px;color:#fff;margin:1px 0}.ln b a{color:#fff}
+.lw{display:block;font-size:12px;color:var(--ink3);line-height:1.45}.lw i{color:var(--ink);font-style:normal;border-bottom:1px dashed var(--amb)}
+@media (max-width:1000px){.lane{grid-template-columns:minmax(0,1fr)}.lt{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}.ln::after{display:none}}
+@media (max-width:480px){.lt{grid-template-columns:minmax(0,1fr)}}
+.eq{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr) 40px minmax(0,1fr);align-items:stretch;gap:6px;margin:1em 0 .4em}
+.eqi{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 14px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.eqi img{width:92px;height:92px;border-radius:50%;object-fit:cover;border:2px solid var(--amb);box-shadow:0 0 22px rgba(255,176,32,.28);filter:grayscale(1) contrast(1.05)}
+.eqi b{color:#fff;font-size:16px}.eqi span{font-size:13.5px;color:var(--ink2);line-height:1.55}
+.eqr{border-color:rgba(255,176,32,.6);box-shadow:0 0 30px rgba(255,176,32,.12) inset}
+.eqx{width:92px;height:92px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:800;font-size:24px;color:#1a0d00;background:linear-gradient(135deg,#ffd27a,#ff8a3c);box-shadow:0 0 26px rgba(255,138,60,.45)}
+.eqo{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:30px;font-weight:800;color:var(--amb)}
+@media (max-width:760px){.eq{grid-template-columns:minmax(0,1fr)}.eqo{height:26px}}
+.ar{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:.6em 0 1em}
+.arh{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+.ava{width:54px;height:54px;border-radius:50%;border:2px solid var(--amb);box-shadow:0 0 16px rgba(255,176,32,.3);flex:none}
+.arn{font-weight:700;color:#fff;font-size:16px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.arn .repo{font-family:var(--mono);font-size:12.5px;font-weight:400}
+.star{font-family:var(--mono);font-size:12px;color:#1a0d00;background:var(--amb);border-radius:999px;padding:1px 10px;font-weight:800}
+.arq{font-size:13.5px;color:var(--ink3);font-style:italic;margin-top:2px}
+.arg{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.arg .rs-img{margin:0}.arg .rs-img img{max-width:none}
+.arr{display:flex;flex-direction:column;gap:8px}
+.arr figcaption{font-size:12.5px;margin-top:4px}
+.arp{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;font-size:13.5px;border-top:1px dashed var(--line);padding-top:7px}
+.arp b{color:var(--amb)}.arp span{color:var(--ink2)}
+.arw{margin-top:12px;padding:9px 12px;border-left:3px solid var(--amb);background:rgba(255,176,32,.08);border-radius:0 10px 10px 0;font-size:14.5px;color:var(--ink)}
+.arw b{color:var(--amb)}
+.arsrc{font-size:12px;color:var(--ink3);margin-top:8px}
+@media (max-width:900px){.arg{grid-template-columns:minmax(0,1fr)}}
+.rs-img{margin:.6em 0 1.2em}.rs-img img{display:block;width:100%;max-width:880px;margin:0 auto;height:auto;border-radius:12px;background:#fff;border:1px solid var(--line)}.rs-img a{border:none}.rs-img figcaption{font-size:13.5px;color:var(--ink3);margin-top:.5em;line-height:1.65}.rs-img figcaption a{border-bottom:1px dotted rgba(76,194,255,.45)}
+.tl{border-left:2px solid var(--line);margin:.6em 0 1.2em 6px;padding-left:18px}
+.te{display:flex;gap:14px;position:relative;margin:0 0 12px}
+.te::before{content:"";position:absolute;left:-25px;top:8px;width:10px;height:10px;border-radius:50%;background:var(--bg);border:2px solid var(--amb)}
+.te.now::before{background:var(--amb);box-shadow:0 0 10px var(--amb)}
+.ty{flex:0 0 68px;font-family:var(--mono);font-size:13px;color:var(--amb);padding-top:2px}
+.te b{color:#fff}.te p{margin:.15em 0 0;font-size:14.5px}
+.te a.ax,.te>div>a{font-family:var(--mono);font-size:11.5px}
+@media (max-width:640px){.te{flex-direction:column;gap:2px}.ty{flex:none}}
+@media (max-width:900px){.lps{grid-template-columns:repeat(2,minmax(0,1fr))}.lp::after{display:none}.flowx.f4{grid-template-columns:repeat(2,minmax(0,1fr))}.strip{flex-wrap:wrap}.sg{flex:1 1 30%!important}}
+@media (max-width:640px){.lps,.flowx.f4,.flowx.f3{grid-template-columns:1fr}.p5,.p4,.p3,.p2{width:100%}}
+.wd{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr) minmax(0,1fr);gap:14px;align-items:stretch;margin:.6em 0}
+.wdc{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:linear-gradient(180deg,var(--bg3),var(--bg2));border-top:3px solid #4cc2ff}
+.wdc.d{border-top-color:#38d39f}.wdk{font-family:var(--mono);font-size:12.5px;color:var(--amb);letter-spacing:1px}.wdt{font-size:16px;font-weight:700;color:#fff;margin:.2em 0 .4em}
+.wdc ul{font-size:14px;margin:0;padding-left:1.2em}.wdm{border:1px dashed rgba(255,176,32,.6);border-radius:14px;padding:14px;display:flex;flex-direction:column;justify-content:center;text-align:center;background:rgba(255,176,32,.06)}
+.wdq{font-size:16px;font-weight:800;color:#fff}.wds{font-size:13px;color:var(--ink2);margin-top:8px;line-height:1.6}.wds b{color:var(--amb)}
+@media (max-width:900px){.wd{grid-template-columns:minmax(0,1fr)}}
+</style></head><body>
+<header class="gtop"><a class="brand" href="../../">← RSI Resources</a><span class="gt"><b>CASE</b> · Research Agent</span><a class="gl" href="../../talk/"> RSI talk →</a></header>
+<div class="hero"><div class="hgrid"></div><div class="hin">
+<div class="eyebrow">CASE STUDY · 2026-11</div>
+<h1>Letting an AI researcher iterate on a recommendation model:<br/><span class="grad">Xiaohongshu × AWS</span></h1>
+<p class="sub">A Research Agent in a real business: why a general-purpose agent “doesn't get far”,<b>Wide exploration + deep progress</b>'s harness gets 41% more improvement with 40% of the budget — and how it relates to our talk, Play, and Argus.</p>
+</div></div>
+<div class="layout">
+<nav class="toc"><div class="tt">CONTENTS</div><a href="#c0"><span class="n">00</span> Bottom line</a><a href="#c1"><span class="n">01</span> What the case study does: an AI researcher iterates on a recommendation model</a><a href="#c2"><span class="n">02</span> Their harness: wide exploration + deep pursuit</a><a href="#c3"><span class="n">03</span> Results</a><a href="#c4"><span class="n">04</span> How it relates to us</a><a href="#c5"><span class="n">05</span> Could this become our case study?</a><a href="#c6"><span class="n">06</span> Hands-on reproduction: get it running with the public code first</a><a href="#c7"><span class="n">07</span> Source</a></nav>
+<main class="g">
+<section class="chapter" id="c0"><div class="chead rv"><span class="big">00</span><div><span class="cn">CHAPTER 00</span><h2> Bottom line</h2></div></div>
+<div class="slide rv"><div class="sk">Conclusion</div>
+<h3 class="st">Could be a case study: it is<span class="hl">“From autoresearch to real business”</span>ready-made evidence</h3>
+<div class="sg2"><div class="sl">
+<p class="sb">On a<b> Training is expensive and the search space is large</b>'s recommendation model, a general-purpose agent quickly got stuck in a single direction; after adding a "broad exploration + deep pursuit" harness,<b>41% more improvement with 40% of the budget</b>.</p>
+<ul class="sp3"><li>A real customer scenario (Xiaohongshu recommendations), co-developed with AWS AI Lab</li><li> Running on Amazon Bedrock + EC2</li><li> The dataset and target model are both public, so the results can be reproduced</li></ul>
+<p class="sb2">It fills exactly the piece missing from our talk: what the limitations of autoresearch look like in a real business, and how to solve them.</p></div>
+<div class="sr">
+<div class="stile"><div class="sn">+1.88</div><div class="su">pp AUC</div><div class="sd"> The general-purpose agent baseline is +1.33pp</div></div>
+<div class="stile"><div class="sn">80</div><div class="su">GPU·h</div><div class="sd"> The baseline used 200 GPU·h</div></div>
+<div class="stile"><div class="sn">4</div><div class="su"> categories of improvement ideas</div><div class="sd"> The baseline puts 86% of its budget on 1 direction</div></div>
+</div></div>
+<div class="sf">Source:<a href="https://aws.amazon.com/cn/blogs/china/practice-recommendation-model-harness-design-implement/" rel="noopener" target="_blank">AWS China Blog · Agentic Practices in Xiaohongshu's Recommendation System</a>(2026-11-20). The comparisons and assessments below are our own.</div></div>
+</section><section class="chapter" id="c1"><div class="chead rv"><span class="big">01</span><div><span class="cn">CHAPTER 01</span><h2> What the case study does: an AI researcher iterates on a recommendation model</h2></div></div>
+<div class="blk rv"><h3>Why it's harder than autoresearch</h3>
+<div class="cards2">
+<div class="cardx"><div class="k">Challenge ①</div><div class="t"> Large exploration space</div><div class="d"> Recommendation models have evolved from DCN and DLRM to HSTU and RankMixer, and the architectures are still changing. Data processing, feature engineering, and training objectives all affect results too. This is a systems engineering problem, not a matter of tuning a few hyperparameters.</div></div><div class="cardx"><div class="k">Challenge ②</div><div class="t"> Training is expensive</div><div class="d"> In a real business, training a recommendation model once takes tens to hundreds of GPU hours; autoresearch trains for only 5 minutes each time.<b>Every failed attempt costs more, and you get fewer attempts</b>.</div></div>
+</div>
+<p>Experiment setup: the target model is <b>RankMixer</b>(using the open-source UniRank implementation), and the dataset is public <b>KuaiRand</b>; the main task is click-prediction AUC, plus 5 auxiliary tasks (follow, like, comment, share, long view), and improvements must not noticeably hurt the auxiliary tasks.</p></div>
+<div class="blk rv"><h3>Start with a general-purpose agent as the baseline: it can make changes, but doesn't get far</h3>
+<p>Given a 200 GPU·h budget and no human intervention, a strong general-purpose agent improved AUC by 1.33pp — showing it's feasible; when humans provide validated ideas, it always writes the code correctly — <b>Writing code isn't the bottleneck</b>. But looking at its trajectory, there are three problems:</p>
+<div class="cards3">
+<div class="cardx"><div class="k">Problem ①</div><div class="t"> 76% of the gains in the first 30% of the time</div><div class="d"> The remaining 70% of the time is largely wasted, making sustained improvement hard.</div></div><div class="cardx"><div class="k">Problem ②</div><div class="t"> 86% of the budget bet on one direction</div><div class="d"> The direction worked at first, but marginal gains soon shrank while it kept making changes — exploration converged too early.</div></div><div class="cardx"><div class="k">Problem ③</div><div class="t"> Read only a little of 50 papers</div><div class="d"> Paper-reading calls make up only 2.7% of all tool calls, and all of them happen in the first 9 hours. Not drawing on external knowledge is one of the main reasons the search direction converges.</div></div>
+</div>
+<div class="lead"><b>In one sentence</b>: Writing the code is doable; the hard part is<b> Decides where to explore next</b>.</div></div>
+</section><section class="chapter" id="c2"><div class="chead rv"><span class="big">02</span><div><span class="cn">CHAPTER 02</span><h2> Their harness: wide exploration + deep pursuit</h2></div></div>
+<div class="blk rv"><h3>Wide-and-Deep exploration strategy</h3>
+<div class="wd rv">
+<div class="wdc w"><div class="wdk">Wide branch · cast a wide net</div><div class="wdt"> Propose at least 8 ideas at a time and screen them cheaply</div><ul><li> Always starts from<b> The initial baseline version</b> Start</li><li> Fewer training steps to save cost</li><li> Goal: quickly determine which ideas are viable and provide data for later decisions</li></ul></div>
+<div class="wdm"><div class="wdq">The agent decides each round on its own<br/> Go Wide or Deep</div><div class="wds"> It considers four things: conclusions from the last few retrospectives · whether a new best model has appeared · the diversity of past exploration · when Wide was last chosen<br/><b> No hard rules or thresholds</b></div></div>
+<div class="wdc d"><div class="wdk">Deep branch · push deeper</div><div class="wdt"> One proposal at a time, pushing up the current best</div><ul><li> Could build on<b> Any historical version</b> Keep iterating</li><li> Could take the ideas that worked across several versions and<b> merge them</b></li><li> Versions that didn't improve the score can still serve as "negative evidence"</li></ul></div>
+</div>
+<p class="dim small">How it differs from common practice: many systems automatically pick "which version to start the next round from" using rules like scores or UCT; here that decision is left to the agent.</p></div>
+<div class="blk rv"><h3>Three agents divide the work, with a fresh set each round</h3>
+<div class="flowx f3 rv">
+<div class="st"><div class="n">1</div><b>Proposal Agent</b><p> Decides between Wide and Deep, draws ideas from papers, code, datasets, and past results, and writes proposals (Wide ≥ 8, Deep 1)</p></div>
+<div class="st"><div class="n">2</div><b>Developing Agent</b><p> Write code according to the proposal; first design the "attribution chain" and the variables to observe, run static checks and code review, then start training. Multiple proposals are handled in parallel</p></div>
+<div class="st gate"><div class="n">3</div><b>Evaluation Agent</b><p> Produces objective conclusions (per-task AUC, whether the attribution chain holds) and subjective conclusions (whether this direction is worth continuing)</p></div>
+</div>
+<div class="cards2">
+<div class="cardx"><div class="k">Three types of context</div><div class="t"> Prompts · handoff docs · long-term memory</div><div class="d"> Agents within a round pass information through simple handoff docs; cross-round information goes into long-term memory, and the next round's agents don't inherit the previous round's context. Each agent gets context on a “minimum necessary” basis.</div></div><div class="cardx plan"><div class="k">Four types of long-term memory</div><div class="t"> Papers · Knowledge base · Leaderboard · Code</div><div class="d"> A paper library; a knowledge base built from each round's experiment findings; a leaderboard of the current best models; and the codebase itself, managed with git, also serves as memory.</div></div>
+</div></div>
+<div class="blk rv"><h3>Evaluation: more than just AUC</h3>
+<div class="tw"><table class="rs-t"><tr><th>Level</th><th> What to look at</th><th> How to judge</th></tr>
+<tr><td><b>Black box</b></td><td> Main-task ΔAUC; auxiliary-task ΔAUC must not drop noticeably</td><td> Computed by code rules</td></tr>
+<tr><td><b>Glass box</b></td><td> Exploration diversity, number of papers read, number of dataset analyses</td><td> Diversity is classified by an LLM; counts are computed by code</td></tr>
+<tr><td><b>Subjective</b></td><td> Whether the Wide / Deep choice and "should we continue this direction" match human judgment</td><td> Human judgment</td></tr>
+</table></div>
+<div class="note"><b>Why it matters</b>: Looking only at the final score, you can't tell whether the "AI researcher" is actually doing good research. Tracking diversity and how often it reads papers can reveal early on that it's stuck in a rabbit hole.</div></div>
+</section><section class="chapter" id="c3"><div class="chead rv"><span class="big">03</span><div><span class="cn">CHAPTER 03</span><h2> Results</h2></div></div>
+<div class="blk rv"><div class="charts2"><figure class="ch rv"><figcaption>AUC gain<span>pp</span></figcaption><svg aria-label="AUC gain" role="img" viewbox="0 0 340 210"><line class="grid" x1="10" x2="330" y1="139.0" y2="139.0"></line><line class="grid" x1="10" x2="330" y1="102.0" y2="102.0"></line><line class="grid" x1="10" x2="330" y1="65.0" y2="65.0"></line><line class="grid" x1="10" x2="330" y1="28.0" y2="28.0"></line><line class="axis" x1="10" x2="330" y1="176" y2="176"></line><path class="bar" d="M55.0,176 V92.7 Q55.0,88.7 59.0,88.7 H121.0 Q125.0,88.7 125.0,92.7 V176 Z" data-tip="General-purpose agent baseline: +1.33pp" fill="#7f8da0"></path><text class="val" x="90.0" y="80.7">+1.33</text><text class="lab" x="90.0" y="194"> General-purpose agent</text><path class="bar" d="M215.0,176 V56.7 Q215.0,52.7 219.0,52.7 H281.0 Q285.0,52.7 285.0,56.7 V176 Z" data-tip="Wide-and-Deep Research Agent:+1.88pp" fill="#38d39f"></path><text class="val" x="250.0" y="44.7">+1.88</text><text class="lab" x="250.0" y="194">W&amp;D Research Agent</text></svg></figure><figure class="ch rv"><figcaption> Training budget<span>GPU·h</span></figcaption><svg aria-label="Training budget" role="img" viewbox="0 0 340 210"><line class="grid" x1="10" x2="330" y1="139.0" y2="139.0"></line><line class="grid" x1="10" x2="330" y1="102.0" y2="102.0"></line><line class="grid" x1="10" x2="330" y1="65.0" y2="65.0"></line><line class="grid" x1="10" x2="330" y1="28.0" y2="28.0"></line><line class="axis" x1="10" x2="330" y1="176" y2="176"></line><path class="bar" d="M55.0,176 V56.7 Q55.0,52.7 59.0,52.7 H121.0 Q125.0,52.7 125.0,56.7 V176 Z" data-tip="General-purpose agent baseline: 200 GPU·h" fill="#7f8da0"></path><text class="val" x="90.0" y="44.7">200</text><text class="lab" x="90.0" y="194"> General-purpose agent</text><path class="bar" d="M215.0,176 V130.7 Q215.0,126.7 219.0,126.7 H281.0 Q285.0,126.7 285.0,130.7 V176 Z" data-tip="Wide-and-Deep Research Agent: 80 GPU·h (40% of the baseline)" fill="#38d39f"></path><text class="val" x="250.0" y="118.7">80</text><text class="lab" x="250.0" y="194">W&amp;D Research Agent</text></svg></figure></div>
+<div class="cards3">
+<div class="cardx"><div class="k">Efficiency</div><div class="t"> 40% of the budget, 41% more improvement</div><div class="d"> AUC +1.88pp, about 41% higher than the baseline's +1.33pp, using only 80 GPU·h.</div></div><div class="cardx"><div class="k">Diversity</div><div class="t"> The best model used 4 categories of improvement ideas</div><div class="d"> The baseline changes almost only one direction; here both the Wide and Deep branches are explored thoroughly, continually producing new best models.</div></div><div class="cardx"><div class="k">Research behavior</div><div class="t"> Read papers 50 times, analyzed data 162 times</div><div class="d"> Read 25 different papers in total; exploration was noticeably broader.</div></div>
+</div>
+<p class="dim small">Training runs on g6.2xlarge instances, and the base model comes from Amazon Bedrock (the blog doesn't name the exact model). The numbers come from the blog and reflect a single run, with no variance reported across repeated runs.</p></div>
+</section><section class="chapter" id="c4"><div class="chead rv"><span class="big">04</span><div><span class="cn">CHAPTER 04</span><h2> How it relates to us</h2></div></div>
+<div class="blk rv"><h3>Which part of our talk it fills in</h3>
+<div class="tw"><table class="rs-t"><tr><th>What we cover</th><th> How it maps to this case</th></tr>
+<tr><td><b>Limitations of autoresearch</b>: Keeps only one line, no archive</td><td> The baseline agent's 76% / 86% / 2.7% — the same problems show up in real-world production</td></tr>
+<tr><td><b>The "Darwin" half of DGM</b>: Keep an archive, maintain diversity, don't keep only the top performer</td><td> The Wide branch ensures diversity; the Deep branch can start from any past version and merge multiple versions; long-term memory serves as the archive</td></tr>
+<tr><td><b>Play demo</b>: ShinkaEvolve selects parents weighted by score</td><td> Not selected by score,<b>Let the agent decide for itself</b> Which path to take next round — a design point worth comparing</td></tr>
+<tr><td><b>Argus</b>: planner writes specs, worker develops, independent scoring</td><td> Proposal / Developing / Evaluation: three agents split the work, with a fresh set each round, passing information through handoff documents and long-term memory</td></tr>
+<tr><td><b>“Put the evals where they can't be modified”</b></td><td>Main- and auxiliary-task AUC computed by code rules, plus glass-box metrics to monitor “research behavior”</td></tr>
+<tr><td><b>“Build evaluation first, then talk about evolution”</b></td><td>Following the ADLC framework, they first designed the evaluation system (black-box / glass-box / subjective), then changed the harness</td></tr>
+</table></div>
+<div class="loop rv"><div class="lpc">Self-iterating recommendation models · the five steps</div><div class="lps"><div class="lp"><div class="lpv">Run<i> Run</i></div><div class="lpt"> Train RankMixer and record per-task AUC</div></div><div class="lp"><div class="lpv">Observe<i> See</i></div><div class="lpt"> Retrospective: check diversity, whether there's been a new best recently, and whether a direction is worth continuing</div></div><div class="lp"><div class="lpv">Propose<i> Propose</i></div><div class="lpt"> Proposal: Wide produces 8+ proposals / Deep produces 1</div></div><div class="lp lv"><div class="lpv">Verify<i> Verify</i></div><div class="lpt"> Code checks + training + main-task / auxiliary-task AUC</div></div><div class="lp"><div class="lpv">Commit<i> Commit</i></div><div class="lpt"> Written to the knowledge base and leaderboard, feeding into the next round</div></div></div></div>
+<div class="note">Related pages:<a href="../../talk/">RSI talk</a>(autoresearch, DGM, Play)· <a href="../../argus-intro/">About Argus</a> · <a href="../../paper/lastai/">The Last AI's take</a>(graded B0–L5).</div></div>
+</section><section class="chapter" id="c5"><div class="chead rv"><span class="big">05</span><div><span class="cn">CHAPTER 05</span><h2> Could this become our case study?</h2></div></div>
+<div class="blk rv"><h3>Where it qualifies</h3>
+<div class="cards2">
+<div class="cardx"><div class="k">Real, and from AWS</div><div class="t"> Customer scenario + AWS AI Lab co-development + Bedrock / EC2</div><div class="d"> More convincing than companies' own claims in papers, and the most direct story to tell customers.</div></div><div class="cardx"><div class="k">Reproducible</div><div class="t"> Both the data and the model are public</div><div class="d"> The KuaiRand dataset and the RankMixer implementation in UniRank are both open source (Apache-2.0), so you can reproduce the baseline in your own account.</div></div><div class="cardx"><div class="k">A complete story</div><div class="t"> It has a baseline, problem diagnosis, design, and results</div><div class="d"> First prove it “can make changes”, then find out why it “doesn't get far”, adjust the harness accordingly, and finally get more improvement with less budget.</div></div><div class="cardx plan"><div class="k">Gets to the heart of it</div><div class="t"> The hard part is "where to explore"</div><div class="d">This matches the main thread of our talk: writing code isn't hard; exploration and validation are.</div></div>
+</div></div>
+<div class="blk rv"><h3>What's still missing (to fill in before turning this into a case study)</h3>
+<ul>
+<li><b>Public data, not Xiaohongshu production data</b>: There is still a gap between results on KuaiRand and online gains in real production; we need to confirm whether there was online validation.</li>
+<li><b>A single experiment, no variance</b>: The gap between +1.88pp and +1.33pp needs more runs and a look at variance before it can be claimed firmly.</li>
+<li><b>Base model not specified</b>: The blog doesn't say which model on Bedrock was used or what the token cost was.</li>
+<li><b>harness code not released</b>: The Wide-and-Deep prompts, plus the three agents' tools and handoff formats, are key to reproducing it.</li>
+<li><b>Cost breakdown</b>: Beyond GPU·h, what is the inference cost of the agent itself?</li>
+</ul></div>
+</section><section class="chapter" id="c6"><div class="chead rv"><span class="big">06</span><div><span class="cn">CHAPTER 06</span><h2> Hands-on reproduction: get it running with the public code first</h2></div></div>
+<div class="blk rv"><h3>Publicly available</h3>
+<div class="cards3">
+<div class="cardx"><div class="k">Target model</div><div class="t">UniRank · RankMixer</div><div class="d"><a href="https://github.com/salmon1802/UniRank" rel="noopener" target="_blank">salmon1802/UniRank</a>, Apache-2.0. 15 ranking models, including RankMixer; includes preprocessing, config, and evaluation code.</div></div><div class="cardx"><div class="k">Dataset</div><div class="t">KuaiRand</div><div class="d"> Short-video recommendation data, about 320 million interactions, 6 tasks; UniRank includes ready-made preprocessing scripts.</div></div><div class="cardx plan"><div class="k">Compute and model</div><div class="t">EC2 g6 + Amazon Bedrock</div><div class="d"> The blog trains on g6.2xlarge; the agent's base model runs on Bedrock.</div></div>
+</div></div>
+<div class="blk rv"><h3>Four suggested steps</h3>
+<div class="flowx f4 rv">
+<div class="st"><div class="n">1</div><b> Get the baseline running</b><p> Train RankMixer on KuaiRand, get AUC for the main and auxiliary tasks, and confirm how many GPU·h a single training run takes</p></div>
+<div class="st"><div class="n">2</div><b> General-purpose agent baseline</b><p> Give the general-purpose agent the same budget and let it make changes on its own; record the gain curve, direction distribution, and number of papers read</p></div>
+<div class="st"><div class="n">3</div><b> Add Wide-and-Deep</b><p> Split into Proposal / Developing / Evaluation, with long-term memory and Wide / Deep branches</p></div>
+<div class="st gate"><div class="n">4</div><b> Controlled evaluation</b><p> Compare ΔAUC at the same budget; run several times to check variance; add glass-box metrics</p></div>
+</div>
+<div class="note">Step 3 can directly reuse what we already have: Play's evolution engine (ShinkaEvolve) can serve as a "select parents by score" control group, and Argus's planner / worker / scoring structure can handle the division of labor among the three agents.</div></div>
+</section><section class="chapter" id="c7"><div class="chead rv"><span class="big">07</span><div><span class="cn">CHAPTER 07</span><h2> Source</h2></div></div>
+<div class="blk rv"><ul>
+<li><a href="https://aws.amazon.com/cn/blogs/china/practice-recommendation-model-harness-design-implement/" rel="noopener" target="_blank">Agentic practice in Xiaohongshu's recommendation system: designing and implementing a harness for self-iterating recommendation models</a>(AWS China Blog, 2026-11-20) — the source of all case-study numbers on this page</li>
+<li><a href="https://github.com/salmon1802/UniRank" rel="noopener" target="_blank">UniRank</a>(RankMixer implementation and KuaiRand preprocessing, Apache-2.0)</li>
+<li><a href="https://github.com/karpathy/autoresearch" rel="noopener" target="_blank">karpathy/autoresearch</a>(cited in the blog for comparison)</li>
+</ul>
+<p class="dim small">The comparisons and judgments on this page are our own and do not represent the views of the blog authors or any employer.</p></div>
+</section>
+<footer class="gfoot">Personal research notes; does not represent the views of any employer. Case facts come from public blogs; the comparisons and judgments are our own.</footer>
+</main></div>
+<div class="tip" id="tip"></div>
+<script>
+const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('.rv').forEach(el=>rm?el.classList.add('in'):io.observe(el));
+document.querySelectorAll('.kn[data-count]').forEach(el=>{const raw=el.dataset.count;if(!/^\d+$/.test(raw)||rm)return;const end=+raw;let t0=null;const step=ts=>{t0=t0||ts;const p=Math.min(1,(ts-t0)/1200);el.textContent=Math.round(end*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step)};el.textContent='0';setTimeout(()=>requestAnimationFrame(step),300)});
+const tip=document.getElementById('tip');
+document.querySelectorAll('[data-tip]').forEach(b=>{b.addEventListener('mousemove',e=>{tip.textContent=b.dataset.tip;tip.style.opacity=1;tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-10)+'px'});b.addEventListener('mouseleave',()=>tip.style.opacity=0)});
+const links=[...document.querySelectorAll('.toc a')];const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io2=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-20% 0px -70% 0px'});
+secs.forEach(s=>s&&io2.observe(s));
+</script><a data-cur="en" data-to="zh" href="../../../../rsi/case/research-agent/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body></html>
