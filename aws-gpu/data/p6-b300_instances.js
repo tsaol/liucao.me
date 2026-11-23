@@ -1,5 +1,5 @@
 // Auto-generated from instances.vantage.sh data
-// Last updated: 2026-11-16
+// Last updated: 2026-11-23
 
 var instanceData = [
   {
@@ -13,6 +13,9 @@ var instanceData = [
     "network": "6400 Gigabit",
     "storage": "3800 GB (8 × 475 GB SSD)",
     "pricing": {
+      "ap-northeast-1": {
+        "onDemand": 209.17
+      },
       "ap-northeast-2": {
         "onDemand": 209.1735
       },
@@ -21,6 +24,9 @@ var instanceData = [
       },
       "ap-southeast-3": {
         "onDemand": 230.93
+      },
+      "ap-southeast-5": {
+        "onDemand": 180.73
       },
       "eu-west-2": {
         "onDemand": 217.54
@@ -45,9 +51,11 @@ var instanceData = [
       }
     },
     "availability": [
+      "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-2",
       "ap-southeast-3",
+      "ap-southeast-5",
       "eu-west-2",
       "sa-east-1",
       "us-east-1",

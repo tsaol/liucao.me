@@ -1,5 +1,5 @@
 // Auto-generated from instances.vantage.sh data
-// Last updated: 2026-11-16
+// Last updated: 2026-11-23
 // Total GPU instances: 99
 
 const allGPUInstances = [
@@ -761,6 +761,9 @@ const allGPUInstances = [
         "onDemand": 3.912,
         "reserved": 2.465
       },
+      "us-east-1-mia-1": {
+        "onDemand": 5.281
+      },
       "us-east-2": {
         "onDemand": 3.912,
         "reserved": 2.465
@@ -806,6 +809,7 @@ const allGPUInstances = [
       "me-south-1",
       "sa-east-1",
       "us-east-1",
+      "us-east-1-mia-1",
       "us-east-2",
       "us-gov-east-1",
       "us-gov-west-1",
@@ -899,6 +903,9 @@ const allGPUInstances = [
         "onDemand": 4.352,
         "reserved": 2.742
       },
+      "us-east-1-mia-1": {
+        "onDemand": 5.875
+      },
       "us-east-2": {
         "onDemand": 4.352,
         "reserved": 2.742
@@ -942,6 +949,7 @@ const allGPUInstances = [
       "me-south-1",
       "sa-east-1",
       "us-east-1",
+      "us-east-1-mia-1",
       "us-east-2",
       "us-gov-east-1",
       "us-gov-west-1",
@@ -1439,6 +1447,9 @@ const allGPUInstances = [
       "us-east-1-iah-1": {
         "onDemand": 1.625
       },
+      "us-east-1-mia-1": {
+        "onDemand": 1.625
+      },
       "us-east-1-nyc-1": {
         "onDemand": 1.625
       },
@@ -1504,6 +1515,7 @@ const allGPUInstances = [
       "us-east-1-chi-1",
       "us-east-1-dfw-1",
       "us-east-1-iah-1",
+      "us-east-1-mia-1",
       "us-east-1-nyc-1",
       "us-east-1-phl-1",
       "us-east-1-qro-1",
@@ -1603,6 +1615,9 @@ const allGPUInstances = [
         "onDemand": 2.176,
         "reserved": 1.371
       },
+      "us-east-1-mia-1": {
+        "onDemand": 2.938
+      },
       "us-east-2": {
         "onDemand": 2.176,
         "reserved": 1.371
@@ -1646,6 +1661,7 @@ const allGPUInstances = [
       "me-south-1",
       "sa-east-1",
       "us-east-1",
+      "us-east-1-mia-1",
       "us-east-2",
       "us-gov-east-1",
       "us-gov-west-1",
@@ -1739,6 +1755,9 @@ const allGPUInstances = [
         "onDemand": 7.824,
         "reserved": 4.929
       },
+      "us-east-1-mia-1": {
+        "onDemand": 10.562
+      },
       "us-east-2": {
         "onDemand": 7.824,
         "reserved": 4.929
@@ -1777,6 +1796,7 @@ const allGPUInstances = [
       "me-south-1",
       "sa-east-1",
       "us-east-1",
+      "us-east-1-mia-1",
       "us-east-2",
       "us-gov-west-1",
       "us-west-1",
@@ -1869,6 +1889,9 @@ const allGPUInstances = [
         "onDemand": 0.526,
         "reserved": 0.331
       },
+      "us-east-1-mia-1": {
+        "onDemand": 0.71
+      },
       "us-east-2": {
         "onDemand": 0.526,
         "reserved": 0.331
@@ -1912,6 +1935,7 @@ const allGPUInstances = [
       "me-south-1",
       "sa-east-1",
       "us-east-1",
+      "us-east-1-mia-1",
       "us-east-2",
       "us-gov-east-1",
       "us-gov-west-1",
@@ -7753,6 +7777,9 @@ const allGPUInstances = [
     "network": "6400 Gigabit",
     "storage": "3800 GB (8 × 475 GB SSD)",
     "pricing": {
+      "ap-northeast-1": {
+        "onDemand": 209.17
+      },
       "ap-northeast-2": {
         "onDemand": 209.1735
       },
@@ -7761,6 +7788,9 @@ const allGPUInstances = [
       },
       "ap-southeast-3": {
         "onDemand": 230.93
+      },
+      "ap-southeast-5": {
+        "onDemand": 180.73
       },
       "eu-west-2": {
         "onDemand": 217.54
@@ -7785,9 +7815,11 @@ const allGPUInstances = [
       }
     },
     "availability": [
+      "ap-northeast-1",
       "ap-northeast-2",
       "ap-south-2",
       "ap-southeast-3",
+      "ap-southeast-5",
       "eu-west-2",
       "sa-east-1",
       "us-east-1",
