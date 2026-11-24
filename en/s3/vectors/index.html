@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>S3 Vectors: Making files in S3 searchable by meaning · liucao.me</title>
+<meta content="What Amazon S3 Vectors is, how to use it, and how it's priced: basic APIs, ENHANCED indexes, hybrid search, a cost calculator, and a demo of permission-filtered semantic search over S3 files" name="description"/>
+<link href="../../../ec2/assets/style.css" rel="stylesheet"/>
+<style>
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .fig { margin: 1.2rem 0 1.4rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .fig svg { display: block; width: 100%; height: auto; }
+        .fig figcaption { text-align: center; font-size: 0.8rem; color: var(--text-mute); margin-top: 0.6rem; }
+        .photo { position: relative; }
+        .photo img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
+        .pin { position: absolute; transform: translate(-50%, -50%); background: rgba(11,15,20,0.88); border: 1px solid var(--accent); color: var(--accent); font-size: 0.74rem; font-weight: 600; padding: 0.12rem 0.55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+        .pin.n1 { border-color: #60a5fa; color: #60a5fa; }
+        .fig figcaption a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .tldr { background: var(--surface); border: 1px solid var(--accent-dim); border-radius: var(--radius); padding: 1.1rem 1.3rem; margin: 0.4rem 0 2.2rem; }
+        .tldr .lead { color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; }
+        .tldr ol { color: var(--text-dim); padding-left: 1.2rem; }
+        .tldr li { margin-bottom: 0.3rem; }
+        .tldr b { color: var(--text); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.87rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        pre.ascii { line-height: 1.35; font-size: 0.78rem; }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+
+        .steps { counter-reset: s; list-style: none; padding-left: 0 !important; }
+        .steps li { counter-increment: s; position: relative; padding-left: 2.2rem; margin-bottom: 0.7rem !important; }
+        .steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--accent-dim); color: var(--accent); font-family: var(--mono); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
+        .cmp td.yes { color: #34d399; font-weight: 600; } .cmp td.no { color: #f87171; font-weight: 600; }
+    
+        /* ---- diagrams (HTML + CSS, so the English copy gets translated too) ---- */
+        .dg { margin: 1rem 0 1.4rem; padding: 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .dg-cap { text-align: center; font-size: 0.8rem; color: var(--text-mute); margin-top: 0.8rem; }
+        .box { background: var(--bg-soft); border: 1px solid var(--border-hi); border-radius: 10px; padding: 0.6rem 0.8rem; font-size: 0.86rem; color: var(--text); line-height: 1.45; }
+        .box small { display: block; color: var(--text-dim); font-size: 0.78rem; margin-top: 0.15rem; }
+        .box.q { border-style: dashed; border-color: var(--accent-dim); text-align: center; font-weight: 600; }
+        .box.good { background: rgba(52,211,153,.10); border-color: #34d399; }
+        .box.retry { background: rgba(251,191,36,.10); border-color: #fbbf24; }
+        .box.stop { background: rgba(248,113,113,.10); border-color: #f87171; }
+        .box.pay { background: rgba(251,191,36,.08); border-color: #d97706; }
+        .arrow-d { text-align: center; color: var(--text-mute); font-size: 1.1rem; line-height: 1.2; margin: 0.25rem 0; }
+        .arrow-d span { font-size: 0.75rem; display: block; }
+        .tl { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.4rem; }
+        .tl .box { flex: 1 1 140px; text-align: center; }
+        .tl .ar { align-self: center; color: var(--text-mute); }
+        .dec { display: grid; grid-template-columns: 1fr; gap: 0.3rem; max-width: 720px; margin: 0 auto; }
+        .branch { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+        .branch .lbl { font-size: 0.75rem; color: var(--text-mute); margin-bottom: 0.25rem; text-align: center; }
+        .loop { max-width: 560px; margin: 0 auto; }
+        .loopnote { border-left: 2px dashed #fbbf24; margin: 0.35rem 0 0 0.9rem; padding: 0.15rem 0 0.15rem 0.6rem; font-size: 0.8rem; color: var(--text-dim); }
+        .res { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1.6fr); gap: 0.45rem 0.6rem; align-items: center; }
+        .res .ar { color: var(--text-mute); }
+        .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem 1rem; max-width: 680px; margin: 0 auto; }
+        .lanes .hd { text-align: center; font-weight: 700; color: var(--accent); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+        .lanes .msg { font-size: 0.84rem; color: var(--text-dim); padding: 0.35rem 0.6rem; border-radius: 8px; background: var(--bg-soft); }
+        .lanes .msg.r { grid-column: 2; } .lanes .msg.l { grid-column: 1; }
+        .lanes .msg.bad { border: 1px dashed #f87171; } .lanes .msg.ok { border: 1px solid #34d399; }
+        .lanes .full { grid-column: 1 / span 2; text-align: center; }
+        .bucket { display: grid; grid-template-columns: auto auto 1fr; gap: 0.6rem; align-items: center; }
+        .bucket .stack { display: grid; gap: 0.4rem; }
+        .gloss code { word-break: break-all; }
+        .users { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
+        .sublbl { font-size: 0.75rem; color: var(--text-mute); text-align: center; }
+        @media (max-width: 640px) {
+          .branch, .lanes { grid-template-columns: 1fr; }
+          .lanes .msg.r, .lanes .msg.l { grid-column: 1; }
+          .res { grid-template-columns: 1fr; } .res .ar { display: none; }
+          .bucket { grid-template-columns: 1fr; } .tl .ar { display: none; }
+          .users { grid-template-columns: 1fr; }
+          .cmp { display: block; overflow-x: auto; }
+        }
+    
+        /* ---- key-info marks (要点 box, highlight, source tag) ---- */
+        .key { background: rgba(0,229,160,.06); border: 1px solid rgba(0,229,160,.3); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; padding: .7em 1em; margin: .2em 0 1.2em; color: var(--text-dim); font-size: .92rem; }
+        .key .kl { display: inline-block; font-size: 12px; font-weight: 700; color: #04130d; background: var(--accent); border-radius: 4px; padding: 0 .45em; margin-right: .5em; }
+        .key ul { margin: .4em 0 0; padding-left: 1.2em; } .key li { margin: .25em 0; }
+        main.wrap mark { background: rgba(0,229,160,.18); color: var(--text); padding: 0 .15em; border-radius: 3px; }
+        .src { display: inline-block; font-family: var(--mono); font-size: 11px; color: #7cc4ff; border: 1px solid rgba(124,196,255,.4); border-radius: 4px; padding: 0 .35em; margin-left: .3em; vertical-align: 1px; white-space: nowrap; }
+        .legend { font-size: .8rem; color: var(--text-mute); margin: -1.2rem 0 2rem; }
+        /* ---- cost calculator ---- */
+        .calc { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem .9rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
+        .calc label { display: flex; flex-direction: column; gap: .25rem; font-size: .8rem; color: var(--text-dim); }
+        .calc input, .calc select { background: var(--bg); color: var(--text); border: 1px solid var(--border-hi); border-radius: 6px; padding: .4rem .5rem; font-family: var(--mono); font-size: .85rem; }
+        .calc-out { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin: .8rem 0 .3rem; }
+        .calc-out div { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px; padding: .55rem .8rem; }
+        .calc-out span { display: block; font-size: .75rem; color: var(--text-mute); }
+        .calc-out b { font-family: var(--mono); font-size: 1.1rem; color: var(--text); }
+        .calc-out small { display: block; font-family: var(--mono); font-size: .7rem; color: var(--text-mute); }
+        .calc-out .tot { border-color: var(--accent-dim); } .calc-out .tot b { color: var(--accent); }
+        @media (max-width: 640px) { .calc, .calc-out { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">S3</a>
+<a href="https://github.com/tsaol/s3-vectors-search">GitHub</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hero">
+<div class="crumb"><a href="../">S3</a> · Vectors · Semantic search</div>
+<h1>S3 Vectors: Making files in S3<span class="g"> Found by meaning</span></h1>
+<p class="sub">S3 holds lots of documents and images, but today you can only find them by file name. This post explains what Amazon S3 Vectors is, how to use it, and how it's priced, then ties it all together with a complete scenario demo: S3 files → vectors → permission-filtered retrieval → answers with sources.</p>
+<nav class="toc">
+<a href="#what">1 · What it is</a>
+<a href="#use">2 · How to use it</a>
+<a href="#mode">3 · Filter first, then search</a>
+<a href="#hybrid">4 · Hybrid search</a>
+<a href="#limits">5 · Limits</a>
+<a href="#price">6 · Pricing</a>
+<a href="#calc">7 · Do the math</a>
+<a href="#demo">8 · Scenario: semantic file search</a>
+<a href="#more">9 · More scenarios</a>
+<a href="#pitfalls">10 · Common pitfalls</a>
+<a href="#terms">Glossary</a>
+</nav>
+</div>
+<div class="callout danger"><b>Disclaimer: The code accompanying this article is sample code for illustration only. It is not an official AWS tool and should not be used directly in production.</b><br/>Limits and prices are as stated in the official AWS documentation (checked 2026-11-24; prices from the AWS Price List, published 2026-11-21).</div>
+<div class="tldr">
+<div class="lead">Start here: in three sentences</div>
+<ol>
+<li><b>S3 Vectors is a bucket type in S3 built specifically for storing vectors.</b>No cluster to build; pay for storage and queries,<mark>Good for "lots of data, infrequent queries"</mark>.</li>
+<li><b>Always use an ENHANCED index.</b>It<mark> Filter by permissions first, then find the most similar</mark>, so results are still recalled even when a user can only see 1% of the files; it also supports Chinese full-text search and hybrid search.</li>
+<li><b>Most of the cost is "query processing"</b>: the larger the index, the more each query costs.<mark>Source text chunks go into "non-filterable" metadata</mark>, so if data can be split by department, use multiple indexes.</li>
+</ol>
+</div>
+<p class="legend">Notes:<span class="key" style="display:inline;padding:0 .4em;margin:0;border-left-width:3px">Key points</span> Key points at the start of each section · <mark>Highlight</mark> Core conclusion · <span class="src">Docs · Limits</span> source (a page in the official AWS documentation); click through to the references at the end to read the original.</p>
+<section class="content-section" id="what">
+<h2 class="section-title"><span>1</span> · What it is</h2>
+<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
+<li>Three layers:<mark>Vector bucket → vector index → vector</mark>(key + floats + metadata).<span class="src">Docs · What is</span></li>
+<li>Cold queries are sub-second; warm queries can be as fast as about 100 ms;<mark>Strongly consistent writes</mark>, so data is queryable right after it's written.<span class="src">Docs · What is</span></li>
+</ul></div>
+<p>A "vector" is just a list of numbers that a piece of text or an image gets turned into.<b>Content with similar meaning has similar numbers</b>. So a search for "what day is payday" finds the passage "Salaries are paid on the 10th of the following month," even though the two sentences share no words.</p>
+<div class="dg">
+<div class="tl">
+<div class="box">Vector bucket<small> A new type of S3 bucket; "Block Public Access" is always on and can't be turned off</small></div><div class="ar">→</div>
+<div class="box">Vector index<small> Groups within a bucket; dimension and distance metric are fixed when the index is created</small></div><div class="ar">→</div>
+<div class="box good">Vectors<small> key + 1024 floats + metadata (department, permission group, source text snippet…)</small></div>
+</div>
+<div class="dg-cap">Figure 1 · The three-layer structure of S3 Vectors</div>
+</div>
+<ul>
+<li><b>No servers to manage</b>: no clusters, no node counts, pay for what you use.<span class="src">Docs · What is</span></li>
+<li><b>What it's good for</b>: the official wording is <i>"ideal for workloads where queries are less frequent"</i>. For example: enterprise document search, agent memory, image deduplication, video clip search.<span class="src">Docs · Use cases</span></li>
+<li><b>What it's not suited for</b>: online recommendations that need very high QPS and very low latency. For these, you can export an index snapshot to OpenSearch Serverless.<span class="src">Docs · Integrations</span></li>
+<li><b>Permissions</b>: the IAM namespace is <code>s3vectors:</code>, and <code>s3:</code> separately, so permissions can be scoped to a single index.</li>
+</ul>
+</section>
+<section class="content-section" id="use">
+<h2 class="section-title"><span>2</span> · How to use it: five APIs are all you need</h2>
+<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
+<li>When creating the index<mark> Dimension, distance metric, non-filterable fields</mark> cannot be changed later.<span class="src">Docs · Full-text config</span></li>
+<li>Writing the same key again overwrites it;<mark>Each PUT is billed at a minimum of 128 KB</mark>, so write in batches (up to 500 per call).<span class="src">Pricing page</span></li>
+</ul></div>
+<ol class="steps">
+<li><b>Create bucket</b>:<code>CreateVectorBucket</code>.</li>
+<li><b>Create index</b>:<code>CreateIndex</code>, set the dimension (matching the embedding model, e.g. 1024 for Titan Text V2), the distance metric (<code>cosine</code>), and which metadata is only returned, not filtered on.</li>
+<li><b>Write</b>:<code>PutVectors</code>, up to 500 per call.</li>
+<li><b>Query</b>:<code>QueryVectors</code>, passing the query vector,<code>topK</code>, filter conditions; can return metadata and distance.</li>
+<li><b>Management</b>:<code>GetVectors</code>(up to 100 keys per call),<code>ListVectors</code>(can be split into 16 parallel segments),<code>DeleteVectors</code>.</li>
+</ol>
+<pre><span class="c"># boto3 1.44+ (older versions lack queryTexts / returnScores)</span>
+sv = boto3.client(<span class="k">'s3vectors'</span>, region_name=<span class="k">'eu-central-1'</span>)
+sv.create_vector_bucket(vectorBucketName=<span class="k">'my-vectors'</span>)
+sv.create_index(vectorBucketName=<span class="k">'my-vectors'</span>, indexName=<span class="k">'docs'</span>,
+    dataType=<span class="k">'float32'</span>, dimension=1024, distanceMetric=<span class="k">'cosine'</span>,
+    metadataConfiguration={
+        <span class="k">'nonFilterableMetadataKeys'</span>: [<span class="k">'chunk_text'</span>],          <span class="c"># Source text: returned only, not filtered</span>
+        <span class="k">'textSearchConfigurations'</span>: [{<span class="k">'metadataKey'</span>: <span class="k">'chunk_text'</span>, <span class="k">'language'</span>: <span class="k">'zh'</span>}]})
+
+sv.put_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, indexName=<span class="k">'docs'</span>, vectors=[{
+    <span class="k">'key'</span>: <span class="k">'doc1#00000'</span>, <span class="k">'data'</span>: {<span class="k">'float32'</span>: emb},
+    <span class="k">'metadata'</span>: {<span class="k">'dept'</span>: <span class="k">'HR'</span>, <span class="k">'acl'</span>: [<span class="k">'all-staff'</span>], <span class="k">'chunk_text'</span>: <span class="k">'12 days of annual leave...'</span>}}])
+
+hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, indexName=<span class="k">'docs'</span>, topK=5,
+    queryVector={<span class="k">'float32'</span>: q_emb},
+    filter={<span class="k">'acl'</span>: {<span class="k">'$in'</span>: [<span class="k">'all-staff'</span>]}},                         <span class="c"># Filter by permissions</span>
+    returnMetadata=True, returnDistance=True)[<span class="k">'vectors'</span>]</pre>
+<p>Every step has a script you can run directly:<a href="https://github.com/tsaol/s3-vectors-search/tree/main/examples">examples/</a>(01 Create an index · 02 Write and query · 03 Filtering · 04 Hybrid search · 05 Management · 06 Agent memory).</p>
+<h3 class="sub-h">Filter syntax</h3>
+<table class="cmp">
+<thead><tr><th>Syntax</th><th> Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>{"dept": "HR"}</code></td><td>Equals (omitting the operator means <code>$eq</code>)</td></tr>
+<tr><td><code>{"price": {"$gte": 10, "$lte": 50}}</code></td><td>Numeric range:<code>$gt $gte $lt $lte</code></td></tr>
+<tr><td><code>{"acl": {"$in": ["hr", "all-staff"]}}</code></td><td>is one of them; when acl is a list field,<b>Matches if it overlaps with the given values</b>(measured)</td></tr>
+<tr><td><code>{"path": {"$startsWith": "hr/"}}</code></td><td>Prefix matching (only available on ENHANCED)</td></tr>
+<tr><td><code>{"$and": [...]}</code> / <code>{"$or": [...]}</code></td><td>combinations; there are also <code>$ne $nin $exists</code></td></tr>
+</tbody>
+</table>
+<p>Watch the number of filter conditions:<code>$in</code>  with 3 values counts as 3 conditions, <mark>ENHANCED indexes: up to 100 per query</mark>.<span class="src">Docs · Metadata filtering</span> When a user belongs to many permission groups, merge them on the application side first.</p>
+</section>
+<section class="content-section" id="mode">
+<h2 class="section-title"><span>3</span> · ENHANCED: filter first, then search</h2>
+<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
+<li>ENHANCED <mark>First compute the vectors that match the filter, then search for the most similar only among them</mark>(pre-filtering).<span class="src">Docs · Metadata filtering</span></li>
+<li><mark>Vector buckets created on or after 2026-09-30 default to ENHANCED</mark>; existing buckets default to CLASSIC and can be upgraded in place at no extra charge.<span class="src">Docs · Index mode</span></li>
+</ul></div>
+<div class="dg">
+<div class="branch">
+<div><div class="lbl">CLASSIC: filters while searching</div>
+<div class="box stop">First find "the most similar batch", then check permissions<small> When a user can see only 1% of files, the closest matches may include none they can see → fewer than topK results, or even none</small></div></div>
+<div><div class="lbl">ENHANCED: filter first</div>
+<div class="box good">First narrow down to "what they can see", then find the most similar within that<small> Recall holds even with very narrow permissions; up to 40 KB of filterable metadata; supports full-text search,<code>$startsWith</code></small></div></div>
+</div>
+<div class="dg-cap">Figure 2 · The difference between the two index modes: it matters a lot for "filtering by permission"</div>
+</div>
+<p>When retrieving by permission, filters are often very narrow, so<b> This matters more than anything else</b>. To view an index's schema, use <code>GetIndex</code> See <code>indexMode</code>; to upgrade, use <code>UpdateIndexMode</code>, taking effect in place with no re-import.<span class="src">Docs · Index mode</span></p>
+</section>
+<section class="content-section" id="hybrid">
+<h2 class="section-title"><span>4</span> · Hybrid search: match both meaning and keywords</h2>
+<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
+<li>Vector search understands meaning, but<mark> Not sensitive to terms that must match exactly, such as error codes, model numbers, and people's names</mark>; BM25 full-text search fills exactly that gap.<span class="src">Docs · Hybrid search</span></li>
+<li>Hybrid search = vector + BM25,<mark>Merge into one ranking with RRF</mark>; there is <code>zh</code> Chinese tokenizer.<span class="src">Docs · Full-text config</span></li>
+</ul></div>
+<div class="dg">
+<div class="res">
+<div class="box">Pass only <code>queryVector</code></div><div class="ar">→</div><div class="box">Vector search: ranked by distance</div>
+<div class="box">Pass only <code>queryTexts</code></div><div class="ar">→</div><div class="box">Full-text search: ranked by BM25 score</div>
+<div class="box good">Pass both</div><div class="ar">→</div><div class="box good">Hybrid search: the two rankings are merged into one with RRF</div>
+</div>
+<div class="dg-cap">Figure 3 · One QueryVectors API: what you pass determines which kind of search runs</div>
+</div>
+<pre>hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, indexName=<span class="k">'docs'</span>, topK=5,
+    queryVector={<span class="k">'float32'</span>: embed(<span class="k">'VPN error E2071'</span>)},
+    queryTexts=[{<span class="k">'text'</span>: <span class="k">'VPN error E2071'</span>, <span class="k">'metadataKey'</span>: <span class="k">'chunk_text'</span>}],
+    filter={<span class="k">'acl'</span>: {<span class="k">'$in'</span>: groups}}, returnMetadata=True, returnScores=True)</pre>
+<ul>
+<li><b>How to enable it</b>: the index must be ENHANCED; in <code>textSearchConfigurations</code>  lists the text fields, with 10 supported languages: en, fr, es, pt, it, de, nl, zh, ja, ko.</li>
+<li><b>Can be enabled on existing data too</b>:<code>UpdateMetadataConfiguration</code> will be backfilled in the background, with the field status changing from <code>BUILDING</code> becomes <code>ACTIVE</code> before it can be queried.<mark>Backfill is billed at PUT pricing</mark>.<span class="src">Pricing page</span></li>
+<li><b>The tokenizer can't be changed later</b>: to change it, you have to delete the field and add it again.</li>
+</ul>
+</section>
+<section class="content-section" id="limits">
+<h2 class="section-title"><span>5</span> · Limits</h2>
+<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
+<li>Per index<mark> Up to 2 billion vectors</mark>, with 1~4,096 dimensions.<span class="src">Docs · Limits</span></li>
+<li>Filterable metadata on CLASSIC indexes is limited to <mark>2 KB</mark>, while ENHANCED allows 40 KB.<span class="src">Docs · Limits</span></li>
+</ul></div>
+<table class="cmp">
+<thead><tr><th>Project</th><th> Limit</th></tr></thead>
+<tbody>
+<tr><td>Vector buckets / per Region per account</td><td>10,000</td></tr>
+<tr><td>Indexes / per vector bucket</td><td>10,000</td></tr>
+<tr><td>Vectors / per index</td><td><b> 2 billion</b></td></tr>
+<tr><td>Dimension</td><td>1 ~ 4,096</td></tr>
+<tr><td>Metadata / per vector</td><td> ENHANCED 100 KB (40 KB filterable) · CLASSIC 40 KB (2 KB filterable) · up to 50 keys</td></tr>
+<tr><td>Non-filterable keys / full-text fields</td><td> 10 per index</td></tr>
+<tr><td>Write</td><td> 500 per call; per index, 1,000 requests, 2,500 vectors, and 140 MB per second</td></tr>
+<tr><td>Read</td><td> GetVectors: 100 per call; ListVectors: 1,000 per page, up to 16 parallel segments</td></tr>
+<tr><td>Query</td><td> topK up to 10,000, 100 per page; ENHANCED allows up to 100 filter conditions per query; query text up to 1,024 characters</td></tr>
+</tbody>
+</table>
+</section>
+<section class="content-section" id="price">
+<h2 class="section-title"><span>6</span> · Pricing</h2>
+<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
+<li>Five items:<mark>Storage, writes, query requests, query data processed, data returned</mark>; there are no fixed fees.<span class="src">Pricing page</span></li>
+<li>Query data processed = <mark>Number of vectors in the queried index × "processing size" per vector</mark>, in three tiers by index size.<span class="src">Pricing page</span></li>
+<li>Metadata that is neither filterable nor full-text searched<mark> Not counted toward query data processed</mark>.<span class="src">Pricing page</span></li>
+</ul></div>
+<table class="cmp">
+<thead><tr><th>Project</th><th> US East (N. Virginia)</th><th>Frankfurt</th><th> How it's calculated</th></tr></thead>
+<tbody>
+<tr><td><b>Storage</b></td><td>$0.06 / GB·month</td><td>$0.064 / GB·month</td><td> Vector + key + all metadata</td></tr>
+<tr><td><b>Writes (PUT)</b></td><td>$0.20 / GB</td><td>$0.214 / GB</td><td> Each request is billed at a minimum of 128 KB</td></tr>
+<tr><td><b>Query requests</b></td><td>$2.50 / million requests</td><td>$2.70 / million requests</td><td> Each QueryVectors call</td></tr>
+<tr><td><b>Query data processed</b></td><td colspan="2"> Per index: first 100K vectors $0.004/TB · 100K–10M $0.002/TB · over 10M $0.0004/TB (Frankfurt about 7% higher)</td><td>Vectors in the index × processing size</td></tr>
+<tr><td><b>Full-text search text</b></td><td colspan="2">$0.00012 / TB (flat rate)</td><td>Full-text field size × number of vectors</td></tr>
+<tr><td><b>Returned data</b></td><td colspan="2">$0.01 / GB; first 512 KB per query free</td><td> Each result is billed at a minimum of 256 bytes</td></tr>
+</tbody>
+</table>
+<h3 class="sub-h">How big is one vector</h3>
+<div class="dg">
+<div class="bucket">
+<div class="stack">
+<div class="box">Vector: 1024 dimensions × 4 bytes = 4 KB</div>
+<div class="box">key: 1 byte per character</div>
+<div class="box">Filterable metadata: department, permission group, path…</div>
+<div class="box retry">Full-text search field: original text chunk</div>
+<div class="box q">Non-filterable metadata (not full-text searched)</div>
+</div>
+<div class="ar">→</div>
+<div class="stack">
+<div class="box pay">💰 Storage: everything is billed<small> Fields that are both filterable and full-text searchable are counted twice</small></div>
+<div class="box pay">💰 Query processing: only the first three are billed<small> Full-text fields are billed separately at $0.00012/TB</small></div>
+<div class="box good">✅ The last item doesn't count toward query data processed</div>
+</div>
+</div>
+<div class="dg-cap">Figure 4 · Which bytes count toward which charge</div>
+</div>
+<h3 class="sub-h">Check against AWS's own example</h3>
+<ul>
+<li><b>Example 1</b>: 10 million vectors across 40 indexes (250,000 each), 1 million queries per month → <mark>$11.38 / month</mark>.<span class="src">Pricing page · Example 1</span></li>
+<li><b>Example 3</b>: 10 million vectors in 1 index, each with 3 KB of full-text search text, 1 million hybrid searches per month → <mark>$107.79 / month</mark> + a one-time backfill of $5.72.<span class="src">Pricing page · Example 3</span></li>
+</ul>
+<p>Same 10 million vectors, a 10x difference: the difference is mainly in<b> Size of the index each query scans</b>. If your workload already queries by department or tenant,<b>Split into multiple smaller indexes</b> is much cheaper. The repo's <code>tools/cost_estimate.py</code> It uses the same algorithm as the pricing page; the tests check against these two examples.</p>
+<div class="callout warn"><b>Costs not on the S3 Vectors bill</b>: embedding (Bedrock charges per token), OCR (Textract charges per page), Lambda, SQS, and the LLM used for answers. For backfilling existing data at the hundreds-of-TB scale,<b>These are usually far more expensive than S3 Vectors itself</b>, which must be estimated separately.</div>
+</section>
+<section class="content-section" id="calc">
+<h2 class="section-title"><span>7</span> · Do the math</h2>
+<p>Change the numbers below to calculate the monthly cost using the pricing page's method (S3 Vectors only). The defaults represent a document retrieval scenario: 20 million chunks, 600 characters each, with 1.8 KB of source text used for Chinese full-text search.</p>
+<div class="calc">
+<label>Region<select id="c-region"><option value="eu-central-1"> Frankfurt eu-central-1</option><option value="us-east-1"> US East us-east-1</option></select></label>
+<label>Total vectors<input id="c-vectors" min="0" step="1000000" type="number" value="20000000"/></label>
+<label>Split into several indexes (query one at a time)<input id="c-indexes" min="1" type="number" value="1"/></label>
+<label>Dimension<input id="c-dim" max="4096" min="1" type="number" value="1024"/></label>
+<label>Filterable metadata KB<input id="c-filt" min="0" step="0.1" type="number" value="1"/></label>
+<label>Full-text search text KB<input id="c-text" min="0" step="0.1" type="number" value="1.8"/></label>
+<label>Other non-filterable metadata KB<input id="c-nonf" min="0" step="0.1" type="number" value="0"/></label>
+<label>Queries per month<input id="c-queries" min="0" step="100000" type="number" value="1000000"/></label>
+<label>Monthly rewrite ratio (0.05 = 5%)<input id="c-rewrite" min="0" step="0.01" type="number" value="0.05"/></label>
+</div>
+<div class="calc-out" id="c-out">
+<div><span>Storage</span><b id="o-storage">—</b><small id="o-gb"></small></div>
+<div><span>Rewrite (PUT)</span><b id="o-put">—</b></div>
+<div><span>Query data processed</span><b id="o-proc">—</b><small id="o-tiers"></small></div>
+<div><span>Full-text search text</span><b id="o-text">—</b></div>
+<div><span>Query requests</span><b id="o-api">—</b></div>
+<div class="tot"><span>Monthly total</span><b id="o-total">—</b></div>
+</div>
+<p class="dg-cap">Assumptions: key is 174 bytes; each query uses topK = 10 and returns metadata, all within the 512 KB free tier. Prices from the AWS Price List (2026-11-21).</p>
+</section>
+<section class="content-section" id="demo">
+<h2 class="section-title"><span>8</span> · Scenario: semantic search over S3 files (permission-filtered)</h2>
+<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
+<li><mark>Events are just "reminders"; the current state of S3 is the "truth"</mark>: duplicate or out-of-order events don't leave incorrect vectors; the rare lost event is caught by reconciliation.</li>
+<li>Permission groups<mark> Taken only from a verified JWT</mark>, and any groups in the request body are ignored; an object without an acl can't be found by anyone.</li>
+<li>Process one object<mark> Doesn't scan the entire index</mark>: chunk keys are numbered sequentially and fetched directly by key.</li>
+</ul></div>
+<p>Requirements: an S3 bucket holds hundreds of TB of documents, images, and videos; content must be searchable in natural language, results may only include files the caller is allowed to see, and object processing must stay in-Region. For the full requirements and a point-by-point comparison, see the repo's <a href="https://github.com/tsaol/s3-vectors-search/blob/main/docs/requirements.md">requirements.md</a> and <a href="https://github.com/tsaol/s3-vectors-search/blob/main/docs/architecture.md">architecture.md</a>.</p>
+<div class="dg">
+<div class="dec">
+<div class="box">Business systems write / overwrite / delete objects; lifecycle expiration<small> S3 source bucket: read-only for processing components</small></div>
+<div class="arrow-d">↓<span>S3 event notifications</span></div>
+<div class="branch">
+<div class="box">SQS events queue<small> Daily incremental: concurrency 10</small></div>
+<div class="box">SQS backfill queue<small> Backfill and reconciliation: concurrency 4, so they don't compete with daily incremental updates</small></div>
+</div>
+<div class="arrow-d">↓<span>On failure, retry with backoff starting at 30 seconds; after 8 attempts → DLQ + alert</span></div>
+<div class="box good">Lambda indexer (same Region)<small>HEAD object → extract (text / docx / Textract OCR, Chinese supported) → chunk → Titan V2 embedding</small></div>
+<div class="arrow-d">↓<span>PutVectors / DeleteVectors</span></div>
+<div class="box good">S3 Vectors · ENHANCED index<small> Metadata: path, ETag, department, uploader, time, chunk, acl, rule version · chunk_text: non-filterable + Chinese full-text search</small></div>
+<div class="arrow-d">↑<span>Hybrid search + filter acl $in user groups</span></div>
+<div class="box">Retrieval agent on AgentCore Runtime<small> JWT authorizer (Cognito) validates the token first; the agent only reads cognito:groups from the token</small></div>
+<div class="arrow-d">↑</div>
+<div class="box q">User logs in, gets a JWT, asks a question</div>
+</div>
+<div class="dg-cap">Figure 5 · Overall flow of the scenario demo</div>
+</div>
+<h3 class="sub-h">How the indexer decides each time</h3>
+<ol class="steps">
+<li><b>HEAD object</b>: the object no longer exists → delete all its vectors. So delete events, expiration events, and late-arriving old events are all handled by the same rule.</li>
+<li><b>ETag, rule version, and model are all unchanged, and the last write completed</b> → Do nothing (duplicate event). If only permissions changed → rewrite only the metadata; don't redo the embedding.</li>
+<li><b>Otherwise</b> → Extract, chunk, and embed; overwrite chunks 0..m-1, then delete old chunks m and beyond.</li>
+<li><b>HEAD again after writing</b>: the object was overwritten again during processing → throw an exception so the queue retries, and the retry processes the new version.</li>
+</ol>
+<div class="callout"><b>Why the Lambda role needs <code>s3:ListBucket</code>?</b>Without this permission, a HEAD on a deleted object returns <b>403</b>, not 404. The indexer then can't tell "deleted" from "no permission", and delete events keep failing. ListBucket is only a read permission, so it doesn't break the "read-only source bucket" requirement.</div>
+<h3 class="sub-h">What the end-to-end tests check</h3>
+<table class="cmp">
+<thead><tr><th>#</th><th>Check</th></tr></thead>
+<tbody>
+<tr><td>1</td><td> Upload a file → automatically indexed</td></tr>
+<tr><td>2</td><td> Regular employees can't find salary files; the compensation team can</td></tr>
+<tr><td>3</td><td> A regular employee forges it in the request body <code>"groups": ["hr-payroll"]</code> → Still not found</td></tr>
+<tr><td>4</td><td> No token → rejected by the runtime</td></tr>
+<tr><td>5</td><td> Search for error code "E2071" → hybrid search ranks the VPN doc first</td></tr>
+<tr><td>6</td><td> Overwrite a file → answers use the new content, and the old chunks are deleted</td></tr>
+<tr><td>7</td><td> Delete a file → its vectors are deleted</td></tr>
+<tr><td>8</td><td> Reconciliation: no orphaned vectors, stale vectors, or missing objects</td></tr>
+</tbody>
+</table>
+<div class="callout warn"><b>Data residency</b>: embedding and OCR both run in this Region. If the LLM used for answers goes through<b> Cross-Region inference profile</b>(<code>eu.</code>, <code>us.</code>, <code>global.</code> prefix), the retrieved<mark> Source text chunks are sent to other Regions for processing</mark>. By default, the demo doesn't call an LLM and only returns search results; whether to enable it is up to the compliance team.</div>
+</section>
+<section class="content-section" id="more">
+<h2 class="section-title"><span>9</span> · More scenarios</h2>
+<table class="cmp">
+<thead><tr><th>Scenario</th><th> How to use S3 Vectors</th><th> Sample</th></tr></thead>
+<tbody>
+<tr><td><b>IT tickets / error codes</b></td><td> Hybrid search: BM25 matches "E2071" exactly, vectors understand "account locked"</td><td><code>examples/04_hybrid.py</code></td></tr>
+<tr><td><b>Long-term memory for agents</b></td><td> Each memory carries <code>user_id</code> + timestamp; filter by user and time window, then find the nearest matches</td><td><code>examples/06_agent_memory.py</code></td></tr>
+<tr><td><b>Product search</b></td><td> Embed the description; store price, inventory, and category as filterable metadata</td><td><code> examples/02, 03</code></td></tr>
+<tr><td><b>Managed RAG</b></td><td> Bedrock Knowledge Bases can use S3 Vectors directly as the vector store, with parsing, chunking, and embedding all managed</td><td>—</td></tr>
+</tbody>
+</table>
+<p><b>Build your own pipeline, or use Knowledge Bases?</b>If you want to go live fastest, use Knowledge Bases. If you need to control the extraction rules and permission fields yourself, or use the same embedding rules as other data sources (as this article requires), build it yourself.<span class="src">Docs · Integrations</span></p>
+</section>
+<section class="content-section" id="pitfalls">
+<h2 class="section-title"><span>10</span> · Common pitfalls</h2>
+<ul>
+<li><b>CLASSIC index + a very narrow filter</b> → Too few results, or even none. Switch to ENHANCED.</li>
+<li><b>Putting large text in filterable metadata</b> → Writes fail with 400 when over the limit, and you pay for it on every query. Put the source text chunks in <code>nonFilterableMetadataKeys</code>.</li>
+<li><b>Frequently overwriting or deleting the same set of keys</b> → Old data temporarily counts toward the index size,<mark>Query costs temporarily go up</mark>.<span class="src">Pricing page</span></li>
+<li><b>Writing one vector at a time</b> → Each PUT is billed at a minimum of 128 KB. Write in batches, up to 500 per call.</li>
+<li><b>The boto3 bundled with Lambda is too old</b> → No <code>queryTexts</code>, <code>returnScores</code>. Include a recent boto3 in the deployment package.</li>
+<li><b>Running ListVectors for every object processed</b> → Breaks down once the index gets large. Use fixed-format keys (<code>doc_id#sequence number</code>), fetched directly by key.</li>
+<li><b>Partially written, partially deleted</b> → Leaves behind old chunks that never get deleted, and even old permissions. Rule:<mark>Chunk 0 is written last; deletes go from the highest index down</mark>, so what remains is always a contiguous range that a retry can finish.</li>
+<li><b>Failed messages wait 90 minutes before being retried</b> → Set the SQS visibility timeout to about 6 times the Lambda timeout. On failure, use <code>ChangeMessageVisibility</code> Reduces wait time.</li>
+<li><b>Permission groups are filled in by the caller</b> → Anyone can impersonate another group. Permission groups must come only from verified identities.</li>
+</ul>
+</section>
+<section class="content-section" id="terms">
+<h2 class="section-title"><span>?</span> · Glossary</h2>
+<table class="cmp gloss">
+<thead><tr><th>Term</th><th> In plain words</th></tr></thead>
+<tbody>
+<tr><td><b>Vector / embedding</b></td><td> Turns a passage of text or an image into a list of numbers; similar meanings give similar numbers</td></tr>
+<tr><td><b>Distance (cosine)</b></td><td>How "different" two vectors are: 0 means identical, larger means less similar</td></tr>
+<tr><td><b>topK</b></td><td> Returns the top K closest matches</td></tr>
+<tr><td><b>Metadata</b></td><td> Labels attached to vectors: department, permission groups, path, source text snippet…</td></tr>
+<tr><td><b>Filterable / non-filterable</b></td><td> Whether you can filter on it in queries; non-filterable fields are only returned with results and don't count toward query processing</td></tr>
+<tr><td><b>BM25</b></td><td> A classic keyword scoring method: the more often a query term appears and the rarer it is, the higher the score</td></tr>
+<tr><td><b>RRF</b></td><td> Merges two rankings into one: each result gets points based on its position in both rankings</td></tr>
+<tr><td><b>ENHANCED / CLASSIC</b></td><td> Index modes: filter first, then search / filter while searching</td></tr>
+<tr><td><b>ETag</b></td><td> S3's "fingerprint" for each object version; when the content changes, the ETag changes</td></tr>
+<tr><td><b>DLQ</b></td><td> Dead-letter queue: messages that fail too many times go here for someone to handle</td></tr>
+<tr><td><b>JWT</b></td><td> The "pass" you get after logging in: it says who you are and which groups you belong to, and it's signed, so it can't be altered</td></tr>
+</tbody>
+</table>
+</section>
+<div class="refs">
+<h4>Reference</h4>
+<ol>
+<li><a href="https://github.com/tsaol/s3-vectors-search">github.com/tsaol/s3-vectors-search</a> · Companion code for this article: basic API examples, scenario demos, a cost calculator (MIT-0)</li>
+<li id="ref-what"><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors.html">What is / Use cases / Integrations · Working with S3 Vectors</a></li>
+<li id="ref-limits"><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-limitations.html">Limits · Limitations and restrictions</a></li>
+<li><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-metadata-filtering.html">Metadata filtering</a></li>
+<li><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-index-mode.html">Index mode · Changing a vector index's mode</a></li>
+<li><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-hybrid-search.html">Hybrid search with Amazon S3 Vectors</a></li>
+<li><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-configuring-full-text-search.html">Full-text config · Configuring full-text search</a></li>
+<li><a href="https://aws.amazon.com/s3/pricing/">Pricing page · Amazon S3 pricing (Vectors section and Examples 1 and 3)</a></li>
+<li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-header-allowlist.html">AgentCore Runtime: forward the Authorization header (JWT authorizer)</a></li>
+</ol>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../">Home</a> · <a href="../">S3</a></p>
+</footer>
+<script>
+// Same method as tools/cost_estimate.py in the repo (checked against the S3 pricing page examples).
+(function () {
+  var KB = 1024, GB = Math.pow(1024, 3), TB = Math.pow(1024, 4);
+  var RATES = {
+    'us-east-1':    {st: 0.06,  put: 0.20,  q: 2.50, tiers: [0.004, 0.002, 0.0004],       text: 0.00012},
+    'eu-central-1': {st: 0.064, put: 0.214, q: 2.70, tiers: [0.004285, 0.002143, 0.000429], text: 0.00012}
+  };
+  function v(id) { var x = parseFloat(document.getElementById(id).value); return isFinite(x) && x > 0 ? x : 0; }
+  function usd(x) { return '$' + (x >= 100 ? x.toFixed(0) : x.toFixed(2)); }
+  function set(id, t) { document.getElementById(id).textContent = t; }
+  function run() {
+    var r = RATES[document.getElementById('c-region').value];
+    var n = v('c-vectors'), idx = Math.max(1, Math.round(v('c-indexes')) || 1), dim = v('c-dim');
+    var filt = v('c-filt') * KB, text = v('c-text') * KB, nonf = v('c-nonf') * KB, key = 174;
+    var q = v('c-queries'), rw = v('c-rewrite');
+    var stored = 4 * dim + key + filt + nonf + text;
+    var gb = n * stored / GB;
+    var storage = gb * r.st, put = rw * gb * r.put;
+    var per = n / idx, proc = 4 * dim + key + filt;
+    var t = [Math.min(per, 1e5), Math.max(0, Math.min(per, 1e7) - 1e5), Math.max(0, per - 1e7)];
+    var tiers = t.map(function (c, i) { return c * proc / TB * r.tiers[i] * q; });
+    var procSum = tiers[0] + tiers[1] + tiers[2];
+    var textCost = per * text / TB * r.text * q;
+    var api = q / 1e6 * r.q;
+    set('o-storage', usd(storage)); set('o-gb', gb.toFixed(1) + ' GB');
+    set('o-put', usd(put)); set('o-proc', usd(procSum));
+    set('o-tiers', tiers.map(usd).join(' / '));
+    set('o-text', usd(textCost)); set('o-api', usd(api));
+    set('o-total', usd(storage + put + procSum + textCost + api));
+  }
+  document.querySelectorAll('.calc input, .calc select').forEach(function (e) { e.addEventListener('input', run); });
+  run();
+})();
+</script>
+<a data-cur="en" data-to="zh" href="../../../s3/vectors/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>

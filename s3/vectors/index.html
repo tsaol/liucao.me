@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>S3 Vectors：让 S3 里的文件按意思搜得到 · liucao.me</title>
+<meta content="Amazon S3 Vectors 是什么、怎么用、怎么收费：基础 API、ENHANCED 索引、混合检索、费用计算器，以及一个按权限过滤的 S3 文件语义检索场景 demo" name="description"/>
+<link href="../../ec2/assets/style.css" rel="stylesheet"/>
+<style>
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .fig { margin: 1.2rem 0 1.4rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .fig svg { display: block; width: 100%; height: auto; }
+        .fig figcaption { text-align: center; font-size: 0.8rem; color: var(--text-mute); margin-top: 0.6rem; }
+        .photo { position: relative; }
+        .photo img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
+        .pin { position: absolute; transform: translate(-50%, -50%); background: rgba(11,15,20,0.88); border: 1px solid var(--accent); color: var(--accent); font-size: 0.74rem; font-weight: 600; padding: 0.12rem 0.55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+        .pin.n1 { border-color: #60a5fa; color: #60a5fa; }
+        .fig figcaption a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .tldr { background: var(--surface); border: 1px solid var(--accent-dim); border-radius: var(--radius); padding: 1.1rem 1.3rem; margin: 0.4rem 0 2.2rem; }
+        .tldr .lead { color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; }
+        .tldr ol { color: var(--text-dim); padding-left: 1.2rem; }
+        .tldr li { margin-bottom: 0.3rem; }
+        .tldr b { color: var(--text); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.87rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        pre.ascii { line-height: 1.35; font-size: 0.78rem; }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+
+        .steps { counter-reset: s; list-style: none; padding-left: 0 !important; }
+        .steps li { counter-increment: s; position: relative; padding-left: 2.2rem; margin-bottom: 0.7rem !important; }
+        .steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--accent-dim); color: var(--accent); font-family: var(--mono); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
+        .cmp td.yes { color: #34d399; font-weight: 600; } .cmp td.no { color: #f87171; font-weight: 600; }
+    
+        /* ---- diagrams (HTML + CSS, so the English copy gets translated too) ---- */
+        .dg { margin: 1rem 0 1.4rem; padding: 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .dg-cap { text-align: center; font-size: 0.8rem; color: var(--text-mute); margin-top: 0.8rem; }
+        .box { background: var(--bg-soft); border: 1px solid var(--border-hi); border-radius: 10px; padding: 0.6rem 0.8rem; font-size: 0.86rem; color: var(--text); line-height: 1.45; }
+        .box small { display: block; color: var(--text-dim); font-size: 0.78rem; margin-top: 0.15rem; }
+        .box.q { border-style: dashed; border-color: var(--accent-dim); text-align: center; font-weight: 600; }
+        .box.good { background: rgba(52,211,153,.10); border-color: #34d399; }
+        .box.retry { background: rgba(251,191,36,.10); border-color: #fbbf24; }
+        .box.stop { background: rgba(248,113,113,.10); border-color: #f87171; }
+        .box.pay { background: rgba(251,191,36,.08); border-color: #d97706; }
+        .arrow-d { text-align: center; color: var(--text-mute); font-size: 1.1rem; line-height: 1.2; margin: 0.25rem 0; }
+        .arrow-d span { font-size: 0.75rem; display: block; }
+        .tl { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.4rem; }
+        .tl .box { flex: 1 1 140px; text-align: center; }
+        .tl .ar { align-self: center; color: var(--text-mute); }
+        .dec { display: grid; grid-template-columns: 1fr; gap: 0.3rem; max-width: 720px; margin: 0 auto; }
+        .branch { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+        .branch .lbl { font-size: 0.75rem; color: var(--text-mute); margin-bottom: 0.25rem; text-align: center; }
+        .loop { max-width: 560px; margin: 0 auto; }
+        .loopnote { border-left: 2px dashed #fbbf24; margin: 0.35rem 0 0 0.9rem; padding: 0.15rem 0 0.15rem 0.6rem; font-size: 0.8rem; color: var(--text-dim); }
+        .res { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1.6fr); gap: 0.45rem 0.6rem; align-items: center; }
+        .res .ar { color: var(--text-mute); }
+        .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem 1rem; max-width: 680px; margin: 0 auto; }
+        .lanes .hd { text-align: center; font-weight: 700; color: var(--accent); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+        .lanes .msg { font-size: 0.84rem; color: var(--text-dim); padding: 0.35rem 0.6rem; border-radius: 8px; background: var(--bg-soft); }
+        .lanes .msg.r { grid-column: 2; } .lanes .msg.l { grid-column: 1; }
+        .lanes .msg.bad { border: 1px dashed #f87171; } .lanes .msg.ok { border: 1px solid #34d399; }
+        .lanes .full { grid-column: 1 / span 2; text-align: center; }
+        .bucket { display: grid; grid-template-columns: auto auto 1fr; gap: 0.6rem; align-items: center; }
+        .bucket .stack { display: grid; gap: 0.4rem; }
+        .gloss code { word-break: break-all; }
+        .users { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
+        .sublbl { font-size: 0.75rem; color: var(--text-mute); text-align: center; }
+        @media (max-width: 640px) {
+          .branch, .lanes { grid-template-columns: 1fr; }
+          .lanes .msg.r, .lanes .msg.l { grid-column: 1; }
+          .res { grid-template-columns: 1fr; } .res .ar { display: none; }
+          .bucket { grid-template-columns: 1fr; } .tl .ar { display: none; }
+          .users { grid-template-columns: 1fr; }
+          .cmp { display: block; overflow-x: auto; }
+        }
+    
+        /* ---- key-info marks (要点 box, highlight, source tag) ---- */
+        .key { background: rgba(0,229,160,.06); border: 1px solid rgba(0,229,160,.3); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; padding: .7em 1em; margin: .2em 0 1.2em; color: var(--text-dim); font-size: .92rem; }
+        .key .kl { display: inline-block; font-size: 12px; font-weight: 700; color: #04130d; background: var(--accent); border-radius: 4px; padding: 0 .45em; margin-right: .5em; }
+        .key ul { margin: .4em 0 0; padding-left: 1.2em; } .key li { margin: .25em 0; }
+        main.wrap mark { background: rgba(0,229,160,.18); color: var(--text); padding: 0 .15em; border-radius: 3px; }
+        .src { display: inline-block; font-family: var(--mono); font-size: 11px; color: #7cc4ff; border: 1px solid rgba(124,196,255,.4); border-radius: 4px; padding: 0 .35em; margin-left: .3em; vertical-align: 1px; white-space: nowrap; }
+        .legend { font-size: .8rem; color: var(--text-mute); margin: -1.2rem 0 2rem; }
+        /* ---- cost calculator ---- */
+        .calc { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem .9rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
+        .calc label { display: flex; flex-direction: column; gap: .25rem; font-size: .8rem; color: var(--text-dim); }
+        .calc input, .calc select { background: var(--bg); color: var(--text); border: 1px solid var(--border-hi); border-radius: 6px; padding: .4rem .5rem; font-family: var(--mono); font-size: .85rem; }
+        .calc-out { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin: .8rem 0 .3rem; }
+        .calc-out div { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px; padding: .55rem .8rem; }
+        .calc-out span { display: block; font-size: .75rem; color: var(--text-mute); }
+        .calc-out b { font-family: var(--mono); font-size: 1.1rem; color: var(--text); }
+        .calc-out small { display: block; font-family: var(--mono); font-size: .7rem; color: var(--text-mute); }
+        .calc-out .tot { border-color: var(--accent-dim); } .calc-out .tot b { color: var(--accent); }
+        @media (max-width: 640px) { .calc, .calc-out { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">S3</a>
+<a href="https://github.com/tsaol/s3-vectors-search">GitHub</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hero">
+<div class="crumb"><a href="../">S3</a> · Vectors · 语义检索</div>
+<h1>S3 Vectors：让 S3 里的文件<span class="g">按意思搜得到</span></h1>
+<p class="sub">S3 里放着大量文档和图片，现在只能按文件名找。这篇讲清楚 Amazon S3 Vectors 是什么、怎么用、怎么收费，再用一个完整的场景 demo 串起来：S3 文件 → 向量 → 按权限检索 → 带出处的回答。</p>
+<nav class="toc">
+<a href="#what">1 · 它是什么</a>
+<a href="#use">2 · 怎么用</a>
+<a href="#mode">3 · 先过滤再检索</a>
+<a href="#hybrid">4 · 混合检索</a>
+<a href="#limits">5 · 上限</a>
+<a href="#price">6 · 怎么收费</a>
+<a href="#calc">7 · 算一算</a>
+<a href="#demo">8 · 场景：文件语义检索</a>
+<a href="#more">9 · 更多场景</a>
+<a href="#pitfalls">10 · 常见坑</a>
+<a href="#terms">术语表</a>
+</nav>
+</div>
+<div class="callout danger"><b>声明：本文配套的代码是讲解用的示例，不是 AWS 官方工具，不能直接用在生产环境。</b><br/>上限、价格以 AWS 官方文档为准（本文查阅日期 2026-11-24，价格来自 AWS Price List，发布于 2026-11-21）。</div>
+<div class="tldr">
+<div class="lead">先看这里：三句话</div>
+<ol>
+<li><b>S3 Vectors 是 S3 里专门放向量的桶。</b>不用建集群，按存储量和查询量付费，<mark>适合"数据很多、查询不太频繁"的场景</mark>。</li>
+<li><b>一定要用 ENHANCED 索引。</b>它<mark>先按权限过滤，再找最相近的</mark>，一个人只能看 1% 的文件时也能召回得到；它还支持中文全文检索和混合检索。</li>
+<li><b>费用的大头是"查询处理量"</b>：索引越大，每次查询越贵。<mark>原文片段放进"不可过滤"的元数据</mark>，能按部门分开就分成多个索引。</li>
+</ol>
+</div>
+<p class="legend">标注说明：<span class="key" style="display:inline;padding:0 .4em;margin:0;border-left-width:3px">要点</span> 每节开头的关键信息 · <mark>高亮</mark> 核心结论 · <span class="src">文档 · Limits</span> 出处（AWS 官方文档的页面），可以点到文末参考里查原文。</p>
+<section class="content-section" id="what">
+<h2 class="section-title"><span>1</span> · 它是什么</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul>
+<li>三层：<mark>向量桶 → 向量索引 → 向量</mark>（key + 浮点数 + 元数据）。<span class="src">文档 · What is</span></li>
+<li>冷查询亚秒级，热查询最快约 100 ms；<mark>写入强一致</mark>，写完马上能查。<span class="src">文档 · What is</span></li>
+</ul></div>
+<p>"向量"就是把一段文字或一张图变成的一串数字。<b>意思相近的内容，数字也相近</b>。所以搜索"工资几号发"时，能找到写着"每月工资在次月 10 日发放"的那段话，哪怕两句话里没有一个相同的词。</p>
+<div class="dg">
+<div class="tl">
+<div class="box">向量桶<small>一种新的 S3 桶；"阻止公有访问"永远打开，关不掉</small></div><div class="ar">→</div>
+<div class="box">向量索引<small>桶里再分组；维度、距离算法在建索引时定死</small></div><div class="ar">→</div>
+<div class="box good">向量<small>key + 1024 个浮点数 + 元数据（部门、权限组、原文片段……）</small></div>
+</div>
+<div class="dg-cap">图 1 · S3 Vectors 的三层结构</div>
+</div>
+<ul>
+<li><b>不用管机器</b>：没有集群、没有节点数，按用量付费。<span class="src">文档 · What is</span></li>
+<li><b>适合什么</b>：官方说法是 <i>"ideal for workloads where queries are less frequent"</i>。比如企业文档检索、Agent 记忆、图片去重、视频片段检索。<span class="src">文档 · Use cases</span></li>
+<li><b>不适合什么</b>：需要很高 QPS、很低延迟的在线推荐。这类场景可以把索引快照导出到 OpenSearch Serverless。<span class="src">文档 · Integrations</span></li>
+<li><b>权限</b>：IAM 的命名空间是 <code>s3vectors:</code>，和 <code>s3:</code> 分开，可以精确授权到某一个索引。</li>
+</ul>
+</section>
+<section class="content-section" id="use">
+<h2 class="section-title"><span>2</span> · 怎么用：五个 API 就够</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul>
+<li>建索引时<mark>维度、距离算法、不可过滤的字段</mark>以后都不能改。<span class="src">文档 · Full-text config</span></li>
+<li>同一个 key 再写一次就是覆盖；<mark>每次 PUT 最少按 128 KB 计费</mark>，所以要批量写（每次最多 500 个）。<span class="src">定价页</span></li>
+</ul></div>
+<ol class="steps">
+<li><b>建桶</b>：<code>CreateVectorBucket</code>。</li>
+<li><b>建索引</b>：<code>CreateIndex</code>，定好维度（和 embedding 模型一致，例如 Titan Text V2 是 1024）、距离算法（<code>cosine</code>）、哪些元数据只返回不过滤。</li>
+<li><b>写入</b>：<code>PutVectors</code>，每次最多 500 个。</li>
+<li><b>查询</b>：<code>QueryVectors</code>，带上查询向量、<code>topK</code>、过滤条件；可以返回元数据和距离。</li>
+<li><b>管理</b>：<code>GetVectors</code>（每次最多 100 个 key）、<code>ListVectors</code>（可分 16 段并行）、<code>DeleteVectors</code>。</li>
+</ol>
+<pre><span class="c"># boto3 1.44+（老版本没有 queryTexts / returnScores）</span>
+sv = boto3.client(<span class="k">'s3vectors'</span>, region_name=<span class="k">'eu-central-1'</span>)
+sv.create_vector_bucket(vectorBucketName=<span class="k">'my-vectors'</span>)
+sv.create_index(vectorBucketName=<span class="k">'my-vectors'</span>, indexName=<span class="k">'docs'</span>,
+    dataType=<span class="k">'float32'</span>, dimension=1024, distanceMetric=<span class="k">'cosine'</span>,
+    metadataConfiguration={
+        <span class="k">'nonFilterableMetadataKeys'</span>: [<span class="k">'chunk_text'</span>],          <span class="c"># 原文：只返回，不过滤</span>
+        <span class="k">'textSearchConfigurations'</span>: [{<span class="k">'metadataKey'</span>: <span class="k">'chunk_text'</span>, <span class="k">'language'</span>: <span class="k">'zh'</span>}]})
+
+sv.put_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, indexName=<span class="k">'docs'</span>, vectors=[{
+    <span class="k">'key'</span>: <span class="k">'doc1#00000'</span>, <span class="k">'data'</span>: {<span class="k">'float32'</span>: emb},
+    <span class="k">'metadata'</span>: {<span class="k">'dept'</span>: <span class="k">'HR'</span>, <span class="k">'acl'</span>: [<span class="k">'all-staff'</span>], <span class="k">'chunk_text'</span>: <span class="k">'年假 12 天……'</span>}}])
+
+hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, indexName=<span class="k">'docs'</span>, topK=5,
+    queryVector={<span class="k">'float32'</span>: q_emb},
+    filter={<span class="k">'acl'</span>: {<span class="k">'$in'</span>: [<span class="k">'all-staff'</span>]}},                         <span class="c"># 按权限过滤</span>
+    returnMetadata=True, returnDistance=True)[<span class="k">'vectors'</span>]</pre>
+<p>每一步都有能直接跑的脚本：<a href="https://github.com/tsaol/s3-vectors-search/tree/main/examples">examples/</a>（01 建索引 · 02 写入和查询 · 03 过滤 · 04 混合检索 · 05 管理 · 06 Agent 记忆）。</p>
+<h3 class="sub-h">过滤语法</h3>
+<table class="cmp">
+<thead><tr><th>写法</th><th>意思</th></tr></thead>
+<tbody>
+<tr><td><code>{"dept": "HR"}</code></td><td>等于（不写操作符就是 <code>$eq</code>）</td></tr>
+<tr><td><code>{"price": {"$gte": 10, "$lte": 50}}</code></td><td>数值范围：<code>$gt $gte $lt $lte</code></td></tr>
+<tr><td><code>{"acl": {"$in": ["hr", "all-staff"]}}</code></td><td>属于其中之一；acl 是列表字段时，<b>和给定的值有交集就算匹配</b>（实测）</td></tr>
+<tr><td><code>{"path": {"$startsWith": "hr/"}}</code></td><td>前缀匹配（只在 ENHANCED 上可用）</td></tr>
+<tr><td><code>{"$and": [...]}</code> / <code>{"$or": [...]}</code></td><td>组合；另有 <code>$ne $nin $exists</code></td></tr>
+</tbody>
+</table>
+<p>注意过滤条件的个数：<code>$in</code> 里有 3 个值就算 3 个条件，<mark>ENHANCED 索引每次查询最多 100 个</mark>。<span class="src">文档 · Metadata filtering</span> 一个用户属于很多权限组时，要先在业务侧合并。</p>
+</section>
+<section class="content-section" id="mode">
+<h2 class="section-title"><span>3</span> · ENHANCED：先过滤，再检索</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul>
+<li>ENHANCED <mark>先算出过滤条件命中的向量，只在这些里面找最相近的</mark>（pre-filtering）。<span class="src">文档 · Metadata filtering</span></li>
+<li><mark>2026-09-30 及以后新建的向量桶默认 ENHANCED</mark>；之前的桶默认 CLASSIC，可以原地升级，不额外收费。<span class="src">文档 · Index mode</span></li>
+</ul></div>
+<div class="dg">
+<div class="branch">
+<div><div class="lbl">CLASSIC：一边找一边过滤</div>
+<div class="box stop">先找"最相近的一批"，再检查权限<small>一个人只能看 1% 的文件时，最相近的那批里可能没有他能看的 → 结果少于 topK，甚至为空</small></div></div>
+<div><div class="lbl">ENHANCED：先过滤</div>
+<div class="box good">先圈出"他能看的"，再在里面找最相近的<small>权限再窄也能召回；可过滤元数据最多 40 KB；支持全文检索、<code>$startsWith</code></small></div></div>
+</div>
+<div class="dg-cap">图 2 · 两种索引模式的区别：对"按权限过滤"影响很大</div>
+</div>
+<p>按权限检索时，过滤条件往往很窄，所以<b>这一点比什么都重要</b>。查看一个索引的模式用 <code>GetIndex</code> 看 <code>indexMode</code>；升级用 <code>UpdateIndexMode</code>，原地生效，不用重新导入。<span class="src">文档 · Index mode</span></p>
+</section>
+<section class="content-section" id="hybrid">
+<h2 class="section-title"><span>4</span> · 混合检索：意思和关键词都要</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul>
+<li>向量检索懂意思，但<mark>对错误码、型号、人名这种"要一模一样"的词不敏感</mark>；BM25 全文检索正好补上。<span class="src">文档 · Hybrid search</span></li>
+<li>混合检索 = 向量 + BM25，<mark>用 RRF 合成一个排名</mark>；有 <code>zh</code> 中文分词器。<span class="src">文档 · Full-text config</span></li>
+</ul></div>
+<div class="dg">
+<div class="res">
+<div class="box">只传 <code>queryVector</code></div><div class="ar">→</div><div class="box">向量检索：按距离排序</div>
+<div class="box">只传 <code>queryTexts</code></div><div class="ar">→</div><div class="box">全文检索：按 BM25 分数排序</div>
+<div class="box good">两个都传</div><div class="ar">→</div><div class="box good">混合检索：两种排名用 RRF 合成一个</div>
+</div>
+<div class="dg-cap">图 3 · 同一个 QueryVectors API，传什么决定做哪种检索</div>
+</div>
+<pre>hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, indexName=<span class="k">'docs'</span>, topK=5,
+    queryVector={<span class="k">'float32'</span>: embed(<span class="k">'VPN 报错 E2071'</span>)},
+    queryTexts=[{<span class="k">'text'</span>: <span class="k">'VPN 报错 E2071'</span>, <span class="k">'metadataKey'</span>: <span class="k">'chunk_text'</span>}],
+    filter={<span class="k">'acl'</span>: {<span class="k">'$in'</span>: groups}}, returnMetadata=True, returnScores=True)</pre>
+<ul>
+<li><b>怎么开</b>：索引必须是 ENHANCED；在 <code>textSearchConfigurations</code> 里列出文本字段，可选 10 种语言：en、fr、es、pt、it、de、nl、zh、ja、ko。</li>
+<li><b>已有数据也能开</b>：<code>UpdateMetadataConfiguration</code> 会在后台回填，字段状态从 <code>BUILDING</code> 变成 <code>ACTIVE</code> 之后才能查。<mark>回填按 PUT 的价格收费</mark>。<span class="src">定价页</span></li>
+<li><b>分词器以后不能改</b>：要换只能删掉这个字段，再重新加一次。</li>
+</ul>
+</section>
+<section class="content-section" id="limits">
+<h2 class="section-title"><span>5</span> · 上限</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul>
+<li>每个索引<mark>最多 20 亿个向量</mark>，维度 1~4,096。<span class="src">文档 · Limits</span></li>
+<li>CLASSIC 索引的可过滤元数据只有 <mark>2 KB</mark>，ENHANCED 有 40 KB。<span class="src">文档 · Limits</span></li>
+</ul></div>
+<table class="cmp">
+<thead><tr><th>项目</th><th>上限</th></tr></thead>
+<tbody>
+<tr><td>向量桶 / 每个区域每个账号</td><td>10,000</td></tr>
+<tr><td>索引 / 每个向量桶</td><td>10,000</td></tr>
+<tr><td>向量 / 每个索引</td><td><b>20 亿</b></td></tr>
+<tr><td>维度</td><td>1 ~ 4,096</td></tr>
+<tr><td>元数据 / 每个向量</td><td>ENHANCED 100 KB（可过滤 40 KB）· CLASSIC 40 KB（可过滤 2 KB）· 最多 50 个 key</td></tr>
+<tr><td>不可过滤 key / 全文字段</td><td>每个索引各 10 个</td></tr>
+<tr><td>写入</td><td>每次 500 个；每个索引每秒 1,000 次请求、2,500 个向量、140 MB/s</td></tr>
+<tr><td>读取</td><td>GetVectors 每次 100 个；ListVectors 每页 1,000 个，最多 16 段并行</td></tr>
+<tr><td>查询</td><td>topK 最多 10,000，每页 100 个；ENHANCED 每次最多 100 个过滤条件；查询文本最多 1,024 字符</td></tr>
+</tbody>
+</table>
+</section>
+<section class="content-section" id="price">
+<h2 class="section-title"><span>6</span> · 怎么收费</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul>
+<li>五项：<mark>存储、写入、查询请求、查询处理量、返回数据</mark>；没有固定费用。<span class="src">定价页</span></li>
+<li>查询处理量 = <mark>被查索引里的向量数 × 每个向量的"处理大小"</mark>，按索引大小分三档。<span class="src">定价页</span></li>
+<li>不可过滤、也不做全文检索的元数据<mark>不算进查询处理量</mark>。<span class="src">定价页</span></li>
+</ul></div>
+<table class="cmp">
+<thead><tr><th>项目</th><th>美东（弗吉尼亚北部）</th><th>法兰克福</th><th>怎么算</th></tr></thead>
+<tbody>
+<tr><td><b>存储</b></td><td>$0.06 / GB·月</td><td>$0.064 / GB·月</td><td>向量 + key + 全部元数据</td></tr>
+<tr><td><b>写入（PUT）</b></td><td>$0.20 / GB</td><td>$0.214 / GB</td><td>每次请求最少按 128 KB 算</td></tr>
+<tr><td><b>查询请求</b></td><td>$2.50 / 百万次</td><td>$2.70 / 百万次</td><td>每次 QueryVectors</td></tr>
+<tr><td><b>查询处理量</b></td><td colspan="2">每个索引：前 10 万个向量 $0.004/TB · 10 万~1,000 万 $0.002/TB · 1,000 万以上 $0.0004/TB（法兰克福约高 7%）</td><td>索引里的向量数 × 处理大小</td></tr>
+<tr><td><b>全文检索文本</b></td><td colspan="2">$0.00012 / TB（单一价格）</td><td>全文字段的大小 × 向量数</td></tr>
+<tr><td><b>返回数据</b></td><td colspan="2">$0.01 / GB；每次查询前 512 KB 免费</td><td>每条结果最少按 256 字节算</td></tr>
+</tbody>
+</table>
+<h3 class="sub-h">一个向量算多大</h3>
+<div class="dg">
+<div class="bucket">
+<div class="stack">
+<div class="box">向量：1024 维 × 4 字节 = 4 KB</div>
+<div class="box">key：每个字符 1 字节</div>
+<div class="box">可过滤元数据：部门、权限组、路径……</div>
+<div class="box retry">全文检索字段：原文片段</div>
+<div class="box q">不可过滤元数据（不做全文检索的）</div>
+</div>
+<div class="ar">→</div>
+<div class="stack">
+<div class="box pay">💰 存储：全部算<small>既可过滤又做全文检索的字段算两次</small></div>
+<div class="box pay">💰 查询处理量：只算前三项<small>全文字段另按 $0.00012/TB 算</small></div>
+<div class="box good">✅ 最后一项不算进查询处理量</div>
+</div>
+</div>
+<div class="dg-cap">图 4 · 哪些字节算进哪一项费用</div>
+</div>
+<h3 class="sub-h">用 AWS 自己的例子对一下</h3>
+<ul>
+<li><b>例 1</b>：1,000 万个向量分在 40 个索引里（每个 25 万），每月 100 万次查询 → <mark>$11.38 / 月</mark>。<span class="src">定价页 · Example 1</span></li>
+<li><b>例 3</b>：1,000 万个向量在 1 个索引里，每个带 3 KB 全文检索文本，每月 100 万次混合检索 → <mark>$107.79 / 月</mark> + 一次性回填 $5.72。<span class="src">定价页 · Example 3</span></li>
+</ul>
+<p>同样是 1,000 万个向量，差 10 倍：区别主要在<b>每次查询要扫的索引有多大</b>。如果业务本来就按部门、按租户查，<b>分成多个小索引</b>会便宜很多。repo 里的 <code>tools/cost_estimate.py</code> 用的就是定价页的算法，测试会用这两个例子核对。</p>
+<div class="callout warn"><b>不在 S3 Vectors 账单里的费用</b>：embedding（Bedrock 按 token 收费）、OCR（Textract 按页收费）、Lambda、SQS、回答用的大模型。对于百 TB 级的存量回填，<b>这几项通常比 S3 Vectors 本身贵得多</b>，要单独估算。</div>
+</section>
+<section class="content-section" id="calc">
+<h2 class="section-title"><span>7</span> · 算一算</h2>
+<p>改下面的数字，按定价页的算法算出每月费用（只算 S3 Vectors 本身）。默认值是一个文档检索场景：2,000 万个片段，600 字一段，原文 1.8 KB 做中文全文检索。</p>
+<div class="calc">
+<label>区域<select id="c-region"><option value="eu-central-1">法兰克福 eu-central-1</option><option value="us-east-1">美东 us-east-1</option></select></label>
+<label>向量总数<input id="c-vectors" min="0" step="1000000" type="number" value="20000000"/></label>
+<label>分成几个索引（每次查一个）<input id="c-indexes" min="1" type="number" value="1"/></label>
+<label>维度<input id="c-dim" max="4096" min="1" type="number" value="1024"/></label>
+<label>可过滤元数据 KB<input id="c-filt" min="0" step="0.1" type="number" value="1"/></label>
+<label>全文检索文本 KB<input id="c-text" min="0" step="0.1" type="number" value="1.8"/></label>
+<label>其他不可过滤元数据 KB<input id="c-nonf" min="0" step="0.1" type="number" value="0"/></label>
+<label>每月查询次数<input id="c-queries" min="0" step="100000" type="number" value="1000000"/></label>
+<label>每月重写比例（0.05 = 5%）<input id="c-rewrite" min="0" step="0.01" type="number" value="0.05"/></label>
+</div>
+<div class="calc-out" id="c-out">
+<div><span>存储</span><b id="o-storage">—</b><small id="o-gb"></small></div>
+<div><span>重写（PUT）</span><b id="o-put">—</b></div>
+<div><span>查询处理量</span><b id="o-proc">—</b><small id="o-tiers"></small></div>
+<div><span>全文检索文本</span><b id="o-text">—</b></div>
+<div><span>查询请求</span><b id="o-api">—</b></div>
+<div class="tot"><span>每月合计</span><b id="o-total">—</b></div>
+</div>
+<p class="dg-cap">假设：key 174 字节；每次查询 topK = 10，返回元数据，都在 512 KB 免费额度以内。价格来自 AWS Price List（2026-11-21）。</p>
+</section>
+<section class="content-section" id="demo">
+<h2 class="section-title"><span>8</span> · 场景：S3 文件语义检索（按权限过滤）</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul>
+<li><mark>事件只是"提醒"，S3 的当前状态才是"事实"</mark>：重复、乱序的事件不会留下错误的向量；极少数丢失的事件由对账补上。</li>
+<li>权限组<mark>只从验证过的 JWT 里取</mark>，请求体里写的 groups 一律忽略；对象没有 acl 就谁都搜不到。</li>
+<li>处理一个对象<mark>不扫描整个索引</mark>：切片 key 连续编号，按 key 直接取。</li>
+</ul></div>
+<p>需求：S3 桶里有百 TB 级的文档、图片、视频，要能用自然语言搜内容，结果只包含调用方有权看的文件，对象处理不出区域。完整需求和逐条对照见 repo 的 <a href="https://github.com/tsaol/s3-vectors-search/blob/main/docs/requirements.md">requirements.md</a> 和 <a href="https://github.com/tsaol/s3-vectors-search/blob/main/docs/architecture.md">architecture.md</a>。</p>
+<div class="dg">
+<div class="dec">
+<div class="box">业务系统写入 / 覆盖 / 删除对象；生命周期过期<small>S3 源桶：处理组件只读</small></div>
+<div class="arrow-d">↓<span>S3 事件通知</span></div>
+<div class="branch">
+<div class="box">SQS events 队列<small>日常增量：并发 10</small></div>
+<div class="box">SQS backfill 队列<small>存量回填、对账：并发 4，不抢日常增量</small></div>
+</div>
+<div class="arrow-d">↓<span>失败按 30 秒起退避重试；8 次 → DLQ + 告警</span></div>
+<div class="box good">Lambda indexer（同一区域）<small>HEAD 对象 → 抽取（文本 / docx / Textract OCR，支持中文）→ 切分 → Titan V2 embedding</small></div>
+<div class="arrow-d">↓<span>PutVectors / DeleteVectors</span></div>
+<div class="box good">S3 Vectors · ENHANCED 索引<small>元数据：路径、ETag、部门、上传人、时间、切片、acl、规则版本 · chunk_text：不可过滤 + 中文全文检索</small></div>
+<div class="arrow-d">↑<span>混合检索 + filter acl $in 用户组</span></div>
+<div class="box">AgentCore Runtime 检索 agent<small>JWT authorizer（Cognito）先验 token；agent 只读 token 里的 cognito:groups</small></div>
+<div class="arrow-d">↑</div>
+<div class="box q">用户登录拿到 JWT，提问</div>
+</div>
+<div class="dg-cap">图 5 · 场景 demo 的整体流程</div>
+</div>
+<h3 class="sub-h">indexer 每次怎么判断</h3>
+<ol class="steps">
+<li><b>HEAD 对象</b>：对象不在了 → 删掉它的全部向量。所以删除事件、过期事件、迟到的旧事件都按同一条规则处理。</li>
+<li><b>ETag、规则版本、模型都没变，上次也写完整了</b> → 什么都不做（重复事件）。如果只是权限变了 → 只重写元数据，不重新做 embedding。</li>
+<li><b>否则</b> → 抽取、切分、embedding，覆盖第 0..m-1 片，再删掉第 m 片及之后的旧片。</li>
+<li><b>写完再 HEAD 一次</b>：对象在处理期间又被覆盖了 → 抛异常让队列重试，重试时处理新版本。</li>
+</ol>
+<div class="callout"><b>为什么 Lambda 角色要给 <code>s3:ListBucket</code>？</b>没有这个权限时，HEAD 一个已删除的对象返回的是 <b>403</b>，不是 404。indexer 就分不清"被删了"还是"没权限"，删除事件会一直失败。ListBucket 只是读权限，不影响"只读源桶"的要求。</div>
+<h3 class="sub-h">端到端测试测什么</h3>
+<table class="cmp">
+<thead><tr><th>#</th><th>检查</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>上传文件 → 自动进入索引</td></tr>
+<tr><td>2</td><td>普通员工搜不到薪资文件；薪酬组能搜到</td></tr>
+<tr><td>3</td><td>普通员工在请求体里伪造 <code>"groups": ["hr-payroll"]</code> → 仍然搜不到</td></tr>
+<tr><td>4</td><td>不带 token → 被 runtime 拒绝</td></tr>
+<tr><td>5</td><td>搜错误码 "E2071" → 混合检索排第一的是 VPN 文档</td></tr>
+<tr><td>6</td><td>覆盖文件 → 答案用新内容，旧切片被删掉</td></tr>
+<tr><td>7</td><td>删除文件 → 向量被删掉</td></tr>
+<tr><td>8</td><td>对账：没有孤儿向量、过期向量、缺失对象</td></tr>
+</tbody>
+</table>
+<div class="callout warn"><b>数据驻留</b>：embedding 和 OCR 都在本区域完成。如果回答用的大模型走<b>跨区域推理配置文件</b>（<code>eu.</code>、<code>us.</code>、<code>global.</code> 开头），检索到的<mark>原文片段会被送到其他区域处理</mark>。demo 默认不调大模型，只返回检索结果；要不要开，由合规团队决定。</div>
+</section>
+<section class="content-section" id="more">
+<h2 class="section-title"><span>9</span> · 更多场景</h2>
+<table class="cmp">
+<thead><tr><th>场景</th><th>S3 Vectors 怎么用</th><th>示例</th></tr></thead>
+<tbody>
+<tr><td><b>IT 工单 / 错误码</b></td><td>混合检索：BM25 精确命中 "E2071"，向量理解"账号被锁"</td><td><code>examples/04_hybrid.py</code></td></tr>
+<tr><td><b>Agent 长期记忆</b></td><td>每条记忆带 <code>user_id</code> + 时间戳；按用户和时间窗口过滤后再找相近的</td><td><code>examples/06_agent_memory.py</code></td></tr>
+<tr><td><b>商品检索</b></td><td>描述做向量；价格、库存、类目做可过滤元数据</td><td><code>examples/02、03</code></td></tr>
+<tr><td><b>托管 RAG</b></td><td>Bedrock Knowledge Bases 直接选 S3 Vectors 做向量库，解析、切分、embedding 都托管</td><td>—</td></tr>
+</tbody>
+</table>
+<p><b>自己写流水线，还是用 Knowledge Bases？</b>想最快上线，用 Knowledge Bases。如果要自己控制抽取规则和权限字段，或者要和其他数据源用同一套 embedding 规则（就像本文的需求），就自己写。<span class="src">文档 · Integrations</span></p>
+</section>
+<section class="content-section" id="pitfalls">
+<h2 class="section-title"><span>10</span> · 常见坑</h2>
+<ul>
+<li><b>CLASSIC 索引 + 很窄的过滤条件</b> → 结果偏少，甚至为空。换成 ENHANCED。</li>
+<li><b>大文本放进可过滤元数据</b> → 超过上限时写入报 400；而且每次查询都要为它付费。原文片段放进 <code>nonFilterableMetadataKeys</code>。</li>
+<li><b>频繁覆盖或删除同一批 key</b> → 旧数据会暂时计入索引大小，<mark>查询费用暂时变高</mark>。<span class="src">定价页</span></li>
+<li><b>一次只写一个向量</b> → 每次 PUT 最少按 128 KB 计费。批量写，每次最多 500 个。</li>
+<li><b>Lambda 自带的 boto3 太旧</b> → 没有 <code>queryTexts</code>、<code>returnScores</code>。部署包里要带上新版 boto3。</li>
+<li><b>处理每个对象都 ListVectors 一遍</b> → 索引一大就跑不动。用固定格式的 key（<code>doc_id#序号</code>），按 key 直接取。</li>
+<li><b>写到一半、删到一半</b> → 留下永远删不掉的旧切片，甚至旧权限。规则：<mark>第 0 片最后写，删除从高序号往下删</mark>，这样剩下的永远是连续的一段，重试时能补完。</li>
+<li><b>失败消息等 90 分钟才重试</b> → SQS 的可见性超时一般设为 Lambda 超时的 6 倍。失败时用 <code>ChangeMessageVisibility</code> 缩短等待时间。</li>
+<li><b>权限组由调用方自己填</b> → 谁都能冒充别的组。权限组只能从验证过的身份里取。</li>
+</ul>
+</section>
+<section class="content-section" id="terms">
+<h2 class="section-title"><span>?</span> · 术语表</h2>
+<table class="cmp gloss">
+<thead><tr><th>术语</th><th>大白话</th></tr></thead>
+<tbody>
+<tr><td><b>向量 / embedding</b></td><td>把一段文字或一张图变成一串数字；意思相近，数字就相近</td></tr>
+<tr><td><b>距离（cosine）</b></td><td>两个向量有多"不像"：0 是一样，越大越不像</td></tr>
+<tr><td><b>topK</b></td><td>返回最相近的前 K 条</td></tr>
+<tr><td><b>元数据</b></td><td>贴在向量上的标签：部门、权限组、路径、原文片段……</td></tr>
+<tr><td><b>可过滤 / 不可过滤</b></td><td>能不能在查询里按它筛选；不可过滤的只随结果返回，不算查询处理量</td></tr>
+<tr><td><b>BM25</b></td><td>经典的关键词打分方法：查询里的词出现得越多、越少见，分数越高</td></tr>
+<tr><td><b>RRF</b></td><td>把两个排名合成一个：每条结果按它在两个排名里的名次加分</td></tr>
+<tr><td><b>ENHANCED / CLASSIC</b></td><td>索引模式：先过滤再检索 / 一边找一边过滤</td></tr>
+<tr><td><b>ETag</b></td><td>S3 给每个对象版本的"指纹"；内容一变，ETag 就变</td></tr>
+<tr><td><b>DLQ</b></td><td>死信队列：失败太多次的消息放到这里，等人处理</td></tr>
+<tr><td><b>JWT</b></td><td>登录后拿到的"通行证"，里面写着你是谁、属于哪些组，带签名，改不了</td></tr>
+</tbody>
+</table>
+</section>
+<div class="refs">
+<h4>参考</h4>
+<ol>
+<li><a href="https://github.com/tsaol/s3-vectors-search">github.com/tsaol/s3-vectors-search</a> · 本文配套代码：基础 API 示例、场景 demo、收费计算器（MIT-0）</li>
+<li id="ref-what"><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors.html">What is / Use cases / Integrations · Working with S3 Vectors</a></li>
+<li id="ref-limits"><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-limitations.html">Limits · Limitations and restrictions</a></li>
+<li><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-metadata-filtering.html">Metadata filtering</a></li>
+<li><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-index-mode.html">Index mode · Changing a vector index's mode</a></li>
+<li><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-hybrid-search.html">Hybrid search with Amazon S3 Vectors</a></li>
+<li><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-configuring-full-text-search.html">Full-text config · Configuring full-text search</a></li>
+<li><a href="https://aws.amazon.com/s3/pricing/">定价页 · Amazon S3 pricing（Vectors 部分及 Example 1、3）</a></li>
+<li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-header-allowlist.html">AgentCore Runtime：转发 Authorization 头（JWT authorizer）</a></li>
+</ol>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 liucao.me · <a href="../../">Home</a> · <a href="../">S3</a></p>
+</footer>
+<script>
+// Same method as tools/cost_estimate.py in the repo (checked against the S3 pricing page examples).
+(function () {
+  var KB = 1024, GB = Math.pow(1024, 3), TB = Math.pow(1024, 4);
+  var RATES = {
+    'us-east-1':    {st: 0.06,  put: 0.20,  q: 2.50, tiers: [0.004, 0.002, 0.0004],       text: 0.00012},
+    'eu-central-1': {st: 0.064, put: 0.214, q: 2.70, tiers: [0.004285, 0.002143, 0.000429], text: 0.00012}
+  };
+  function v(id) { var x = parseFloat(document.getElementById(id).value); return isFinite(x) && x > 0 ? x : 0; }
+  function usd(x) { return '$' + (x >= 100 ? x.toFixed(0) : x.toFixed(2)); }
+  function set(id, t) { document.getElementById(id).textContent = t; }
+  function run() {
+    var r = RATES[document.getElementById('c-region').value];
+    var n = v('c-vectors'), idx = Math.max(1, Math.round(v('c-indexes')) || 1), dim = v('c-dim');
+    var filt = v('c-filt') * KB, text = v('c-text') * KB, nonf = v('c-nonf') * KB, key = 174;
+    var q = v('c-queries'), rw = v('c-rewrite');
+    var stored = 4 * dim + key + filt + nonf + text;
+    var gb = n * stored / GB;
+    var storage = gb * r.st, put = rw * gb * r.put;
+    var per = n / idx, proc = 4 * dim + key + filt;
+    var t = [Math.min(per, 1e5), Math.max(0, Math.min(per, 1e7) - 1e5), Math.max(0, per - 1e7)];
+    var tiers = t.map(function (c, i) { return c * proc / TB * r.tiers[i] * q; });
+    var procSum = tiers[0] + tiers[1] + tiers[2];
+    var textCost = per * text / TB * r.text * q;
+    var api = q / 1e6 * r.q;
+    set('o-storage', usd(storage)); set('o-gb', gb.toFixed(1) + ' GB');
+    set('o-put', usd(put)); set('o-proc', usd(procSum));
+    set('o-tiers', tiers.map(usd).join(' / '));
+    set('o-text', usd(textCost)); set('o-api', usd(api));
+    set('o-total', usd(storage + put + procSum + textCost + api));
+  }
+  document.querySelectorAll('.calc input, .calc select').forEach(function (e) { e.addEventListener('input', run); });
+  run();
+})();
+</script>
+<a data-cur="zh" data-to="en" href="../../en/s3/vectors/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>
