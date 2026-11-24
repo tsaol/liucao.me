@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head><script>(function(){var B="";function p(u){return typeof u==='string'&&u[0]==='/'&&u[1]!=='/'&&u!==B&&u.indexOf(B+'/')!==0?B+u:u}window.__p=p;var f=window.fetch;window.fetch=function(i,o){return f.call(this,p(i),o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return x.apply(this,arguments)}})();</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>开源自进化引擎与行业 demo · RSI 资料包</title>
+<link href="../assets/style.css" rel="stylesheet"/>
+<style>
+:root{--rs-bg:#0B0D12;--rs-bg2:#12151d;--rs-ink:#E6EAF2;--rs-dim:#8A94A6;--rs-cold:#4CC2FF;--rs-warm:#FFB020;--rs-ok:#38D39F;--rs-line:#232a36;
+--rs-sans:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+--rs-mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+body{background:var(--rs-bg)}
+main.rs-wrap{color:var(--rs-ink);font-family:var(--rs-sans);font-size:17px;line-height:1.8;max-width:980px;margin:0 auto;padding:4vh 5vw 12vh}
+main.rs-wrap h1{font-size:36px;line-height:1.25;margin:0 0 .3em}
+main.rs-wrap h2{font-size:24px;margin:0 0 .9em;color:var(--rs-cold)}
+main.rs-wrap h3{font-size:18px;margin:1.6em 0 .6em;color:var(--rs-ink)}
+main.rs-wrap section{border-top:1px solid var(--rs-line);padding:2.4em 0;scroll-margin-top:56px}
+main.rs-wrap section.head{border-top:none;padding-top:0}
+main.rs-wrap p{margin:0 0 1em}
+main.rs-wrap b{color:var(--rs-warm);font-weight:600}
+main.rs-wrap a{color:var(--rs-cold);text-decoration:none;border-bottom:1px dotted rgba(76,194,255,.5)}
+main.rs-wrap a:hover{border-bottom-style:solid}
+main.rs-wrap .dim{color:var(--rs-dim)}
+main.rs-wrap .small{font-size:14px}
+main.rs-wrap code{font-family:var(--rs-mono);font-size:.86em;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:4px;padding:0 .3em}
+main.rs-wrap ul{margin:0 0 1em;padding-left:1.3em}
+main.rs-wrap li{margin:.35em 0}
+main.rs-wrap .lead{font-size:21px;line-height:1.6;padding:1em 1.2em;border-left:3px solid var(--rs-warm);background:var(--rs-bg2);border-radius:0 8px 8px 0;margin:1.2em 0}
+main.rs-wrap .note{font-size:14px;color:var(--rs-dim);background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.7em 1em;margin:1em 0}
+.rs-toc{position:sticky;top:0;z-index:5;background:rgba(11,13,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--rs-line);display:flex;gap:1.2em;justify-content:center;flex-wrap:wrap;padding:.55em 1em;font-size:14px}
+.rs-toc a{color:var(--rs-dim);text-decoration:none}
+.rs-toc a:hover{color:var(--rs-cold)}
+.rs-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:1.2em 0}
+.rs-card{display:block;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:1em 1.1em;color:var(--rs-ink)!important;border-bottom:1px solid var(--rs-line)!important;transition:border-color .2s}
+.rs-card:hover{border-color:var(--rs-cold)!important}
+.rs-card .k{font-size:13px;color:var(--rs-dim)}
+.rs-card .t{font-size:18px;font-weight:600;margin:.2em 0}
+.rs-card .d{font-size:14px;color:var(--rs-dim);line-height:1.6}
+.rs-q{background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:10px;padding:.2em 1.1em;margin:.8em 0}
+.rs-q summary{cursor:pointer;font-weight:600;padding:.7em 0;list-style:none}
+.rs-q summary::-webkit-details-marker{display:none}
+.rs-q summary::before{content:"+ ";color:var(--rs-warm)}
+.rs-q[open] summary::before{content:"− "}
+.rs-q > div{padding:0 0 .8em}
+table.rs-t{width:100%;border-collapse:collapse;font-size:15px;margin:.6em 0 1.2em}
+table.rs-t th,table.rs-t td{border-bottom:1px solid var(--rs-line);padding:.55em .5em;text-align:left;vertical-align:top}
+table.rs-t th{color:var(--rs-dim);font-weight:500;font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--rs-line);border-radius:999px;padding:0 .6em;color:var(--rs-dim);margin-right:.3em;white-space:nowrap}
+.tag.top{color:var(--rs-warm);border-color:rgba(255,176,32,.5)}
+.tag.ok{color:var(--rs-ok);border-color:rgba(56,211,159,.5)}
+pre.rs-f{font-family:var(--rs-mono);font-size:14px;background:var(--rs-bg2);border:1px solid var(--rs-line);border-radius:8px;padding:.9em 1.1em;overflow-x:auto;line-height:1.7;color:var(--rs-ink)}
+@media (max-width:640px){.rs-cards{grid-template-columns:1fr}main.rs-wrap{font-size:16px}main.rs-wrap h1{font-size:28px}table.rs-t{font-size:14px}}
+@media print{body{background:#fff}.rs-toc,nav{display:none}main.rs-wrap{color:#111}main.rs-wrap b{color:#b35f00}main.rs-wrap h2{color:#0a5c8a}
+.rs-card,.rs-q,pre.rs-f,main.rs-wrap .note,main.rs-wrap .lead{background:#f6f6f6;border-color:#ddd;color:#111!important}}
+    .rs-fig{margin:1em 0 1.6em}.rs-fig img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;border:1px solid var(--rs-line)}.rs-fig figcaption{font-size:13px;color:var(--rs-dim);line-height:1.65;margin-top:.6em}.rs-fig a{border-bottom:none}
+.rs-tl{border-left:2px solid var(--rs-line);margin:1em 0 1.4em;padding-left:1em}.rs-tl>div{margin:.55em 0;font-size:15px}.rs-tl .y{display:inline-block;min-width:6.5em;color:var(--rs-cold);font-family:var(--rs-mono);font-size:13px}
+main.rs-wrap a{overflow-wrap:anywhere}
+.key{background:rgba(255,176,32,.08);border:1px solid rgba(255,176,32,.35);border-left:4px solid var(--rs-warm);border-radius:0 8px 8px 0;padding:.7em 1em;margin:.2em 0 1.2em}
+.key .kl{display:inline-block;font-size:12px;font-weight:700;color:#111;background:var(--rs-warm);border-radius:4px;padding:0 .45em;margin-right:.5em}
+.key ul{margin:.4em 0 0;padding-left:1.2em}.key li{margin:.25em 0}
+main.rs-wrap mark{background:rgba(255,176,32,.22);color:var(--rs-ink);padding:0 .15em;border-radius:3px}
+.src{display:inline-block;font-family:var(--rs-mono);font-size:11.5px;color:var(--rs-cold);border:1px solid rgba(76,194,255,.4);border-radius:4px;padding:0 .35em;margin-left:.3em;vertical-align:1px;white-space:nowrap}
+.legend{font-size:13px;color:var(--rs-dim);margin:.6em 0 0}
+@media print{.key{background:#fff8ec}main.rs-wrap mark{background:#ffe9b8;color:#111}}
+</style>
+<style>.tw{overflow-x:auto}table.rs-t{width:100%;border-collapse:collapse;font-size:14px;margin:.6em 0 1.2em}table.rs-t th,table.rs-t td{border:1px solid var(--rs-line);padding:.45em .6em;text-align:left;vertical-align:top}table.rs-t th{background:var(--rs-bg2);color:var(--rs-dim)}main.rs-wrap h3{color:var(--rs-warm)}main.rs-wrap code{overflow-wrap:anywhere;word-break:break-all}</style></head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="../">← RSI 资料包</a>
+<a href="../view/">我的判断</a>
+<a href="../landscape/">RSI 全景</a>
+<a href="../demo/play/">Play</a>
+<a href="../talk/">RSI 分享</a>
+</div>
+</nav>
+<div class="rs-toc">
+<a href="#s1">结论</a>
+<a href="#s2">Bedrock 接入</a>
+<a href="#s3">按家族比较</a>
+<a href="#s4">逐个项目</a>
+<a href="#s5">客户常问</a>
+<a href="#s6">行业 demo</a>
+<a href="#s7">没能核实</a>
+</div>
+<main class="rs-wrap">
+<section class="head">
+<h1>开源自进化引擎与行业 demo</h1>
+<p class="dim">给 Agent 自进化 / RSI 动手实验做的调研:除了 ShinkaEvolve,还有哪些开源框架、各自改什么、怎么接 Amazon Bedrock、适不适合 2–3 小时的 workshop;以及行业里大家都认识的 demo。数据来自各项目的 GitHub、PyPI、README、论文和官方博客,核对于 2026-11-24。写「未核实」「没实测」的地方以原文为准。</p><div class="note">相关:<a href="../talk/">RSI 分享</a> · <a href="../case/research-agent/">案例:小红书 × AWS AI Lab Research Agent</a> · <a href="../alphaevolve/">AlphaEvolve 详解</a> · <a href="../paper/">论文解读</a></div><ul>
+<li>日期：2026-11-24（GitHub 星数、license、最后 push 都是当天用 GitHub REST API 取的）</li>
+<li>主引擎：ShinkaEvolve（基线）</li>
+<li>方法：GitHub API、PyPI JSON、把 40 个仓库浅克隆下来 grep（bedrock / litellm / anthropic / openai）、读 README 和 docs、用 HF papers API 核对论文标题。实测了 Bedrock 的 OpenAI 兼容端点（见第 2 节）。</li>
+<li>原始数据：<code>engines.json</code>（每个项目的字段，加上 <code>demos</code>）</li>
+<li>写着“未实测”的，意思是文档或代码里有这条路，但我们没有真的跑过。</li>
+</ul>
+<hr/>
+</section>
+<section id="s1">
+<h2>1. 结论（先看这里）</h2>
+<p><strong>换引擎模块，推荐 1–2 个：</strong></p>
+<ol>
+<li><strong>OpenEvolve</strong>（首选）：7,861 星，Apache-2.0，2026-11-24 还有 push。</li>
+<li>评估器接口和我们的几乎一样：<code>evaluate(program_path)</code> 返回一个 dict，里面有 <code>combined_score</code>，进化区也用 <code>EVOLVE-BLOCK-START/END</code> 标记。我们的 <code>score(program_path)</code> 只要包一行就能用。</li>
+<li><code>pip install openevolve</code>，依赖很轻，只用 CPU。</li>
+<li>方法和 Shinka 不一样（MAP-Elites + island），放在同一道题上对比很好讲。</li>
+<li>缺点：没有原生 Bedrock，只支持 OpenAI 兼容接口。要用 Claude 得先起一个 LiteLLM proxy（见第 2 节）。</li>
+<li><strong>GEPA</strong>（第二个，换的是“进化对象”）：7,560 星，MIT。</li>
+<li>从“改代码”换到“改 prompt / skill / 配置”。<code>optimize_anything(seed, evaluator, objective)</code> 也能把我们的 <code>score(program_path)</code> 包进去用。</li>
+<li>模型名用 LiteLLM 格式，可以直接写 <code>bedrock/...</code>，不用起 proxy（未实测）。</li>
+<li>已经集成进 DSPy（<code>dspy.GEPA</code>），客户问 DSPy 时能顺着讲。</li>
+<li><strong>备选：SkyDiscover</strong>（UC Berkeley，769 星，Apache-2.0）。一条 CLI 里用 <code>--search</code> 就能切换 adaevolve / evox / openevolve / gepa / shinkaevolve，评估器还是 <code>evaluate(program_path)</code> 加 <code>combined_score</code>。从“换引擎”的角度看它最合适，但它在 PyPI 上的情况不清楚，README 只写了 <code>git clone + uv sync</code>，Bedrock 也要走代理。建议讲师先自己跑通一遍，再决定要不要把它放进课程。</li>
+</ol>
+<p><strong>可以提，但不要在课上跑：</strong></p>
+<ul>
+<li>CodeEvolve、LLM4AD（EoH/FunSearch/ReEvo 等的统一平台）、LEVI、DSPy MIPROv2、TextGrad、Trace、ACE（Kayba 版）、Meta-Harness、AHE、DGM、HGM、ADAS、AFlow、AIDE、SICA、EvoAgentX、karpathy/autoresearch。原因各不相同：太重（Docker、SWE-bench、E2B），太贵（DGM 一次完整运行约 2.2 万美元），接口差得太远（DSPy 要把任务重写成程序），或者项目太新、太小。</li>
+</ul>
+<p><strong>避开：</strong></p>
+<ul>
+<li>停更：OpenELM（最后 push 2023-11）、FunSearch 参考代码（2024-02，不带 LLM 和沙箱）、OpenAlpha_Evolve（2025-05）、PromptBreeder 社区实现（2024-08）。</li>
+<li>许可证有问题：Meta AIRA-dojo（CC BY-NC 4.0，不能商用）；Sakana AI Scientist（自定义许可证，基于 RAIL，有使用限制条款）；DeepEvolve、SwarmEvolve、autoresearch（GitHub 上没有 license）。</li>
+<li>还不能用：SwarmEvolve 代码没发布（README 写着 “code coming soon”），而且它要自己托管模型才能共享 KV cache，本来就不能接 Bedrock。</li>
+<li>路线不同：Agent Lightning v1.0、ThetaEvolve 是用 RL 改模型权重，要 GPU，没法用 Bedrock 上托管的模型。Weco CLI 的搜索跑在 Weco 自己的服务器上，要账号和 credits。</li>
+</ul>
+<hr/>
+</section>
+<section id="s2">
+<h2>2. Bedrock 接入要点（2026-11-24 实测）</h2>
+<ul>
+<li><strong>原生支持 Bedrock</strong>（代码里有 <code>AnthropicBedrock</code> 或 Bedrock 引擎）：ShinkaEvolve、DGM（模型 ID 是旧的）、AI Scientist（模型 ID 是旧的）、TextGrad（通过 <code>langchain-aws</code>）。HGM 的 requirements 里有 <code>anthropic[bedrock]</code>，没有实测。</li>
+<li><strong>通过 LiteLLM 模型名接入</strong>（可以直接写 <code>bedrock/...</code>）：GEPA、DSPy（要装 <code>dspy[litellm]</code>）、LLM4AD、ReEvo、Trace、LEVI、EvoAgentX、Kayba ACE、AIRA-dojo。这些都是文档或代码里有这条路，<strong>都没有实测</strong>。</li>
+<li><strong>只支持 OpenAI 兼容接口</strong>：OpenEvolve、SkyDiscover、CodeEvolve、EoH、GigaEvo、AHE、官方 ACE 等。有两种办法：</li>
+<li>Claude 系列：Bedrock 的 OpenAI 兼容端点 <code>https://bedrock-runtime.&lt;region&gt;.amazonaws.com/openai/v1/chat/completions</code> <strong>不支持 Claude</strong>。实测 Claude Opus 5.5（jp）、Sonnet 4.5、Haiku 4.5 都返回 <code>404 model_not_found</code>（"doesn't support this API"）。所以要在本机起一个 <strong>LiteLLM proxy</strong>（后端走 Bedrock Converse），再把 <code>api_base</code> 指向它。</li>
+<li>开源权重模型：同一个端点上 <code>openai.gpt-oss-120b-1:0</code>、<code>openai.gpt-oss-20b-1:0</code>、<code>qwen.qwen3-coder-30b-a3b-v1:0</code>、<code>moonshot.kimi-k2-thinking</code> 都能返回结果（us-east-1，SigV4）。用 OpenAI SDK 的话要用 Bedrock API key（bearer token）。好处是不用起 proxy，便宜，适合当 mutation 模型。</li>
+<li><strong>CLI 后端</strong>：OpenEvolve 有 <code>provider: claude_code</code>（另外还有 Codex、Copilot CLI）。Claude Code 本身可以走 Bedrock，所以理论上可以不起 proxy，<strong>但没有实测</strong>。</li>
+</ul>
+<hr/>
+</section>
+<section id="s3">
+<h2>3. 按家族比较</h2>
+<h3>3.1 程序 / 代码进化引擎（AlphaEvolve 一类）</h3>
+<div class="tw"><table class="rs-t">
+<thead>
+<tr>
+<th>项目</th>
+<th>星数</th>
+<th>License</th>
+<th>最后 push</th>
+<th>进化什么 / 怎么搜</th>
+<th>评估器接口</th>
+<th>Bedrock</th>
+<th>安装</th>
+<th>适合度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ShinkaEvolve（基线）</td>
+<td>1,539</td>
+<td>Apache-2.0</td>
+<td>2026-11-24</td>
+<td>EVOLVE-BLOCK；island + novelty 拒绝采样 + bandit 选模型</td>
+<td><code>main(program_path, results_dir)</code> → <code>combined_score</code></td>
+<td>原生</td>
+<td><code>pip install shinka-evolve</code>（0.0.8，py≥3.10）</td>
+<td>5</td>
+</tr>
+<tr>
+<td>OpenEvolve</td>
+<td>7,861</td>
+<td>Apache-2.0</td>
+<td>2026-11-24</td>
+<td>EVOLVE-BLOCK；MAP-Elites + island + 级联评估</td>
+<td><code>evaluate(program_path)</code> → dict（<code>combined_score</code>）</td>
+<td>走 proxy / 开源模型直连 / Claude Code CLI</td>
+<td><code>pip install openevolve</code>（0.4.1，py≥3.10）</td>
+<td>5</td>
+</tr>
+<tr>
+<td>SkyDiscover</td>
+<td>769</td>
+<td>Apache-2.0</td>
+<td>2026-09-14</td>
+<td>EVOLVE-BLOCK；AdaEvolve、EvoX，还能调用 openevolve/gepa/shinka</td>
+<td><code>evaluate(program_path)</code> → <code>combined_score</code></td>
+<td>走 proxy</td>
+<td>git + <code>uv sync</code>（py 3.10–3.13）</td>
+<td>4</td>
+</tr>
+<tr>
+<td>CodeEvolve</td>
+<td>157</td>
+<td>Apache-2.0</td>
+<td>2026-11-11</td>
+<td>EVOLVE-BLOCK；island GA + meta-prompt + 可选 MAP-Elites</td>
+<td><code>evaluate(code_path, results_path)</code> 写 JSON</td>
+<td>走 proxy</td>
+<td>conda，py≥3.13.5；PyPI 上的同名包是别人的</td>
+<td>3</td>
+</tr>
+<tr>
+<td>LLM4AD</td>
+<td>810</td>
+<td>BSD-2-Clause</td>
+<td>2026-11-24</td>
+<td>单个函数；EoH/FunSearch/ReEvo/HSEvo/MCTS-AHD/LLaMEA…</td>
+<td><code>evaluate_program(program_str, callable)</code></td>
+<td>LiteLLM</td>
+<td><code>pip install llm4ad</code>（1.20.0）</td>
+<td>3</td>
+</tr>
+<tr>
+<td>LEVI</td>
+<td>51</td>
+<td>MIT</td>
+<td>2026-06-22</td>
+<td>函数或 prompt；行为 archive + 便宜模型 + 强模型做“范式转换”</td>
+<td><code>evolve_code(..., score_fn, budget_dollars)</code></td>
+<td>LiteLLM（未实测）</td>
+<td><code>pip install levi-evolve</code>（py≥3.11）</td>
+<td>3</td>
+</tr>
+<tr>
+<td>EoH</td>
+<td>383</td>
+<td>MIT</td>
+<td>2026-08-06</td>
+<td>启发式（思路 + 代码一起进化）</td>
+<td><code>evaluate_program</code></td>
+<td>走 proxy</td>
+<td><code>pip install .</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td>ReEvo</td>
+<td>311</td>
+<td>MIT</td>
+<td>2026-01-24</td>
+<td>组合优化启发式；反思式进化</td>
+<td><code>eval.py</code> 打印分数</td>
+<td>LiteLLM</td>
+<td>py≥3.11</td>
+<td>2</td>
+</tr>
+<tr>
+<td>LLaMEA</td>
+<td>136</td>
+<td>MIT</td>
+<td>2026-11-22</td>
+<td>黑盒优化算法；进化策略</td>
+<td><code>f(solution)</code></td>
+<td>无（直连 Anthropic，不是 Bedrock）</td>
+<td><code>pip install llamea</code>（py≥3.11.5）</td>
+<td>2</td>
+</tr>
+<tr>
+<td>GigaEvo</td>
+<td>129</td>
+<td>MIT</td>
+<td>2026-08-17</td>
+<td>MAP-Elites + island + prompt 共进化</td>
+<td>problem 目录 + Hydra</td>
+<td>走 proxy</td>
+<td><code>pip install -e</code>（py≥3.11）</td>
+<td>2</td>
+</tr>
+<tr>
+<td>FunSearch 参考代码</td>
+<td>1,155</td>
+<td>Apache-2.0</td>
+<td>2024-02-05</td>
+<td>priority 函数；island</td>
+<td>不带 LLM 和沙箱</td>
+<td>要自己接</td>
+<td>Colab</td>
+<td>1</td>
+</tr>
+<tr>
+<td>OpenELM</td>
+<td>748</td>
+<td>MIT</td>
+<td>2023-11-15</td>
+<td>MAP-Elites / ELM</td>
+<td>环境类</td>
+<td>要自己接</td>
+<td>PyPI 2023 年版</td>
+<td>1</td>
+</tr>
+<tr>
+<td>DeepEvolve</td>
+<td>146</td>
+<td>无</td>
+<td>2025-10-11</td>
+<td>多文件 + Deep Research</td>
+<td>examples</td>
+<td>要自己接</td>
+<td>conda py3.9</td>
+<td>1</td>
+</tr>
+<tr>
+<td>ThetaEvolve</td>
+<td>184</td>
+<td>Apache-2.0</td>
+<td>2026-02-27</td>
+<td>程序 + RL 改权重</td>
+<td>基于 OpenEvolve</td>
+<td>不适用</td>
+<td>Docker + GPU</td>
+<td>1</td>
+</tr>
+<tr>
+<td>SwarmEvolve</td>
+<td>60</td>
+<td>无</td>
+<td>2026-11-06</td>
+<td>开源模型 swarm 共享 KV cache</td>
+<td>代码未发布</td>
+<td>不适用</td>
+<td>—</td>
+<td>1</td>
+</tr>
+<tr>
+<td>OpenAlpha_Evolve</td>
+<td>1,058</td>
+<td>MIT</td>
+<td>2025-05-31</td>
+<td>简单进化循环</td>
+<td>测试样例</td>
+<td>LiteLLM</td>
+<td>要 Docker</td>
+<td>1</td>
+</tr>
+<tr>
+<td>EvoControl</td>
+<td>136</td>
+<td>Apache-2.0</td>
+<td>2026-01-25</td>
+<td>受控自进化</td>
+<td>研究代码</td>
+<td>走 proxy</td>
+<td><code>pip install -e</code></td>
+<td>1</td>
+</tr>
+</tbody>
+</table></div>
+<h3>3.2 会改自己代码的 agent / harness 进化</h3>
+<div class="tw"><table class="rs-t">
+<thead>
+<tr>
+<th>项目</th>
+<th>星数</th>
+<th>License</th>
+<th>最后 push</th>
+<th>进化什么 / 怎么搜</th>
+<th>Bedrock</th>
+<th>重依赖</th>
+<th>已知结果</th>
+<th>适合度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DGM</td>
+<td>2,543</td>
+<td>Apache-2.0</td>
+<td>2025-08-13</td>
+<td>agent 自己的代码；开放式 archive</td>
+<td>代码里有（旧模型 ID）</td>
+<td>Docker、SWE-bench</td>
+<td>SWE-bench 20.0%→50.0%，Polyglot 14.2%→30.7%；一次运行约 2 周、约 2.2 万美元</td>
+<td>2</td>
+</tr>
+<tr>
+<td>HGM</td>
+<td>450</td>
+<td>Apache-2.0</td>
+<td>2026-02-07</td>
+<td>自修改树搜索（CMP + Thompson sampling）</td>
+<td>可能可以（未实测）</td>
+<td>Docker、SWE-bench</td>
+<td>优于以前的方法；SWE-bench Lite 达人类水平；ICLR 2026 Oral</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Meta-Harness</td>
+<td>1,803</td>
+<td>MIT</td>
+<td>2026-11-05</td>
+<td>harness 代码；Claude Code 读历史 trace 后提方案</td>
+<td>Claude Code 可走 Bedrock（未实测）</td>
+<td>TB2 要 Docker，token 用得多</td>
+<td>文本分类 +7.7 点；IMO 级题 +4.7；TB2 超过手写 harness</td>
+<td>3</td>
+</tr>
+<tr>
+<td>AHE</td>
+<td>983</td>
+<td>MIT</td>
+<td>2026-10-30</td>
+<td>harness；evaluate→analyze→improve</td>
+<td>走 proxy</td>
+<td>E2B 沙箱、Docker</td>
+<td>TB2 69.7%→77.0%（GPT-5.4）</td>
+<td>2</td>
+</tr>
+<tr>
+<td>ADAS</td>
+<td>1,671</td>
+<td>Apache-2.0</td>
+<td>2025-01-28</td>
+<td>agent 设计（forward 函数）；Meta Agent Search</td>
+<td>只支持 OpenAI</td>
+<td>无</td>
+<td>ICLR 2025</td>
+<td>2</td>
+</tr>
+<tr>
+<td>AFlow</td>
+<td>639</td>
+<td>MIT</td>
+<td>2025-12-25</td>
+<td>workflow 代码；MCTS</td>
+<td>走 proxy</td>
+<td>py3.9</td>
+<td>平均 +5.7%，ICLR 2025 Oral</td>
+<td>2</td>
+</tr>
+<tr>
+<td>AIDE ML</td>
+<td>1,632</td>
+<td>MIT</td>
+<td>2026-11-21</td>
+<td>ML 脚本；树搜索</td>
+<td>走 proxy</td>
+<td>看任务</td>
+<td>MLE-bench / RE-Bench 用作参考 agent</td>
+<td>2</td>
+</tr>
+<tr>
+<td>SICA</td>
+<td>427</td>
+<td>MIT</td>
+<td>2025-04-23</td>
+<td>agent 自己的代码库</td>
+<td>走 proxy</td>
+<td>Docker</td>
+<td>SWE-Bench Verified 子集 17%→53%</td>
+<td>2</td>
+</tr>
+<tr>
+<td>EvoAgentX</td>
+<td>3,447</td>
+<td>MIT（文件）/ API 显示 NOASSERTION</td>
+<td>2026-10-31</td>
+<td>workflow / prompt；内置 TextGrad、MIPRO、AFlow、EvoPrompt</td>
+<td>LiteLLM</td>
+<td>无</td>
+<td>自测结果</td>
+<td>2</td>
+</tr>
+<tr>
+<td>AgentDescent</td>
+<td>220</td>
+<td>MIT</td>
+<td>2026-11-24</td>
+<td>skill / prompt / harness；diff 当梯度</td>
+<td>LiteLLM</td>
+<td>无</td>
+<td>新项目</td>
+<td>2</td>
+</tr>
+<tr>
+<td>karpathy/autoresearch</td>
+<td>100,522</td>
+<td>无</td>
+<td>2026-03-26</td>
+<td>train.py；coding agent 循环改</td>
+<td>Claude Code 可走 Bedrock</td>
+<td>单张 GPU</td>
+<td>见 demo 一节</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Godel Agent</td>
+<td>244</td>
+<td>MIT</td>
+<td>2025-09-17</td>
+<td>运行时改自己的逻辑</td>
+<td>只支持 OpenAI</td>
+<td>无</td>
+<td>论文结果</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Weco CLI</td>
+<td>125</td>
+<td>Apache-2.0</td>
+<td>2026-11-04</td>
+<td>任意可打分的代码；树搜索</td>
+<td>否（SaaS）</td>
+<td>要 Weco 账号和 credits</td>
+<td>商业产品</td>
+<td>1</td>
+</tr>
+<tr>
+<td>AI Scientist v1/v2</td>
+<td>15,039 / 7,551</td>
+<td>自定义（RAIL 类）</td>
+<td>2025-12-19</td>
+<td>想法、实验、论文</td>
+<td>原生（旧模型 ID）</td>
+<td>GPU</td>
+<td>v1 每篇约 15 美元；v2 一篇过了 workshop 录用线</td>
+<td>1</td>
+</tr>
+<tr>
+<td>AIRA-dojo</td>
+<td>181</td>
+<td>CC BY-NC 4.0</td>
+<td>2026-04-14</td>
+<td>MLE-bench 解法；Greedy/MCTS/Evo</td>
+<td>LiteLLM</td>
+<td>Slurm、apptainer</td>
+<td>MLE-bench lite 39.6%→47.7%</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Agent Lightning</td>
+<td>18,995</td>
+<td>MIT</td>
+<td>2026-11-24</td>
+<td>模型权重（RL）</td>
+<td>不适用</td>
+<td>GPU（verl + vLLM）</td>
+<td>Qwen3.5-9B SWE-bench Verified 41.8%→56.4%</td>
+<td>1</td>
+</tr>
+</tbody>
+</table></div>
+<h3>3.3 Prompt / 上下文 / 技能优化</h3>
+<div class="tw"><table class="rs-t">
+<thead>
+<tr>
+<th>项目</th>
+<th>星数</th>
+<th>License</th>
+<th>最后 push</th>
+<th>优化什么 / 怎么搜</th>
+<th>接口</th>
+<th>Bedrock</th>
+<th>安装</th>
+<th>适合度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GEPA</td>
+<td>7,560</td>
+<td>MIT</td>
+<td>2026-11-21</td>
+<td>任何文本（prompt、代码、配置）；反思 + Pareto</td>
+<td><code>optimize(...)</code> / <code>optimize_anything(seed, evaluator, objective)</code></td>
+<td>LiteLLM <code>bedrock/...</code></td>
+<td><code>pip install gepa</code>（0.1.4）</td>
+<td>4</td>
+</tr>
+<tr>
+<td>DSPy</td>
+<td>39,204</td>
+<td>MIT</td>
+<td>2026-11-21</td>
+<td>模块指令和示例；MIPROv2、GEPA 等</td>
+<td><code>Module</code> + <code>metric</code> + <code>optimizer.compile</code></td>
+<td><code>dspy[litellm]</code></td>
+<td><code>pip install dspy</code>（3.5.0）</td>
+<td>3</td>
+</tr>
+<tr>
+<td>ACE（Kayba）</td>
+<td>2,613</td>
+<td>Apache-2.0</td>
+<td>2026-09-24</td>
+<td>Skillbook（策略库）</td>
+<td><code>ACELiteLLM(model=...)</code></td>
+<td>LiteLLM</td>
+<td><code>pip install ace-framework</code>（py≥3.12）</td>
+<td>3</td>
+</tr>
+<tr>
+<td>ACE（官方）</td>
+<td>1,472</td>
+<td>Apache-2.0</td>
+<td>2026-08-24</td>
+<td>playbook；Generator/Reflector/Curator</td>
+<td>研究脚本</td>
+<td>走 proxy（provider 只有 sambanova/together/openai/commonstack）</td>
+<td>uv</td>
+<td>2</td>
+</tr>
+<tr>
+<td>TextGrad</td>
+<td>3,804</td>
+<td>MIT</td>
+<td>2025-07-25</td>
+<td>文本变量；“文本梯度”</td>
+<td>写法像 PyTorch</td>
+<td>原生（<code>langchain-aws</code>）</td>
+<td><code>pip install textgrad</code>（0.1.8）</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Trace / OptoPrime</td>
+<td>764</td>
+<td>MIT</td>
+<td>2026-06-17</td>
+<td>用 <code>@bundle(trainable=True)</code> 标记的代码</td>
+<td>node / bundle</td>
+<td>LiteLLM</td>
+<td><code>pip install trace-opt</code>（2025-03 之后没发新版）</td>
+<td>2</td>
+</tr>
+<tr>
+<td>EvoPrompt</td>
+<td>255</td>
+<td>MIT</td>
+<td>2025-09-22</td>
+<td>prompt；GA / DE</td>
+<td>研究脚本</td>
+<td>走 proxy</td>
+<td>requirements</td>
+<td>1</td>
+</tr>
+<tr>
+<td>PromptBreeder（社区版）</td>
+<td>191</td>
+<td>MIT</td>
+<td>2024-08-03</td>
+<td>prompt + 变异 prompt</td>
+<td>LangChain</td>
+<td>走 proxy</td>
+<td>requirements</td>
+<td>1</td>
+</tr>
+</tbody>
+</table></div>
+<p>注：表里“走 proxy”的意思是：用 Claude 就要起 LiteLLM proxy；用开源模型可以直连 Bedrock 的 OpenAI 兼容端点。</p>
+<hr/>
+</section>
+<section id="s4">
+<h2>4. 逐个项目要点</h2>
+<h3>4.1 程序 / 代码进化</h3>
+<p><strong>ShinkaEvolve（基线）</strong>：SakanaAI/ShinkaEvolve，arXiv 2509.19349，ICLR 2026</p>
+<ul>
+<li>进化 EVOLVE-BLOCK 里的代码。用多个 island，父代采样时平衡探索和利用；新代码如果和旧的太像就丢掉（novelty 拒绝采样）；用 bandit 决定每次调哪个 LLM。</li>
+<li><code>evaluate.py</code> 里写 <code>main(program_path, results_dir)</code>，用 <code>run_shinka_eval</code> 跑，返回的 dict 里有 <code>combined_score</code>、<code>public</code>、<code>private</code>、<code>text_feedback</code>。</li>
+<li>原生支持 Bedrock：<code>anthropic.AnthropicBedrock</code>，认证用 Bedrock API key 或 AWS 凭证。可以本地并行跑，也可以上 Slurm。还有 WebUI，2026-02 起有给 Claude Code / Codex 用的 agent skills。</li>
+<li>结果：circle packing 只用约 150 个样本就到了新 SOTA；AIME harness；ALE-Bench；MoE 负载均衡 loss；帮一支队伍赢了 ICFP 2025 编程比赛。</li>
+</ul>
+<p><strong>OpenEvolve</strong>：algorithmicsuperintelligence/openevolve，没有自己的论文</p>
+<ul>
+<li>MAP-Elites（同时追求分数高和种类多）+ island + 级联评估（先用便宜的测试筛一遍，再跑贵的）。可以加 LLM 当评委。</li>
+<li><code>evaluate(program_path)</code> 返回 dict 或 <code>EvaluationResult(metrics={"combined_score": ...})</code>，也可以写 <code>evaluate_stage1/2</code> 做级联。用 YAML 配置。</li>
+<li>后端：任何 OpenAI 兼容 API；另外有 Claude Code、Codex、Copilot CLI 三个 CLI provider（<code>openevolve/llm/</code> 下面有 <code>claude_code.py</code>、<code>codex_app_server.py</code>、<code>copilot_cli.py</code>）。</li>
+<li>例子很多：circle packing、function minimization、TSP、symbolic regression、MLX Metal kernel、Rust 排序、prompt 优化、AlgoTune 等。自带 visualizer。</li>
+<li>很多后来的框架（SkyDiscover、ThetaEvolve、SwarmEvolve、CodeEvolve 的论文）都拿它当基线或者直接在它上面改。</li>
+</ul>
+<p><strong>SkyDiscover</strong>：skydiscover-ai/skydiscover，UC Berkeley Sky Lab，CAIS'26；AdaEvolve 2602.20133、EvoX 2602.23413</p>
+<ul>
+<li><code>--search</code> 可以选 adaevolve、evox、topk、beam_search、best_of_n、openevolve_native、gepa_native；外部后端 openevolve、gepa 用 <code>uv sync --extra external</code> 装，shinkaevolve 要手动装。</li>
+<li>评估器是 <code>evaluate(program_path)</code> 返回 dict，主目标是 <code>combined_score</code>，也可以做 Pareto 多目标。</li>
+<li>README 说在 Frontier-CS 172 道题上，中位数比 OpenEvolve、GEPA、ShinkaEvolve 高约 34%（作者自己测的）。另外有 Synthesize 模式，让 coding agent 造一整套系统。</li>
+<li>风险：PyPI 上有个 <code>skydiscover</code> 0.1.0（2026-02），但没写项目链接，不能确认是同一个项目。核心用 OpenAI SDK，LiteLLM 只给 GEPA 后端用。</li>
+</ul>
+<p><strong>CodeEvolve</strong>：inter-co/science-codeevolve，arXiv 2510.14150，EMNLP 2026 Findings</p>
+<ul>
+<li>island 遗传算法 + inspiration crossover + meta-prompting（连 prompt 一起进化），可选 MAP-Elites。只支持 OpenAI 兼容接口。</li>
+<li>评估器签名是 <code>evaluate(code_path, results_path)</code>，结果写成 JSON 文件。要求 Python ≥ 3.13.5，用 conda 装。所有实验数据都放在 HF dataset 上。</li>
+<li>注意：PyPI 上的 <code>codeevolve</code> 是别人的项目（ehallford11714/codeevolve）。</li>
+</ul>
+<p><strong>LLM4AD</strong>：Optima-CityU/LLM4AD，arXiv 2412.17287</p>
+<ul>
+<li>一个平台里有很多方法：EoH、FunSearch、ReEvo、HSEvo、MCTS-AHD、MEoH、NSGA2/MOEAD、LLaMEA、hill-climb 等，还有 GUI。</li>
+<li>LLM 层有 LiteLLM 封装（注释里写了 <code>bedrock/...</code>），也支持 OpenAI、Ollama、vLLM 和多家国产云。</li>
+<li>接口是函数级的：写一个 Evaluation 类，实现 <code>evaluate_program(program_str, callable_func)</code>。不用 EVOLVE-BLOCK。</li>
+</ul>
+<p><strong>EoH / ReEvo / LLaMEA</strong>：三篇经典的“LLM 设计启发式”论文代码（ICML 2024 / NeurIPS 2024 / IEEE TEVC）。都偏组合优化或连续优化，接口是为特定问题定制的。EoH 团队现在推荐用 LLM4AD。</p>
+<p><strong>LEVI</strong>：ttanv/levi，arXiv 2605.09764</p>
+<ul>
+<li><code>levi.evolve_code(..., score_fn, model, budget_dollars)</code>，可以直接设美元预算。quickstart 约 0.05–0.10 美元。</li>
+<li>README 说在 ADRS 7 道题上平均 76.5，高于 GEPA 71.9、OpenEvolve 70.6、ShinkaEvolve 67.4（作者自己测的）。只有 51 星。</li>
+</ul>
+<p><strong>GigaEvo</strong>（AIRI）：MAP-Elites + island + prompt 共进化，用 OpenAI 兼容接口，基础运行不需要 Redis。
+<strong>ThetaEvolve</strong>：在 OpenEvolve 上加了 RL 训练，要 GPU 和 Docker。
+<strong>SwarmEvolve</strong>：arXiv 2611.08483，Brown 大学。代码还没发布；思路是用 Qwen3 8B–32B 在单 GPU 上组成 swarm，共享 KV cache。
+<strong>FunSearch / OpenELM / DeepEvolve / OpenAlpha_Evolve / EvoControl</strong>：见第 1 节“避开”。</p>
+<h3>4.2 会改自己代码的 agent</h3>
+<ul>
+<li><strong>DGM</strong>（2505.22954）：agent 改自己的 Python 代码，改出来的版本都存进 archive，以后从里面选父代再改。默认的 coding 模型是 Bedrock 上的 Claude 3.5 Sonnet v2（<code>dgm/llm_withtools.py</code>）。论文附录 B.1 说一次 SWE-bench 运行约 2.2 万美元、约 2 周。</li>
+<li><strong>HGM</strong>（2510.21614，ICLR 2026 Oral）：在 DGM 代码上改。用 CMP（一个分支的子孙后来表现多好）来估计哪个节点值得扩展，再用 Thompson sampling 选。默认模型是 gpt-5-mini，max_workers 是 20。</li>
+<li><strong>Meta-Harness</strong>（2603.28052）：proposer 是 Claude Code，它通过文件系统读所有历史候选的代码、分数和 trace。有交互网页 demo。官方说明里列了 Claude Code skill 版（Harness Forge）和 Codex 版（SuperagenticAI/metaharness）。</li>
+<li><strong>AHE</strong>（2604.25850）：Terminal-Bench 2 上 69.7%→77.0%（GPT-5.4，10 轮），GPT-5.5 版 84.7%。依赖 E2B 沙箱和 Serper 搜索。</li>
+<li><strong>ADAS / AFlow / Gödel Agent / SICA</strong>：2024–2025 年的代表作，代码量小，方便读，但基本只支持 OpenAI，而且多数已经不更新了。</li>
+<li><strong>AIDE ML / Weco</strong>：AIDE 是开源的树搜索 ML agent；Weco CLI 是商业服务的客户端。</li>
+<li><strong>AI Scientist v1/v2</strong>：原生支持 Bedrock（旧模型 ID），要 GPU，许可证有限制条款（比如用它写的论文要显著声明是 AI 生成的）。</li>
+<li><strong>AIRA-dojo</strong>：CC BY-NC 4.0，不能商用。</li>
+<li><strong>Agent Lightning v1.0</strong>：用 RL 训练模型（verl + vLLM），要 Python ≥ 3.12 和 GPU。在 v1.0 的代码树里找不到早期的 APO（自动 prompt 优化）。</li>
+</ul>
+<h3>4.3 Prompt / 上下文 / 技能</h3>
+<ul>
+<li><strong>GEPA</strong>（2507.19457）：读执行 trace，用自然语言反思，再改 prompt；用 Pareto 前沿保留各有长处的候选，再合并。论文：比 GRPO 平均高 10%，rollout 最多少 35 倍；比 MIPROv2 高 10% 以上。<code>optimize_anything</code> 能优化代码、配置、SVG 等。</li>
+<li><strong>DSPy</strong>（MIPROv2 论文 2406.11695）：生态最大，有 39k 星。新版默认用原生 lm15 引擎，provider 列表里没有 Bedrock，所以 Bedrock 要装 <code>dspy[litellm]</code>。</li>
+<li><strong>ACE</strong>（2510.04618）：上下文当作 playbook 来进化，agent 任务 +10.6%，金融任务 +8.6%。官方代码支持的 provider 少；Kayba 的 <code>ace-framework</code> 走 LiteLLM，更容易接 Bedrock。</li>
+<li><strong>TextGrad</strong>：原生有 Bedrock 引擎（<code>langchain_aws.ChatBedrock</code>）。<strong>Trace/OptoPrime</strong>：用装饰器标记哪段代码可以优化，默认走 LiteLLM。</li>
+<li><strong>EvoPrompt / PromptBreeder</strong>：早期的经典工作。DeepMind 的 PromptBreeder 没有官方代码，只有社区实现。</li>
+</ul>
+<hr/>
+</section>
+<section id="s5">
+<h2>5. 客户常问，可以这样答</h2>
+<ul>
+<li>“有没有比 Shinka 更火的？” → OpenEvolve 星数最多（约 7.9k），接口和 Shinka 几乎一样，我们的 workshop 里有一节换引擎实验可以直接对比。</li>
+<li>“Google 有 AlphaEvolve on Cloud，AWS 呢？” → AWS 上可以用开源引擎（Shinka / OpenEvolve）+ Bedrock + EC2 自己搭。Shinka 原生支持 Bedrock。生产场景下，AgentCore 有 optimization 功能（recommendations、A/B test），Bedrock 有 Prompt Optimization（见第 6 节 demo）。</li>
+<li>“能改 agent 本身吗？” → 能。DGM / HGM 改 agent 的代码，Meta-Harness / AHE 改 harness，GEPA / ACE 改 prompt 和上下文。前两类成本高，适合拿来讲；后两类便宜，可以在课上做。</li>
+<li>“要不要 GPU？” → 程序进化（Shinka / OpenEvolve / GEPA）只要 CPU 加 LLM API。只有 RL 路线（Agent Lightning、ThetaEvolve）和 autoresearch、AI Scientist 才要 GPU。</li>
+</ul>
+<hr/>
+</section>
+<section id="s6">
+<h2>6. 行业知名 demo</h2>
+<p>说明：数字都来自原始博客、论文或 README，抓取日期 2026-11-24。写着“未核实”的，是没找到一手来源。</p>
+<h3>AlphaEvolve（Google DeepMind）</h3>
+<ul>
+<li>讲什么：Gemini 写代码，自动打分，再进化，找到了新算法，而且已经用在 Google 的生产系统里。</li>
+<li>关键数字：</li>
+<li>4x4 复数矩阵乘法只用 48 次标量乘法，比 1969 年的 Strassen 方法更好。</li>
+<li>Borg 调度启发式：平均回收 Google 全球 0.7% 的算力，已经上线 1 年以上。</li>
+<li>Gemini 里一个矩阵乘法 kernel 提速 23%，Gemini 训练时间少了 1%。</li>
+<li>FlashAttention kernel 最高提速 32.5%。</li>
+<li>50 多个数学开放问题：约 75% 追平已知最优解，约 20% 超过（比如 11 维 kissing number）。</li>
+<li>链接：<a href="https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" rel="noopener" target="_blank">https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/</a> ，<a href="https://github.com/google-deepmind/alphaevolve_results" rel="noopener" target="_blank">https://github.com/google-deepmind/alphaevolve_results</a> ，<a href="https://github.com/google-deepmind/alphaevolve_repository_of_problems" rel="noopener" target="_blank">https://github.com/google-deepmind/alphaevolve_repository_of_problems</a></li>
+<li>能不能便宜地重跑：不能。原系统不开源。alphaevolve_results 里的 Colab notebook 只能用来验证结果（免费，不要 GPU）。</li>
+<li>Bedrock：不能（只用 Gemini）。</li>
+<li>适不适合 2–3 小时 workshop：部分适合。适合开场讲“为什么这件事重要”，但没法动手重跑。</li>
+<li>备注：DeepMind 博客发布于 2025-05-14；repo 里没有运行 AlphaEvolve 的代码。</li>
+</ul>
+<h3>AlphaEvolve on Google Cloud（托管服务 + Codelab）</h3>
+<ul>
+<li>讲什么：同一个 AlphaEvolve 做成了云服务。Codelab 用 EVOLVE-BLOCK 标记，进化 26 圆 circle packing 和 TSP，评估在本地跑。</li>
+<li>关键数字：</li>
+<li>2025-12-09 私有预览，2026-07-09/10 GA。</li>
+<li>Codelab 1 预计 45–60 分钟，评估在本地跑，不要 GPU。</li>
+<li>客户案例（Google 博客自己说的）：Coolblue 跑 200 次迭代，28 天需求预测的 WMAPE 改善 5% 以上；BASF 的规划/预测模型改善 80% 以上。</li>
+<li>另外还有两个 Codelab：在 Cloud Run 上进化编译型代码，在 GKE 上进化 LoRA 微调的超参数。</li>
+<li>链接：<a href="https://cloud.google.com/blog/products/ai-machine-learning/alphaevolve-is-available-for-everyone" rel="noopener" target="_blank">https://cloud.google.com/blog/products/ai-machine-learning/alphaevolve-is-available-for-everyone</a> ，<a href="https://codelabs.developers.google.com/alphaevolve-on-google-cloud-1" rel="noopener" target="_blank">https://codelabs.developers.google.com/alphaevolve-on-google-cloud-1</a> ，<a href="https://codelabs.developers.google.com/alphaevolve-on-google-cloud-2" rel="noopener" target="_blank">https://codelabs.developers.google.com/alphaevolve-on-google-cloud-2</a> ，<a href="https://codelabs.developers.google.com/alphaevolve-on-google-cloud-3" rel="noopener" target="_blank">https://codelabs.developers.google.com/alphaevolve-on-google-cloud-3</a> ，<a href="https://github.com/Google-Cloud-AI/alphaevolve-on-googlecloud" rel="noopener" target="_blank">https://github.com/Google-Cloud-AI/alphaevolve-on-googlecloud</a></li>
+<li>能不能便宜地重跑：要有 GCP 项目和 Gemini Enterprise app。费用 = AlphaEvolve API + Vertex Gemini token（具体单价未核实）。</li>
+<li>Bedrock：不能（只在 GCP 上）。</li>
+<li>适不适合 2–3 小时 workshop：部分适合，可以当竞品参照。它的 Codelab 结构（seed 程序 + EVOLVE-BLOCK + 打分函数，先 circle packing 再 TSP）和我们的 workshop 几乎一样，客户很可能会拿来比。</li>
+<li>备注：客户问“Google 有托管的 AlphaEvolve，AWS 有吗”时，要准备好答案。</li>
+</ul>
+<h3>FunSearch（DeepMind，Nature 2023）</h3>
+<ul>
+<li>讲什么：LLM 只改一个 priority 函数，就进化出了新的数学构造和更好的装箱启发式。</li>
+<li>关键数字：</li>
+<li>n=8 维 cap set 大小 512（140 次实验里只有 4 次找到）。DeepMind 说这是 20 年来 cap set 下界最大的一次提升。</li>
+<li>在线一维 bin packing：进化出的启发式比 best-fit 等常用方法好。</li>
+<li>链接：<a href="https://deepmind.google/discover/blog/funsearch-making-new-discoveries-in-mathematical-sciences-using-large-language-models/" rel="noopener" target="_blank">https://deepmind.google/discover/blog/funsearch-making-new-discoveries-in-mathematical-sciences-using-large-language-models/</a> ，<a href="https://www.nature.com/articles/s41586-023-06924-6" rel="noopener" target="_blank">https://www.nature.com/articles/s41586-023-06924-6</a> ，<a href="https://github.com/google-deepmind/funsearch" rel="noopener" target="_blank">https://github.com/google-deepmind/funsearch</a></li>
+<li>能不能便宜地重跑：Colab notebook 可以免费跑，能复核已经发现的函数，也能跑 bin packing 评估。implementation/ 目录只有单线程的骨架，不带 LLM 和沙箱，要自己接。</li>
+<li>Bedrock：可以自己接（没有内置后端），要自己写 LLM 调用的代码。</li>
+<li>适不适合 2–3 小时 workshop：部分适合。bin packing 的评估很适合当“打分函数”的教学例子；完整重跑 cap set 太贵。</li>
+<li>备注：repo 最后一次 push 是 2024-02。</li>
+</ul>
+<h3>Karpathy autoresearch（2026-03）</h3>
+<ul>
+<li>讲什么：coding agent（Claude 或 Codex）整夜自己改 train.py，每次训练 5 分钟，val_bpb 变好就保留这个改动。</li>
+<li>关键数字：</li>
+<li>约 2 天里试了约 700 个改动，找到约 20 个有用的。</li>
+<li>这些改动叠加以后，nanochat 的 Time-to-GPT-2 从 2.02 小时降到 1.80 小时（约 11%）。</li>
+<li>大约每小时 12 次实验，一夜约 100 次。</li>
+<li>链接：<a href="https://github.com/karpathy/autoresearch" rel="noopener" target="_blank">https://github.com/karpathy/autoresearch</a> ，<a href="https://x.com/karpathy/status/2031135152349524125" rel="noopener" target="_blank">https://x.com/karpathy/status/2031135152349524125</a> ，<a href="https://github.com/karpathy/nanochat/commit/f06860494848db080c9a80a0ffa83203b042056b" rel="noopener" target="_blank">https://github.com/karpathy/nanochat/commit/f06860494848db080c9a80a0ffa83203b042056b</a></li>
+<li>能不能便宜地重跑：要 1 张 NVIDIA GPU（作者用 H100 测的），每次 5 分钟。在 AWS 上用哪种 GPU 实例、多少钱，未核实。</li>
+<li>Bedrock：可以。agent 就是 Claude Code，Claude Code 可以走 Bedrock。</li>
+<li>适不适合 2–3 小时 workshop：部分适合。它最有名（GitHub 约 10 万星），适合开场讲“大家都认识的例子”。但 2–3 小时只能跑十几次实验，而且要 GPU。</li>
+<li>备注：repo 没有 license（GitHub API 返回 license=null）。</li>
+</ul>
+<h3>Darwin Gödel Machine（DGM）</h3>
+<ul>
+<li>讲什么：coding agent 改自己的代码，所有版本存成一棵进化树，在编程基准上越来越强。</li>
+<li>关键数字：</li>
+<li>SWE-bench 20.0% → 50.0%。</li>
+<li>Polyglot 全集 14.2% → 30.7%。</li>
+<li>一次 SWE-bench 运行约 2 周、约 2.2 万美元。</li>
+<li>链接：<a href="https://arxiv.org/abs/2505.22954" rel="noopener" target="_blank">https://arxiv.org/abs/2505.22954</a> ，<a href="https://github.com/jennyzzt/dgm" rel="noopener" target="_blank">https://github.com/jennyzzt/dgm</a></li>
+<li>能不能便宜地重跑：很贵。完整跑 SWE-bench 约 2.2 万美元。论文附录估计，用 o3-mini 在 Polyglot 60 道题上做一次评估约 5 美元。要 Docker。</li>
+<li>Bedrock：代码里有（dgm/llm.py 用 anthropic.AnthropicBedrock，默认是旧的 Claude 3.5 Sonnet v2 模型 ID）。README 只写了 OpenAI 和 Anthropic 的 key。整套在 Bedrock 上跑没有实测。</li>
+<li>适不适合 2–3 小时 workshop：动手不适合，讲故事适合。结果图很有说服力，但没法在课上重跑。</li>
+<li>备注：README 有警告：会执行模型生成的、不可信的代码。</li>
+</ul>
+<h3>Sakana The AI Scientist v1 / v2</h3>
+<ul>
+<li>讲什么：从想法、做实验、写论文到审稿，全部自动完成。</li>
+<li>关键数字：</li>
+<li>v1：每篇论文约 15 美元。</li>
+<li>v2：3 篇论文投到 ICLR 2025 workshop，其中 1 篇平均分 6.33（约前 45%），超过平均录用线。按事先的约定，在正式发表前撤回了。</li>
+<li>v2 实验阶段用 Claude 3.5 Sonnet 每次约 15–20 美元，写论文再加约 5 美元。</li>
+<li>链接：<a href="https://sakana.ai/ai-scientist/" rel="noopener" target="_blank">https://sakana.ai/ai-scientist/</a> ，<a href="https://sakana.ai/ai-scientist-first-publication/" rel="noopener" target="_blank">https://sakana.ai/ai-scientist-first-publication/</a> ，<a href="https://github.com/SakanaAI/AI-Scientist" rel="noopener" target="_blank">https://github.com/SakanaAI/AI-Scientist</a> ，<a href="https://github.com/SakanaAI/AI-Scientist-v2" rel="noopener" target="_blank">https://github.com/SakanaAI/AI-Scientist-v2</a></li>
+<li>能不能便宜地重跑：要 Linux + NVIDIA GPU（CUDA/PyTorch），每次几十美元。</li>
+<li>Bedrock：原生支持（README 里有 “Claude Models via Bedrock”）。</li>
+<li>适不适合 2–3 小时 workshop：部分适合。能用 Bedrock 跑，但要 GPU，一次要几个小时。适合拿一个已经跑完的结果来演示。</li>
+<li>备注：GitHub 上 license 显示为 NOASSERTION（实际是自定义的 AI Scientist Source Code License），商用前要看清条款。</li>
+</ul>
+<h3>OpenEvolve circle packing（n=26）</h3>
+<ul>
+<li>讲什么：开源复现 AlphaEvolve 的 26 圆 circle packing。</li>
+<li>关键数字：</li>
+<li>半径之和 2.634，和 AlphaEvolve 论文的 2.635 只差 0.04%。README 说后来继续进化，已经超过了论文的结果。</li>
+<li>用两阶段配置，每阶段 max_iterations 100；README 记录了 470 代进化。</li>
+<li>链接：<a href="https://github.com/algorithmicsuperintelligence/openevolve/tree/main/examples/circle_packing" rel="noopener" target="_blank">https://github.com/algorithmicsuperintelligence/openevolve/tree/main/examples/circle_packing</a></li>
+<li>能不能便宜地重跑：只要 CPU。总成本看用哪个模型，具体多少美元未核实。</li>
+<li>Bedrock：要通过 OpenAI 兼容接口（比如 LiteLLM proxy）。README 还说支持 Claude Code 和 Codex CLI。</li>
+<li>适不适合 2–3 小时 workshop：适合。可以在同一道题上直接和 Shinka 比，还自带 visualizer。</li>
+</ul>
+<h3>ShinkaEvolve 的四个 demo（Sakana，2025-09）</h3>
+<ul>
+<li>讲什么：用更少的样本做程序进化（样本效率更高）。</li>
+<li>关键数字：</li>
+<li>circle packing 26 圆：只用 150 个样本就得到了新 SOTA。</li>
+<li>AIME agent 脚手架：进化 75 代，得到一个三阶段的结构。</li>
+<li>ALE-Bench / AtCoder AHC015：分数从 762,641 提到 817,371（博客说这个分数可以排第 2）。</li>
+<li>MoE 训练：发现了一个新的 load-balancing loss。</li>
+<li>链接：<a href="https://sakana.ai/shinka-evolve/" rel="noopener" target="_blank">https://sakana.ai/shinka-evolve/</a> ，<a href="https://github.com/SakanaAI/ShinkaEvolve" rel="noopener" target="_blank">https://github.com/SakanaAI/ShinkaEvolve</a> ，<a href="https://sakanaai.github.io/ShinkaEvolve/webui/" rel="noopener" target="_blank">https://sakanaai.github.io/ShinkaEvolve/webui/</a></li>
+<li>能不能便宜地重跑：circle packing 只要 CPU。成本看用哪个模型（具体金额未核实）。</li>
+<li>Bedrock：原生支持（README 的配置说明里有 Anthropic / Bedrock）。</li>
+<li>适不适合 2–3 小时 workshop：适合。这是我们的主引擎，circle packing 是最好的第一个动手实验，WebUI 可以实时看进化树。</li>
+</ul>
+<h3>Voyager（Minecraft 技能库）</h3>
+<ul>
+<li>讲什么：GPT-4 agent 在 Minecraft 里自己定学习计划，自己写技能代码，存进技能库，一直学下去。</li>
+<li>关键数字：</li>
+<li>找到的不同物品是原来的 3.3 倍（160 轮提示里找到 63 种）。</li>
+<li>走的距离是 2.3 倍。</li>
+<li>科技树解锁更快：木头 15.3 倍，石头 8.5 倍，铁 6.4 倍。</li>
+<li>链接：<a href="https://voyager.minedojo.org/" rel="noopener" target="_blank">https://voyager.minedojo.org/</a> ，<a href="https://github.com/MineDojo/Voyager" rel="noopener" target="_blank">https://github.com/MineDojo/Voyager</a> ，<a href="https://arxiv.org/abs/2305.16291" rel="noopener" target="_blank">https://arxiv.org/abs/2305.16291</a></li>
+<li>能不能便宜地重跑：要正版 Minecraft、Fabric mods、Node.js，还要 Microsoft/Azure 登录。repo 最后一次 push 是 2024-04。</li>
+<li>Bedrock：不能（代码里写的是 openai_api_key，换 Bedrock 要自己改）。</li>
+<li>适不适合 2–3 小时 workshop：动手不适合。讲概念适合：“技能库就是一种靠记忆的自进化”。</li>
+</ul>
+<h3>GEPA / DSPy 提示词优化教程</h3>
+<ul>
+<li>讲什么：用反思来进化提示词（Pareto + 反思）。optimize_anything 还能优化代码、配置和 agent 结构。</li>
+<li>关键数字：</li>
+<li>README 的快速例子：GPT-4.1 Mini 在 AIME 2025 上从 46.6% 提到 56.6%。</li>
+<li>比 GRPO 少用很多评估：100–500 次，GRPO 要 5,000–25,000 次以上。</li>
+<li>ARC-AGI agent：32% → 89%（靠架构发现）。</li>
+<li>Databricks 博客说：开源模型 + GEPA 比 Claude Opus 4.1 便宜 90 倍。</li>
+<li>链接：<a href="https://github.com/gepa-ai/gepa" rel="noopener" target="_blank">https://github.com/gepa-ai/gepa</a> ，<a href="https://dspy.ai/tutorials/gepa_aime/" rel="noopener" target="_blank">https://dspy.ai/tutorials/gepa_aime/</a> ，<a href="https://dspy.ai/tutorials/gepa_ai_program/" rel="noopener" target="_blank">https://dspy.ai/tutorials/gepa_ai_program/</a> ，<a href="https://gepa-ai.github.io/gepa/blog/introducing-optimize-anything/" rel="noopener" target="_blank">https://gepa-ai.github.io/gepa/blog/introducing-optimize-anything/</a></li>
+<li>能不能便宜地重跑：很便宜。只调 LLM API，CPU 就够。DSPy 教程是 notebook（在 docs 里的 index.ipynb）。</li>
+<li>Bedrock：通过 LiteLLM（DSPy 和 GEPA 的模型名可以写 bedrock/...），这次没有实测。</li>
+<li>适不适合 2–3 小时 workshop：适合。30–45 分钟能跑完一轮，成本低。也适合放在“换引擎”模块：从改代码换成改提示词。</li>
+<li>备注：GEPA 已经集成进 DSPy、MLflow、Google ADK。</li>
+</ul>
+<h3>Meta-Harness 交互式 demo（Stanford，2026-03）</h3>
+<ul>
+<li>讲什么：让 Claude Code 当 proposer，读之前所有候选的源码、日志和分数，再进化 agent 的 harness。</li>
+<li>关键数字：</li>
+<li>网页 demo：TerminalBench-2 里 19 道难题，从 Terminus-KIRA 的 28.5% 到第 7 轮的 46.5%。</li>
+<li>文本分类：比最好的上下文管理方法高 7.7 点，context token 少用 4 倍。</li>
+<li>200 道 IMO 级的题：同一个 harness 在 5 个没见过的模型上平均 +4.7 点。</li>
+<li>每一步最多用约 1000 万 token 的诊断上下文。</li>
+<li>链接：<a href="https://yoonholee.com/meta-harness/" rel="noopener" target="_blank">https://yoonholee.com/meta-harness/</a> ，<a href="https://arxiv.org/abs/2603.28052" rel="noopener" target="_blank">https://arxiv.org/abs/2603.28052</a> ，<a href="https://github.com/stanford-iris-lab/meta-harness" rel="noopener" target="_blank">https://github.com/stanford-iris-lab/meta-harness</a></li>
+<li>能不能便宜地重跑：网页 demo 免费点开看。真要重跑会用很多 token（每一步可能上百万），具体金额未核实。</li>
+<li>Bedrock：可以。proposer 是 Claude Code（可以走 Bedrock）；被测的模型要看具体例子。</li>
+<li>适不适合 2–3 小时 workshop：部分适合。网页 demo 很适合在课上花 5 分钟展示“harness 自进化”；完整重跑太贵。</li>
+</ul>
+<h3>Amazon Bedrock（Advanced）Prompt Optimization</h3>
+<ul>
+<li>讲什么：AWS 托管的提示词改写和优化。Advanced 版最多可以同时对比 5 个模型，会给出评估分、成本和延迟。</li>
+<li>关键数字：Prompt Optimization 2025-04-23 GA；Advanced Prompt Optimization 2026-05-14 发布。</li>
+<li>链接：<a href="https://aws.amazon.com/about-aws/whats-new/2025/04/prompt-optimization-amazon-bedrock-generally-available/" rel="noopener" target="_blank">https://aws.amazon.com/about-aws/whats-new/2025/04/prompt-optimization-amazon-bedrock-generally-available/</a> ，<a href="https://aws.amazon.com/blogs/aws/amazon-bedrock-introduces-new-advanced-prompt-optimization-and-migration-tool/" rel="noopener" target="_blank">https://aws.amazon.com/blogs/aws/amazon-bedrock-introduces-new-advanced-prompt-optimization-and-migration-tool/</a></li>
+<li>能不能便宜地重跑：在控制台点几下就行，按 token 收费（单价未核实）。</li>
+<li>Bedrock：原生。</li>
+<li>适不适合 2–3 小时 workshop：部分适合。花 5–10 分钟展示“AWS 托管的提示词自优化”，和 GEPA 做个对比。</li>
+</ul>
+<h3>Amazon Bedrock AgentCore optimization（recommendations / A/B test / insights）</h3>
+<ul>
+<li>讲什么：用生产环境的 trace 和评估分，自动建议怎么改 system prompt 和 tool description；先离线批量评估，再线上 A/B 测试，最后让赢的版本上线。</li>
+<li>关键数字：</li>
+<li>2026-04-30 预览。</li>
+<li>2026-06-17：batch evaluations、recommendations、A/B tests GA（14 个 Region）；failure / intent / trajectory insights 进入预览（13 个 Region）。</li>
+<li>AWS 博客（2026-09-16）的表格：AppWorld 基线 72.62%，GEPA 79.63%，MIPROv2 74.40%，AWS 单 agent reflector 81.55%，sub-agent reflector 95.83%。</li>
+<li>AgentCore Evaluations：2025-12-02 预览，2026-03-31 GA。</li>
+<li>链接：<a href="https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-bedrock-agentcore-new-optimization-capabilities/" rel="noopener" target="_blank">https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-bedrock-agentcore-new-optimization-capabilities/</a> ，<a href="https://aws.amazon.com/blogs/machine-learning/optimizing-agent-system-prompts-with-amazon-bedrock-agentcore/" rel="noopener" target="_blank">https://aws.amazon.com/blogs/machine-learning/optimizing-agent-system-prompts-with-amazon-bedrock-agentcore/</a> ，<a href="https://aws.amazon.com/blogs/machine-learning/introducing-agent-quality-optimization-in-agentcore-now-in-preview/" rel="noopener" target="_blank">https://aws.amazon.com/blogs/machine-learning/introducing-agent-quality-optimization-in-agentcore-now-in-preview/</a> ，<a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/optimization.html" rel="noopener" target="_blank">https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/optimization.html</a></li>
+<li>能不能便宜地重跑：要先有一个已经部署的 agent 和它的 trace，按 AgentCore 用量收费（单价未核实）。</li>
+<li>Bedrock：原生。</li>
+<li>适不适合 2–3 小时 workshop：适合放在最后一节，把“自进化”落到 AWS 的托管产品上，回答“生产环境里怎么用”。</li>
+<li>备注：AppWorld 那张表的数字是从网页抓下来的文本里对出来的，行和列的对应关系建议再人工看一次原文。</li>
+</ul>
+<h3>workshop 建议</h3>
+<ul>
+<li>开场 10 分钟只讲不跑：AlphaEvolve（48 次乘法、Borg 0.7%）、DGM（20%→50%）、autoresearch（700 次改动、约 11%），再打开 Meta-Harness 的网页 demo。</li>
+<li>动手主线：用 ShinkaEvolve 跑 circle packing（只要 CPU，原生 Bedrock）。想加“换引擎”，就用 OpenEvolve 跑同一道题做对比；想换优化对象，就用 GEPA/DSPy 做 AIME 提示词优化。</li>
+<li>收尾：讲 Bedrock Advanced Prompt Optimization 和 AgentCore optimization，说明“生产环境里怎么用 AWS 托管的方式做自改进”。同时准备好回答“Google 有 AlphaEvolve on Cloud，AWS 呢”。</li>
+</ul>
+<hr/>
+</section>
+<section id="s7">
+<h2>7. 没能核实 / 要注意的</h2>
+<ul>
+<li>下面这些 Bedrock 路径都只是“文档或代码里有”，<strong>没有实测</strong>：OpenEvolve + LiteLLM proxy、OpenEvolve 的 <code>claude_code</code> provider 走 Bedrock、GEPA / DSPy / LLM4AD / LEVI 用 <code>bedrock/...</code> 模型名、HGM、Meta-Harness。放进课程前要先端到端跑一遍。</li>
+<li>已经实测的只有：Claude 不能走 Bedrock 的 OpenAI 兼容端点；gpt-oss / qwen3-coder / kimi-k2-thinking 可以（us-east-1，SigV4）。bedrock-mantle 端点没有测到模型列表。</li>
+<li>SkyDiscover 的 PyPI 包 <code>skydiscover</code> 0.1.0 不能确认是官方发的。</li>
+<li>各引擎跑一次 circle packing 要花多少美元，没有一手数据（只有 LEVI quickstart 写了约 0.05–0.10 美元）。</li>
+<li>SkyDiscover、LEVI、SwarmEvolve、CodeEvolve 说自己比别的框架强，都是作者自己测的，没有第三方复现。</li>
+<li>AI Scientist 的许可证全文没有逐条读，只确认了它基于 RAIL，有限制条款（包括论文要声明 AI 生成）。商用前要找法务看。</li>
+</ul>
+</section>
+<p class="dim small">AI 整理:由多轮检索和逐项核对写成,数字以各项目原文为准。个人研究整理,不代表任何雇主立场。</p>
+</main>
+<a data-cur="zh" data-to="en" href="../../en/rsi/engines/" id="lang-toggle" lang="en" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">English</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>
