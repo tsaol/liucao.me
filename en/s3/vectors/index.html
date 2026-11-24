@@ -137,6 +137,11 @@
         .calc-out small { display: block; font-family: var(--mono); font-size: .7rem; color: var(--text-mute); }
         .calc-out .tot { border-color: var(--accent-dim); } .calc-out .tot b { color: var(--accent); }
         @media (max-width: 640px) { .calc, .calc-out { grid-template-columns: 1fr 1fr; } }
+        .fig.arch { background: #fff; padding: .6rem; } .fig.arch img { display: block; width: 100%; height: auto; border-radius: 6px; }
+        .fig.arch figcaption { color: #555; } .fig.arch figcaption a { color: #0b6bcb; }
+        .flow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+        .flow2 .lbl { font-weight: 700; color: var(--accent); font-size: .9rem; margin-bottom: .5rem; }
+        @media (max-width: 760px) { .flow2 { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -171,7 +176,7 @@
 <div class="lead">Start here: in three sentences</div>
 <ol>
 <li><b>S3 Vectors is a bucket type in S3 built specifically for storing vectors.</b>No cluster to build; pay for storage and queries,<mark>Good for "lots of data, infrequent queries"</mark>.</li>
-<li><b>Always use an ENHANCED index.</b>It<mark> Filter by permissions first, then find the most similar</mark>, so results are still recalled even when a user can only see 1% of the files; it also supports Chinese full-text search and hybrid search.</li>
+<li><b>Always use an ENHANCED index.</b>It<mark> Filter by permissions first, then find the most similar</mark>, so results are still recalled even when a user can see only a small fraction of the files; it also supports Chinese full-text search and hybrid search.</li>
 <li><b>Most of the cost is "query processing"</b>: the larger the index, the more each query costs.<mark>Source text chunks go into "non-filterable" metadata</mark>, so if data can be split by department, use multiple indexes.</li>
 </ol>
 </div>
@@ -251,7 +256,7 @@ hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, in
 <div class="dg">
 <div class="branch">
 <div><div class="lbl">CLASSIC: filters while searching</div>
-<div class="box stop">First find "the most similar batch", then check permissions<small> When a user can see only 1% of files, the closest matches may include none they can see → fewer than topK results, or even none</small></div></div>
+<div class="box stop">First find "the most similar batch", then check permissions<small> When a user can see only a small fraction of the files, the nearest batch may contain none they can see → fewer than topK results, or even none</small></div></div>
 <div><div class="lbl">ENHANCED: filter first</div>
 <div class="box good">First narrow down to "what they can see", then find the most similar within that<small> Recall holds even with very narrow permissions; up to 40 KB of filterable metadata; supports full-text search,<code>$startsWith</code></small></div></div>
 </div>
@@ -317,7 +322,7 @@ hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, in
 <tr><td><b>Storage</b></td><td>$0.06 / GB·month</td><td>$0.064 / GB·month</td><td> Vector + key + all metadata</td></tr>
 <tr><td><b>Writes (PUT)</b></td><td>$0.20 / GB</td><td>$0.214 / GB</td><td> Each request is billed at a minimum of 128 KB</td></tr>
 <tr><td><b>Query requests</b></td><td>$2.50 / million requests</td><td>$2.70 / million requests</td><td> Each QueryVectors call</td></tr>
-<tr><td><b>Query data processed</b></td><td colspan="2"> Per index: first 100K vectors $0.004/TB · 100K–10M $0.002/TB · over 10M $0.0004/TB (Frankfurt about 7% higher)</td><td>Vectors in the index × processing size</td></tr>
+<tr><td><b>Query data processed</b></td><td colspan="2"> Per index: first 100K vectors $0.004/TB · 100K–10M $0.002/TB · over 10M $0.0004/TB<br/> Frankfurt: $0.004285 / $0.002143 / $0.000429 per TB</td><td> Vectors in the index × processing size</td></tr>
 <tr><td><b>Full-text search text</b></td><td colspan="2">$0.00012 / TB (flat rate)</td><td>Full-text field size × number of vectors</td></tr>
 <tr><td><b>Returned data</b></td><td colspan="2">$0.01 / GB; first 512 KB per query free</td><td> Each result is billed at a minimum of 256 bytes</td></tr>
 </tbody>
@@ -361,7 +366,7 @@ hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, in
 <label>Full-text search text KB<input id="c-text" min="0" step="0.1" type="number" value="1.8"/></label>
 <label>Other non-filterable metadata KB<input id="c-nonf" min="0" step="0.1" type="number" value="0"/></label>
 <label>Queries per month<input id="c-queries" min="0" step="100000" type="number" value="1000000"/></label>
-<label>Monthly rewrite ratio (0.05 = 5%)<input id="c-rewrite" min="0" step="0.01" type="number" value="0.05"/></label>
+<label>Vectors rewritten per month<input id="c-rewrite" min="0" step="100000" type="number" value="1000000"/></label>
 </div>
 <div class="calc-out" id="c-out">
 <div><span>Storage</span><b id="o-storage">—</b><small id="o-gb"></small></div>
@@ -381,32 +386,61 @@ hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, in
 <li>Process one object<mark> Doesn't scan the entire index</mark>: chunk keys are numbered sequentially and fetched directly by key.</li>
 </ul></div>
 <p>Requirements: an S3 bucket holds hundreds of TB of documents, images, and videos; content must be searchable in natural language, results may only include files the caller is allowed to see, and object processing must stay in-Region. For the full requirements and a point-by-point comparison, see the repo's <a href="https://github.com/tsaol/s3-vectors-search/blob/main/docs/requirements.md">requirements.md</a> and <a href="https://github.com/tsaol/s3-vectors-search/blob/main/docs/architecture.md">architecture.md</a>.</p>
+<figure class="fig arch">
+<a href="../../../s3/vectors/img/architecture.png"><img alt="S3 semantic search architecture: two paths, indexing and retrieval, 10 steps in total" loading="lazy" src="../../../s3/vectors/img/architecture.png"/></a>
+<figcaption>Figure 5 · Architecture diagram (click to enlarge) · <a href="https://github.com/tsaol/s3-vectors-search/blob/main/docs/img/architecture.drawio">draw.io source file</a></figcaption>
+</figure>
+<h3 class="sub-h">What each step does</h3>
+<div class="flow2">
+<div><div class="lbl">Indexing: file → vectors</div>
+<ol class="steps">
+<li><b>Write</b>: A business system uploads, overwrites, or deletes an S3 object. Expiration deletes work the same way.</li>
+<li><b>Notification</b>: S3 sends events to an SQS queue.<mark>The event is just a "reminder"</mark>, possibly duplicated or out of order.</li>
+<li><b>Receive message</b>: Lambda takes 1 message at a time, first does a HEAD on the object,<mark>Treat the current S3 state as the source of truth</mark>.</li>
+<li><b>Text recognition</b>: Images and PDFs go to Textract, which reads the objects directly from S3 without downloading them.</li>
+<li><b>Convert to vectors</b>: Text is split into 600-character chunks, and vectors are generated with Titan V2 in the same Region.</li>
+<li><b>Write to the vector store</b>: Overwrite chunks 0..m-1, then delete the leftover old chunks.</li>
+</ol></div>
+<div><div class="lbl">Retrieval: question → permitted results</div>
+<ol class="steps" start="7" style="counter-reset: s 6">
+<li><b>Sign in</b>: The user signs in with Cognito and gets a JWT listing the groups they belong to.</li>
+<li><b>Ask a question</b>: Calls the agent with the JWT.<mark>AgentCore verifies the token first</mark>, and anything that doesn't match is rejected.</li>
+<li><b>Retrieval</b>: Hybrid vector + keyword search,<mark>Search only files that the groups in the token can access</mark>.</li>
+<li><b>Answer (optional)</b>: The LLM answers from the retrieved chunks and cites sources; if nothing is found, it says so.</li>
+</ol></div>
+</div>
+
+<h3 class="sub-h">Sync mechanism: how Lambda decides in steps 3~6</h3>
 <div class="dg">
 <div class="dec">
-<div class="box">Business systems write / overwrite / delete objects; lifecycle expiration<small> S3 source bucket: read-only for processing components</small></div>
-<div class="arrow-d">↓<span>S3 event notifications</span></div>
+<div class="box q">A message arrives: it only says "this object may have changed"</div>
+<div class="arrow-d">↓<span>HEAD object</span></div>
 <div class="branch">
-<div class="box">SQS events queue<small> Daily incremental: concurrency 10</small></div>
-<div class="box">SQS backfill queue<small> Backfill and reconciliation: concurrency 4, so they don't compete with daily incremental updates</small></div>
+<div><div class="lbl">Object no longer exists</div><div class="box stop"> Delete all its vectors<small> Deletions and expired or late stale events all go here</small></div></div>
+<div><div class="lbl">Object still exists</div><div class="box"> Compare with the ETag and rule version recorded in chunk 0</div></div>
 </div>
-<div class="arrow-d">↓<span>On failure, retry with backoff starting at 30 seconds; after 8 attempts → DLQ + alert</span></div>
-<div class="box good">Lambda indexer (same Region)<small>HEAD object → extract (text / docx / Textract OCR, Chinese supported) → chunk → Titan V2 embedding</small></div>
-<div class="arrow-d">↓<span>PutVectors / DeleteVectors</span></div>
-<div class="box good">S3 Vectors · ENHANCED index<small> Metadata: path, ETag, department, uploader, time, chunk, acl, rule version · chunk_text: non-filterable + Chinese full-text search</small></div>
-<div class="arrow-d">↑<span>Hybrid search + filter acl $in user groups</span></div>
-<div class="box">Retrieval agent on AgentCore Runtime<small> JWT authorizer (Cognito) validates the token first; the agent only reads cognito:groups from the token</small></div>
-<div class="arrow-d">↑</div>
-<div class="box q">User logs in, gets a JWT, asks a question</div>
+<div class="branch">
+<div><div class="lbl">Same, and the last write completed</div><div class="box good"> Do nothing<small> Duplicate event; only permissions changed → update metadata only</small></div></div>
+<div><div class="lbl">Different</div><div class="box retry"> Re-extract, chunk, write<small> HEAD again after writing: changed again → back off and retry</small></div></div>
 </div>
-<div class="dg-cap">Figure 5 · Overall flow of the scenario demo</div>
 </div>
-<h3 class="sub-h">How the indexer decides each time</h3>
-<ol class="steps">
-<li><b>HEAD object</b>: the object no longer exists → delete all its vectors. So delete events, expiration events, and late-arriving old events are all handled by the same rule.</li>
-<li><b>ETag, rule version, and model are all unchanged, and the last write completed</b> → Do nothing (duplicate event). If only permissions changed → rewrite only the metadata; don't redo the embedding.</li>
-<li><b>Otherwise</b> → Extract, chunk, and embed; overwrite chunks 0..m-1, then delete old chunks m and beyond.</li>
-<li><b>HEAD again after writing</b>: the object was overwritten again during processing → throw an exception so the queue retries, and the retry processes the new version.</li>
-</ol>
+<div class="dg-cap">Figure 6 · Every message goes through this single flow</div>
+</div>
+<h3 class="sub-h">Why a failure leaves no dirty data</h3>
+<p>A file is split into many chunks, and the vector key is <code>FileID#00000</code>, <code>#00001</code>…both writes and deletes follow one rule:<mark>A file's chunks always form a contiguous range starting from 0</mark>.</p>
+<div class="dg">
+<div class="tl">
+<div class="box">Write<small> Write 1..m-1 first,<b>Chunk 0 written last</b></small></div><div class="ar">·</div>
+<div class="box">Delete<small><b> Delete from the highest index down</b></small></div><div class="ar">·</div>
+<div class="box">Change permissions<small> Update from back to front,<b>Chunk 0 updated last</b></small></div>
+</div>
+<div class="dg-cap">Figure 7 · Three ordering rules: chunk 0 is the "commit marker"</div>
+</div>
+<ul>
+<li><b>Fails partway through writing</b>: Chunk 0 is still old, so the next check detects the mismatch and rewrites it.</li>
+<li><b>Fails partway through deleting</b>: The remaining chunks are still one contiguous range, so the next run scans up from 0, finds all of them, and then deletes them.</li>
+<li><b>No need to scan the whole index</b>: Fetched directly by key, so the cost of processing a file doesn't depend on index size.</li>
+</ul>
 <div class="callout"><b>Why the Lambda role needs <code>s3:ListBucket</code>?</b>Without this permission, a HEAD on a deleted object returns <b>403</b>, not 404. The indexer then can't tell "deleted" from "no permission", and delete events keep failing. ListBucket is only a read permission, so it doesn't break the "read-only source bucket" requirement.</div>
 <h3 class="sub-h">What the end-to-end tests check</h3>
 <table class="cmp">
@@ -506,7 +540,7 @@ hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, in
     var q = v('c-queries'), rw = v('c-rewrite');
     var stored = 4 * dim + key + filt + nonf + text;
     var gb = n * stored / GB;
-    var storage = gb * r.st, put = rw * gb * r.put;
+    var storage = gb * r.st, put = rw * stored / GB * r.put;
     var per = n / idx, proc = 4 * dim + key + filt;
     var t = [Math.min(per, 1e5), Math.max(0, Math.min(per, 1e7) - 1e5), Math.max(0, per - 1e7)];
     var tiers = t.map(function (c, i) { return c * proc / TB * r.tiers[i] * q; });

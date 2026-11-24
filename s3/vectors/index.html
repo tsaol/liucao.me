@@ -137,6 +137,11 @@
         .calc-out small { display: block; font-family: var(--mono); font-size: .7rem; color: var(--text-mute); }
         .calc-out .tot { border-color: var(--accent-dim); } .calc-out .tot b { color: var(--accent); }
         @media (max-width: 640px) { .calc, .calc-out { grid-template-columns: 1fr 1fr; } }
+        .fig.arch { background: #fff; padding: .6rem; } .fig.arch img { display: block; width: 100%; height: auto; border-radius: 6px; }
+        .fig.arch figcaption { color: #555; } .fig.arch figcaption a { color: #0b6bcb; }
+        .flow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+        .flow2 .lbl { font-weight: 700; color: var(--accent); font-size: .9rem; margin-bottom: .5rem; }
+        @media (max-width: 760px) { .flow2 { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -171,7 +176,7 @@
 <div class="lead">先看这里：三句话</div>
 <ol>
 <li><b>S3 Vectors 是 S3 里专门放向量的桶。</b>不用建集群，按存储量和查询量付费，<mark>适合"数据很多、查询不太频繁"的场景</mark>。</li>
-<li><b>一定要用 ENHANCED 索引。</b>它<mark>先按权限过滤，再找最相近的</mark>，一个人只能看 1% 的文件时也能召回得到；它还支持中文全文检索和混合检索。</li>
+<li><b>一定要用 ENHANCED 索引。</b>它<mark>先按权限过滤，再找最相近的</mark>，一个人只能看很少一部分文件时也能召回得到；它还支持中文全文检索和混合检索。</li>
 <li><b>费用的大头是"查询处理量"</b>：索引越大，每次查询越贵。<mark>原文片段放进"不可过滤"的元数据</mark>，能按部门分开就分成多个索引。</li>
 </ol>
 </div>
@@ -251,7 +256,7 @@ hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, in
 <div class="dg">
 <div class="branch">
 <div><div class="lbl">CLASSIC：一边找一边过滤</div>
-<div class="box stop">先找"最相近的一批"，再检查权限<small>一个人只能看 1% 的文件时，最相近的那批里可能没有他能看的 → 结果少于 topK，甚至为空</small></div></div>
+<div class="box stop">先找"最相近的一批"，再检查权限<small>一个人只能看很少一部分文件时，最相近的那批里可能没有他能看的 → 结果少于 topK，甚至为空</small></div></div>
 <div><div class="lbl">ENHANCED：先过滤</div>
 <div class="box good">先圈出"他能看的"，再在里面找最相近的<small>权限再窄也能召回；可过滤元数据最多 40 KB；支持全文检索、<code>$startsWith</code></small></div></div>
 </div>
@@ -317,7 +322,7 @@ hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, in
 <tr><td><b>存储</b></td><td>$0.06 / GB·月</td><td>$0.064 / GB·月</td><td>向量 + key + 全部元数据</td></tr>
 <tr><td><b>写入（PUT）</b></td><td>$0.20 / GB</td><td>$0.214 / GB</td><td>每次请求最少按 128 KB 算</td></tr>
 <tr><td><b>查询请求</b></td><td>$2.50 / 百万次</td><td>$2.70 / 百万次</td><td>每次 QueryVectors</td></tr>
-<tr><td><b>查询处理量</b></td><td colspan="2">每个索引：前 10 万个向量 $0.004/TB · 10 万~1,000 万 $0.002/TB · 1,000 万以上 $0.0004/TB（法兰克福约高 7%）</td><td>索引里的向量数 × 处理大小</td></tr>
+<tr><td><b>查询处理量</b></td><td colspan="2">每个索引：前 10 万个向量 $0.004/TB · 10 万~1,000 万 $0.002/TB · 1,000 万以上 $0.0004/TB<br/>法兰克福：$0.004285 / $0.002143 / $0.000429 每 TB</td><td>索引里的向量数 × 处理大小</td></tr>
 <tr><td><b>全文检索文本</b></td><td colspan="2">$0.00012 / TB（单一价格）</td><td>全文字段的大小 × 向量数</td></tr>
 <tr><td><b>返回数据</b></td><td colspan="2">$0.01 / GB；每次查询前 512 KB 免费</td><td>每条结果最少按 256 字节算</td></tr>
 </tbody>
@@ -361,7 +366,7 @@ hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, in
 <label>全文检索文本 KB<input id="c-text" min="0" step="0.1" type="number" value="1.8"/></label>
 <label>其他不可过滤元数据 KB<input id="c-nonf" min="0" step="0.1" type="number" value="0"/></label>
 <label>每月查询次数<input id="c-queries" min="0" step="100000" type="number" value="1000000"/></label>
-<label>每月重写比例（0.05 = 5%）<input id="c-rewrite" min="0" step="0.01" type="number" value="0.05"/></label>
+<label>每月重写的向量数<input id="c-rewrite" min="0" step="100000" type="number" value="1000000"/></label>
 </div>
 <div class="calc-out" id="c-out">
 <div><span>存储</span><b id="o-storage">—</b><small id="o-gb"></small></div>
@@ -381,32 +386,61 @@ hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, in
 <li>处理一个对象<mark>不扫描整个索引</mark>：切片 key 连续编号，按 key 直接取。</li>
 </ul></div>
 <p>需求：S3 桶里有百 TB 级的文档、图片、视频，要能用自然语言搜内容，结果只包含调用方有权看的文件，对象处理不出区域。完整需求和逐条对照见 repo 的 <a href="https://github.com/tsaol/s3-vectors-search/blob/main/docs/requirements.md">requirements.md</a> 和 <a href="https://github.com/tsaol/s3-vectors-search/blob/main/docs/architecture.md">architecture.md</a>。</p>
+<figure class="fig arch">
+<a href="img/architecture.png"><img alt="S3 语义检索架构图：建索引和检索两条线，共 10 步" loading="lazy" src="img/architecture.png"/></a>
+<figcaption>图 5 · 架构图（点开看大图）· <a href="https://github.com/tsaol/s3-vectors-search/blob/main/docs/img/architecture.drawio">draw.io 源文件</a></figcaption>
+</figure>
+<h3 class="sub-h">每一步在做什么</h3>
+<div class="flow2">
+<div><div class="lbl">建索引：文件 → 向量</div>
+<ol class="steps">
+<li><b>写入</b>：业务系统上传、覆盖或删除 S3 对象。过期删除也一样。</li>
+<li><b>通知</b>：S3 把事件发到 SQS 队列。<mark>事件只是"提醒"</mark>，可能重复，也可能乱序。</li>
+<li><b>取消息</b>：Lambda 每次取 1 条，先 HEAD 对象，<mark>以 S3 现在的状态为准</mark>。</li>
+<li><b>识别文字</b>：图片和 PDF 交给 Textract，直接读 S3 上的对象，不下载。</li>
+<li><b>变成向量</b>：文字切成 600 字一段，用同区域的 Titan V2 生成向量。</li>
+<li><b>写入向量库</b>：覆盖第 0..m-1 片，再删掉多出来的旧片。</li>
+</ol></div>
+<div><div class="lbl">检索：问题 → 有权限的结果</div>
+<ol class="steps" start="7" style="counter-reset: s 6">
+<li><b>登录</b>：用户在 Cognito 登录，拿到 JWT，里面写着他属于哪些组。</li>
+<li><b>提问</b>：带着 JWT 调用 agent。<mark>AgentCore 先验 token</mark>，不对就进不来。</li>
+<li><b>检索</b>：向量 + 关键词混合检索，<mark>只在 token 里的组能看的文件里找</mark>。</li>
+<li><b>回答（可选）</b>：大模型根据找到的片段回答，标出处；找不到就说找不到。</li>
+</ol></div>
+</div>
+
+<h3 class="sub-h">同步机制：第 3~6 步里 Lambda 怎么判断</h3>
 <div class="dg">
 <div class="dec">
-<div class="box">业务系统写入 / 覆盖 / 删除对象；生命周期过期<small>S3 源桶：处理组件只读</small></div>
-<div class="arrow-d">↓<span>S3 事件通知</span></div>
+<div class="box q">收到一条消息：只知道"这个对象可能变了"</div>
+<div class="arrow-d">↓<span>HEAD 对象</span></div>
 <div class="branch">
-<div class="box">SQS events 队列<small>日常增量：并发 10</small></div>
-<div class="box">SQS backfill 队列<small>存量回填、对账：并发 4，不抢日常增量</small></div>
+<div><div class="lbl">对象不在了</div><div class="box stop">删掉它的全部向量<small>删除、过期、迟到的旧事件，都走这里</small></div></div>
+<div><div class="lbl">对象还在</div><div class="box">和第 0 片记录的 ETag、规则版本比一比</div></div>
 </div>
-<div class="arrow-d">↓<span>失败按 30 秒起退避重试；8 次 → DLQ + 告警</span></div>
-<div class="box good">Lambda indexer（同一区域）<small>HEAD 对象 → 抽取（文本 / docx / Textract OCR，支持中文）→ 切分 → Titan V2 embedding</small></div>
-<div class="arrow-d">↓<span>PutVectors / DeleteVectors</span></div>
-<div class="box good">S3 Vectors · ENHANCED 索引<small>元数据：路径、ETag、部门、上传人、时间、切片、acl、规则版本 · chunk_text：不可过滤 + 中文全文检索</small></div>
-<div class="arrow-d">↑<span>混合检索 + filter acl $in 用户组</span></div>
-<div class="box">AgentCore Runtime 检索 agent<small>JWT authorizer（Cognito）先验 token；agent 只读 token 里的 cognito:groups</small></div>
-<div class="arrow-d">↑</div>
-<div class="box q">用户登录拿到 JWT，提问</div>
+<div class="branch">
+<div><div class="lbl">一样，而且上次写完整了</div><div class="box good">什么都不做<small>重复事件；只是权限变了 → 只改元数据</small></div></div>
+<div><div class="lbl">不一样</div><div class="box retry">重新抽取、切分、写入<small>写完再 HEAD 一次：又变了 → 退避重试</small></div></div>
 </div>
-<div class="dg-cap">图 5 · 场景 demo 的整体流程</div>
 </div>
-<h3 class="sub-h">indexer 每次怎么判断</h3>
-<ol class="steps">
-<li><b>HEAD 对象</b>：对象不在了 → 删掉它的全部向量。所以删除事件、过期事件、迟到的旧事件都按同一条规则处理。</li>
-<li><b>ETag、规则版本、模型都没变，上次也写完整了</b> → 什么都不做（重复事件）。如果只是权限变了 → 只重写元数据，不重新做 embedding。</li>
-<li><b>否则</b> → 抽取、切分、embedding，覆盖第 0..m-1 片，再删掉第 m 片及之后的旧片。</li>
-<li><b>写完再 HEAD 一次</b>：对象在处理期间又被覆盖了 → 抛异常让队列重试，重试时处理新版本。</li>
-</ol>
+<div class="dg-cap">图 6 · 每条消息都按这一个流程处理</div>
+</div>
+<h3 class="sub-h">为什么失败了也不会留下脏数据</h3>
+<p>一个文件切成很多片，向量的 key 是 <code>文件ID#00000</code>、<code>#00001</code>……写入和删除都遵守一条规则：<mark>一个文件的切片永远是从 0 开始、连续的一段</mark>。</p>
+<div class="dg">
+<div class="tl">
+<div class="box">写入<small>先写 1..m-1，<b>第 0 片最后写</b></small></div><div class="ar">·</div>
+<div class="box">删除<small><b>从最大的序号往下删</b></small></div><div class="ar">·</div>
+<div class="box">改权限<small>从后往前改，<b>第 0 片最后改</b></small></div>
+</div>
+<div class="dg-cap">图 7 · 三个顺序规则：第 0 片是"提交标记"</div>
+</div>
+<ul>
+<li><b>写到一半失败</b>：第 0 片还是旧的，下次检查发现不一致，重新写。</li>
+<li><b>删到一半失败</b>：剩下的还是连续的一段，下次从 0 往上找，能全部找到再删。</li>
+<li><b>不用扫整个索引</b>：按 key 直接取，处理一个文件的成本和索引大小无关。</li>
+</ul>
 <div class="callout"><b>为什么 Lambda 角色要给 <code>s3:ListBucket</code>？</b>没有这个权限时，HEAD 一个已删除的对象返回的是 <b>403</b>，不是 404。indexer 就分不清"被删了"还是"没权限"，删除事件会一直失败。ListBucket 只是读权限，不影响"只读源桶"的要求。</div>
 <h3 class="sub-h">端到端测试测什么</h3>
 <table class="cmp">
@@ -506,7 +540,7 @@ hits = sv.query_vectors(vectorBucketName=<span class="k">'my-vectors'</span>, in
     var q = v('c-queries'), rw = v('c-rewrite');
     var stored = 4 * dim + key + filt + nonf + text;
     var gb = n * stored / GB;
-    var storage = gb * r.st, put = rw * gb * r.put;
+    var storage = gb * r.st, put = rw * stored / GB * r.put;
     var per = n / idx, proc = 4 * dim + key + filt;
     var t = [Math.min(per, 1e5), Math.max(0, Math.min(per, 1e7) - 1e5), Math.max(0, per - 1e7)];
     var tiers = t.map(function (c, i) { return c * proc / TB * r.tiers[i] * q; });
