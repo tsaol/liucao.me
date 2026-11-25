@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Amazon Bedrock AgentCore: the full set of AWS services for running agents · liucao.me</title>
+<meta content="What is Amazon Bedrock AgentCore: 13 services in one diagram (Runtime, Harness, Gateway, Memory, Identity, Policy, Observability, Evaluations...), where to start, and updates from the second half of 2026" name="description"/>
+<link href="../../ec2/assets/style.css" rel="stylesheet"/>
+<style>
+        .gv-hero { text-align: center; padding: 2.8rem 1.5rem 1.6rem; }
+        .gv-hero .crumb { font-family: var(--mono); font-size: 0.72rem; color: var(--text-mute); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+        .gv-hero .crumb a { color: var(--accent); }
+        .gv-hero h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+        .gv-hero h1 .g { color: var(--accent); }
+        .gv-hero .sub { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1rem; }
+        .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin: 1.4rem auto 0; max-width: 780px; }
+        .toc a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); padding: 0.3rem 0.7rem; border-radius: 999px; transition: color 0.15s, border-color 0.15s; }
+        .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+        .section-title span { color: var(--accent); }
+        .fig { margin: 1.2rem 0 1.4rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .fig svg { display: block; width: 100%; height: auto; }
+        .fig figcaption { text-align: center; font-size: 0.8rem; color: var(--text-mute); margin-top: 0.6rem; }
+        .photo { position: relative; }
+        .photo img { display: block; width: 100%; height: auto; border-radius: var(--radius-sm); }
+        .pin { position: absolute; transform: translate(-50%, -50%); background: rgba(11,15,20,0.88); border: 1px solid var(--accent); color: var(--accent); font-size: 0.74rem; font-weight: 600; padding: 0.12rem 0.55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+        .pin.n1 { border-color: #60a5fa; color: #60a5fa; }
+        .fig figcaption a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .tldr { background: var(--surface); border: 1px solid var(--accent-dim); border-radius: var(--radius); padding: 1.1rem 1.3rem; margin: 0.4rem 0 2.2rem; }
+        .tldr .lead { color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; }
+        .tldr ol { color: var(--text-dim); padding-left: 1.2rem; }
+        .tldr li { margin-bottom: 0.3rem; }
+        .tldr b { color: var(--text); }
+        .content-section { margin-bottom: 2.4rem; scroll-margin-top: 4rem; }
+        .content-section p { color: var(--text-dim); margin-bottom: 0.8rem; }
+        .content-section p b, .content-section li b { color: var(--text); }
+        .content-section ul, .content-section ol { color: var(--text-dim); padding-left: 1.2rem; margin-bottom: 0.9rem; }
+        .content-section ul li, .content-section ol li { margin-bottom: 0.35rem; }
+        h3.sub-h { font-size: 1.02rem; color: var(--text); margin: 1.2rem 0 0.5rem; letter-spacing: -0.01em; }
+        h3.sub-h::before { content: "▸ "; color: var(--accent); }
+
+        .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.9rem; color: var(--text-dim); }
+        .callout.warn { border-left-color: #f59e0b; }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout b { color: var(--text); }
+        .callout .lead { color: var(--text); font-weight: 600; margin-bottom: 0.35rem; }
+
+        .cmp { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1rem; font-size: 0.87rem; }
+        .cmp th, .cmp td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .cmp th { background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+        .cmp td { color: var(--text-dim); }
+        .cmp td b { color: var(--text); }
+        .cmp tr:hover td { background: var(--bg-soft); }
+
+        pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--text); margin: 0.6rem 0 1rem; }
+        pre .c { color: var(--text-mute); }
+        pre .k { color: var(--accent); }
+        pre.ascii { line-height: 1.35; font-size: 0.78rem; }
+        code { font-family: var(--mono); font-size: 0.85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; color: var(--text); }
+
+        .refs { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-top: 2rem; font-size: 0.85rem; }
+        .refs h4 { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .refs ol { padding-left: 1.4rem; color: var(--text-dim); }
+        .refs li { margin-bottom: 0.35rem; word-break: break-all; }
+        .refs a { color: var(--text-dim); border-bottom: 1px dashed var(--border-hi); }
+        .refs a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .next { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; margin: 2.5rem 0 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .next .left { color: var(--text-mute); font-size: 0.82rem; }
+        .next .right a { display: block; font-family: var(--mono); font-size: 0.78rem; color: var(--text-mute); }
+        .next .right a.big { font-family: var(--font); font-size: 1rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+
+        .steps { counter-reset: s; list-style: none; padding-left: 0 !important; }
+        .steps li { counter-increment: s; position: relative; padding-left: 2.2rem; margin-bottom: 0.7rem !important; }
+        .steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--accent-dim); color: var(--accent); font-family: var(--mono); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
+        .cmp td.yes { color: #34d399; font-weight: 600; } .cmp td.no { color: #f87171; font-weight: 600; }
+    
+        /* ---- diagrams (HTML + CSS, so the English copy gets translated too) ---- */
+        .dg { margin: 1rem 0 1.4rem; padding: 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+        .dg-cap { text-align: center; font-size: 0.8rem; color: var(--text-mute); margin-top: 0.8rem; }
+        .box { background: var(--bg-soft); border: 1px solid var(--border-hi); border-radius: 10px; padding: 0.6rem 0.8rem; font-size: 0.86rem; color: var(--text); line-height: 1.45; }
+        .box small { display: block; color: var(--text-dim); font-size: 0.78rem; margin-top: 0.15rem; }
+        .box.q { border-style: dashed; border-color: var(--accent-dim); text-align: center; font-weight: 600; }
+        .box.good { background: rgba(52,211,153,.10); border-color: #34d399; }
+        .box.retry { background: rgba(251,191,36,.10); border-color: #fbbf24; }
+        .box.stop { background: rgba(248,113,113,.10); border-color: #f87171; }
+        .box.pay { background: rgba(251,191,36,.08); border-color: #d97706; }
+        .arrow-d { text-align: center; color: var(--text-mute); font-size: 1.1rem; line-height: 1.2; margin: 0.25rem 0; }
+        .arrow-d span { font-size: 0.75rem; display: block; }
+        .tl { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.4rem; }
+        .tl .box { flex: 1 1 140px; text-align: center; }
+        .tl .ar { align-self: center; color: var(--text-mute); }
+        .dec { display: grid; grid-template-columns: 1fr; gap: 0.3rem; max-width: 720px; margin: 0 auto; }
+        .branch { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+        .branch .lbl { font-size: 0.75rem; color: var(--text-mute); margin-bottom: 0.25rem; text-align: center; }
+        .loop { max-width: 560px; margin: 0 auto; }
+        .loopnote { border-left: 2px dashed #fbbf24; margin: 0.35rem 0 0 0.9rem; padding: 0.15rem 0 0.15rem 0.6rem; font-size: 0.8rem; color: var(--text-dim); }
+        .res { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1.6fr); gap: 0.45rem 0.6rem; align-items: center; }
+        .res .ar { color: var(--text-mute); }
+        .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem 1rem; max-width: 680px; margin: 0 auto; }
+        .lanes .hd { text-align: center; font-weight: 700; color: var(--accent); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+        .lanes .msg { font-size: 0.84rem; color: var(--text-dim); padding: 0.35rem 0.6rem; border-radius: 8px; background: var(--bg-soft); }
+        .lanes .msg.r { grid-column: 2; } .lanes .msg.l { grid-column: 1; }
+        .lanes .msg.bad { border: 1px dashed #f87171; } .lanes .msg.ok { border: 1px solid #34d399; }
+        .lanes .full { grid-column: 1 / span 2; text-align: center; }
+        .bucket { display: grid; grid-template-columns: auto auto 1fr; gap: 0.6rem; align-items: center; }
+        .bucket .stack { display: grid; gap: 0.4rem; }
+        .gloss code { word-break: break-all; }
+        .users { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
+        .sublbl { font-size: 0.75rem; color: var(--text-mute); text-align: center; }
+        @media (max-width: 640px) {
+          .branch, .lanes { grid-template-columns: 1fr; }
+          .lanes .msg.r, .lanes .msg.l { grid-column: 1; }
+          .res { grid-template-columns: 1fr; } .res .ar { display: none; }
+          .bucket { grid-template-columns: 1fr; } .tl .ar { display: none; }
+          .users { grid-template-columns: 1fr; }
+          .cmp { display: block; overflow-x: auto; }
+        }
+    
+        /* ---- key-info marks (要点 box, highlight, source tag) ---- */
+        .key { background: rgba(0,229,160,.06); border: 1px solid rgba(0,229,160,.3); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; padding: .7em 1em; margin: .2em 0 1.2em; color: var(--text-dim); font-size: .92rem; }
+        .key .kl { display: inline-block; font-size: 12px; font-weight: 700; color: #04130d; background: var(--accent); border-radius: 4px; padding: 0 .45em; margin-right: .5em; }
+        .key ul { margin: .4em 0 0; padding-left: 1.2em; } .key li { margin: .25em 0; }
+        main.wrap mark { background: rgba(0,229,160,.18); color: var(--text); padding: 0 .15em; border-radius: 3px; }
+        .src { display: inline-block; font-family: var(--mono); font-size: 11px; color: #7cc4ff; border: 1px solid rgba(124,196,255,.4); border-radius: 4px; padding: 0 .35em; margin-left: .3em; vertical-align: 1px; white-space: nowrap; }
+        .legend { font-size: .8rem; color: var(--text-mute); margin: -1.2rem 0 2rem; }
+        /* ---- cost calculator ---- */
+        .calc { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem .9rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
+        .calc label { display: flex; flex-direction: column; gap: .25rem; font-size: .8rem; color: var(--text-dim); }
+        .calc input, .calc select { background: var(--bg); color: var(--text); border: 1px solid var(--border-hi); border-radius: 6px; padding: .4rem .5rem; font-family: var(--mono); font-size: .85rem; }
+        .calc-out { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin: .8rem 0 .3rem; }
+        .calc-out div { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px; padding: .55rem .8rem; }
+        .calc-out span { display: block; font-size: .75rem; color: var(--text-mute); }
+        .calc-out b { font-family: var(--mono); font-size: 1.1rem; color: var(--text); }
+        .calc-out small { display: block; font-family: var(--mono); font-size: .7rem; color: var(--text-mute); }
+        .calc-out .tot { border-color: var(--accent-dim); } .calc-out .tot b { color: var(--accent); }
+        @media (max-width: 640px) { .calc, .calc-out { grid-template-columns: 1fr 1fr; } }
+        .fig.arch { background: #fff; padding: .6rem; } .fig.arch img { display: block; width: 100%; height: auto; border-radius: 6px; }
+        .fig.arch figcaption { color: #555; } .fig.arch figcaption a { color: #0b6bcb; }
+        .flow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+        .flow2 .lbl { font-weight: 700; color: var(--accent); font-size: .9rem; margin-bottom: .5rem; }
+        @media (max-width: 760px) { .flow2 { grid-template-columns: 1fr; } }
+    </style>
+<style>
+.svc { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .7rem; margin: 1rem 0 1.4rem; }
+.svc .grp { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: .8rem .9rem; }
+.svc .grp h4 { font-family: var(--mono); font-size: .74rem; letter-spacing: .06em; color: var(--accent); margin-bottom: .5rem; text-transform: uppercase; }
+.svc .it { margin-bottom: .55rem; font-size: .86rem; color: var(--text-dim); }
+.svc .it b { display: block; color: var(--text); font-size: .9rem; }
+.tl2 { border-left: 2px solid var(--border-hi); margin: .8rem 0 1.2rem .4rem; padding-left: 1rem; }
+.tl2 div { position: relative; margin-bottom: .6rem; color: var(--text-dim); font-size: .9rem; }
+.tl2 div::before { content: ""; position: absolute; left: -1.38rem; top: .45rem; width: .6rem; height: .6rem; border-radius: 50%; background: var(--accent); }
+.tl2 time { font-family: var(--mono); color: var(--text); margin-right: .5rem; }
+.meas { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .6rem; margin: .8rem 0 1.2rem; }
+.meas div { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .6rem .8rem; }
+.meas span { display: block; font-size: .75rem; color: var(--text-mute); }
+.meas b { font-family: var(--mono); font-size: 1.15rem; color: var(--text); }
+.meas small { display: block; font-size: .72rem; color: var(--text-mute); }
+.meas .good b { color: var(--accent); } .meas .bad b { color: #f59e0b; }
+.go-card { display: block; background: var(--surface); border: 1px solid var(--accent-dim); border-radius: var(--radius); padding: 1rem 1.2rem; margin: 1rem 0 1.6rem; color: var(--text-dim); }
+.go-card b { color: var(--accent); font-size: 1.05rem; display: block; margin-bottom: .3rem; }
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="brand"><a href="../" style="color:inherit;">liucao<span>.me</span></a></div>
+<div class="links">
+<a href="./">AgentCore</a>
+<a href="runtime/">Runtime</a>
+</div>
+</nav>
+<main class="wrap">
+<div class="gv-hero">
+<div class="crumb">AI · AgentCore</div>
+<h1>Amazon Bedrock AgentCore:<span class="g">A full suite of services for running agents</span></h1>
+<p class="sub">Putting an agent into production takes more than calling a model: where it runs, how it's isolated, how it calls tools, what it remembers, whose identity it uses, and how well it performs. AgentCore splits these into separate managed services. This page is the overview; Runtime has its own in-depth page.</p>
+<nav class="toc">
+<a href="#what">1 · What it is</a>
+<a href="#services">2 · The 13 services</a>
+<a href="#pick">3 · Where to start</a>
+<a href="#news">4 · Recent updates</a>
+</nav>
+</div>
+<div class="callout"><b>Accessed 2026-11-25.</b>AWS official documentation is authoritative for the service list, limits and pricing; the "measured" results in this article are my own tests in the Tokyo Region (ap-northeast-1).</div>
+<div class="tldr">
+<div class="lead">Start here: in three sentences</div>
+<ol>
+<li><b>AgentCore is a complete suite of managed services on AWS for "running agents".</b>You choose the framework (Strands, LangGraph, CrewAI...) and the model (in Bedrock or elsewhere),<mark>Each service can be used on its own</mark>.</li>
+<li><b>At the core is Runtime:</b>Put your agent in a container,<mark>An isolated environment for each session</mark>, pay per use, scales to 0 when idle.</li>
+<li><b>Other services are built around it:</b>Tools (Gateway, Code Interpreter, Browser), memory and identity (Memory, Identity), governance (Policy, Registry), quality (Observability, Evaluations, Optimization).</li>
+</ol>
+</div>
+<p class="legend">Notes:<span class="key" style="display:inline;padding:0 .4em;margin:0;border-left-width:3px">Key points</span> Key points at the start of each section · <mark>Highlight</mark> Core conclusion · <span class="src">Docs · Instances</span> Sources (official AWS pages, linked in the references at the end) · <span class="src">Measured</span> My own test results in the Tokyo Region.</p>
+<section class="content-section" id="what">
+<h2 class="section-title"><span>1</span> · What it is</h2>
+<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
+<li>Official definition: using any framework and any foundation model,<mark>Securely, at scale</mark> Build, deploy and run agents,<mark>No infrastructure to manage</mark>.<span class="src">Docs · What is</span></li>
+<li>The services are modular:<mark>Use them together, or use just one</mark>, for example using only Runtime to run your own agent, or only Gateway to turn APIs into MCP tools.<span class="src">Docs · What is</span></li>
+</ul></div>
+<p>Actually putting an agent into production takes more than "calling a model". You need a lot of other things: where it runs, how it's isolated, how it calls tools, what it remembers, whose identity it uses to access other systems, how to see what it did, and how well it did. AgentCore breaks these into separate managed services, <b>You write only the agent logic itself</b>.</p>
+<p>Three typical use cases from the official docs:<b>Agent applications</b>(customer service, process automation, data analysis, coding assistants),<b>Tools and MCP servers</b>(wrap existing APIs and Lambda functions as tools),<b>Agent platform</b>(a "paved road" for internal developers).<span class="src">Docs · What is</span></p>
+</section>
+<section class="content-section" id="services">
+<h2 class="section-title"><span>2</span> · 13 services in one diagram</h2>
+<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
+<li>Grouped into five categories by purpose:<mark>Runtime, tools, memory and identity, governance, quality</mark>.<span class="src">Docs · What is</span></li>
+<li>For a first try, the fastest entry point is <b>Harness</b>:<mark>Define and run an agent with a single API call</mark>(model, prompt and tools specified directly in the request).<span class="src">Docs · What is</span></li>
+</ul></div>
+<div class="svc">
+<div class="grp"><h4>Run</h4>
+<div class="it"><b>Runtime</b> A managed agent runtime with per-session isolation; two compute options: microVM and Instances (see next page).</div>
+<div class="it"><b>Harness</b> A managed agent loop: it handles orchestration, tool calls, and memory; each session gets its own microVM with a file system and shell.</div>
+</div>
+<div class="grp"><h4>Tools</h4>
+<div class="it"><b>Gateway</b> Turns APIs, Lambda functions, and existing services into MCP tools, and can also connect to existing MCP servers.</div>
+<div class="it"><b>Code Interpreter</b> An isolated sandbox where agents run Python / JavaScript / TypeScript.</div>
+<div class="it"><b>Browser</b> A managed cloud browser that lets agents fill in forms, click through web pages, and scrape information.</div>
+<div class="it"><b>Web Search / Web Answer</b> Managed tools added in 2026-11 (not part of the official 13 services): search the web in a single call, or get a cited answer directly.</div>
+</div>
+<div class="grp"><h4>Memory and identity</h4>
+<div class="it"><b>Memory</b> Short-term memory (multi-turn conversations) and long-term memory (across sessions), shareable across multiple agents.</div>
+<div class="it"><b>Identity</b> Agent identity and authorization, integrating with existing identity systems such as Cognito, Okta, and Entra ID.</div>
+</div>
+<div class="grp"><h4>Governance</h4>
+<div class="it"><b>Policy</b> Deterministic rules: every tool call is intercepted and checked before it runs. Rules can be written in natural language or a Cedar-compatible policy language.</div>
+<div class="it"><b>Registry</b> An internal catalog of agents, MCP servers, tools, and skills, with review and publishing workflows.</div>
+<div class="it"><b>Payments</b> Lets agents make small payments to call paid APIs (x402, MPP protocols), with configurable spending limits.</div>
+</div>
+<div class="grp"><h4>Quality</h4>
+<div class="it"><b>Observability</b> Traces, logs and metrics (OpenTelemetry) for every step, viewable in CloudWatch.</div>
+<div class="it"><b>Evaluations</b> Automatically evaluates how well agents complete tasks, using built-in or custom evaluators.</div>
+<div class="it"><b>Optimization</b> Generates improvement suggestions (prompts, tool descriptions) from traces, then validates them with A/B tests.</div>
+</div>
+</div>
+<div class="dg-cap" style="text-align:center;font-size:.8rem;color:var(--text-mute);margin-top:-.6rem;margin-bottom:1.2rem">Figure 1 · AgentCore services, grouped by purpose (source: AgentCore Developer Guide · What is)</div>
+</section>
+<section class="content-section" id="pick">
+<h2 class="section-title"><span>3</span> · Where to start</h2>
+<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
+<li>Just want to try an agent quickly:<mark>Using Harness</mark>, no container required.<span class="src">Docs · What is</span></li>
+<li>You already have your own agent code (any framework):<mark>Package it as a container and put it in Runtime</mark>, you just need to implement two interfaces:<code>GET /ping</code> and <code>POST /invocations</code>, port 8080.<span class="src">Docs · Getting started with Instances</span></li>
+</ul></div>
+<ul class="steps">
+<li><b>Harness</b>: the model, system prompt, and tools are all defined in a single call; good for prototypes and small internal tools.</li>
+<li><b>Runtime</b>: your own framework and dependencies, your own container image; good for production and cases where you need control over the environment.</li>
+<li><b>Add other services as needed</b>: add Gateway to call company APIs; add Memory to remember users; add Policy to control what the agent can do; after launch, use Observability and Evaluations to monitor quality.</li>
+</ul>
+<a class="go-card" href="runtime/"><b>Next · Runtime deep dive: microVM or Instances →</b>How to choose between the two compute options, how they're billed, and the security model, plus my measured startup times and costs, and a few pitfalls the official docs don't make clear.</a>
+</section>
+<section class="content-section" id="news">
+<h2 class="section-title"><span>4</span> · Recent updates (second half of 2026)</h2>
+<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
+<li><mark>The new-generation Runtime is the default starting 11-12</mark>(including Tokyo): sessions start from snapshots; a 2 GB image starts in under 2 seconds at P75.<span class="src">What’s New 11-12</span></li>
+<li><mark>Runtime instances</mark>(GA on 8-06) lets agents run on EC2 in your own account; privileged mode, nested virtualization and G7 GPUs were added later.<span class="src">What’s New</span></li>
+</ul></div>
+<div class="tl2">
+<div><time>08-06</time> Runtime instances are generally available: run agents on EC2 in your own account, with sessions up to 14 days.</div>
+<div><time>09-18</time> Next-generation Runtime (V2) released: memory is allocated on demand and reclaimed after use, and cold starts hold steady at about 2 seconds.</div>
+<div><time>11-05</time> Web Answer: a managed tool that returns synthesized answers with sources.</div>
+<div><time>11-10</time> Web Search API: search the web in a single call.</div>
+<div><time>11-12</time> V2 becomes the default version for new runtimes; sessions up to 8 vCPU / 32 GB, images up to 10 GB.</div>
+<div><time>11-16</time> Runtime instances are now available in 6 more Regions.</div>
+<div><time>11-18</time> Runtime instances support privileged mode: agents can install system software and run nested containers.</div>
+<div><time>11-19</time> Runtime instances support nested virtualization (KVM, Intel instance types); Harness adds Strands default configuration, built-in tools, and lifecycle hooks.</div>
+<div><time>11-20</time> Runtime instances support G7 GPU instances.</div>
+</div>
+</section>
+<div class="refs">
+<h4>Reference</h4>
+<ol>
+<li>AgentCore Developer Guide · What is:<a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html">https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html</a></li>
+<li>AgentCore product page:<a href="https://aws.amazon.com/bedrock/agentcore/">https://aws.amazon.com/bedrock/agentcore/</a></li>
+<li>AgentCore pricing:<a href="https://aws.amazon.com/bedrock/agentcore/pricing/">https://aws.amazon.com/bedrock/agentcore/pricing/</a></li>
+<li>What's New · New-generation Runtime becomes the default (2026-11-12):<a href="https://aws.amazon.com/about-aws/whats-new/2026/11/new-agentcore-runtime-default/">https://aws.amazon.com/about-aws/whats-new/2026/11/new-agentcore-runtime-default/</a></li>
+<li>What's New · New-generation Runtime launched (2026-09-18):<a href="https://aws.amazon.com/about-aws/whats-new/2026/09/new-agentcore-runtime-generally-available/">https://aws.amazon.com/about-aws/whats-new/2026/09/new-agentcore-runtime-generally-available/</a></li>
+<li>What's New · Runtime instances generally available (2026-08-06):<a href="https://aws.amazon.com/about-aws/whats-new/2026/08/aws-bedrock-agentcore-runtime-instances-generally-available/">https://aws.amazon.com/about-aws/whats-new/2026/08/aws-bedrock-agentcore-runtime-instances-generally-available/</a></li>
+<li>What's New · Privileged mode (2026-11-18):<a href="https://aws.amazon.com/about-aws/whats-new/2026/11/agentcore-elevated-privileges/">https://aws.amazon.com/about-aws/whats-new/2026/11/agentcore-elevated-privileges/</a></li>
+<li>What's New · Nested virtualization (2026-11-19):<a href="https://aws.amazon.com/about-aws/whats-new/2026/11/agentcore-nested-virtualization/">https://aws.amazon.com/about-aws/whats-new/2026/11/agentcore-nested-virtualization/</a></li>
+<li>What's New · G7 instances (2026-11-20):<a href="https://aws.amazon.com/about-aws/whats-new/2026/11/agentcore-ec2-g7/">https://aws.amazon.com/about-aws/whats-new/2026/11/agentcore-ec2-g7/</a></li>
+<li>What's New · Web Search API (2026-11-10):<a href="https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-bedrock-agentcore-web-search-api/">https://aws.amazon.com/about-aws/whats-new/2026/11/amazon-bedrock-agentcore-web-search-api/</a></li>
+<li>What's New · Web Answer (2026-11-05):<a href="https://aws.amazon.com/about-aws/whats-new/2026/11/web-answer-amazon-bedrock/">https://aws.amazon.com/about-aws/whats-new/2026/11/web-answer-amazon-bedrock/</a></li>
+<li>AWS ML Blog · New Harness features (2026-11-19):<a href="https://aws.amazon.com/blogs/machine-learning/amazon-bedrock-agentcore-harness-adds-strands-harness-defaults-built-in-tools-and-lifecycle-hooks/">https://aws.amazon.com/blogs/machine-learning/amazon-bedrock-agentcore-harness-adds-strands-harness-defaults-built-in-tools-and-lifecycle-hooks/</a></li>
+</ol>
+</div>
+</main>
+<a data-cur="en" data-to="zh" href="../../agentcore/" id="lang-toggle" lang="zh" style="position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:6px 12px;border-radius:999px;background:rgba(20,24,32,.82);color:#fff;font:600 12px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px)">中文</a><script id="lang-toggle-js">(function(){var a=document.getElementById('lang-toggle');if(!a)return;a.addEventListener('click',function(){try{localStorage.setItem('lang',a.dataset.to)}catch(e){}});try{var p=localStorage.getItem('lang');if(p&&p===a.dataset.to)location.replace(a.href)}catch(e){}})();</script></body>
+</html>
