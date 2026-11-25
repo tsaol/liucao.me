@@ -175,96 +175,61 @@
 <div class="gv-hero">
 <div class="crumb">AI · AgentCore</div>
 <h1>Amazon Bedrock AgentCore:<span class="g">A full suite of services for running agents</span></h1>
-<p class="sub">Putting an agent into production takes more than calling a model: where it runs, how it's isolated, how it calls tools, what it remembers, whose identity it uses, and how well it performs. AgentCore splits these into separate managed services. This page is the overview; Runtime has its own in-depth page.</p>
+<p class="sub">An overview of AWS managed services for running agents.</p>
 <nav class="toc">
-<a href="#what">1 · What it is</a>
-<a href="#services">2 · The 13 services</a>
-<a href="#pick">3 · Where to start</a>
-<a href="#news">4 · Recent updates</a>
+<a href="#services">1 · 13 services</a>
+<a href="#news">2 · Recent updates</a>
 </nav>
 </div>
-<div class="callout"><b>Accessed 2026-11-25.</b>AWS official documentation is authoritative for the service list, limits and pricing; the "measured" results in this article are my own tests in the Tokyo Region (ap-northeast-1).</div>
 <div class="tldr">
-<div class="lead">Start here: in three sentences</div>
-<ol>
-<li><b>AgentCore is a complete suite of managed services on AWS for "running agents".</b>You choose the framework (Strands, LangGraph, CrewAI...) and the model (in Bedrock or elsewhere),<mark>Each service can be used on its own</mark>.</li>
-<li><b>At the core is Runtime:</b>Put your agent in a container,<mark>An isolated environment for each session</mark>, pay per use, scales to 0 when idle.</li>
-<li><b>Other services are built around it:</b>Tools (Gateway, Code Interpreter, Browser), memory and identity (Memory, Identity), governance (Policy, Registry), quality (Observability, Evaluations, Optimization).</li>
-</ol>
+<div class="lead">In one sentence</div>
+<p style="color:var(--text-dim);margin:0">AgentCore is AWS's<mark> A managed service for running agents</mark>: use any framework and model you like,<mark>Each service can be used on its own</mark>. The core is Runtime (one isolated environment per session); the other services handle tools, memory, identity, governance and quality.<span class="src">Docs · What is</span></p>
 </div>
-<p class="legend">Notes:<span class="key" style="display:inline;padding:0 .4em;margin:0;border-left-width:3px">Key points</span> Key points at the start of each section · <mark>Highlight</mark> Core conclusion · <span class="src">Docs · Instances</span> Sources (official AWS pages, linked in the references at the end) · <span class="src">Measured</span> My own test results in the Tokyo Region.</p>
-<section class="content-section" id="what">
-<h2 class="section-title"><span>1</span> · What it is</h2>
-<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li>Official definition: using any framework and any foundation model,<mark>Securely, at scale</mark> Build, deploy and run agents,<mark>No infrastructure to manage</mark>.<span class="src">Docs · What is</span></li>
-<li>The services are modular:<mark>Use them together, or use just one</mark>, for example using only Runtime to run your own agent, or only Gateway to turn APIs into MCP tools.<span class="src">Docs · What is</span></li>
-</ul></div>
-<p>Actually putting an agent into production takes more than "calling a model". You need a lot of other things: where it runs, how it's isolated, how it calls tools, what it remembers, whose identity it uses to access other systems, how to see what it did, and how well it did. AgentCore breaks these into separate managed services, <b>You write only the agent logic itself</b>.</p>
-<p>Three typical use cases from the official docs:<b>Agent applications</b>(customer service, process automation, data analysis, coding assistants),<b>Tools and MCP servers</b>(wrap existing APIs and Lambda functions as tools),<b>Agent platform</b>(a "paved road" for internal developers).<span class="src">Docs · What is</span></p>
-</section>
 <section class="content-section" id="services">
-<h2 class="section-title"><span>2</span> · 13 services in one diagram</h2>
+<h2 class="section-title"><span>1</span> · 13 services</h2>
 <div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li>Grouped into five categories by purpose:<mark>Runtime, tools, memory and identity, governance, quality</mark>.<span class="src">Docs · What is</span></li>
-<li>For a first try, the fastest entry point is <b>Harness</b>:<mark>Define and run an agent with a single API call</mark>(model, prompt and tools specified directly in the request).<span class="src">Docs · What is</span></li>
+<li>First time:<mark>Harness</mark>, and a single API call runs an agent. Existing code: package it as a container and put it in <mark>Runtime</mark>.<span class="src">Docs · What is</span></li>
 </ul></div>
 <div class="svc">
 <div class="grp"><h4>Run</h4>
-<div class="it"><b>Runtime</b> A managed agent runtime with per-session isolation; two compute options: microVM and Instances (see next page).</div>
-<div class="it"><b>Harness</b> A managed agent loop: it handles orchestration, tool calls, and memory; each session gets its own microVM with a file system and shell.</div>
+<div class="it"><b>Runtime</b> Managed runtime with session isolation</div>
+<div class="it"><b>Harness</b> Managed agent loop</div>
 </div>
 <div class="grp"><h4>Tools</h4>
-<div class="it"><b>Gateway</b> Turns APIs, Lambda functions, and existing services into MCP tools, and can also connect to existing MCP servers.</div>
-<div class="it"><b>Code Interpreter</b> An isolated sandbox where agents run Python / JavaScript / TypeScript.</div>
-<div class="it"><b>Browser</b> A managed cloud browser that lets agents fill in forms, click through web pages, and scrape information.</div>
-<div class="it"><b>Web Search / Web Answer</b> Managed tools added in 2026-11 (not part of the official 13 services): search the web in a single call, or get a cited answer directly.</div>
+<div class="it"><b>Gateway</b> Turn APIs / Lambda into MCP tools</div>
+<div class="it"><b>Code Interpreter</b> A sandbox for running code</div>
+<div class="it"><b>Browser</b> Cloud browser</div>
 </div>
 <div class="grp"><h4>Memory and identity</h4>
-<div class="it"><b>Memory</b> Short-term memory (multi-turn conversations) and long-term memory (across sessions), shareable across multiple agents.</div>
-<div class="it"><b>Identity</b> Agent identity and authorization, integrating with existing identity systems such as Cognito, Okta, and Entra ID.</div>
+<div class="it"><b>Memory</b> Short-term + long-term memory</div>
+<div class="it"><b>Identity</b> Integrates with existing identity systems</div>
 </div>
 <div class="grp"><h4>Governance</h4>
-<div class="it"><b>Policy</b> Deterministic rules: every tool call is intercepted and checked before it runs. Rules can be written in natural language or a Cedar-compatible policy language.</div>
-<div class="it"><b>Registry</b> An internal catalog of agents, MCP servers, tools, and skills, with review and publishing workflows.</div>
-<div class="it"><b>Payments</b> Lets agents make small payments to call paid APIs (x402, MPP protocols), with configurable spending limits.</div>
+<div class="it"><b>Policy</b> Rule-based blocking before tool calls</div>
+<div class="it"><b>Registry</b> agent / tool catalog</div>
+<div class="it"><b>Payments</b> agent micropayments</div>
 </div>
 <div class="grp"><h4>Quality</h4>
-<div class="it"><b>Observability</b> Traces, logs and metrics (OpenTelemetry) for every step, viewable in CloudWatch.</div>
-<div class="it"><b>Evaluations</b> Automatically evaluates how well agents complete tasks, using built-in or custom evaluators.</div>
-<div class="it"><b>Optimization</b> Generates improvement suggestions (prompts, tool descriptions) from traces, then validates them with A/B tests.</div>
+<div class="it"><b>Observability</b> Trajectories, logs, metrics</div>
+<div class="it"><b>Evaluations</b> Automatic quality evaluation</div>
+<div class="it"><b>Optimization</b> Improvement suggestions + A/B testing</div>
 </div>
 </div>
-<div class="dg-cap" style="text-align:center;font-size:.8rem;color:var(--text-mute);margin-top:-.6rem;margin-bottom:1.2rem">Figure 1 · AgentCore services, grouped by purpose (source: AgentCore Developer Guide · What is)</div>
-</section>
-<section class="content-section" id="pick">
-<h2 class="section-title"><span>3</span> · Where to start</h2>
-<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li>Just want to try an agent quickly:<mark>Using Harness</mark>, no container required.<span class="src">Docs · What is</span></li>
-<li>You already have your own agent code (any framework):<mark>Package it as a container and put it in Runtime</mark>, you just need to implement two interfaces:<code>GET /ping</code> and <code>POST /invocations</code>, port 8080.<span class="src">Docs · Getting started with Instances</span></li>
-</ul></div>
-<ul class="steps">
-<li><b>Harness</b>: the model, system prompt, and tools are all defined in a single call; good for prototypes and small internal tools.</li>
-<li><b>Runtime</b>: your own framework and dependencies, your own container image; good for production and cases where you need control over the environment.</li>
-<li><b>Add other services as needed</b>: add Gateway to call company APIs; add Memory to remember users; add Policy to control what the agent can do; after launch, use Observability and Evaluations to monitor quality.</li>
-</ul>
-<a class="go-card" href="runtime/"><b>Next · Runtime deep dive: microVM or Instances →</b>How to choose between the two compute options, how they're billed, and the security model, plus my measured startup times and costs, and a few pitfalls the official docs don't make clear.</a>
+<a class="go-card" href="runtime/"><b>Runtime: microVM or Instances →</b>A comparison of the two compute options, a pricing calculator and hands-on tests.</a>
 </section>
 <section class="content-section" id="news">
-<h2 class="section-title"><span>4</span> · Recent updates (second half of 2026)</h2>
+<h2 class="section-title"><span>2</span> · Recent updates</h2>
 <div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li><mark>The new-generation Runtime is the default starting 11-12</mark>(including Tokyo): sessions start from snapshots; a 2 GB image starts in under 2 seconds at P75.<span class="src">What’s New 11-12</span></li>
-<li><mark>Runtime instances</mark>(GA on 8-06) lets agents run on EC2 in your own account; privileged mode, nested virtualization and G7 GPUs were added later.<span class="src">What’s New</span></li>
+<li><mark>The new Runtime is the default since 11-12</mark>, starts in under 2 seconds;<mark>Runtime instances</mark> can run on your own EC2.<span class="src">What’s New</span></li>
 </ul></div>
 <div class="tl2">
-<div><time>08-06</time> Runtime instances are generally available: run agents on EC2 in your own account, with sessions up to 14 days.</div>
-<div><time>09-18</time> Next-generation Runtime (V2) released: memory is allocated on demand and reclaimed after use, and cold starts hold steady at about 2 seconds.</div>
-<div><time>11-05</time> Web Answer: a managed tool that returns synthesized answers with sources.</div>
-<div><time>11-10</time> Web Search API: search the web in a single call.</div>
-<div><time>11-12</time> V2 becomes the default version for new runtimes; sessions up to 8 vCPU / 32 GB, images up to 10 GB.</div>
-<div><time>11-16</time> Runtime instances are now available in 6 more Regions.</div>
-<div><time>11-18</time> Runtime instances support privileged mode: agents can install system software and run nested containers.</div>
-<div><time>11-19</time> Runtime instances support nested virtualization (KVM, Intel instance types); Harness adds Strands default configuration, built-in tools, and lifecycle hooks.</div>
-<div><time>11-20</time> Runtime instances support G7 GPU instances.</div>
+<div><time>08-06</time> Runtime instances launched (EC2 in your own account, sessions up to 14 days)</div>
+<div><time>09-18</time> New Runtime (V2) released</div>
+<div><time>11-05</time>Web Answer · 11-10 Web Search API</div>
+<div><time>11-12</time> V2 becomes the default (including Tokyo)</div>
+<div><time>11-18</time> Instances support privileged mode</div>
+<div><time>11-19</time> Instances support nested virtualization (Intel)</div>
+<div><time>11-20</time> Instances support G7 GPUs</div>
 </div>
 </section>
 <div class="refs">

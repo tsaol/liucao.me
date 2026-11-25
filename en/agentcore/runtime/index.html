@@ -175,159 +175,66 @@
 <div class="gv-hero">
 <div class="crumb"><a href="../">AgentCore</a> · Runtime</div>
 <h1>AgentCore Runtime:<span class="g">microVM or Instances</span></h1>
-<p class="sub">Runtime is the core of AgentCore: it puts an agent in a container, with an isolated environment for each session. In 2026 it gained a second compute option, Instances, which runs on EC2 in your own account. This page covers how to choose between the two, how they're billed, and where the security boundaries are, plus my measured data and the pitfalls I hit.</p>
+<p class="sub">How to choose between the two compute options: comparison, cost calculator, hands-on tests.</p>
 <nav class="toc">
-<a href="#what">1 · What it is</a>
-<a href="#two">2 · Two compute types</a>
-<a href="#microvm">3 · microVM V2</a>
-<a href="#instances">4 · Instances</a>
-<a href="#price">5 · Pricing</a>
-<a href="#eval">6 · Evaluation</a>
-<a href="#measured">7 · Measured results</a>
-<a href="#choose">8 · How to choose</a>
-<a href="#start">9 · Getting started</a>
+<a href="#compare">1 · Comparison</a>
+<a href="#price">2 · Cost</a>
+<a href="#measured">3 · Benchmarks</a>
+<a href="#start">4 · Getting started</a>
 </nav>
 </div>
-<div class="callout"><b>Accessed 2026-11-25.</b>Prices and limits follow the official AWS documentation. The "measured" figures come from a multi-agent coding task I ran in the Tokyo Region (ap-northeast-1): in the same run, half the agents ran on microVMs and half on Instances. The sample is small (3 agents per side), so the numbers only show orders of magnitude.</div>
 <div class="tldr">
-<div class="lead">Start here: in three sentences</div>
+<div class="lead">Conclusion</div>
 <ol>
-<li><b>Runtime has two compute options:</b>microVM (serverless, pay-per-use, starts in seconds) and Instances (runs on EC2 in your own account, billed per instance plus a 12% management fee).</li>
-<li><b>Default to microVM.</b><mark>Only if you need x86 / GPU, sessions longer than 8 hours, or root access</mark>(installing system software, running containers, locking down the network) should you use Instances.</li>
-<li><b>When using Instances, be sure to remember:</b><mark>Stopping a session doesn't shut down the machine</mark>. The instance is released only when you delete the session; and these instances<mark> Not shown in the EC2 instance list by default</mark>.</li>
+<li><b>Uses microVMs by default:</b>Fast startup (seconds), pay per use, no ops.</li>
+<li><b>Need x86 / GPU, more than 8 hours, or root (to lock down networking or run containers)</b>use Instances.</li>
+<li><b>With Instances, always delete sessions:</b><mark>Stopping a session doesn't shut down EC2</mark>, and these instances don't show up in the EC2 list by default.</li>
 </ol>
 </div>
-<p class="legend">Notes:<span class="key" style="display:inline;padding:0 .4em;margin:0;border-left-width:3px">Key points</span> Key points at the start of each section · <mark>Highlight</mark> Core conclusion · <span class="src">Docs · Instances</span> Sources (official AWS pages, linked in the references at the end) · <span class="src">Measured</span> My own test results in the Tokyo Region.</p>
-<section class="content-section" id="what">
-<h2 class="section-title"><span>1</span> · What Runtime is</h2>
-<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li>You provide a container image (or code package), and it handles running, isolation, and scaling;<mark>One session = one isolated environment</mark>, using the one you pass in: <code>runtimeSessionId</code> to tell them apart.<span class="src">Docs · Instances</span></li>
-<li>The container only needs to do two things:<code>GET /ping</code> returns the health status,<code>POST /invocations</code> handling requests, all in <mark>Port 8080</mark>.<span class="src">Docs · Getting started with Instances</span></li>
-</ul></div>
-<p>Invoking it is simple:<code>InvokeAgentRuntime</code> with the runtime ARN, a session ID, and the request payload. The first time a new session ID is used, Runtime prepares a new environment for it; after that, all requests with the same session ID go to the same environment,<b>Sessions can't see each other</b>. When the session ends, use <code>StopRuntimeSession</code>.</p>
-<p>Any framework and any model: Strands, LangGraph, CrewAI, LlamaIndex, Google ADK, OpenAI Agents SDK, and models inside or outside Bedrock. MCP and A2A protocols are also supported.<span class="src">Docs · What is</span></p>
-</section>
-<section class="content-section" id="two">
-<h2 class="section-title"><span>2</span> · Two compute options</h2>
-<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li>chosen when creating the runtime,<mark>Can't be changed later</mark>.<span class="src">Docs · Instances</span></li>
-<li>Official recommendations:<mark>Use microVMs for lightweight, API-driven agents that finish quickly</mark>; use Instances for long-running, stateful work, or when you need GPUs or a shared environment for multiple agents.<span class="src">Docs · Instances</span></li>
-</ul></div>
+<p class="legend"><mark>Highlight</mark> Bottom line · <span class="src">Docs</span> Sources at the end · <span class="src">Measured</span> My test in the Tokyo Region (2026-11-25)</p>
+<section class="content-section" id="compare">
+<h2 class="section-title"><span>1</span> · Comparison</h2>
 <table class="cmp">
-<tr><th></th><th>microVM (default)</th><th>Instances</th></tr>
-<tr><td><b>Where it runs</b></td><td> AWS-managed Firecracker microVMs; you never see the machine</td><td> EC2 in your own account and your own VPC (AWS-managed instances)</td></tr>
-<tr><td><b>Architecture</b></td><td>arm64</td><td><mark> x86_64 or arm64</mark>, you choose the instance types yourself (up to 30)</td></tr>
-<tr><td><b>Specs</b></td><td> Scales on demand, up to 8 vCPU / 32 GB; images up to 10 GB</td><td> Determined by instance type, including GPUs and large memory</td></tr>
-<tr><td><b>Maximum session duration</b></td><td> 8 hours</td><td><mark> 14 days</mark>, and after it stops you can resume it with the same session ID (the data volume is kept)</td></tr>
-<tr><td><b>Isolation unit</b></td><td> One microVM per session</td><td> One EC2 instance per session;<mark>Multiple agents in the same session aren't isolated from each other</mark></td></tr>
-<tr><td><b>root access</b></td><td> None</td><td> Optional privileged mode (PRIVILEGED)</td></tr>
-<tr><td><b>Billing</b></td><td> Billed per second for actual CPU and memory usage</td><td> EC2 instance time + 12% management fee</td></tr>
-<tr><td><b>Start</b><span class="src"> Measured</span></td><td> 2.5–6 seconds</td><td> 63–93 seconds (needs to launch an EC2 instance)</td></tr>
+<tr><th></th><th>microVM (default)</th><th>Instances</th><th> Better</th></tr>
+<tr><td><b>Where it runs</b></td><td> AWS-managed microVM</td><td> EC2 in your account</td><td></td></tr>
+<tr><td><b>Start</b><span class="src"> Measured</span></td><td> 2.5–6 seconds</td><td> 63–93 seconds</td><td class="yes">microVM</td></tr>
+<tr><td><b>Billing</b></td><td> Based on actual usage</td><td> EC2 for the full duration + 12% management fee</td><td class="yes">microVM</td></tr>
+<tr><td><b>Operations</b></td><td> Almost nothing to manage</td><td> Roles, quotas, deleting sessions</td><td class="yes">microVM</td></tr>
+<tr><td><b>Network / metadata lockdown</b><span class="src"> Measured</span></td><td> Not possible</td><td> In privileged mode, can</td><td class="yes">Instances</td></tr>
+<tr><td><b>Hardware</b></td><td> arm64, up to 8 vCPU / 32 GB</td><td>x86 / arm64 / GPU</td><td class="yes">Instances</td></tr>
+<tr><td><b>Maximum session duration</b></td><td> 8 hours</td><td> 14 days</td><td class="yes">Instances</td></tr>
+<tr><td><b>Isolation</b></td><td colspan="2"> Both use one session as the unit of isolation; with Instances, agents in the same session are not isolated from each other</td><td> Same</td></tr>
 </table>
-<p class="legend" style="margin-top:-.4rem">Table 1 · Comparison of the two compute options (sources: docs · Instances, What's New 11-12, pricing page; startup times are measured)</p>
-</section>
-<section class="content-section" id="microvm">
-<h2 class="section-title"><span>3</span> · microVM: the new generation (V2)</h2>
-<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li>A dedicated Firecracker microVM for each session,<mark>Hardware-level isolation</mark>.<span class="src">What’s New 11-12</span></li>
-<li>V2 first snapshots the initialized agent,<mark>Each new session is restored from a snapshot</mark>: a 2 GB image starts in under 2 seconds at P75 (V1 takes 29.7 seconds).<span class="src">What’s New 11-12</span></li>
-<li>Memory is allocated on demand and reclaimed when unused,<mark>For multi-turn conversational agents, billed memory is up to 68% lower</mark>; scales to 0 when idle.<span class="src">What’s New 11-12</span></li>
-</ul></div>
-<ul>
-<li><b>Default version</b>: starting 2026-11-12, new runtimes in 19 Regions, including Tokyo, default to V2; for existing runtimes you have to change the <code>platformVersion</code> Change to <code>V2</code>.<span class="src">What’s New 11-12</span></li>
-<li><b>Good fit for</b>: the official examples are compiling large codebases, driving browsers, and loading local models within a session.<span class="src">What’s New 11-12</span></li>
-<li><b>Limits</b>: the container has no permission to change network rules,<mark>Can't block the instance metadata address</mark><span class="src"> Measured</span>. So give the execution role least privilege: code running inside has a chance to obtain this role's temporary credentials.</li>
-</ul>
-</section>
-<section class="content-section" id="instances">
-<h2 class="section-title"><span>4</span> · Instances: running on EC2 in your own account</h2>
-<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li>Three things:<mark>capacity provider</mark>(the EC2 "template": OS, instance type, subnet, disk, role) → <mark>runtime</mark>(what to run) → <mark>Session</mark>(one EC2 instance).<span class="src">Docs · Instances</span></li>
-<li>Agents on the same instance <mark>Shared file system, so they can read each other's credentials</mark>; use separate sessions if you need isolation.<span class="src">Docs · Security</span></li>
-<li>In privileged mode the agent runs as root, but<mark> Dedicated to this one session</mark>, so the isolation boundary stays the same.<span class="src">Docs · Security</span></li>
-</ul></div>
-<div class="dg">
-<div class="tl">
-<div class="box">capacity provider<small> OS x86/arm, allowed instance types, subnets and security groups, disks, idle time before shutdown</small></div><div class="ar">→</div>
-<div class="box">runtime<small> Container image, execution role, protocol; optional privileged mode</small></div><div class="ar">→</div>
-<div class="box good">Session = one EC2 instance<small> Boots on first invocation; up to 14 days; data disk can be retained</small></div>
-</div>
-<div class="dg-cap">Figure 1 · The three-layer structure of Instances (source: docs · Instances)</div>
-</div>
-<h3 class="sub-h">IAM roles to prepare</h3>
-<ul>
-<li><b>Infrastructure role (operator role)</b>: AgentCore assumes it to launch, tag, configure network interfaces for, and shut down instances. You can attach the managed policy directly: <code>BedrockAgentCoreRuntimeInstancesOperatorRolePolicy</code>, trust <code>bedrock-agentcore.amazonaws.com</code>.<span class="src">Docs · Security</span></li>
-<li><b>Instance profile</b>: attached to the EC2 instance, used only to ship system logs,<mark>Gives the agent code no permissions</mark>. If you don't pass it, AgentCore uses a default instance role it creates itself.<span class="src">Managed policy documentation</span></li>
-<li><b>Execution role</b>: the permissions your agent code gets, same as with microVM.</li>
-</ul>
-<h3 class="sub-h">Privileged mode and nested virtualization</h3>
-<ul>
-<li><b>Privileged mode</b>(2026-11-18): agents can install system software and run nested containers, for example spinning up their own Postgres and Redis for integration tests. Set it in the runtime's <code>capacityProviderConfiguration.operatingSystemConfiguration.linux.privilegeMode</code>.<span class="src">What’s New 11-18</span></li>
-<li><b>Nested virtualization</b>(2026-11-19): sessions can use KVM to run virtual machines and emulators (such as the Android emulator),<mark>Intel instance types only</mark>(C7i, C8i, M7i, M8i, R7i, R8i).<span class="src">What’s New 11-19</span></li>
-</ul>
+<p class="legend" style="margin-top:-.4rem">Sources: Docs · Instances, What’s New 11-12, pricing page</p>
 </section>
 <section class="content-section" id="price">
-<h2 class="section-title"><span>5</span> · Pricing</h2>
+<h2 class="section-title"><span>2</span> · Cost</h2>
 <div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li>microVM V2:<mark>$0.1276 / vCPU·hour + $0.0169 / GB·hour</mark>, billed per second for actual usage; CPU isn't charged during I/O time spent waiting for model responses.<span class="src">Pricing page</span></li>
-<li>Instances:<mark>EC2 billed per instance from start to stop (minimum about 1 minute) + a management fee of 12% of the On-Demand price</mark>(7.8% for G-series GPUs); Savings Plans and Reserved Instances can cover the EC2 portion, but not the management fee.<span class="src">Pricing page</span></li>
+<li>microVM V2 <mark>$0.1276 / vCPU-hour + $0.0169 / GB-hour</mark>, CPU isn't billed while waiting on the model; Instances = <mark>EC2 On-Demand price × 1.12</mark>.<span class="src">Pricing page</span></li>
+<li>128 agents × 40 minutes:<mark>microVM ~$4.7, Instances ~$42</mark>(m7g.2xlarge) / $11.5 (m8g.large). Model costs are usually a few hundred dollars.</li>
 </ul></div>
-<p>Official example: a 3-hour session on c7g.2xlarge (8 vCPU / 16 GB, US East) = 3 × $0.289 = $0.867, plus a 12% management fee = $0.104,<b>Total about $0.97</b>.<span class="src">Pricing page</span></p>
-<h3 class="sub-h">Rough estimate for my workload (order of magnitude)</h3>
-<ul>
-<li>Agents spend most of their time waiting for model responses, so the CPU sits idle. microVM charges only for actual usage,<mark>Running an agent for 40 minutes costs a few cents</mark>.</li>
-<li>Instances bills for the whole machine from boot (including about 1.5 minutes of startup): m7g.2xlarge on-demand in Tokyo is $0.4216/hour, or $0.472/hour with the 12% management fee, <mark>One agent running for 40 minutes costs about $0.33</mark>.<span class="src">AWS Price List</span></li>
-<li>128 agents running concurrently for 40 minutes:<mark>microVM about $4.7, Instances (m7g.2xlarge) about $42</mark>; with m8g.large it's about $11.5, and with m7g.large about $10.5. By comparison, model costs for a task this size run to several hundred dollars. There's a calculator in the next section.</li>
-</ul>
-</section>
-<section class="content-section" id="eval">
-<h2 class="section-title"><span>6</span> · Evaluation: side-by-side comparison of the two approaches</h2>
-<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li><mark>Speed, cost, operations: microVM is clearly better</mark>;<mark>Security controls, hardware choice, long tasks: Instances is better</mark>.<span class="src">Measured</span></li>
-<li>Compute is usually a rounding error in agent tasks: this run measured <mark>microVM is about 0.3% of total cost, Instances about 3.5%</mark>(model cost $3.01).<span class="src">Measured</span></li>
-<li>The biggest risk with Instances isn't cost but<mark> Forgetting to delete sessions</mark>: forgetting to shut down one m7g.2xlarge costs $11.3 a day.<span class="src">AWS Price List</span></li>
-</ul></div>
-<table class="cmp">
-<tr><th>Dimension</th><th>microVM</th><th>Instances</th><th> Better</th></tr>
-<tr><td><b>Start</b></td><td> 2.5–6 seconds</td><td> 63–93 seconds (each new session starts an EC2 instance)</td><td class="yes">microVM</td></tr>
-<tr><td><b>Work speed</b></td><td colspan="2"> Once running, they're the same: each agent's model cost ($0.32–0.44) and output are identical</td><td> Same</td></tr>
-<tr><td><b>Compute cost (this run)</b></td><td>About $0.01 (3 agents, 11 minutes)</td><td>About $0.11 (3 instances, including boot time)</td><td class="yes">microVM</td></tr>
-<tr><td><b>Compute cost (128 × 40 minutes)</b></td><td>About $4.7 (worst case $23)</td><td>About $42 (m7g.2xlarge) / $11.5 (m8g.large)</td><td class="yes">microVM</td></tr>
-<tr><td><b>Network / metadata lockdown</b></td><td> Not possible</td><td> Possible in privileged mode (verified)</td><td class="yes">Instances</td></tr>
-<tr><td><b>Isolation</b></td><td colspan="2"> Both use one isolation unit per session (microVM or EC2); on Instances, agents in the same session are not isolated from each other</td><td> Same</td></tr>
-<tr><td><b>Hardware</b></td><td> arm64 only, max 8 vCPU / 32 GB</td><td> x86 / arm64, GPU, large memory, your choice</td><td class="yes">Instances</td></tr>
-<tr><td><b>Session duration</b></td><td> Up to 8 hours</td><td> Up to 14 days; can be stopped and resumed</td><td class="yes">Instances</td></tr>
-<tr><td><b>Operations</b></td><td> Almost nothing to manage</td><td> Requires setting up roles, a capacity provider and quotas, plus reconciling and deleting sessions</td><td class="yes">microVM</td></tr>
-<tr><td><b>Scale</b></td><td> No quotas to manage</td><td> Limited by the account's EC2 vCPU quota</td><td class="yes">microVM</td></tr>
-<tr><td><b>Discounts</b></td><td> Can buy a committed baseline</td><td> The EC2 portion can use Savings Plans and Capacity Reservations</td><td> Depends</td></tr>
-</table>
-<p class="legend" style="margin-top:-.4rem">Table 2 · Item-by-item comparison (prices: AWS Price List, Tokyo On-Demand, 2026-11-25; times and costs: measured)</p>
-<h3 class="sub-h">Do the math</h3>
-<p>Fill in your own workload. microVM is billed by actual usage (agents spend most of their time waiting on the model, so average vCPU use is low); Instances are billed for the whole machine from start to shutdown.</p>
 <div class="calc" id="acc">
 <label>Agents<input id="a-n" min="1" type="number" value="128"/></label>
 <label>Minutes per agent<input id="a-min" min="1" type="number" value="40"/></label>
 <label>Instances instance type (Tokyo on-demand price)<select id="a-type">
-<option value="0.11594">m8g.large · 2 vCPU · $0.1159</option>
-<option value="0.1054">m7g.large · 2 vCPU · $0.1054</option>
-<option value="0.10006">c8g.large · 2 vCPU · $0.1001</option>
-<option value="0.23188">m8g.xlarge · 4 vCPU · $0.2319</option>
-<option selected="" value="0.4216">m7g.2xlarge · 8 vCPU · $0.4216</option>
-<option value="0.46376">m8g.2xlarge · 8 vCPU · $0.4638</option>
-<option value="0.13671">m8i.large · x86 · 2 vCPU · $0.1367</option>
-<option value="0.54684">m8i.2xlarge · x86 · 8 vCPU · $0.5468</option>
+<option value="0.11594">m8g.large · $0.1159</option>
+<option value="0.1054">m7g.large · $0.1054</option>
+<option value="0.23188">m8g.xlarge · $0.2319</option>
+<option selected="" value="0.4216">m7g.2xlarge · $0.4216</option>
+<option value="0.46376">m8g.2xlarge · $0.4638</option>
+<option value="0.13671">m8i.large (x86) · $0.1367</option>
+<option value="0.54684">m8i.2xlarge (x86) · $0.5468</option>
 </select></label>
-<label>Boot minutes (billed)<input id="a-boot" min="0" step="0.5" type="number" value="1.5"/></label>
-<label>microVM average vCPU used<input id="a-cpu" min="0" step="0.1" type="number" value="0.3"/></label>
+<label>Uptime minutes<input id="a-boot" min="0" step="0.5" type="number" value="1.5"/></label>
+<label>microVM average vCPU<input id="a-cpu" min="0" step="0.1" type="number" value="0.3"/></label>
 <label>microVM average memory (GB)<input id="a-mem" min="0.125" step="0.25" type="number" value="1"/></label>
 <label>Model cost per agent $<input id="a-llm" min="0" step="0.1" type="number" value="1.5"/></label>
 </div>
 <div class="calc-out">
-<div><span>microVM compute cost</span><b id="o-mv">–</b><small id="o-mv2"></small></div>
-<div><span>Instances compute cost</span><b id="o-ec">–</b><small id="o-ec2"></small></div>
+<div><span>microVM</span><b id="o-mv">–</b><small id="o-mv2"></small></div>
+<div><span>Instances</span><b id="o-ec">–</b><small id="o-ec2"></small></div>
 <div class="tot"><span>Instances extra cost</span><b id="o-diff">–</b><small id="o-share"></small></div>
 </div>
-<p class="legend" style="margin-top:.2rem">Pricing: microVM V2 $0.1276/vCPU·hour + $0.0169/GB·hour (per second; CPU isn't billed while waiting on I/O); Instances = EC2 on-demand price × 1.12 (12% management fee), minimum about 1 minute. Excludes EBS and data transfer.</p>
 <script>
 (function () {
   function v(id) { var x = parseFloat(document.getElementById(id).value); return isFinite(x) && x >= 0 ? x : 0; }
@@ -350,74 +257,45 @@
 </script>
 </section>
 <section class="content-section" id="measured">
-<h2 class="section-title"><span>7</span> · Hands-on: the same task, half on microVM, half on Instances</h2>
+<h2 class="section-title"><span>3</span> · Benchmarks</h2>
 <div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li><mark>Startup differs by an order of magnitude</mark>: microVM 2.5–6 seconds, Instances 63–93 seconds; once work starts, both are equally fast.<span class="src">Measured</span></li>
-<li>With privileged mode on Instances,<mark>The instance metadata address can actually be blocked</mark>(iptables inside the container takes effect, verified); microVM can't do this.<span class="src">Measured</span></li>
-<li><mark>Stopping a session doesn't release the EC2 instance</mark>: I had 6 instances keep running for about 1 hour after their sessions stopped; they only shut down after I deleted the sessions.<span class="src">Measured</span></li>
+<li>The same multi-agent coding task,<mark>Half the agents on microVM, half on Instances</mark>: same output; the only differences are startup and compute cost.<span class="src">Measured</span></li>
 </ul></div>
 <div class="meas">
-<div><span>microVM startup</span><b>2.5–6 s</b><small> 3 agents</small></div>
-<div class="bad"><span>Instances startup</span><b>63–93 s</b><small> 3 agents, m7g.2xlarge</small></div>
-<div><span>Second invocation in the same session</span><b>0.2 s</b><small> Instances, machine already running</small></div>
-<div class="good"><span>Metadata blocking</span><b> Can / Can't</b><small> Instances privileged mode / microVM</small></div>
-<div><span>Task result</span><b>12 / 12</b><small> All acceptance checks passed, with identical output on both</small></div>
-<div><span>Model costs</span><b>$3.01</b><small> Total for 6 agents</small></div>
-<div><span>Compute cost · microVM</span><b>≈ $0.01</b><small> 3 agents, 11 minutes total</small></div>
-<div class="bad"><span>Compute cost · Instances</span><b>≈ $0.11</b><small> 3 instances if sessions are deleted correctly; $2.66 if you forget</small></div>
+<div><span>Startup · microVM</span><b>2.5–6 s</b></div>
+<div class="bad"><span>Startup · Instances</span><b>63–93 s</b></div>
+<div class="good"><span>Metadata blocked</span><b> Instances only</b></div>
+<div><span>Task result</span><b>12 / 12</b></div>
+<div><span>Compute cost · microVM</span><b>≈ $0.01</b></div>
+<div class="bad"><span>Compute cost · Instances</span><b>≈ $0.11</b><small>$2.66 if you forget to delete the session</small></div>
 </div>
-<p>The task was a small multi-agent coding task: 1 planner, 1 lead, and 4 developers, assigned alternately in launch order. On both sides, each developer's model cost was $0.32–0.44, and the output was the same,<b>The only difference is the first minute or two</b>: put the team lead on Instances and the whole team starts about 1.5 minutes later.</p>
-<h3 class="sub-h">Gotchas I hit that the official docs don't make clear</h3>
+<h3 class="sub-h">Pitfalls we hit</h3>
 <ol>
-<li><b>Stopping a session doesn't shut down the machine.</b><code>StopRuntimeSession</code> only stopped the agent; the EC2 instance stayed up and kept billing, and the "shut down after 10 minutes idle" setting didn't trigger either (my 6 instances ran an extra 35–80 minutes, costing about $2.66 more). You need to call <code>DeleteCapacityProviderSession</code>(the parameters are the capacity provider ID and the session ID) before the instance is released.<span class="src">Measured</span></li>
-<li><b>These instances are hidden by default.</b>The docs mention in passing: managed instances don't appear in EC2 console or API listings by default. To list them with the CLI, add <code>--include-managed-resources</code>, otherwise you'll think "everything is shut down". The instance tags include <code>bedrock-agentcore:runtime-session-id</code>, which you can use to reconcile costs.<span class="src">Docs · Instances</span></li>
-<li><b>In the default STANDARD mode, the container runs as uid 0, but its privileges are stripped</b>: you can't chown, switch to another user, or change iptables. If your entrypoint needs to drop privileges to run the agent, you have to use privileged mode.<span class="src">Measured</span></li>
-<li><b>Request content is sent in chunks</b>(<code>Transfer-Encoding: chunked</code>, no Content-Length). HTTP servers that only accept Content-Length will read an empty body. microVMs don't have this problem.<span class="src">Measured</span></li>
-<li><b>The list of allowed instance types is not a priority order.</b>I listed m8g.2xlarge first and m7g.2xlarge second, but every instance launched was m7g.<span class="src">Measured</span></li>
-<li><b>Privileged mode requires a newer SDK version.</b>CLI 2.36.47 doesn't have this parameter yet; boto3 1.44.11 does.<span class="src">Measured</span></li>
+<li><b>Stopping a session doesn't shut down the machine</b>: you need to call <code>DeleteCapacityProviderSession</code>, otherwise you keep getting billed.</li>
+<li><b>Instances hidden by default</b>: when querying, add <code>--include-managed-resources</code>.</li>
+<li><b>STANDARD mode permissions revoked</b>: you can't switch users or change iptables; you need privileged mode.</li>
+<li><b>Requests are sent in chunks</b>(chunked, no Content-Length).</li>
+<li><b>Privileged mode requires the latest SDK</b>(boto3 ≥ 1.44.11).</li>
 </ol>
 </section>
-<section class="content-section" id="choose">
-<h2 class="section-title"><span>8</span> · How to choose</h2>
-<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li><mark>microVM by default</mark>: fast startup, pay per use, almost no operations work.</li>
-<li><mark>Use Instances in these cases</mark>: you need x86 or GPUs, sessions longer than 8 hours, root (to install system software, run containers, or lock down the network), or Savings Plans or Capacity Reservations.</li>
-</ul></div>
-<ul>
-<li><b>The two can be mixed</b>: within one system, put agents that set the overall pace (such as planners or team leads) on microVM for speed; put agents that need a special environment or stricter network control on Instances.</li>
-<li><b>On Instances, don't put mutually untrusted agents in the same session to save money</b>: they can read each other's credentials.</li>
-<li><b>Check quotas before going big</b>: Instances uses one EC2 instance per session, so 100 concurrent sessions means 100 instances; check your account's EC2 vCPU quota first.</li>
-<li><b>Be sure to reconcile your bill</b>: after the task ends, query by session ID tag for any instances still running (remember to add <code>--include-managed-resources</code>).</li>
-</ul>
-</section>
 <section class="content-section" id="start">
-<h2 class="section-title"><span>9</span> · Getting started: Instances in four steps</h2>
-<div class="key"><span class="kl">Key points</span> Key points of this section<ul>
-<li>Prerequisite: something that implements <code>/ping</code> and <code>/invocations</code> container image (pushed to ECR), a private subnet and a security group.</li>
-</ul></div>
-<pre><span class="c"># 1. Infrastructure role: trust bedrock-agentcore.amazonaws.com, attach the managed policy</span>
-<span class="c">#    BedrockAgentCoreRuntimeInstancesOperatorRolePolicy (create it in IAM)</span>
-
-<span class="c"># 2. capacity provider: OS, instance type, network, idle time before shutdown</span>
+<h2 class="section-title"><span>4</span> · Getting started with Instances</h2>
+<pre><span class="c"># 1. Infrastructure role: trust bedrock-agentcore.amazonaws.com, attach BedrockAgentCoreRuntimeInstancesOperatorRolePolicy</span>
+<span class="c"># 2. capacity provider</span>
 <span class="k">aws</span> bedrock-agentcore-control create-capacity-provider --name my_cp \
-  --permissions-configuration capacityProviderOperatorRoleArn=&lt;infrastructure role ARN&gt; \
+  --permissions-configuration capacityProviderOperatorRoleArn=&lt;role ARN&gt; \
   --compute-configuration '{"ec2Configuration": {
      "launchTemplateSource": {"launchParameters": {"operatingSystem": "LINUX_ARM64",
         "instanceRequirements": {"allowedInstanceTypes": ["m8g.large"]}}},
-     "vpcConfiguration": {"subnets": ["&lt;subnet&gt;"], "securityGroups": ["&lt;security group&gt;"]},
-     "lifecycleConfiguration": {"idleInstanceTimeout": 600, "maxLifetime": 28800}}}'
-
-<span class="c"># 3. runtime: image, execution role, attach to the capacity provider (privileged mode needs a newer boto3)</span>
+     "vpcConfiguration": {"subnets": ["&lt;subnet&gt;"], "securityGroups": ["&lt;security group&gt;"]}}}'
+<span class="c"># 3. Attach the runtime to the capacity provider</span>
 <span class="k">aws</span> bedrock-agentcore-control create-agent-runtime --agent-runtime-name my_agent \
-  --agent-runtime-artifact containerConfiguration={containerUri=&lt;ECR image&gt;} \
-  --role-arn &lt;execution role ARN&gt; \
+  --agent-runtime-artifact containerConfiguration={containerUri=&lt;ECR image&gt;} --role-arn &lt;execution role ARN&gt; \
   --capacity-provider-configuration capacityProviderArn=&lt;capacity provider ARN&gt;
-
-<span class="c"># 4. When done: stop first, then delete the session (if you only stop without deleting, the EC2 instance keeps running)</span>
+<span class="c"># 4. When done: stop, then delete the session</span>
 <span class="k">aws</span> bedrock-agentcore stop-runtime-session --agent-runtime-arn &lt;runtime ARN&gt; --runtime-session-id &lt;session ID&gt;
 <span class="k">aws</span> bedrock-agentcore delete-capacity-provider-session --capacity-provider-id &lt;ID&gt; --session-id &lt;session ID&gt;</pre>
-<p class="legend" style="margin-top:.2rem">Note: when writing ARNs in zsh,<code>"$ACCOUNT:role/..."</code> in <code>:r</code> gets swallowed as a variable modifier, and the ARN becomes <code>...ole/...</code>. It must be written as <code>${ACCOUNT}</code>.<span class="src">Measured</span></p>
-<a class="go-card" href="../"><b>← Back to AgentCore overview</b> 13 services in one diagram, and where to start.</a>
+<a class="go-card" href="../"><b>← AgentCore overview</b></a>
 </section>
 <div class="refs">
 <h4>Reference</h4>
