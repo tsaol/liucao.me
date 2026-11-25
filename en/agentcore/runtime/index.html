@@ -144,6 +144,14 @@
         @media (max-width: 760px) { .flow2 { grid-template-columns: 1fr; } }
     </style>
 <style>
+/* readability: the site's mute grey (#64717f) is only ~3.9:1 on the dark bg; brighten it here and size small text up */
+main.wrap { --text-dim: #b8c3ce; --text-mute: #93a0ae; }
+main.wrap .legend { font-size: .86rem; }
+main.wrap .key { font-size: .96rem; }
+main.wrap .calc label { font-size: .86rem; }
+main.wrap .calc-out span { font-size: .82rem; } main.wrap .calc-out small { font-size: .78rem; }
+main.wrap .refs { font-size: .88rem; }
+main.wrap .src { font-size: 12px; }
 .svc { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .7rem; margin: 1rem 0 1.4rem; }
 .svc .grp { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: .8rem .9rem; }
 .svc .grp h4 { font-family: var(--mono); font-size: .74rem; letter-spacing: .06em; color: var(--accent); margin-bottom: .5rem; text-transform: uppercase; }
@@ -155,9 +163,9 @@
 .tl2 time { font-family: var(--mono); color: var(--text); margin-right: .5rem; }
 .meas { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .6rem; margin: .8rem 0 1.2rem; }
 .meas div { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .6rem .8rem; }
-.meas span { display: block; font-size: .75rem; color: var(--text-mute); }
+.meas span { display: block; font-size: .82rem; color: var(--text-mute); }
 .meas b { font-family: var(--mono); font-size: 1.15rem; color: var(--text); }
-.meas small { display: block; font-size: .72rem; color: var(--text-mute); }
+.meas small { display: block; font-size: .78rem; color: var(--text-mute); }
 .meas .good b { color: var(--accent); } .meas .bad b { color: #f59e0b; }
 .go-card { display: block; background: var(--surface); border: 1px solid var(--accent-dim); border-radius: var(--radius); padding: 1rem 1.2rem; margin: 1rem 0 1.6rem; color: var(--text-dim); }
 .go-card b { color: var(--accent); font-size: 1.05rem; display: block; margin-bottom: .3rem; }
@@ -205,7 +213,7 @@
 <div class="row" data-w="l"><div class="v l">Almost nothing to manage</div><div class="mid"><div class="lab"> Operations</div><div class="bar"><i></i></div></div><div class="v r"> Roles, quotas, deleting sessions</div><div class="note"> Instances requires a role and a capacity provider, and you have to delete sessions when you're done, or the instances keep running.</div></div>
 <div class="row" data-w="l"><div class="v l">No quotas to manage</div><div class="mid"><div class="lab"> Scale</div><div class="bar"><i></i></div></div><div class="v r"> Limited by EC2 quotas</div><div class="note"> Instances runs one EC2 instance per session, so 100 concurrent sessions means 100 instances. Check your account's vCPU quota.</div></div>
 <div class="row" data-w="r"><div class="v l">Not possible</div><div class="mid"><div class="lab"> Network / metadata lockdown <span class="src">Measured</span></div><div class="bar"><i></i></div></div><div class="v r"> In privileged mode, can</div><div class="note"> microVM has no permission to change network rules; in Instances privileged mode, the agent runs as root and can block the metadata address with iptables.</div></div>
-<div class="row" data-w="r"><div class="v l">arm64 · up to 8 vCPU</div><div class="mid"><div class="lab"> Hardware</div><div class="bar"><i></i></div></div><div class="v r">x86 / arm64 / GPU</div><div class="note"> microVM is arm64 only; Instances lets you pick any instance type, including Intel, GPU, and high-memory.</div></div>
+<div class="row" data-w="r"><div class="v l">arm64 · up to 8 vCPU</div><div class="mid"><div class="lab"> Hardware</div><div class="bar"><i></i></div></div><div class="v r">x86 / arm64 / GPU</div><div class="note"> microVM is arm64 only; with Instances you can pick any instance type, including Intel, high-memory, and GPU (L4 tested and working).</div></div>
 <div class="row" data-w="r"><div class="v l">8 hours</div><div class="mid"><div class="lab"> Maximum session duration</div><div class="bar"><i></i></div></div><div class="v r"> 14 days</div><div class="note"> After an Instances session stops, you can resume it with the same session ID, and the data volume is still there.</div></div>
 <div class="row" data-w="t"><div class="v l">One microVM per session</div><div class="mid"><div class="lab"> Isolation</div><div class="bar"><i></i></div></div><div class="v r"> One EC2 instance per session</div><div class="note"> Both use one isolated unit per session; in Instances, multiple agents in the same session share one machine and can read each other's credentials.</div></div>
 </div>
@@ -221,17 +229,17 @@
 .vs-side.l { box-shadow: inset 4px 0 0 #00e5a0; } .vs-side.r { box-shadow: inset -4px 0 0 #7c8cff; text-align: right; }
 .vs-name { font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
 .vs-side.l .vs-name { color: #00e5a0; } .vs-side.r .vs-name { color: #9aa6ff; }
-.vs-sub { font-size: .78rem; color: var(--text-mute); }
+.vs-sub { font-size: .86rem; color: var(--text-mute); }
 .vs-score { font-family: var(--mono); font-size: 2.4rem; font-weight: 800; line-height: 1; margin-top: .3rem; color: var(--text); }
 .vs-mid { font-family: var(--mono); font-weight: 800; font-size: 1.5rem; color: var(--text-mute); text-align: center; }
 .vs-mid small { display: block; font-size: .7rem; font-weight: 600; margin-top: .2rem; }
 .duel .row { display: grid; grid-template-columns: 1fr 1.25fr 1fr; align-items: center; gap: .8rem; padding: .55rem .2rem; border-bottom: 1px solid var(--border);
   opacity: .25; transform: translateY(6px); transition: opacity .5s, transform .5s; }
 .duel .row.on { opacity: 1; transform: none; }
-.duel .v { font-size: .88rem; color: var(--text-dim); transition: color .4s, text-shadow .4s; }
+.duel .v { font-size: .95rem; color: var(--text-dim); transition: color .4s, text-shadow .4s; }
 .duel .v.r { text-align: right; }
-.duel .note { grid-column: 1 / -1; text-align: center; font-size: .78rem; color: var(--text-mute); margin-top: -.15rem; }
-.duel .mid .lab { text-align: center; font-size: .8rem; font-weight: 700; color: var(--text); margin-bottom: .3rem; }
+.duel .note { grid-column: 1 / -1; text-align: center; font-size: .86rem; color: var(--text-mute); margin-top: -.1rem; }
+.duel .mid .lab { text-align: center; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: .3rem; }
 .duel .bar { position: relative; height: 8px; border-radius: 99px; background: var(--bg-soft); overflow: hidden; }
 .duel .bar i { position: absolute; top: 0; bottom: 0; left: 50%; width: 0; border-radius: 99px; transition: width .9s cubic-bezier(.2,.8,.2,1), left .9s cubic-bezier(.2,.8,.2,1); }
 .duel .row[data-w="l"].on .bar i { left: 0; width: 50%; background: linear-gradient(90deg, #00e5a0, rgba(0,229,160,.15)); box-shadow: 0 0 14px rgba(0,229,160,.6); }
@@ -241,9 +249,9 @@
 .duel .row[data-w="r"].on .v.r { color: #aab4ff; font-weight: 700; text-shadow: 0 0 12px rgba(124,140,255,.35); }
 .race { margin-top: 1.2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: .9rem 1.1rem; }
 .race-head { display: flex; align-items: center; gap: .8rem; margin-bottom: .7rem; font-size: .85rem; }
-.race-head .muted { color: var(--text-mute); font-size: .78rem; }
+.race-head .muted { color: var(--text-mute); font-size: .84rem; }
 .race-head button { margin-left: auto; font: 700 .8rem var(--mono); color: #04130d; background: #00e5a0; border: 0; border-radius: 99px; padding: .35rem .9rem; cursor: pointer; }
-.lane { display: grid; grid-template-columns: 80px 1fr 64px; align-items: center; gap: .7rem; margin: .45rem 0; font-size: .8rem; }
+.lane { display: grid; grid-template-columns: 88px 1fr 64px; align-items: center; gap: .7rem; margin: .45rem 0; font-size: .88rem; }
 .lane .ln { color: var(--text-dim); font-weight: 700; } .lane .t { font-family: var(--mono); text-align: right; color: var(--text); }
 .track { position: relative; height: 14px; border-radius: 99px; background: repeating-linear-gradient(90deg, var(--bg-soft) 0 18px, transparent 18px 22px); }
 .track i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 99px; background: linear-gradient(90deg, rgba(0,229,160,.2), #00e5a0); box-shadow: 0 0 16px rgba(0,229,160,.7); }
@@ -356,6 +364,13 @@
 <div><span>Compute cost · microVM</span><b>≈ $0.01</b></div>
 <div class="bad"><span>Compute cost · Instances</span><b>≈ $0.11</b><small>$2.66 if you forget to delete the session</small></div>
 </div>
+<h3 class="sub-h">Tried GPUs too</h3>
+<div class="meas">
+<div><span>Launch · GPU instance</span><b>123 s</b></div>
+<div class="good"><span>GPUs work</span><b>nvidia-smi ✓</b><small>AgentCore installs the driver, so the image doesn't need it</small></div>
+<div><span>The GPU we got</span><b>L4-3Q · 3 GB</b><small> g6f.xlarge, a fraction of one L4</small></div>
+<div class="bad"><span>GPU instance types in Tokyo</span><b> All x86</b></div>
+</div>
 <h3 class="sub-h">Pitfalls we hit</h3>
 <ol>
 <li><b>Stopping a session doesn't shut down the machine</b>: you need to call <code>DeleteCapacityProviderSession</code>, otherwise you keep getting billed.</li>
@@ -363,6 +378,8 @@
 <li><b>STANDARD mode permissions revoked</b>: you can't switch users or change iptables; you need privileged mode.</li>
 <li><b>Requests are sent in chunks</b>(chunked, no Content-Length).</li>
 <li><b>Privileged mode requires the latest SDK</b>(boto3 ≥ 1.44.11).</li>
+<li><b>GPUs in Tokyo are x86 only</b>: gr6 is AMD, not Graviton, and g5g isn't supported, so you need an x86 image.</li>
+<li><b>A single AZ often runs out of capacity</b>: configure two subnets and allow several instance types; with multiple types allowed, you may get a fractional GPU (g6f).</li>
 </ol>
 </section>
 <section class="content-section" id="start">

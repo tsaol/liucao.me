@@ -144,6 +144,14 @@
         @media (max-width: 760px) { .flow2 { grid-template-columns: 1fr; } }
     </style>
 <style>
+/* readability: the site's mute grey (#64717f) is only ~3.9:1 on the dark bg; brighten it here and size small text up */
+main.wrap { --text-dim: #b8c3ce; --text-mute: #93a0ae; }
+main.wrap .legend { font-size: .86rem; }
+main.wrap .key { font-size: .96rem; }
+main.wrap .calc label { font-size: .86rem; }
+main.wrap .calc-out span { font-size: .82rem; } main.wrap .calc-out small { font-size: .78rem; }
+main.wrap .refs { font-size: .88rem; }
+main.wrap .src { font-size: 12px; }
 .svc { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .7rem; margin: 1rem 0 1.4rem; }
 .svc .grp { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: .8rem .9rem; }
 .svc .grp h4 { font-family: var(--mono); font-size: .74rem; letter-spacing: .06em; color: var(--accent); margin-bottom: .5rem; text-transform: uppercase; }
@@ -155,9 +163,9 @@
 .tl2 time { font-family: var(--mono); color: var(--text); margin-right: .5rem; }
 .meas { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .6rem; margin: .8rem 0 1.2rem; }
 .meas div { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .6rem .8rem; }
-.meas span { display: block; font-size: .75rem; color: var(--text-mute); }
+.meas span { display: block; font-size: .82rem; color: var(--text-mute); }
 .meas b { font-family: var(--mono); font-size: 1.15rem; color: var(--text); }
-.meas small { display: block; font-size: .72rem; color: var(--text-mute); }
+.meas small { display: block; font-size: .78rem; color: var(--text-mute); }
 .meas .good b { color: var(--accent); } .meas .bad b { color: #f59e0b; }
 .go-card { display: block; background: var(--surface); border: 1px solid var(--accent-dim); border-radius: var(--radius); padding: 1rem 1.2rem; margin: 1rem 0 1.6rem; color: var(--text-dim); }
 .go-card b { color: var(--accent); font-size: 1.05rem; display: block; margin-bottom: .3rem; }
