@@ -194,18 +194,105 @@
 <p class="legend"><mark>Highlight</mark> Bottom line · <span class="src">Docs</span> Sources at the end · <span class="src">Measured</span> My test in the Tokyo Region (2026-11-25)</p>
 <section class="content-section" id="compare">
 <h2 class="section-title"><span>1</span> · Comparison</h2>
-<table class="cmp">
-<tr><th></th><th>microVM (default)</th><th>Instances</th><th> Better</th></tr>
-<tr><td><b>Where it runs</b></td><td> AWS-managed microVM</td><td> EC2 in your account</td><td></td></tr>
-<tr><td><b>Start</b><span class="src"> Measured</span></td><td> 2.5–6 seconds</td><td> 63–93 seconds</td><td class="yes">microVM</td></tr>
-<tr><td><b>Billing</b></td><td> Based on actual usage</td><td> EC2 for the full duration + 12% management fee</td><td class="yes">microVM</td></tr>
-<tr><td><b>Operations</b></td><td> Almost nothing to manage</td><td> Roles, quotas, deleting sessions</td><td class="yes">microVM</td></tr>
-<tr><td><b>Network / metadata lockdown</b><span class="src"> Measured</span></td><td> Not possible</td><td> In privileged mode, can</td><td class="yes">Instances</td></tr>
-<tr><td><b>Hardware</b></td><td> arm64, up to 8 vCPU / 32 GB</td><td>x86 / arm64 / GPU</td><td class="yes">Instances</td></tr>
-<tr><td><b>Maximum session duration</b></td><td> 8 hours</td><td> 14 days</td><td class="yes">Instances</td></tr>
-<tr><td><b>Isolation</b></td><td colspan="2"> Both use one session as the unit of isolation; with Instances, agents in the same session are not isolated from each other</td><td> Same</td></tr>
-</table>
-<p class="legend" style="margin-top:-.4rem">Sources: Docs · Instances, What’s New 11-12, pricing page</p>
+<div class="vs">
+<div class="vs-side l"><div class="vs-name">microVM</div><div class="vs-sub"> Default · Serverless</div><div class="vs-score" id="sc-l">0</div></div>
+<div class="vs-mid">VS<small id="sc-t"> Ties 0</small></div>
+<div class="vs-side r"><div class="vs-name">Instances</div><div class="vs-sub"> EC2 in your account</div><div class="vs-score" id="sc-r">0</div></div>
+</div>
+<div class="duel" id="duel">
+<div class="row" data-w="l"><div class="v l">2.5–6 seconds</div><div class="mid"><div class="lab"> Start <span class="src">Measured</span></div><div class="bar"><i></i></div></div><div class="v r"> 63–93 seconds</div><div class="note"> microVM restores from a snapshot; Instances launches a new EC2 instance for every new session.</div></div>
+<div class="row" data-w="l"><div class="v l">Based on actual usage</div><div class="mid"><div class="lab"> Billing</div><div class="bar"><i></i></div></div><div class="v r"> EC2 for the full duration + 12%</div><div class="note">microVM bills only for the CPU and memory actually used, with no CPU charge while waiting for model responses; Instances bills for the whole instance from launch to shutdown.</div></div>
+<div class="row" data-w="l"><div class="v l">Almost nothing to manage</div><div class="mid"><div class="lab"> Operations</div><div class="bar"><i></i></div></div><div class="v r"> Roles, quotas, deleting sessions</div><div class="note"> Instances requires a role and a capacity provider, and you have to delete sessions when you're done, or the instances keep running.</div></div>
+<div class="row" data-w="l"><div class="v l">No quotas to manage</div><div class="mid"><div class="lab"> Scale</div><div class="bar"><i></i></div></div><div class="v r"> Limited by EC2 quotas</div><div class="note"> Instances runs one EC2 instance per session, so 100 concurrent sessions means 100 instances. Check your account's vCPU quota.</div></div>
+<div class="row" data-w="r"><div class="v l">Not possible</div><div class="mid"><div class="lab"> Network / metadata lockdown <span class="src">Measured</span></div><div class="bar"><i></i></div></div><div class="v r"> In privileged mode, can</div><div class="note"> microVM has no permission to change network rules; in Instances privileged mode, the agent runs as root and can block the metadata address with iptables.</div></div>
+<div class="row" data-w="r"><div class="v l">arm64 · up to 8 vCPU</div><div class="mid"><div class="lab"> Hardware</div><div class="bar"><i></i></div></div><div class="v r">x86 / arm64 / GPU</div><div class="note"> microVM is arm64 only; Instances lets you pick any instance type, including Intel, GPU, and high-memory.</div></div>
+<div class="row" data-w="r"><div class="v l">8 hours</div><div class="mid"><div class="lab"> Maximum session duration</div><div class="bar"><i></i></div></div><div class="v r"> 14 days</div><div class="note"> After an Instances session stops, you can resume it with the same session ID, and the data volume is still there.</div></div>
+<div class="row" data-w="t"><div class="v l">One microVM per session</div><div class="mid"><div class="lab"> Isolation</div><div class="bar"><i></i></div></div><div class="v r"> One EC2 instance per session</div><div class="note"> Both use one isolated unit per session; in Instances, multiple agents in the same session share one machine and can read each other's credentials.</div></div>
+</div>
+<div class="race" id="race">
+<div class="race-head"><b>Startup race</b><span class="muted"> Based on measured times, played back at 20x speed</span><button id="race-go" type="button"> Start ▶</button></div>
+<div class="lane"><span class="ln">microVM</span><div class="track"><i id="car-l"></i></div><span class="t" id="t-l">0 s</span></div>
+<div class="lane"><span class="ln">Instances</span><div class="track"><i class="slow" id="car-r"></i></div><span class="t" id="t-r">0 s</span></div>
+</div>
+<p class="legend" style="margin-top:.6rem">Sources: docs · Instances, What’s New 11-12, pricing page; startup times and metadata blocking were measured (2026-11-25, Tokyo).</p>
+<style>
+.vs { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; margin: .4rem 0 1rem; }
+.vs-side { border-radius: 14px; padding: 1rem 1.2rem; position: relative; overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+.vs-side.l { box-shadow: inset 4px 0 0 #00e5a0; } .vs-side.r { box-shadow: inset -4px 0 0 #7c8cff; text-align: right; }
+.vs-name { font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
+.vs-side.l .vs-name { color: #00e5a0; } .vs-side.r .vs-name { color: #9aa6ff; }
+.vs-sub { font-size: .78rem; color: var(--text-mute); }
+.vs-score { font-family: var(--mono); font-size: 2.4rem; font-weight: 800; line-height: 1; margin-top: .3rem; color: var(--text); }
+.vs-mid { font-family: var(--mono); font-weight: 800; font-size: 1.5rem; color: var(--text-mute); text-align: center; }
+.vs-mid small { display: block; font-size: .7rem; font-weight: 600; margin-top: .2rem; }
+.duel .row { display: grid; grid-template-columns: 1fr 1.25fr 1fr; align-items: center; gap: .8rem; padding: .55rem .2rem; border-bottom: 1px solid var(--border);
+  opacity: .25; transform: translateY(6px); transition: opacity .5s, transform .5s; }
+.duel .row.on { opacity: 1; transform: none; }
+.duel .v { font-size: .88rem; color: var(--text-dim); transition: color .4s, text-shadow .4s; }
+.duel .v.r { text-align: right; }
+.duel .note { grid-column: 1 / -1; text-align: center; font-size: .78rem; color: var(--text-mute); margin-top: -.15rem; }
+.duel .mid .lab { text-align: center; font-size: .8rem; font-weight: 700; color: var(--text); margin-bottom: .3rem; }
+.duel .bar { position: relative; height: 8px; border-radius: 99px; background: var(--bg-soft); overflow: hidden; }
+.duel .bar i { position: absolute; top: 0; bottom: 0; left: 50%; width: 0; border-radius: 99px; transition: width .9s cubic-bezier(.2,.8,.2,1), left .9s cubic-bezier(.2,.8,.2,1); }
+.duel .row[data-w="l"].on .bar i { left: 0; width: 50%; background: linear-gradient(90deg, #00e5a0, rgba(0,229,160,.15)); box-shadow: 0 0 14px rgba(0,229,160,.6); }
+.duel .row[data-w="r"].on .bar i { left: 50%; width: 50%; background: linear-gradient(270deg, #7c8cff, rgba(124,140,255,.15)); box-shadow: 0 0 14px rgba(124,140,255,.6); }
+.duel .row[data-w="t"].on .bar i { left: 30%; width: 40%; background: var(--border-hi); }
+.duel .row[data-w="l"].on .v.l { color: #00e5a0; font-weight: 700; text-shadow: 0 0 12px rgba(0,229,160,.35); }
+.duel .row[data-w="r"].on .v.r { color: #aab4ff; font-weight: 700; text-shadow: 0 0 12px rgba(124,140,255,.35); }
+.race { margin-top: 1.2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: .9rem 1.1rem; }
+.race-head { display: flex; align-items: center; gap: .8rem; margin-bottom: .7rem; font-size: .85rem; }
+.race-head .muted { color: var(--text-mute); font-size: .78rem; }
+.race-head button { margin-left: auto; font: 700 .8rem var(--mono); color: #04130d; background: #00e5a0; border: 0; border-radius: 99px; padding: .35rem .9rem; cursor: pointer; }
+.lane { display: grid; grid-template-columns: 80px 1fr 64px; align-items: center; gap: .7rem; margin: .45rem 0; font-size: .8rem; }
+.lane .ln { color: var(--text-dim); font-weight: 700; } .lane .t { font-family: var(--mono); text-align: right; color: var(--text); }
+.track { position: relative; height: 14px; border-radius: 99px; background: repeating-linear-gradient(90deg, var(--bg-soft) 0 18px, transparent 18px 22px); }
+.track i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 99px; background: linear-gradient(90deg, rgba(0,229,160,.2), #00e5a0); box-shadow: 0 0 16px rgba(0,229,160,.7); }
+.track i.slow { background: linear-gradient(90deg, rgba(124,140,255,.2), #7c8cff); box-shadow: 0 0 16px rgba(124,140,255,.7); }
+.track i.done::after { content: "✓"; position: absolute; right: -18px; top: -3px; font-weight: 800; color: var(--text); }
+@media (max-width: 640px) { .duel .row { grid-template-columns: 1fr; text-align: center; } .duel .v.r { text-align: center; } .vs-score { font-size: 1.8rem; } }
+</style>
+<script>
+(function () {
+  var rows = [].slice.call(document.querySelectorAll('#duel .row'));
+  var l = 0, r = 0, t = 0, shown = false;
+  function reveal() {
+    if (shown) return; shown = true;
+    rows.forEach(function (row, i) {
+      setTimeout(function () {
+        row.classList.add('on');
+        var w = row.dataset.w; if (w === 'l') l++; else if (w === 'r') r++; else t++;
+        document.getElementById('sc-l').textContent = l; document.getElementById('sc-r').textContent = r;
+        document.getElementById('sc-t').textContent = document.getElementById('sc-t').textContent.replace(/\d+$/, t);
+      }, 180 * i);
+    });
+  }
+  var box = document.getElementById('duel');
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es, ob) { es.forEach(function (e) { if (e.isIntersecting) { reveal(); ob.disconnect(); } }); }, { threshold: .25 }).observe(box);
+  } else { reveal(); }
+  // start race: measured midpoints, microVM ~4 s, Instances ~78 s; full lane = 90 s; played 20x faster
+  var LANE = 90, SPEED = 20, raf = null;
+  function go() {
+    var cl = document.getElementById('car-l'), cr = document.getElementById('car-r');
+    var tl = document.getElementById('t-l'), tr = document.getElementById('t-r');
+    cl.classList.remove('done'); cr.classList.remove('done');
+    var t0 = performance.now(); if (raf) cancelAnimationFrame(raf);
+    (function step(now) {
+      var s = (now - t0) / 1000 * SPEED;
+      var a = Math.min(s, 4), b = Math.min(s, 78);
+      cl.style.width = (a / LANE * 100) + '%'; cr.style.width = (b / LANE * 100) + '%';
+      tl.textContent = a.toFixed(1) + ' s'; tr.textContent = b.toFixed(0) + ' s';
+      if (a >= 4) cl.classList.add('done'); if (b >= 78) cr.classList.add('done');
+      if (b < 78) raf = requestAnimationFrame(step);
+    })(t0);
+  }
+  document.getElementById('race-go').addEventListener('click', go);
+  var raceBox = document.getElementById('race');
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es, ob) { es.forEach(function (e) { if (e.isIntersecting) { setTimeout(go, 600); ob.disconnect(); } }); }, { threshold: .6 }).observe(raceBox);
+  }
+})();
+</script>
 </section>
 <section class="content-section" id="price">
 <h2 class="section-title"><span>2</span> · Cost</h2>

@@ -194,18 +194,105 @@
 <p class="legend"><mark>高亮</mark> 结论 · <span class="src">文档</span> 出处见文末 · <span class="src">实测</span> 我在东京区域测的（2026-11-25）</p>
 <section class="content-section" id="compare">
 <h2 class="section-title"><span>1</span> · 对比</h2>
-<table class="cmp">
-<tr><th></th><th>microVM（默认）</th><th>Instances</th><th>更好</th></tr>
-<tr><td><b>跑在哪</b></td><td>AWS 托管的 microVM</td><td>你账号里的 EC2</td><td></td></tr>
-<tr><td><b>启动</b><span class="src">实测</span></td><td>2.5–6 秒</td><td>63–93 秒</td><td class="yes">microVM</td></tr>
-<tr><td><b>计费</b></td><td>按实际用量</td><td>EC2 全程 + 12% 管理费</td><td class="yes">microVM</td></tr>
-<tr><td><b>运维</b></td><td>几乎不用管</td><td>角色、配额、删会话</td><td class="yes">microVM</td></tr>
-<tr><td><b>封网络 / 元数据</b><span class="src">实测</span></td><td>做不到</td><td>特权模式下能</td><td class="yes">Instances</td></tr>
-<tr><td><b>硬件</b></td><td>arm64，最大 8 vCPU / 32 GB</td><td>x86 / arm64 / GPU</td><td class="yes">Instances</td></tr>
-<tr><td><b>会话最长</b></td><td>8 小时</td><td>14 天</td><td class="yes">Instances</td></tr>
-<tr><td><b>隔离</b></td><td colspan="2">都是一个会话一个隔离单位；Instances 同一会话里的 agent 互相不隔离</td><td>一样</td></tr>
-</table>
-<p class="legend" style="margin-top:-.4rem">来源：文档 · Instances、What’s New 11-12、定价页</p>
+<div class="vs">
+<div class="vs-side l"><div class="vs-name">microVM</div><div class="vs-sub">默认 · 无服务器</div><div class="vs-score" id="sc-l">0</div></div>
+<div class="vs-mid">VS<small id="sc-t">平局 0</small></div>
+<div class="vs-side r"><div class="vs-name">Instances</div><div class="vs-sub">你账号里的 EC2</div><div class="vs-score" id="sc-r">0</div></div>
+</div>
+<div class="duel" id="duel">
+<div class="row" data-w="l"><div class="v l">2.5–6 秒</div><div class="mid"><div class="lab">启动 <span class="src">实测</span></div><div class="bar"><i></i></div></div><div class="v r">63–93 秒</div><div class="note">microVM 从快照恢复；Instances 每个新会话都要开一台 EC2。</div></div>
+<div class="row" data-w="l"><div class="v l">按实际用量</div><div class="mid"><div class="lab">计费</div><div class="bar"><i></i></div></div><div class="v r">EC2 全程 + 12%</div><div class="note">microVM 只算实际用到的 CPU 和内存，等模型回复时 CPU 不收费；Instances 整台机器从开机到关机都算钱。</div></div>
+<div class="row" data-w="l"><div class="v l">几乎不用管</div><div class="mid"><div class="lab">运维</div><div class="bar"><i></i></div></div><div class="v r">角色、配额、删会话</div><div class="note">Instances 要建角色和 capacity provider，跑完还要删会话，不然机器一直开着。</div></div>
+<div class="row" data-w="l"><div class="v l">不用管配额</div><div class="mid"><div class="lab">规模</div><div class="bar"><i></i></div></div><div class="v r">受 EC2 配额限制</div><div class="note">Instances 一个会话一台 EC2，100 个并发就是 100 台，要看账号的 vCPU 配额。</div></div>
+<div class="row" data-w="r"><div class="v l">做不到</div><div class="mid"><div class="lab">封网络 / 元数据 <span class="src">实测</span></div><div class="bar"><i></i></div></div><div class="v r">特权模式下能</div><div class="note">microVM 里没有改网络规则的权限；Instances 特权模式下 agent 是 root，能用 iptables 封住元数据地址。</div></div>
+<div class="row" data-w="r"><div class="v l">arm64 · 最大 8 vCPU</div><div class="mid"><div class="lab">硬件</div><div class="bar"><i></i></div></div><div class="v r">x86 / arm64 / GPU</div><div class="note">microVM 只有 arm64；Instances 机型随便选，包括 Intel、GPU、大内存。</div></div>
+<div class="row" data-w="r"><div class="v l">8 小时</div><div class="mid"><div class="lab">会话最长</div><div class="bar"><i></i></div></div><div class="v r">14 天</div><div class="note">Instances 的会话停了以后，可以用同一个会话 ID 恢复，数据盘还在。</div></div>
+<div class="row" data-w="t"><div class="v l">一个会话一台 microVM</div><div class="mid"><div class="lab">隔离</div><div class="bar"><i></i></div></div><div class="v r">一个会话一台 EC2</div><div class="note">两边都是一个会话一个隔离单位；Instances 同一会话里的多个 agent 共用一台机器，能互相读到凭证。</div></div>
+</div>
+<div class="race" id="race">
+<div class="race-head"><b>启动赛跑</b><span class="muted">按实测时间，压缩 20 倍播放</span><button id="race-go" type="button">开跑 ▶</button></div>
+<div class="lane"><span class="ln">microVM</span><div class="track"><i id="car-l"></i></div><span class="t" id="t-l">0 s</span></div>
+<div class="lane"><span class="ln">Instances</span><div class="track"><i class="slow" id="car-r"></i></div><span class="t" id="t-r">0 s</span></div>
+</div>
+<p class="legend" style="margin-top:.6rem">来源：文档 · Instances、What’s New 11-12、定价页；启动时间和封元数据是实测（2026-11-25，东京）。</p>
+<style>
+.vs { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; margin: .4rem 0 1rem; }
+.vs-side { border-radius: 14px; padding: 1rem 1.2rem; position: relative; overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+.vs-side.l { box-shadow: inset 4px 0 0 #00e5a0; } .vs-side.r { box-shadow: inset -4px 0 0 #7c8cff; text-align: right; }
+.vs-name { font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
+.vs-side.l .vs-name { color: #00e5a0; } .vs-side.r .vs-name { color: #9aa6ff; }
+.vs-sub { font-size: .78rem; color: var(--text-mute); }
+.vs-score { font-family: var(--mono); font-size: 2.4rem; font-weight: 800; line-height: 1; margin-top: .3rem; color: var(--text); }
+.vs-mid { font-family: var(--mono); font-weight: 800; font-size: 1.5rem; color: var(--text-mute); text-align: center; }
+.vs-mid small { display: block; font-size: .7rem; font-weight: 600; margin-top: .2rem; }
+.duel .row { display: grid; grid-template-columns: 1fr 1.25fr 1fr; align-items: center; gap: .8rem; padding: .55rem .2rem; border-bottom: 1px solid var(--border);
+  opacity: .25; transform: translateY(6px); transition: opacity .5s, transform .5s; }
+.duel .row.on { opacity: 1; transform: none; }
+.duel .v { font-size: .88rem; color: var(--text-dim); transition: color .4s, text-shadow .4s; }
+.duel .v.r { text-align: right; }
+.duel .note { grid-column: 1 / -1; text-align: center; font-size: .78rem; color: var(--text-mute); margin-top: -.15rem; }
+.duel .mid .lab { text-align: center; font-size: .8rem; font-weight: 700; color: var(--text); margin-bottom: .3rem; }
+.duel .bar { position: relative; height: 8px; border-radius: 99px; background: var(--bg-soft); overflow: hidden; }
+.duel .bar i { position: absolute; top: 0; bottom: 0; left: 50%; width: 0; border-radius: 99px; transition: width .9s cubic-bezier(.2,.8,.2,1), left .9s cubic-bezier(.2,.8,.2,1); }
+.duel .row[data-w="l"].on .bar i { left: 0; width: 50%; background: linear-gradient(90deg, #00e5a0, rgba(0,229,160,.15)); box-shadow: 0 0 14px rgba(0,229,160,.6); }
+.duel .row[data-w="r"].on .bar i { left: 50%; width: 50%; background: linear-gradient(270deg, #7c8cff, rgba(124,140,255,.15)); box-shadow: 0 0 14px rgba(124,140,255,.6); }
+.duel .row[data-w="t"].on .bar i { left: 30%; width: 40%; background: var(--border-hi); }
+.duel .row[data-w="l"].on .v.l { color: #00e5a0; font-weight: 700; text-shadow: 0 0 12px rgba(0,229,160,.35); }
+.duel .row[data-w="r"].on .v.r { color: #aab4ff; font-weight: 700; text-shadow: 0 0 12px rgba(124,140,255,.35); }
+.race { margin-top: 1.2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: .9rem 1.1rem; }
+.race-head { display: flex; align-items: center; gap: .8rem; margin-bottom: .7rem; font-size: .85rem; }
+.race-head .muted { color: var(--text-mute); font-size: .78rem; }
+.race-head button { margin-left: auto; font: 700 .8rem var(--mono); color: #04130d; background: #00e5a0; border: 0; border-radius: 99px; padding: .35rem .9rem; cursor: pointer; }
+.lane { display: grid; grid-template-columns: 80px 1fr 64px; align-items: center; gap: .7rem; margin: .45rem 0; font-size: .8rem; }
+.lane .ln { color: var(--text-dim); font-weight: 700; } .lane .t { font-family: var(--mono); text-align: right; color: var(--text); }
+.track { position: relative; height: 14px; border-radius: 99px; background: repeating-linear-gradient(90deg, var(--bg-soft) 0 18px, transparent 18px 22px); }
+.track i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 99px; background: linear-gradient(90deg, rgba(0,229,160,.2), #00e5a0); box-shadow: 0 0 16px rgba(0,229,160,.7); }
+.track i.slow { background: linear-gradient(90deg, rgba(124,140,255,.2), #7c8cff); box-shadow: 0 0 16px rgba(124,140,255,.7); }
+.track i.done::after { content: "✓"; position: absolute; right: -18px; top: -3px; font-weight: 800; color: var(--text); }
+@media (max-width: 640px) { .duel .row { grid-template-columns: 1fr; text-align: center; } .duel .v.r { text-align: center; } .vs-score { font-size: 1.8rem; } }
+</style>
+<script>
+(function () {
+  var rows = [].slice.call(document.querySelectorAll('#duel .row'));
+  var l = 0, r = 0, t = 0, shown = false;
+  function reveal() {
+    if (shown) return; shown = true;
+    rows.forEach(function (row, i) {
+      setTimeout(function () {
+        row.classList.add('on');
+        var w = row.dataset.w; if (w === 'l') l++; else if (w === 'r') r++; else t++;
+        document.getElementById('sc-l').textContent = l; document.getElementById('sc-r').textContent = r;
+        document.getElementById('sc-t').textContent = document.getElementById('sc-t').textContent.replace(/\d+$/, t);
+      }, 180 * i);
+    });
+  }
+  var box = document.getElementById('duel');
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es, ob) { es.forEach(function (e) { if (e.isIntersecting) { reveal(); ob.disconnect(); } }); }, { threshold: .25 }).observe(box);
+  } else { reveal(); }
+  // start race: measured midpoints, microVM ~4 s, Instances ~78 s; full lane = 90 s; played 20x faster
+  var LANE = 90, SPEED = 20, raf = null;
+  function go() {
+    var cl = document.getElementById('car-l'), cr = document.getElementById('car-r');
+    var tl = document.getElementById('t-l'), tr = document.getElementById('t-r');
+    cl.classList.remove('done'); cr.classList.remove('done');
+    var t0 = performance.now(); if (raf) cancelAnimationFrame(raf);
+    (function step(now) {
+      var s = (now - t0) / 1000 * SPEED;
+      var a = Math.min(s, 4), b = Math.min(s, 78);
+      cl.style.width = (a / LANE * 100) + '%'; cr.style.width = (b / LANE * 100) + '%';
+      tl.textContent = a.toFixed(1) + ' s'; tr.textContent = b.toFixed(0) + ' s';
+      if (a >= 4) cl.classList.add('done'); if (b >= 78) cr.classList.add('done');
+      if (b < 78) raf = requestAnimationFrame(step);
+    })(t0);
+  }
+  document.getElementById('race-go').addEventListener('click', go);
+  var raceBox = document.getElementById('race');
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es, ob) { es.forEach(function (e) { if (e.isIntersecting) { setTimeout(go, 600); ob.disconnect(); } }); }, { threshold: .6 }).observe(raceBox);
+  }
+})();
+</script>
 </section>
 <section class="content-section" id="price">
 <h2 class="section-title"><span>2</span> · 费用</h2>
