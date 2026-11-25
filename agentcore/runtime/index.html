@@ -182,9 +182,10 @@
 <a href="#microvm">3 · microVM V2</a>
 <a href="#instances">4 · Instances</a>
 <a href="#price">5 · 怎么收费</a>
-<a href="#measured">6 · 实测</a>
-<a href="#choose">7 · 怎么选</a>
-<a href="#start">8 · 上手</a>
+<a href="#eval">6 · 评估</a>
+<a href="#measured">7 · 实测</a>
+<a href="#choose">8 · 怎么选</a>
+<a href="#start">9 · 上手</a>
 </nav>
 </div>
 <div class="callout"><b>查阅日期 2026-11-25。</b>价格、上限以 AWS 官方文档为准。"实测"是我在东京区域（ap-northeast-1）用一个多 agent 编程任务测的：同一次任务里一半 agent 放 microVM、一半放 Instances，样本小（每边 3 个 agent），只说明量级。</div>
@@ -275,12 +276,81 @@
 <h3 class="sub-h">按我的任务估一下（量级）</h3>
 <ul>
 <li>agent 大部分时间在等模型回复，CPU 很闲。microVM 只收实际用量，<mark>每个 agent 跑 40 分钟大约几分钱</mark>。</li>
-<li>Instances 整台机器都在计费：m8g.2xlarge 在美东按需价是 $0.359/小时（东京更贵一些），一个 agent 跑 40 分钟约 $0.25–0.35。</li>
-<li>128 个 agent 同时跑 40 分钟：<mark>microVM 约 $5，Instances 约 $40 多</mark>。换成 m8g.large 这种小机型能降到约 1/4。对比之下，这种规模的任务模型费用是几百美元，计算费用不是大头。</li>
+<li>Instances 整台机器从开机就计费（包括约 1.5 分钟的开机时间）：m7g.2xlarge 东京按需价 $0.4216/小时，加 12% 管理费是 $0.472/小时，<mark>一个 agent 跑 40 分钟约 $0.33</mark>。<span class="src">AWS Price List</span></li>
+<li>128 个 agent 同时跑 40 分钟：<mark>microVM 约 $4.7，Instances（m7g.2xlarge）约 $42</mark>；换成 m8g.large 约 $11.5、m7g.large 约 $10.5。对比之下，这种规模的任务模型费用是几百美元。下一节有计算器。</li>
 </ul>
 </section>
+<section class="content-section" id="eval">
+<h2 class="section-title"><span>6</span> · 评估：两种方式逐项对比</h2>
+<div class="key"><span class="kl">要点</span>本节关键信息<ul>
+<li><mark>速度、费用、运维：microVM 明显更好</mark>；<mark>安全控制、硬件选择、长任务：Instances 更好</mark>。<span class="src">实测</span></li>
+<li>计算费在 agent 任务里通常只是零头：这次实测 <mark>microVM 约占总费用 0.3%，Instances 约 3.5%</mark>（模型费 $3.01）。<span class="src">实测</span></li>
+<li>Instances 最大的风险不是贵，而是<mark>忘了删会话</mark>：一台 m7g.2xlarge 忘记关，一天就是 $11.3。<span class="src">AWS Price List</span></li>
+</ul></div>
+<table class="cmp">
+<tr><th>维度</th><th>microVM</th><th>Instances</th><th>更好的是</th></tr>
+<tr><td><b>启动</b></td><td>2.5–6 秒</td><td>63–93 秒（每个新会话开一台 EC2）</td><td class="yes">microVM</td></tr>
+<tr><td><b>干活速度</b></td><td colspan="2">开始干活以后一样：每个 agent 的模型费用（$0.32–0.44）和产出都一样</td><td>一样</td></tr>
+<tr><td><b>计算费（这次）</b></td><td>约 $0.01（3 个 agent、11 分钟）</td><td>约 $0.11（3 台、包括开机时间）</td><td class="yes">microVM</td></tr>
+<tr><td><b>计算费（128 个 × 40 分钟）</b></td><td>约 $4.7（最坏情况 $23）</td><td>约 $42（m7g.2xlarge）/ $11.5（m8g.large）</td><td class="yes">microVM</td></tr>
+<tr><td><b>封网络 / 元数据</b></td><td>做不到</td><td>特权模式下能做到，并验证过</td><td class="yes">Instances</td></tr>
+<tr><td><b>隔离</b></td><td colspan="2">都是一个会话一个隔离单位（microVM 或 EC2）；Instances 上同一会话里的 agent 互相不隔离</td><td>一样</td></tr>
+<tr><td><b>硬件</b></td><td>只有 arm64，最大 8 vCPU / 32 GB</td><td>x86 / arm64、GPU、大内存，任选</td><td class="yes">Instances</td></tr>
+<tr><td><b>会话时长</b></td><td>最长 8 小时</td><td>最长 14 天，可以停了再恢复</td><td class="yes">Instances</td></tr>
+<tr><td><b>运维</b></td><td>几乎不用管</td><td>要准备角色、capacity provider、配额，还要对账删会话</td><td class="yes">microVM</td></tr>
+<tr><td><b>规模</b></td><td>不用管配额</td><td>受账号 EC2 vCPU 配额限制</td><td class="yes">microVM</td></tr>
+<tr><td><b>折扣</b></td><td>可以买承诺基线（committed baseline）</td><td>EC2 部分能用 Savings Plans 和容量预留</td><td>看情况</td></tr>
+</table>
+<p class="legend" style="margin-top:-.4rem">表 2 · 逐项对比（价格：AWS Price List 东京按需价，2026-11-25；时间和费用：实测）</p>
+<h3 class="sub-h">算一算</h3>
+<p>按你的任务填，microVM 按实际用量算（agent 多数时间在等模型，平均用到的 vCPU 很少），Instances 按整台机器从开机到关机算。</p>
+<div class="calc" id="acc">
+<label>agent 数<input id="a-n" min="1" type="number" value="128"/></label>
+<label>每个跑多少分钟<input id="a-min" min="1" type="number" value="40"/></label>
+<label>Instances 机型（东京按需价）<select id="a-type">
+<option value="0.11594">m8g.large · 2 vCPU · $0.1159</option>
+<option value="0.1054">m7g.large · 2 vCPU · $0.1054</option>
+<option value="0.10006">c8g.large · 2 vCPU · $0.1001</option>
+<option value="0.23188">m8g.xlarge · 4 vCPU · $0.2319</option>
+<option selected="" value="0.4216">m7g.2xlarge · 8 vCPU · $0.4216</option>
+<option value="0.46376">m8g.2xlarge · 8 vCPU · $0.4638</option>
+<option value="0.13671">m8i.large · x86 · 2 vCPU · $0.1367</option>
+<option value="0.54684">m8i.2xlarge · x86 · 8 vCPU · $0.5468</option>
+</select></label>
+<label>开机分钟（计费）<input id="a-boot" min="0" step="0.5" type="number" value="1.5"/></label>
+<label>microVM 平均用到的 vCPU<input id="a-cpu" min="0" step="0.1" type="number" value="0.3"/></label>
+<label>microVM 平均内存 GB<input id="a-mem" min="0.125" step="0.25" type="number" value="1"/></label>
+<label>每个 agent 的模型费 $<input id="a-llm" min="0" step="0.1" type="number" value="1.5"/></label>
+</div>
+<div class="calc-out">
+<div><span>microVM 计算费</span><b id="o-mv">–</b><small id="o-mv2"></small></div>
+<div><span>Instances 计算费</span><b id="o-ec">–</b><small id="o-ec2"></small></div>
+<div class="tot"><span>Instances 多花</span><b id="o-diff">–</b><small id="o-share"></small></div>
+</div>
+<p class="legend" style="margin-top:.2rem">单价：microVM V2 $0.1276/vCPU·小时 + $0.0169/GB·小时（按秒，等 I/O 时 CPU 不计费）；Instances = EC2 按需价 × 1.12（管理费 12%），最少约 1 分钟。不含 EBS 和流量。</p>
+<script>
+(function () {
+  function v(id) { var x = parseFloat(document.getElementById(id).value); return isFinite(x) && x >= 0 ? x : 0; }
+  function usd(x) { return '$' + (x >= 100 ? x.toFixed(0) : x.toFixed(2)); }
+  function run() {
+    var n = v('a-n'), h = v('a-min') / 60, boot = v('a-boot') / 60, price = v('a-type');
+    var mv = n * h * (v('a-cpu') * 0.1276 + Math.max(0.125, v('a-mem')) * 0.0169);
+    var ec = n * Math.max(1 / 60, h + boot) * price * 1.12;
+    var llm = n * v('a-llm');
+    document.getElementById('o-mv').textContent = usd(mv);
+    document.getElementById('o-mv2').textContent = '占总费用 ' + (100 * mv / Math.max(1e-9, mv + llm)).toFixed(1) + '%';
+    document.getElementById('o-ec').textContent = usd(ec);
+    document.getElementById('o-ec2').textContent = '占总费用 ' + (100 * ec / Math.max(1e-9, ec + llm)).toFixed(1) + '%';
+    document.getElementById('o-diff').textContent = usd(ec - mv);
+    document.getElementById('o-share').textContent = '模型费合计 ' + usd(llm);
+  }
+  document.querySelectorAll('#acc input, #acc select').forEach(function (e) { e.addEventListener('input', run); });
+  run();
+})();
+</script>
+</section>
 <section class="content-section" id="measured">
-<h2 class="section-title"><span>6</span> · 实测：同一个任务，一半放 microVM，一半放 Instances</h2>
+<h2 class="section-title"><span>7</span> · 实测：同一个任务，一半放 microVM，一半放 Instances</h2>
 <div class="key"><span class="kl">要点</span>本节关键信息<ul>
 <li><mark>启动差一个数量级</mark>：microVM 2.5–6 秒，Instances 63–93 秒；开始干活以后两边一样快。<span class="src">实测</span></li>
 <li>Instances 开特权模式后，<mark>实例元数据地址能真正封住</mark>（容器内 iptables 生效并验证）；microVM 做不到。<span class="src">实测</span></li>
@@ -292,12 +362,14 @@
 <div><span>同会话第二次调用</span><b>0.2 s</b><small>Instances，机器已经开着</small></div>
 <div class="good"><span>元数据封锁</span><b>能 / 不能</b><small>Instances 特权模式 / microVM</small></div>
 <div><span>任务结果</span><b>12 / 12</b><small>验收全部通过，两边产出一样</small></div>
-<div><span>模型费用</span><b>$3.01</b><small>6 个 agent 合计；计算费是零头</small></div>
+<div><span>模型费用</span><b>$3.01</b><small>6 个 agent 合计</small></div>
+<div><span>计算费 · microVM</span><b>≈ $0.01</b><small>3 个 agent，共 11 分钟</small></div>
+<div class="bad"><span>计算费 · Instances</span><b>≈ $0.11</b><small>3 台，删对会话时；忘删时 $2.66</small></div>
 </div>
 <p>任务是一个小的多 agent 编程任务：1 个规划者、1 个组长、4 个开发者，按启动顺序隔一个分一个。两边每个开发者花的模型费都在 $0.32–0.44，产出也一样，<b>差别只在开头那一两分钟</b>：组长放在 Instances 上，整个团队就晚开工约 1.5 分钟。</p>
 <h3 class="sub-h">官方文档没写清楚、我踩到的坑</h3>
 <ol>
-<li><b>停会话不等于关机器。</b><code>StopRuntimeSession</code> 只停了 agent，EC2 还开着、还在计费，"空闲 10 分钟关机"也没触发。要调 <code>DeleteCapacityProviderSession</code>（参数是 capacity provider ID 和会话 ID），实例才会释放。<span class="src">实测</span></li>
+<li><b>停会话不等于关机器。</b><code>StopRuntimeSession</code> 只停了 agent，EC2 还开着、还在计费，"空闲 10 分钟关机"也没触发（我的 6 台多跑了 35–80 分钟，多花约 $2.66）。要调 <code>DeleteCapacityProviderSession</code>（参数是 capacity provider ID 和会话 ID），实例才会释放。<span class="src">实测</span></li>
 <li><b>这些实例默认是隐藏的。</b>文档提了一句：托管实例默认不出现在 EC2 控制台和 API 的列表里。用 CLI 查要加 <code>--include-managed-resources</code>，否则会以为"都关了"。实例标签里有 <code>bedrock-agentcore:runtime-session-id</code>，可以按它对账。<span class="src">文档 · Instances</span></li>
 <li><b>默认的 STANDARD 模式下，容器虽然是 uid 0，但权限被收掉了</b>：不能 chown、不能切换到别的用户、不能改 iptables。如果你的入口程序要降权运行 agent，就得用特权模式。<span class="src">实测</span></li>
 <li><b>请求内容是分块传的</b>（<code>Transfer-Encoding: chunked</code>，没有 Content-Length）。只认 Content-Length 的 HTTP 服务器会读到空内容。microVM 上没这个问题。<span class="src">实测</span></li>
@@ -306,7 +378,7 @@
 </ol>
 </section>
 <section class="content-section" id="choose">
-<h2 class="section-title"><span>7</span> · 怎么选</h2>
+<h2 class="section-title"><span>8</span> · 怎么选</h2>
 <div class="key"><span class="kl">要点</span>本节关键信息<ul>
 <li><mark>默认用 microVM</mark>：启动快、按用量付费、几乎不用运维。</li>
 <li><mark>这几种情况用 Instances</mark>：要 x86 或 GPU；会话超过 8 小时；要 root（装系统软件、跑容器、封网络）；要用 Savings Plans 或容量预留。</li>
@@ -319,7 +391,7 @@
 </ul>
 </section>
 <section class="content-section" id="start">
-<h2 class="section-title"><span>8</span> · 上手：Instances 的四步</h2>
+<h2 class="section-title"><span>9</span> · 上手：Instances 的四步</h2>
 <div class="key"><span class="kl">要点</span>本节关键信息<ul>
 <li>前提：一个实现了 <code>/ping</code> 和 <code>/invocations</code> 的容器镜像（推到 ECR），一个私有子网和安全组。</li>
 </ul></div>
@@ -362,6 +434,7 @@
 <li>What's New · 嵌套虚拟化（2026-11-19）：<a href="https://aws.amazon.com/about-aws/whats-new/2026/11/agentcore-nested-virtualization/">https://aws.amazon.com/about-aws/whats-new/2026/11/agentcore-nested-virtualization/</a></li>
 <li>AWS ML Blog · 新一代 AgentCore runtime（2026-11-12）：<a href="https://aws.amazon.com/blogs/machine-learning/run-agents-securely-and-efficiently-with-the-next-generation-agentcore-runtime/">https://aws.amazon.com/blogs/machine-learning/run-agents-securely-and-efficiently-with-the-next-generation-agentcore-runtime/</a></li>
 <li>CLI · create-capacity-provider：<a href="https://docs.aws.amazon.com/cli/latest/reference/bedrock-agentcore-control/create-capacity-provider.html">https://docs.aws.amazon.com/cli/latest/reference/bedrock-agentcore-control/create-capacity-provider.html</a></li>
+<li>AWS Price List · EC2 东京按需价（公开价格文件）：<a href="https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/ap-northeast-1/index.csv">https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/ap-northeast-1/index.csv</a></li>
 </ol>
 </div>
 </main>
